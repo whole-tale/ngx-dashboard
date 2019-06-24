@@ -39,6 +39,9 @@ test-report.xml
 /typings
 yarn-error.log
 
+# NPM (prefer Yarn lockfile instead)
+package-lock.json
+
 # e2e
 /e2e/*.js
 /e2e/*.map
