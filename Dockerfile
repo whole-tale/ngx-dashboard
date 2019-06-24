@@ -3,7 +3,7 @@ FROM node:carbon as nodebuild
 RUN npm install -g yarn @angular/cli@7
 WORKDIR /srv/app/
 COPY package.json yarn.lock ./
-RUN yarn install && yarn cache clean
+RUN yarn install --network-timeout=360000 && yarn cache clean
 COPY . ./
 RUN ng build --prod
 
