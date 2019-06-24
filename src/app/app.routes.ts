@@ -20,7 +20,7 @@ export const routes = [
     component: MainComponent,
     children: [
       {
-        path: 'tales',
+        path: '',
         loadChildren: './+tale-catalog/tale-catalog.module#TaleCatalogModule'
       },
       {
@@ -49,7 +49,7 @@ export const routes = [
   },
   {
     path: '**',
-    redirectTo: 'tales',
+    redirectTo: '',
     pathMatch: 'full'
   }
 ];

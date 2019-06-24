@@ -55,7 +55,7 @@
 
 <div class="ui inverted menu wt-top">
     <a href="pseudo-home.html" class="header item wt-brand"><img src="assets/img/wholetale_logo_sm.png">Whole<span>Tale</span></a>
-    <a class="item" [ngClass]="{ 'active':currentRoute==='/tales' }" routerLink="/tales" routerLinkActive="active">Tale Dashboard</a>
+    <a class="item" [ngClass]="{ 'active':currentRoute==='/' }" routerLink="/" routerLinkActive="active">Tale Dashboard</a>
     <a class="item" [ngClass]="{ 'active':currentRoute==='/datasets' }" routerLink="/datasets" routerLinkActive="active">Data Catalog</a>
     <a class="item" [ngClass]="{ 'active':currentRoute==='/environments' }" routerLink="/environments" routerLinkActive="active">Compute Environments</a>
     <div class="right menu">
