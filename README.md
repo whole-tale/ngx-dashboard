@@ -11,8 +11,8 @@ For a short demonstration, see http://recordit.co/68UCeE5PU3
 - [Prerequisites](#prerequisites)
 - [Main Differences](#differences)
   - [Angular instead of EmberJS](#angular7)
-  - [Directives and Pipes instead of Helpers](#directives-and-pipes)
-  - [Modules, Components, and Routes instead of Controllers / Routes / Templates / Components](#modules-components-routes)
+    - [Directives and Pipes instead of Helpers](#directives-and-pipes)
+    - [Modules, Components, and Routes instead of Controllers / Routes / Templates / Components](#modules-components-routes)
   - [TypeScript instead of JavaScript](#typescript)
   - [Yarn instead of NPM](#yarn)
 - [Getting started](#getting-started)
@@ -53,7 +53,7 @@ Note that while some of this code may need to be adapted to be "more Angular", i
 
 Reasoning: EmberJS support is dwindling, with seemingly less community active than ever before and it is becoming difficult to get answers to basic questions that arise during development. It is even more difficult to reuse anything that the community has contributed due to either minor differences in each version of EmberJS. Furthermore, we are running an older version of Ember, causing further disparity between us and the state-of-the-art.
 
-### <a name="directives-and-pipes"> Directives and Pipes instead of Helpers
+#### <a name="directives-and-pipes"> Directives and Pipes instead of Helpers
 
 Where EmberJS had "helpers" that could be called from within templates, Angular offers "directives" or "pipes".
 
@@ -75,7 +75,7 @@ Angular offers many built-in directives that work similarly to the helpers offer
 
 Reasoning: Syntactical sugar from EmberJS is still present, with new additions to make writing dynamic templates and forms even easier.
 
-### <a name="modules-components-routes"> Modules, Components, and Routes instead of Controllers / Routes / Templates / Components
+#### <a name="modules-components-routes"> Modules, Components, and Routes instead of Controllers / Routes / Templates / Components
 
 Where EmberJS used a unique mix of component-based architecture and classic MVC, Angular appears to be more purely component-based.
 
@@ -91,7 +91,7 @@ Reasoning: Modular code is easier to understand and refactor independently of ot
 
 ### <a name="typescript"> TypeScript instead of JavaScript
 
-The biggest difference here is the use of TypeScript over JavaScript. TypeScript adds more strict typing to classic JavaScript. Notice that type definitions `string` (member type) and `void` (function return type) are provided in the following snippet:
+One of the biggest differences here is the adoption of TypeScript, which effectively adds more strict typing to classic JavaScript. Notice that type definitions `string` (member type) and `void` (function return type) are provided in the following TypeScript snippet:
 
 ```typescript
 class Greeter {
@@ -114,7 +114,7 @@ let a = 6;
 a = "and now I'm a string";
 ```
 
-Reasoning: While it can sometimes add frustration during the compile step, using a stringly-typed language can make code easier to read, test, and maintain.
+Reasoning: While it can sometimes add frustration during the compile step, using a strongly-typed language can make code easier to read, test, and maintain.
 
 Aside: The `any` type keyword can be used to declare a "classic" JavaScript variable, and TypeScript won't complain about the type. Long-term this is a very fragile pattern, but it works great for putting together a quick prototype.
 
