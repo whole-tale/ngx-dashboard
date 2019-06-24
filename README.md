@@ -4,6 +4,8 @@ A prototype rewrite of the WholeTale Dashboard in Angular 7+
 
 This project was seeded from [ng-seed/universal](https://github.com/ng-seed/univseral)
 
+For a short demonstration, see http://recordit.co/68UCeE5PU3
+
 ## Table of contents:
 
 - [Prerequisites](#prerequisites)
