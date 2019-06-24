@@ -12,6 +12,7 @@ For a short demonstration, see http://recordit.co/68UCeE5PU3
 - [Main Differences](#differences)
   - [Angular instead of EmberJS](#angular7)
   - [Directives and Pipes instead of Helpers](#directives-and-pipes)
+  - [Modules, Components, and Routes instead of Controllers / Routes / Templates / Components](#modules-components-routes)
   - [TypeScript instead of JavaScript](#typescript)
   - [Yarn instead of NPM](#yarn)
 - [Getting started](#getting-started)
@@ -73,6 +74,20 @@ Angular offers many built-in directives that work similarly to the helpers offer
 - Form validation directives for common tasks, such as `email`, `min`, `max`, `pattern`, `required`, etc
 
 Reasoning: Syntactical sugar from EmberJS is still present, with new additions to make writing dynamic templates and forms even easier.
+
+### <a name="modules-components-routes"> Modules, Components, and Routes instead of Controllers / Routes / Templates / Components
+
+Where EmberJS used a unique mix of component-based architecture and classic MVC, Angular appears to be more purely component-based.
+
+Angular allows you to define modules - groups of related components/services that can be injected into and inherited by one another.
+
+A module can then use Angular's `Router` to map URL path suffixes to individual components, and the router will populate the view with the correct components upon navigation.
+
+A module can declare a "service" which, just like in EmberJS, is a singleton class allowing modules and components to share their data between each other. Also just like EmberJS, services can be injected into one another and into components using dependency injection.
+
+For example, our app has an `AppModule` at its base that is made up of a `HeaderComponent`, `MainComponent`, and `FooterComponent` (currently unused). The `MainComponent` contains our `<router-outlet></router-outlet>`, which is where our component will be rendered when a matching URL is found. The routes we've set up point to sub-modules named `tale-catalog`, `data-catalog`, `compute-environments`, and `run-tale`. Each of these sub-modules is currently made up of a single component, but could be split into as few or as many different components as we'd like.
+
+Reasoning: Modular code is easier to understand and refactor independently of other modules. Designing with modularity in mind helps you write more cohesive and maintainable code that can be sustained long-term.
 
 ### <a name="typescript"> TypeScript instead of JavaScript
 
