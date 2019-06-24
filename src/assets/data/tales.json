@@ -1,0 +1,253 @@
+[
+  {
+    "_accessLevel": 2,
+    "_id": "5ced932bcb972e88b257c5e1",
+    "_modelType": "tale",
+    "authors": [],
+    "category": "science",
+    "config": {},
+    "created": "2019-05-28T19:59:39.455000+00:00",
+    "creatorId": "5cdde4ca84f03ea7329bab0d",
+    "dataSet": [],
+    "dataSetCitation": [],
+    "description": null,
+    "folderId": "5ced932bcb972e88b257c5e3",
+    "format": 7,
+    "icon": "https://raw.githubusercontent.com/whole-tale/jupyter-base/master/squarelogo-greytext-orangebody-greymoons.png",
+    "iframe": true,
+    "illustration": "https://raw.githubusercontent.com/whole-tale/dashboard/master/public/images/demo-graph2.jpg",
+    "imageId": "5cddc19384f03ea7329bab09",
+    "imageInfo": {
+      "digest": "registry.local.wholetale.org/5ce311acdf11f7f5db93e524/1558556822@sha256:b6b3cb5d07a584deeb1a2c759860f6d31a49f6d7f2ebfcdb2504925f26671cb0",
+      "jobId": "5d09109ff827337e431c8cee",
+      "last_build": 1559774290,
+      "repo2docker_version": "wholetale/repo2docker:latest",
+      "status": 3
+    },
+    "licenseSPDX": "CC-BY-4.0",
+    "narrative": [],
+    "narrativeId": "5cdde4d984f03ea7329bab1a",
+    "public": false,
+    "publishInfo": [],
+    "title": "newone",
+    "updated": "2019-06-18T16:26:07.465000+00:00",
+    "workspaceId": "5ced932bcb972e88b257c5e2",
+    "workspaceModified": 1559774278
+  },
+  {
+    "_accessLevel": -1,
+    "_id": "5cf68c18c9a8549a0b5ec90d",
+    "_modelType": "tale",
+    "authors": [
+      {
+        "firstName": "Kacper",
+        "lastName": "Kowalik",
+        "orcid": "https://orcid.org/0000-0003-1709-3744"
+      }
+    ],
+    "category": "astronomy",
+    "config": {},
+    "created": "2019-06-04T15:19:37.093000+00:00",
+    "creatorId": "5cddc1713fb749dc19050112",
+    "dataSet": [
+      {
+        "_modelType": "item",
+        "itemId": "5cf68bffc9a8549a0b5ec8ef",
+        "mountPath": "BBH_events_v3.json"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c00c9a8549a0b5ec8f2",
+        "mountPath": "GW150914_4_template.hdf5"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c00c9a8549a0b5ec8f5",
+        "mountPath": "GW151226_4_template.hdf5"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c01c9a8549a0b5ec8f8",
+        "mountPath": "GW170104_4_template.hdf5"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c01c9a8549a0b5ec8fa",
+        "mountPath": "H-H1_LOSC_4_V1-1167559920-32.hdf5"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c02c9a8549a0b5ec8fc",
+        "mountPath": "H-H1_LOSC_4_V2-1126259446-32.hdf5"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c02c9a8549a0b5ec8ff",
+        "mountPath": "H-H1_LOSC_4_V2-1128678884-32.hdf5"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c02c9a8549a0b5ec901",
+        "mountPath": "H-H1_LOSC_4_V2-1135136334-32.hdf5"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c03c9a8549a0b5ec903",
+        "mountPath": "L-L1_LOSC_4_V1-1167559920-32.hdf5"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c03c9a8549a0b5ec905",
+        "mountPath": "L-L1_LOSC_4_V2-1126259446-32.hdf5"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c03c9a8549a0b5ec907",
+        "mountPath": "L-L1_LOSC_4_V2-1128678884-32.hdf5"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c04c9a8549a0b5ec909",
+        "mountPath": "L-L1_LOSC_4_V2-1135136334-32.hdf5"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c04c9a8549a0b5ec90b",
+        "mountPath": "LVT151012_4_template.hdf5"
+      }
+    ],
+    "dataSetCitation": [],
+    "description": "### LIGO Detected Gravitational Waves from Black Holes\nOn September 14,2015 at 5:51 a.m. Eastern Daylight Time (09:51 UTC), the twin Laser Interferometer Gravitational-wave Observatory (LIGO) detectors, located in Livingston, Louisiana, and Hanford, Washington, USA both measured ripples in the fabric of spacetime - gravitational waves - arriving at the Earth from a cataclysmic event in the distant universe. The new Advanced LIGO detectors had just been brought into operation for their first observing run when the very clear and strong signal was captured.\n\nThis discovery comes at the culmination of decades of instrument research and development, through a world-wide effort of thousands of researchers, and made possible by dedicated support for LIGO from the National Science Foundation. It also proves a prediction made 100 years ago by Einstein that gravitational waves exist. More excitingly, it marks the beginning of a new era of gravitational wave astronomy - the possibilities for discovery are as rich and boundless as they have been with light-based astronomy.\n\nThis first detection is a spectacular discovery: the gravitational waves were produced during the final fraction of a second of the merger of two black holes to produce a single, more massive spinning black hole. This collision of two black holes had been predicted but never observed.\n\nTo learn more about the discovery and the teams that made it possible, view the [**Official Press Release**](https://www.ligo.caltech.edu/news/ligo20160211) or [**download the PDF**](https://www.ligo.caltech.edu/system/media_files/binaries/302/original/detection-press-release.pdf).To explore how LIGO works run this interactive Tale!\n\nPlease visit https://gravity.ncsa.illinois.edu/",
+    "folderId": "5cf68c18c9a8549a0b5ec90f",
+    "format": 7,
+    "icon": "https://raw.githubusercontent.com/whole-tale/jupyter-base/master/squarelogo-greytext-orangebody-greymoons.png",
+    "iframe": true,
+    "illustration": "https://use.yt/upload/e922a8ac",
+    "imageId": "5cddc19384f03ea7329bab09",
+    "imageInfo": {
+      "digest": "registry.local.wholetale.org/5cf68c18c9a8549a0b5ec90d/1559772166@sha256:9d274721b7a4f65481ad296e767b50578a18e105f050c94eed83f43055a29083",
+      "jobId": "5cf967db89e272283f3b9943",
+      "last_build": 1559772166,
+      "repo2docker_version": "wholetale/repo2docker:latest",
+      "status": 3
+    },
+    "licenseSPDX": "CC-BY-4.0",
+    "narrative": [],
+    "narrativeId": "5cdde4d984f03ea7329bab1a",
+    "public": true,
+    "publishInfo": [],
+    "title": "LIGO Tutorial",
+    "updated": "2019-06-06T19:22:03.260000+00:00",
+    "workspaceId": "5cf68c18c9a8549a0b5ec90e",
+    "workspaceModified": 1559661594
+  },
+  {
+    "_accessLevel": 2,
+    "_id": "5d0a6891f9a0039174594873",
+    "_modelType": "tale",
+    "authors": [
+      {
+        "firstName": "Kacper",
+        "lastName": "Kowalik",
+        "orcid": "https://orcid.org/0000-0003-1709-3744"
+      }
+    ],
+    "category": "astronomy",
+    "config": {},
+    "copyOfTale": "5cf68c18c9a8549a0b5ec90d",
+    "created": "2019-06-19T16:53:26.831000+00:00",
+    "creatorId": "5cdde4ca84f03ea7329bab0d",
+    "dataSet": [
+      {
+        "_modelType": "item",
+        "itemId": "5cf68bffc9a8549a0b5ec8ef",
+        "mountPath": "BBH_events_v3.json"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c00c9a8549a0b5ec8f2",
+        "mountPath": "GW150914_4_template.hdf5"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c00c9a8549a0b5ec8f5",
+        "mountPath": "GW151226_4_template.hdf5"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c01c9a8549a0b5ec8f8",
+        "mountPath": "GW170104_4_template.hdf5"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c01c9a8549a0b5ec8fa",
+        "mountPath": "H-H1_LOSC_4_V1-1167559920-32.hdf5"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c02c9a8549a0b5ec8fc",
+        "mountPath": "H-H1_LOSC_4_V2-1126259446-32.hdf5"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c02c9a8549a0b5ec8ff",
+        "mountPath": "H-H1_LOSC_4_V2-1128678884-32.hdf5"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c02c9a8549a0b5ec901",
+        "mountPath": "H-H1_LOSC_4_V2-1135136334-32.hdf5"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c03c9a8549a0b5ec903",
+        "mountPath": "L-L1_LOSC_4_V1-1167559920-32.hdf5"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c03c9a8549a0b5ec905",
+        "mountPath": "L-L1_LOSC_4_V2-1126259446-32.hdf5"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c03c9a8549a0b5ec907",
+        "mountPath": "L-L1_LOSC_4_V2-1128678884-32.hdf5"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c04c9a8549a0b5ec909",
+        "mountPath": "L-L1_LOSC_4_V2-1135136334-32.hdf5"
+      },
+      {
+        "_modelType": "item",
+        "itemId": "5cf68c04c9a8549a0b5ec90b",
+        "mountPath": "LVT151012_4_template.hdf5"
+      }
+    ],
+    "dataSetCitation": [],
+    "description": "### LIGO Detected Gravitational Waves from Black Holes\nOn September 14,2015 at 5:51 a.m. Eastern Daylight Time (09:51 UTC), the twin Laser Interferometer Gravitational-wave Observatory (LIGO) detectors, located in Livingston, Louisiana, and Hanford, Washington, USA both measured ripples in the fabric of spacetime - gravitational waves - arriving at the Earth from a cataclysmic event in the distant universe. The new Advanced LIGO detectors had just been brought into operation for their first observing run when the very clear and strong signal was captured.\n\nThis discovery comes at the culmination of decades of instrument research and development, through a world-wide effort of thousands of researchers, and made possible by dedicated support for LIGO from the National Science Foundation. It also proves a prediction made 100 years ago by Einstein that gravitational waves exist. More excitingly, it marks the beginning of a new era of gravitational wave astronomy - the possibilities for discovery are as rich and boundless as they have been with light-based astronomy.\n\nThis first detection is a spectacular discovery: the gravitational waves were produced during the final fraction of a second of the merger of two black holes to produce a single, more massive spinning black hole. This collision of two black holes had been predicted but never observed.\n\nTo learn more about the discovery and the teams that made it possible, view the [**Official Press Release**](https://www.ligo.caltech.edu/news/ligo20160211) or [**download the PDF**](https://www.ligo.caltech.edu/system/media_files/binaries/302/original/detection-press-release.pdf).To explore how LIGO works run this interactive Tale!\n\nPlease visit https://gravity.ncsa.illinois.edu/",
+    "folderId": "5d0a6891f9a0039174594875",
+    "format": 7,
+    "icon": "https://raw.githubusercontent.com/whole-tale/jupyter-base/master/squarelogo-greytext-orangebody-greymoons.png",
+    "iframe": true,
+    "illustration": "https://use.yt/upload/e922a8ac",
+    "imageId": "5cddc19384f03ea7329bab09",
+    "imageInfo": {
+      "digest": "registry.local.wholetale.org/5d0a4a60f9a00391745947f3/1560955662@sha256:60c8f83e37e322e6ec6723969d61191ba1d46deaa37fa94c9130174d185e7c19",
+      "jobId": "5d0a6892f9a003917459487d",
+      "last_build": 1560963218,
+      "repo2docker_version": "wholetale/repo2docker_wholetale:latest",
+      "status": 3
+    },
+    "licenseSPDX": "CC-BY-4.0",
+    "narrative": [],
+    "narrativeId": "5cdde4d984f03ea7329bab1a",
+    "public": false,
+    "publishInfo": [],
+    "status": 1,
+    "title": "LIGO Tutorial",
+    "updated": "2019-06-19T16:54:05.194000+00:00",
+    "workspaceId": "5d0a6891f9a0039174594874",
+    "workspaceModified": 1560963218
+  }
+]

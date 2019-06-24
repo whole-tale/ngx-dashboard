@@ -46,6 +46,7 @@
                 "input": "src",
                 "output": "/"
               },
+              "src/assets/img",
               "src/assets/data",
               "src/assets/i18n",
               "src/assets/config.local.json"

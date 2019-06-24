@@ -13,7 +13,21 @@ $theme: mat-light-theme($primary, $accent, $warn);
 @include angular-material-theme($theme);
 
 body {
-  @include font(#{$h4}/1.429 $font--preferred);
+  @include font(#{$h4}/ 1.429 $font--preferred);
 
   background: c(grey, gallery);
+}
+
+@import './wholetale-dashboard';
+
+.clickable {
+  cursor: pointer;
+}
+
+.not.clickable {
+  cursor: not-allowed;
+}
+
+.wt-top > a:hover {
+  text-decoration: none;
 }

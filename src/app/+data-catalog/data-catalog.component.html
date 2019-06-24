@@ -1,0 +1,233 @@
+<div fxLayoutAlign="center" [@routeAnimation]>
+    <!-- <div *ngIf="error$ | async">
+        Error: {{ (error$ | async) }}
+    </div>
+    <app-data-table *ngIf="!(error$ | async)"
+                    [data]="airlines$"
+                    [isProcessing]="isProcessing$ | async"
+                    [cols]="airlineTable.cols"
+                    [filterCol]="airlineTable.filterCol"
+                    [buttons]="airlineTable.buttons"
+                    [options]="airlineTable.options"
+                    (refreshClick)="refresh()">
+        <app-menu-group cssClass="qa-menu" icon="more_vert" tooltip="PUBLIC.SHARED.ACTION.TOOLTIP">
+            <app-menu-item cssClass="qa-menu_item__create" icon="add" text="{{ 'PUBLIC.AIR_UNIVERSAL.AIRLINE.AIRLINE_TABLE.CREATE' | translate }}"
+                           (menuClick)="createAirline()">
+            </app-menu-item>
+        </app-menu-group>
+    </app-data-table> -->
+
+    <div class="ui stackable grid container">
+        <div class="row">
+            <div class="sixteen wide column">
+                <div class="ui secondary pointing menu">
+                    <a (click)="currentFilter='public'" [ngClass]="{'active': currentFilter==='public'}" class="active item">
+                        Data Catalog
+                    </a>
+                    <a (click)="currentFilter='mine'" [ngClass]="{'active': currentFilter==='mine'}" class="item">
+                        My Registered Data
+                    </a>
+                    <div class="right menu">
+                        <div class="item">
+                            <div class="ui primary right labeled icon button" id="add-data">
+                                Add Data
+                                <i class="plus icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="ten wide column">
+
+                <div class="ui fluid icon wt-input input">
+                    <input type="text" placeholder="Search WholeTale Registered Data Catalog...">
+                    <i class="search icon"></i>
+                </div>
+
+            </div>
+            <div class="six wide column">
+
+                <div class="ui centered grid">
+                    <div class="ui center aligned column">
+                        <div aria-label="Pagination Navigation" role="navigation" class="ui pagination pointing secondary menu">
+                            <a aria-current="false" aria-disabled="false" tabindex="0" value="1" aria-label="Previous item" type="prevItem" class="item">⟨</a><a aria-current="true" aria-disabled="false" tabindex="0" value="1" type="pageItem" class="active item">1</a><a aria-current="false" aria-disabled="false" tabindex="0" value="2" type="pageItem" class="item">2</a><a aria-current="false" aria-disabled="false" tabindex="0" value="3" type="pageItem" class="item">3</a><a aria-current="false" aria-disabled="false" tabindex="0" value="2" aria-label="Next item" type="nextItem" class="item">⟩</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row" *ngIf="currentFilter==='public'">
+            <div class="sixteen wide column">
+
+                <div class="ui styled fluid accordion">
+                    <div class="title">
+                        <div class="label">
+                            <img src="assets/img/data-one.png">
+                        </div>
+                        <div class="listing">
+                            Craig Willis <i> Created 3 months ago</i> [0 MB] <span class="data-title">Watershed 18 daily stream discharge</span>, Coweeta Hydrologic Laboratory, Otto NC, 1936-2017 <span class="doi">https://pasta.Iternet.edu/package/metadata/eml/knb-Iter-cwt/3033/27</span>
+                        </div>
+                        <div class="ui floating dropdown theme" tabindex="0">
+                            <mat-icon fontSet="fa" fontIcon="fa-ellipsis-v"></mat-icon>
+                            <div class="menu transition hidden" tabindex="-1">
+                                <div class="item">Save to My Registered Data</div>
+                                <a class="item">Add to Existing Tale</a>
+                                <a class="item" id="test">Create New Tale</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content">
+                        <div class="ui list transition hidden">
+                            <div class="item">
+                                <b>Dataset:</b> Watershed 18 daily stream discharge
+                            </div>
+                            <div class="item">
+                                <b>Source:</b> Coweeta Hydrologic Laboratory, Otto, NC 1936-2017 LTR Network Member Node
+                            </div>
+                            <div class="item">
+                                <b>DOI:</b> 10.6073/pasta/2e1f7b33a70e0bf658c40abaf3c64b12
+                            </div>
+                            <div class="item">
+                                <b>DataID:</b>
+
+                            </div>
+                            <div class="item">
+                                <b>Repository:</b> DataOne
+                            </div>
+                            <div class="item">
+                                <b>Size:</b> 33 KB
+                            </div>
+                            <div class="item">
+                                <b>Added by:</b> Craig Willis
+                            </div>
+                            <div class="item spaced">
+                                <b>Used in:</b> 8 Tales, 2 are public
+                                <div class="list">
+                                    <a class="item" href="run-meta-pre-run.html">
+                                        Accelerated discovery of metallic glasses...
+                                    </a>
+                                    <a class="item">
+                                        Someone Else's Public Tale
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="title">
+                        <div class="label">
+                            <img src="assets/img/data-one.png">
+                        </div>
+                        <div class="listing">
+                            Matthew Jones <i>Created 6 months ago</i> [10 MB] <span class="data-title">Water samples from rivers and estuaries in the Canadian Arctic Archipelago</span>, 2016 <span class="doi">doi:10.18739/A2J80W</span>
+                        </div>
+                        <div class="ui floating dropdown theme" tabindex="0">
+                            <mat-icon fontSet="fa" fontIcon="fa-ellipsis-v"></mat-icon>
+                            <div class="menu transition hidden" tabindex="-1">
+                                <div class="item">Save to My Registered Data</div>
+                                <a class="item">Add to Existing Tale</a>
+                                <a class="item">Create New Tale</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content">
+                        <div class="ui list transition hidden">
+                            <div class="item">
+                                <b>Dataset:</b> Water samples from rivers and estuaries in the Canadian Arctic Archipelago
+                            </div>
+                            <div class="item">
+                                <b>Source:</b> 2016
+                            </div>
+                            <div class="item">
+                                <b>DOI:</b> 10.18739/A2J80W
+                            </div>
+                            <div class="item">
+                                <b>DataID:</b>
+
+                            </div>
+                            <div class="item">
+                                <b>Repository:</b> DataOne
+                            </div>
+                            <div class="item">
+                                <b>Size:</b> 10 MB
+                            </div>
+                            <div class="item">
+                                <b>Added by:</b> Matthew Jones
+                            </div>
+                            <div class="item spaced">
+                                <b>Used in:</b> 3 Tales, 1 is public
+                                <div class="list">
+                                    <a class="item">
+                                        Someone's Public Tale
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="title">
+                        <div class="label">
+                            <img src="assets/img/data-one.png">
+                        </div>
+                        <div class="listing">
+                            Matthew Harris <i>Created 6 months ago</i> [37 MB] <span class="data-title">Togiak Archaeological and Paleoecological Project</span> <span class="doi">doi:10.18739/A2196V</span>
+                        </div>
+                        <div class="ui floating dropdown theme" tabindex="0">
+                            <mat-icon fontSet="fa" fontIcon="fa-ellipsis-v"></mat-icon>
+                            <div class="menu transition hidden" tabindex="-1">
+                                <div class="item">Save to My Registered Data</div>
+                                <a class="item">Add to Existing Tale</a>
+                                <a class="item">Create New Tale</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content">
+                        <div class="ui list transition hidden">
+                            <div class="item">
+                                <b>Dataset:</b> Togiak Archaeological and Paleoecological Project
+                            </div>
+                            <div class="item">
+                                <b>Source:</b>
+
+                            </div>
+                            <div class="item">
+                                <b>DOI:</b> 10.18739/A2196V
+                            </div>
+                            <div class="item">
+                                <b>DataID:</b>
+
+                            </div>
+                            <div class="item">
+                                <b>Repository:</b> DataOne
+                            </div>
+                            <div class="item">
+                                <b>Size:</b> 37 MB
+                            </div>
+                            <div class="item">
+                                <b>Added by:</b> Matthew Harris
+                            </div>
+                            <div class="item spaced">
+                                <b>Used in:</b> 5 Tales, 3 are public
+                                <div class="list">
+                                    <a class="item">
+                                        Someone's Public Tale
+                                    </a>
+                                    <a class="item">
+                                        Someone Else's Public Tale
+                                    </a>
+                                    <a class="item">
+                                        A Third Public Tale
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

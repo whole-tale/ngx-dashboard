@@ -17,6 +17,10 @@ node_modules/
 .settings/
 *.sublime-workspace
 
+IDE - Theia
+.theia/
+.Trash-1001/
+
 # IDE - VSCode
 .vscode/*
 !.vscode/settings.json

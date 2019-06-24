@@ -20,20 +20,20 @@ export const routes = [
     component: MainComponent,
     children: [
       {
-        path: '',
-        loadChildren: './+home/home.module#HomeModule'
+        path: 'tales',
+        loadChildren: './+tale-catalog/tale-catalog.module#TaleCatalogModule'
       },
       {
-        path: 'about',
-        loadChildren: './+about/about.module#AboutModule'
+        path: 'environments',
+        loadChildren: './+compute-environments/compute-environments.module#ComputeEnvironmentsModule'
       },
       {
-        path: 'air-universal',
-        loadChildren: './+air-universal/air-universal.module#AirUniversalModule'
+        path: 'datasets',
+        loadChildren: './+data-catalog/data-catalog.module#DataCatalogModule'
       },
       {
-        path: 'secure-page',
-        loadChildren: './+secure/secure.module#SecureModule'
+        path: 'run',
+        loadChildren: './+run-tale/run-tale.module#RunTaleModule'
       }
     ],
     canActivateChild: [MetaGuard],
@@ -49,7 +49,7 @@ export const routes = [
   },
   {
     path: '**',
-    redirectTo: '',
+    redirectTo: 'tales',
     pathMatch: 'full'
   }
 ];

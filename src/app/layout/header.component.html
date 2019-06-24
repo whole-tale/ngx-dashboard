@@ -1,7 +1,8 @@
-﻿<mat-toolbar class="header mat-elevation-z2" color="primary">
+<!-- <mat-toolbar class="header mat-elevation-z2" color="primary">
     <span>
-        <mat-icon class="header__logo">developer_board</mat-icon>
-        <span>{{ title | translate }}</span>
+        <img src="assets/img/wholetale_logo_sm.png" height="24" width="24" />
+        <span> W H O L E </span>
+        <small>T A L E</small>
     </span>
     <span fxFlex></span>
     <button mat-button [routerLink]="['/', '']">
@@ -12,7 +13,9 @@
     </button>
     <button mat-button [routerLink]="['/', 'about']">
         {{ 'PUBLIC.ABOUT.ABOUT.MENU_TITLE' | translate }}
-    </button>
+    </button> -->
+
+
     <!--<button mat-button [routerLink]="['/', 'about', 'us', 22]">-->
         <!--{{ 'PUBLIC.ABOUT.ABOUT_US.MENU_TITLE' | translate }}-->
     <!--</button>-->
@@ -22,10 +25,10 @@
     <!--<button mat-button [routerLink]="['/', 'about', 'apple', 6, 'pear']">-->
         <!--{{ 'PUBLIC.ABOUT.ABOUT_APPLE_PEAR.MENU_TITLE' | translate }}-->
     <!--</button>-->
-    <button mat-button [routerLink]="['/', 'secure-page']">
+   <!-- <button mat-button [routerLink]="['/', 'secure-page']">
         {{ 'PUBLIC.SECURE.MENU_TITLE' | translate }}
-    </button>
-    <span fxFlex></span>
+    </button> -->
+    <!-- <span fxFlex></span>
     <a mat-button href="https://www.github.com/ng-seed/universal">
         Github
     </a>
@@ -48,4 +51,24 @@
     <button mat-icon-button [matMenuTriggerFor]="i18nMenu">
         <mat-icon>language</mat-icon>
     </button>
-</mat-toolbar>
+</mat-toolbar> -->
+
+<div class="ui inverted menu wt-top">
+    <a href="pseudo-home.html" class="header item wt-brand"><img src="assets/img/wholetale_logo_sm.png">Whole<span>Tale</span></a>
+    <a class="item" [ngClass]="{ 'active':currentRoute==='/tales' }" routerLink="/tales" routerLinkActive="active">Tale Dashboard</a>
+    <a class="item" [ngClass]="{ 'active':currentRoute==='/datasets' }" routerLink="/datasets" routerLinkActive="active">Data Catalog</a>
+    <a class="item" [ngClass]="{ 'active':currentRoute==='/environments' }" routerLink="/environments" routerLinkActive="active">Compute Environments</a>
+    <div class="right menu">
+      <a class="item"><i class="info circle white icon"></i></a>
+      <a class="item"><i class="tasks white icon"></i></a>
+      <a class="ui right dropdown item" tabindex="0">
+        <i class="user circle white icon"></i>
+        <div class="menu" tabindex="-1">
+          <div class="item"><img class="gravatar" src="https://girder.stage.wholetale.org/api/v1/user/5a97190233b3fc0001161cbc/gravatar?size=64">Kristina Davis</div>
+          <div class="divider"></div>
+          <div class="item">Account</div>
+          <div class="item">Logout</div>
+        </div>
+      </a>
+    </div>
+  </div>
