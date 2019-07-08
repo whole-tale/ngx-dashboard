@@ -33,7 +33,7 @@ export class HeaderComponent extends BaseComponent implements OnInit {
     this.router.events.subscribe(value => {
       if (value instanceof NavigationEnd) {
         this.currentRoute = value.url;
-        console.log(`Route is now: ${value.url}`);
+        // console.log(`Route is now: ${value.url}`);
       }
     });
   }

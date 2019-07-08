@@ -39,17 +39,30 @@
                         </div>
                     </div>
                     <div class="ui secondary pointing menu" style="margin-top: 0">
-                        <a class="item disabled" href="">
+                        <a class="item" [ngClass]="{ 'active':currentTab==='interact' }" routerLink="/run/12345/interact" routerLinkActive="active" (click)="currentTab='interact'">
                           Interact
                         </a>
-                        <a class="item disabled" href="">
+                        <a class="item" [ngClass]="{ 'active':currentTab==='files' }" routerLink="/run/12345/files" routerLinkActive="active" (click)="currentTab='data'">
                           Files
                         </a>
-                        <a class="active item" href="run-meta.html">
+                        <a class="item" [ngClass]="{ 'active':currentTab==='metadata' }" routerLink="/run/12345/metadata" routerLinkActive="active"  (click)="currentTab='metadata'">
                           Metadata
                         </a>
                     </div>
                     <div class="wt-panel-body" style="padding-bottom:40px">
+                      <router-outlet></router-outlet>
+                    </div>
+
+
+
+<!--
+                    <div class="wt-panel-body" style="padding-bottom:40px" *ngIf="currentTab==='interact'">
+                      
+                    </div>
+                    <div class="wt-panel-body" style="padding-bottom:40px" *ngIf="currentTab==='data'">
+                      <file-explorer></file-explorer>
+                    </div>
+                    <div class="wt-panel-body" style="padding-bottom:40px" *ngIf="currentTab==='metadata'">
 
                         <div class="ui stackable grid">
                             <div class="ui ten wide column">
@@ -104,7 +117,7 @@
                             </div>
                         </div>
 
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>

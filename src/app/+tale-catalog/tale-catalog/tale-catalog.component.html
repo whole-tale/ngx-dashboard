@@ -1,0 +1,83 @@
+<div class="wt-dash" fxLayoutAlign="center" [@routeAnimation]>
+  <div class="ui stackable grid container">
+
+    <!-- Filter Tales -->
+		<div class="row">
+			<div class="sixteen wide column">
+				<div class="ui secondary pointing menu">
+					<a (click)="currentFilter='public'" [ngClass]="{'active': currentFilter==='public'}" class="item">
+						Public Tales
+					</a>
+					<a (click)="currentFilter='mine'" [ngClass]="{'active': currentFilter==='mine'}" class="item">
+						My Tales
+					</a>
+					<div class="right menu">
+						<div class="item no-phone">
+							<button class="ui primary right labeled icon button" id="test">
+                  Create New Tale
+                  <i class="plus icon"></i>
+              </button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+    <!-- Search Tales -->
+		<div class="row">
+			<div class="sixteen wide column">
+				<div class="ui fluid icon wt-input input">
+					<input type="text" placeholder="Search Public Tales...">
+					<i class="search icon"></i>
+				</div>
+			</div>
+		</div>
+
+    <button class="ui button primary" (click)="refresh()">Test Update</button>
+
+    <!-- Public Tales -->
+		<div class="row" *ngIf="currentFilter==='public'">
+			<div class="sixteen wide column">
+				<div class="ui four stackable doubling selectable special cards">
+
+          <!-- Card for each Tale -->
+          <div class="ui card" *ngFor="let tale of tales.value; index as i; trackBy: trackById">
+            <div class="blurring dimmable fluid image">
+              <div class="ui dimmer transition hidden">
+                <div class="content">
+                  <div class="center">
+                    <a class="ui inverted button" routerLink="/run/12345/metadata" routerLinkActive="active">View</a>
+                  </div>
+                </div>
+              </div>
+              <img class="pic" src="{{ tale.illustration }}">
+            </div>
+            <div class="content">
+              <div style="text-transform: uppercase; color: #ba975e;font-weight: 700;">
+                  {{ tale.categories }}
+              </div>
+              <div class="t-title">
+                <h3>
+                  <a class="ui link button" style="text-decoration:none;" routerLink="/run/12345/metadata" routerLinkActive="active">{{ tale.title }}</a>
+                </h3>
+              </div>
+              <div>
+                  by <span style="color:#67c096">{{ tale.authors || tale.creator }}</span>
+              </div>
+            </div>
+            <div class="extra content">
+              <span style="text-transform:uppercase">
+                  {{ tale.public ? 'public' : '' }}
+              </span>
+              <span class="right floated" style="color:#2185d0">
+                  <i class="play icon"></i>
+                  Run Tale
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

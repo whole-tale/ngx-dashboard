@@ -1,6 +1,6 @@
 import { AuthGuard } from '@ngx-auth/core';
 
-import { TaleCatalogComponent } from './tale-catalog.component';
+import { TaleCatalogComponent } from './tale-catalog/tale-catalog.component';
 
 export const routes = [
   {
