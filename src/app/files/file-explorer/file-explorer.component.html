@@ -2,7 +2,7 @@
   <mat-icon *ngIf="canNavigateUp" class="pointer" (click)="navigateUp()">
     arrow_back
   </mat-icon>
-  <span style="margin-left: 8px"> {{path || 'Files'}} </span>
+  <span style="margin-left: 8px"> {{ path || 'Files' }} </span>
   <span class="spacer"></span>
   <mat-icon class="pointer" (click)="openNewFolderDialog()">
     create_new_folder
@@ -48,7 +48,7 @@
             insert_drive_file
           </mat-icon>
 
-          <span>{{element.name}}</span>
+          <span>{{ element.name }}</span>
         </div>
       </mat-grid-tile>
     </mat-grid-list>
@@ -84,7 +84,7 @@
         mat-menu-item
         (click)="moveElement(self, element)"
       >
-        {{element.name}}
+        {{ element.name }}
       </button>
     </ng-container>
   </ng-template>

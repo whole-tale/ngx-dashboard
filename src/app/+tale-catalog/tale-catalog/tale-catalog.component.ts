@@ -3,8 +3,8 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 import { BaseComponent } from '~/app/framework/core';
 import { routeAnimation } from '~/app/shared';
 
-import { Tale } from '@tales/models/tale';
-import { TalesService } from '@tales/tales.service';
+import { Tale } from '@api/models/tale';
+import { TaleService } from '@api/services/tale.service';
 
 @Component({
     templateUrl: './tale-catalog.component.html',
@@ -19,7 +19,7 @@ export class TaleCatalogComponent extends BaseComponent implements OnInit, OnDes
     tales: BehaviorSubject<Array<Tale>> = new BehaviorSubject<Array<Tale>>([]);
     subscription: Subscription;
 
-    constructor(private ref: ChangeDetectorRef, private taleService: TalesService) {
+    constructor(private ref: ChangeDetectorRef, private taleService: TaleService) {
         super();
     }
 
@@ -37,10 +37,18 @@ export class TaleCatalogComponent extends BaseComponent implements OnInit, OnDes
 
     refresh() {
         console.log("Calling GET");
-        this.taleService.refresh().subscribe((data: Array<Tale>) => {
+        /*this.talesService.refresh().subscribe((data: Array<Tale>) => {
             console.log("Component got data:", data);
             this.tales.next(data);
             this.ref.detectChanges();
+        });*/
+        let params = {};
+        this.taleService.taleListTales(params).subscribe((data: Array<Tale>) => {
+            console.log("Component got data:", data);
+            this.tales.next(data);
+            this.ref.detectChanges();
+        }, err => {
+          console.error("Failed to GET /tales:", err);
         });
     }
 

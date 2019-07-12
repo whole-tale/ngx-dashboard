@@ -1,3 +1,4 @@
+import { AuthGuard } from '@ngx-auth/core';
 import { MetaGuard } from '@ngx-meta/core';
 import { ChangeLanguageComponent } from '~/app/framework/i18n';
 
@@ -36,7 +37,7 @@ export const routes = [
         loadChildren: './+run-tale/run-tale.module#RunTaleModule'
       }
     ],
-    canActivateChild: [MetaGuard],
+    canActivateChild: [MetaGuard, AuthGuard],
     data: {
       i18n: {
         isRoot: true

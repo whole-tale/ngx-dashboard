@@ -55,6 +55,10 @@
               "src/assets/sass/lib.scss",
               "src/assets/sass/style.scss"
             ],
+            "scripts": [
+              "node_modules/jquery/dist/jquery.min.js",
+              "node_modules/semantic-ui-css/semantic.min.js"
+            ],
             "progress": true
           },
           "configurations": {

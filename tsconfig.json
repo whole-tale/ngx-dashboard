@@ -16,6 +16,7 @@
       "e2e-config": ["./tools/test/nightmare.config.ts"],
       "@tales/*": ["./src/app/tales/*"],
       "@files/*": ["./src/app/files/*"],
+      "@api/*": ["./src/app/api/*"],
       "@login/*": ["./src/app/login/*"]
     },
     "typeRoots": ["node_modules/@types"],

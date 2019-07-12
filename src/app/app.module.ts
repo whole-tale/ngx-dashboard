@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injector, NgModule } from '@angular/core';
 import { BrowserModule, makeStateKey } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
+import { ApiModule } from '@api/api.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
@@ -11,6 +12,7 @@ import { MetaLoader } from '@ngx-meta/core';
 import { TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { ANGULARTICS2_TOKEN } from 'angulartics2';
 import { Angulartics2GoogleAnalytics } from 'angulartics2/ga';
+import { CookieService } from 'ngx-cookie-service';
 import { PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface, PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { AnalyticsModule } from '~/app/framework/analytics';
 import { configFactory, CoreModule, metaFactory, SharedModule } from '~/app/framework/core';
@@ -68,14 +70,16 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = { supp
     ]),
     MaterialModule,
     StoreModule.forRoot(),
-    FontAwesomeModule
+    FontAwesomeModule,
+    ApiModule
   ],
   declarations: [HeaderComponent, FooterComponent, MainComponent, LoginComponent, AppComponent],
   providers: [
     {
       provide: PERFECT_SCROLLBAR_CONFIG,
       useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG
-    }
+    },
+    CookieService
   ],
   exports: [AppComponent],
   entryComponents: [ChangeLanguageComponent],
@@ -83,6 +87,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = { supp
 })
 export class AppModule {
   constructor() {
+    // TODO: Only add icons we need?
     library.add(fas);
   }
 }

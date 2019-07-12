@@ -8,7 +8,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class ApiConfiguration {
-  rootUrl: string = '//girder.local.wholetale.org/api/v1';
+  rootUrl: string = 'https://girder.local.wholetale.org/api/v1';
 }
 
 export interface ApiConfigurationInterface {

@@ -1,6 +1,6 @@
 /* tslint:disable */
 import { NgModule, ModuleWithProviders } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ApiConfiguration, ApiConfigurationInterface } from './api-configuration';
 
 import { ApiKeyService } from './services/api-key.service';
@@ -30,6 +30,9 @@ import { UserService } from './services/user.service';
 import { WholetaleService } from './services/wholetale.service';
 import { WorkerService } from './services/worker.service';
 import { WorkspaceService } from './services/workspace.service';
+
+import { TokenInterceptor } from './token.interceptor';
+import { TokenService as JwtTokenService } from './token.service';
 
 /**
  * Provider for all Api services, plus ApiConfiguration
@@ -66,7 +69,13 @@ import { WorkspaceService } from './services/workspace.service';
     UserService,
     WholetaleService,
     WorkerService,
-    WorkspaceService
+    WorkspaceService,
+    JwtTokenService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptor,
+      multi: true
+    }
   ]
 })
 export class ApiModule {

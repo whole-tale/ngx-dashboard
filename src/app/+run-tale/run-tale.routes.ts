@@ -24,7 +24,6 @@ export const routes = [
       {
         path: 'interact',
         component: TaleInteractComponent,
-        // canActivate: [AuthGuard],
         data: {
           meta: {
             title: 'PUBLIC.SECURE.PAGE_TITLE',
@@ -35,7 +34,6 @@ export const routes = [
       {
         path: 'files',
         component: TaleFilesComponent,
-        // canActivate: [AuthGuard],
         data: {
           meta: {
             title: 'PUBLIC.SECURE.PAGE_TITLE',
@@ -46,7 +44,6 @@ export const routes = [
       {
         path: 'files/:folderid',
         component: TaleFilesComponent,
-        // canActivate: [AuthGuard],
         data: {
           meta: {
             title: 'PUBLIC.SECURE.PAGE_TITLE',
@@ -57,7 +54,6 @@ export const routes = [
       {
         path: 'metadata',
         component: TaleMetadataComponent,
-        // canActivate: [AuthGuard],
         data: {
           meta: {
             title: 'PUBLIC.SECURE.PAGE_TITLE',
@@ -66,7 +62,7 @@ export const routes = [
         }
       }
     ],
-    //canActivateChild: [AuthGuard],
+    canActivateChild: [AuthGuard],
     data: {
       i18n: {
         isRoot: true
