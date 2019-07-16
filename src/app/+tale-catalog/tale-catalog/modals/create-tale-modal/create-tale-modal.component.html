@@ -1,0 +1,52 @@
+<h1 mat-dialog-title>Create New Tale</h1>
+
+<mat-dialog-content>
+  <form class="ui form segment">
+    <div class="field">
+      <label>Title</label>
+      <input matInput type="text" name="tale-name" placeholder="Enter a Tale Name" [(ngModel)]="newTale.title" required />
+    </div>
+
+    <!-- TODO: dropdown -->
+    <div class="field">
+      <!-- <input matInput type="text" name="tale-env" placeholder="Compute Enviornment" [(ngModel)]="tale.imageId" required />-->
+      <label>Compute Environment</label>
+      <div class="ui fluid dropdown selection">
+        <input type="hidden" name="imageId" [(ngModel)]="newTale.imageId" required />
+        <div class="default text">Select a Compute Environment</div>
+        <i class="dropdown icon"></i>
+        <div class="menu">
+          <div class="item" *ngFor="let env of environments; index as i; trackBy: trackById" (click)="newTale.imageId = env._id">
+            <img class="ui avatar image" [src]="env.icon">
+            {{ env.name }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field" *ngIf="!newTale.dataSet.length">
+        <label>Input Data</label>
+        <p>Add data after Tale creation using your chosen compute environment, or the Files tab of your running Tale.</p>
+        <!-- <input type="hidden" name="dataSet" [(ngModel)]="newTale.dataSet" /> -->
+    </div>
+    <div class="field" *ngIf="newTale.dataSet.length">
+        <label>Input Data</label>
+        <p>Running the tale with the following datasets:</p>
+        <ul>
+          <li>Dataset A</li>
+          <li>Dataset B</li>
+          <li>Dataset C</li>
+        </ul>
+        <!-- <input type="hidden" name="dataSet" [(ngModel)]="newTale.dataSet" /> -->
+    </div>
+    <!--<button class="ui button" type="submit">Submit</button>-->
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button class="ui black deny button" mat-dialog-close>Cancel</button>
+  <button class="ui positive right labeled icon button" [mat-dialog-close]="newTale">
+    Create New Tale
+    <i class="play icon"></i>
+  </button>
+</mat-dialog-actions>

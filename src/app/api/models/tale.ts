@@ -19,6 +19,15 @@ export interface Tale {
   _id?: string;
 
   /**
+   * Access level for this resource.
+   *   -1 => Public
+   *   0 => None
+   *   1 => Read
+   *   2 => Write
+   */
+  _accessLevel?: number;
+
+  /**
    * Keyword describing topic of the Tale
    */
   category?: string;

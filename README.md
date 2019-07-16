@@ -130,35 +130,15 @@ Reasoning: Yarn appears to be better than NPM at synchronizing dependency versio
 
 ### <a name="installation"> Installation
 
-You can install **`ng-seed/universal`** by simply forking the repo:
+You can run **`wt-ng-dash`** by simply cloning the repo:
 
 ```
 # clone the repo
-$ git clone https://github.com/ng-seed/universal.git [your-project-name]
-$ cd [your-project-name]
+$ git clone https://github.com/bodom0015/wt-ng-dash.git
+$ cd wt-ng-dash
 ```
 
-### <a name="setting-up-upstream-repository"> Setting up upstream repository
-
-Once you have cloned the repo, you can follow these steps to allow sync changes made in this repo with your fork:
-
-```
-# set up `origin`
-$ git remote set-url origin [your-fork-repo]
-
-# set up `upstream` to sync future changes
-$ git remote add upstream https://github.com/ng-seed/universal.git
-
-# verify the upstream repo specified for your fork
-$ git remote -v
-origin    https://github.com/YOUR_USERNAME/[your-fork-repo].git (fetch)
-origin    https://github.com/YOUR_USERNAME/[your-fork-repo].git (push)
-upstream  https://github.com/ng-seed/universal.git (fetch)
-upstream  https://github.com/ng-seed/universal.git (push)
-
-# initial push for the fork
-$ git push
-```
+### <a name="pulling-updates" Pulling updates
 
 Now, you can create a new directory (_ex: `src/app/shared`_) to build your codebase out, while benefiting from the
 client framework located at the `src/app/framework` directory.
@@ -189,7 +169,7 @@ This will build the Angular application in a `node:carbon` container, then copy 
 
 This process ensures that our final production-ready image does not contain any unnecessary build tools, and will actively hinder us from manually performing modifications after the container is deployed.
 
-### <a name="development-builds"> Development and builds without Docker
+### <a name="development-builds"> Development and builds (without Docker)
 
 Below are the scripts to dev, build, and test this seed project:
 

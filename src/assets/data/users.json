@@ -1,0 +1,40 @@
+[
+  {
+    "_accessLevel": -1,
+    "_id": "5cddc1713fb749dc19050112",
+    "_modelType": "user",
+    "admin": true,
+    "created": "2019-05-16T20:00:49.374000+00:00",
+    "firstName": "Example",
+    "gravatar_baseUrl": "https://www.gravatar.com/avatar/54321=identicon",
+    "lastName": "Admin",
+    "login": "exampleadmin",
+    "public": true
+  },
+  {
+    "_accessLevel": 2,
+    "_id": "5cdde4ca84f03ea7329bab0d",
+    "_modelType": "user",
+    "admin": false,
+    "created": "2019-07-12T22:31:38.646000+00:00",
+    "email": "example.user@email.com",
+    "emailVerified": false,
+    "firstName": "Example",
+    "gravatar_baseUrl": "https://www.gravatar.com/avatar/12345=identicon",
+    "groupInvites": [],
+    "groups": [],
+    "lastName": "User",
+    "login": "exampleusername",
+    "myData": [
+      "5ce715d2df11f7f5db93e807",
+      "5ce311abdf11f7f5db93e51f",
+      "5ce71581df11f7f5db93e7fb",
+      "5ce30468df11f7f5db93e2d9",
+      "5ce7154cdf11f7f5db93e7f8"
+    ],
+    "otp": false,
+    "public": true,
+    "size": 570,
+    "status": "enabled"
+  }
+]

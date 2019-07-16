@@ -1,0 +1,33 @@
+[
+  {
+    "_id": "5ced91d75609460c02e85bd5",
+    "data": {
+      "current": 0,
+      "estimateTime": false,
+      "message": "Creating job",
+      "resource": {
+        "imageInfo": {
+          "digest": "registry.local.wholetale.org/5ce306d0df11f7f5db93e2f6/1558382288@sha256:6c4a2d0a940ff3752bff6b5c105ef9cb6d8a74781ccd6d453221389d55aed38c",
+          "jobId": "5ced74f1df11f7f5db93e90b",
+          "last_build": 1558540194,
+          "repo2docker_version": "wholetale/repo2docker:latest",
+          "status": 3
+        },
+        "instance_id": "5ced91d75609460c02e85bd4",
+        "tale_id": "5ce56fa2df11f7f5db93e5d4",
+        "type": "wt_launch_instance_status"
+      },
+      "resourceName": "Custom resource",
+      "state": "active",
+      "title": "Build tale notification",
+      "total": 5
+    },
+    "expires": -1,
+    "startTime": 1559073239.5329916,
+    "time": "2019-05-28T19:53:59.532000+00:00",
+    "type": "progress",
+    "updated": "2019-05-28T19:53:59.532000+00:00",
+    "updatedTime": 1559073239.5329916,
+    "userId": "5cdde4ca84f03ea7329bab0d"
+  }
+]
