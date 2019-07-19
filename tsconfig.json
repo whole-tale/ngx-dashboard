@@ -17,7 +17,10 @@
       "@tales/*": ["./src/app/tales/*"],
       "@files/*": ["./src/app/files/*"],
       "@api/*": ["./src/app/api/*"],
-      "@login/*": ["./src/app/login/*"]
+      "@login/*": ["./src/app/login/*"],
+      "@shared/*": ["./src/app/shared/*"],
+      "@framework/*": ["./src/app/framework/*"],
+      "@layout/*": ["./src/app/layout/*"]
     },
     "typeRoots": ["node_modules/@types"],
     "lib": ["es2017", "dom"]

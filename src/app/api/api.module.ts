@@ -33,6 +33,7 @@ import { WorkspaceService } from './services/workspace.service';
 
 import { TokenInterceptor } from './token.interceptor';
 import { TokenService as JwtTokenService } from './token.service';
+import { NotificationStreamService } from './notification-stream.service';
 
 /**
  * Provider for all Api services, plus ApiConfiguration
@@ -71,6 +72,7 @@ import { TokenService as JwtTokenService } from './token.service';
     WorkerService,
     WorkspaceService,
     JwtTokenService,
+    NotificationStreamService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,

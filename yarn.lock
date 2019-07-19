@@ -7170,6 +7170,11 @@ ng-bullet@~1.0.3:
   dependencies:
     tslib "^1.9.0"
 
+ng-event-source@^1.0.14:
+  version "1.0.14"
+  resolved "https://registry.yarnpkg.com/ng-event-source/-/ng-event-source-1.0.14.tgz#c55035dac04ac4941e4a8eb7a7c26ded2d8d94e5"
+  integrity sha512-RtgmjtTDSQG1yDcsVzT1Yafv6E2PlF64/f2TouN+/DyQuWIFYRg+qOvRJMB08Nqy76CJB30Mvsw6InHrmrGTvg==
+
 ng-swagger-gen@^1.7.0-b:
   version "1.7.0-b"
   resolved "https://registry.yarnpkg.com/ng-swagger-gen/-/ng-swagger-gen-1.7.0-b.tgz#32009a045be1a6116a0e8d3361e1ebe77f556363"

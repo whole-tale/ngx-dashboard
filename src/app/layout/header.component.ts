@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, NgZone, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { AuthService } from '@ngx-auth/core';
@@ -10,6 +10,8 @@ import { Language, LanguageSelectors, State } from '~/app/store';
 import { UserService } from '@api/services/user.service';
 import { TokenService } from '@api/token.service';
 import { CookieService } from 'ngx-cookie-service';
+
+import { NotificationStreamService } from '@api/notification-stream.service';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -31,14 +33,15 @@ export class HeaderComponent extends BaseComponent implements OnInit {
   user: any = null;
 
   constructor(
-    private readonly ref: ChangeDetectorRef,
+    private readonly zone: NgZone,
     private readonly store$: Store<State>,
     private readonly config: ConfigService,
     private readonly auth: AuthService,
     private readonly router: Router,
     private readonly cookies: CookieService,
     private readonly users: UserService,
-    private readonly tokenService: TokenService
+    private readonly tokenService: TokenService,
+    private readonly notificationStream: NotificationStreamService
   ) {
     super();
 
@@ -58,12 +61,15 @@ export class HeaderComponent extends BaseComponent implements OnInit {
     this.isAuthenticated = this.auth.isAuthenticated;
     this.user = this.tokenService.user;
 
-    $('.ui.dropdown').dropdown({ action: 'hide' });
+    this.zone.runOutsideAngular(() => {
+      $('.ui.dropdown').dropdown({ action: 'hide' });
+    });
 
     this.users.userGetMe().subscribe((user: any) => {
-      console.log('Logged in as:', user);
-      this.user = this.tokenService.user = user;
-      this.ref.detectChanges();
+      this.zone.run(() => {
+        console.log('Logged in as:', user);
+        this.user = this.tokenService.user = user;
+      });
     });
   }
 
@@ -72,5 +78,9 @@ export class HeaderComponent extends BaseComponent implements OnInit {
     this.cookies.deleteAll();
 
     return this.auth.invalidate();
+  }
+
+  toggleNotificationStream() {
+    this.notificationStream.openNotificationStream(!this.notificationStream.showNotificationStream);
   }
 }

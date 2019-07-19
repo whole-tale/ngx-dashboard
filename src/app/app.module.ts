@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injector, NgModule } from '@angular/core';
+import { ErrorHandler, Injector, NgModule } from '@angular/core';
 import { BrowserModule, makeStateKey } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { ApiModule } from '@api/api.module';
@@ -10,6 +10,7 @@ import { TransferHttpCacheModule } from '@nguniversal/common';
 import { ConfigLoader, ConfigService } from '@ngx-config/core';
 import { MetaLoader } from '@ngx-meta/core';
 import { TranslateLoader, TranslateService } from '@ngx-translate/core';
+import { ErrorHandlerModule } from '@shared/error-handler/error-handler.module';
 import { ANGULARTICS2_TOKEN } from 'angulartics2';
 import { Angulartics2GoogleAnalytics } from 'angulartics2/ga';
 import { CookieService } from 'ngx-cookie-service';
@@ -27,6 +28,7 @@ import { FooterComponent } from './layout/footer.component';
 import { HeaderComponent } from './layout/header.component';
 import { MainComponent } from './layout/main.component';
 import { LoginComponent } from './login/login.component';
+import { NotificationStreamComponent } from './notification-stream/notification-stream.component';
 
 export const REQ_KEY = makeStateKey<string>('req');
 
@@ -38,6 +40,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = { supp
     TransferHttpCacheModule,
     RouterModule.forRoot(routes),
     PerfectScrollbarModule,
+    ErrorHandlerModule,
     AnalyticsModule.forRoot([
       {
         provide: ANGULARTICS2_TOKEN,
@@ -73,7 +76,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = { supp
     FontAwesomeModule,
     ApiModule
   ],
-  declarations: [HeaderComponent, FooterComponent, MainComponent, LoginComponent, AppComponent],
+  declarations: [HeaderComponent, FooterComponent, MainComponent, LoginComponent, AppComponent, NotificationStreamComponent],
   providers: [
     {
       provide: PERFECT_SCROLLBAR_CONFIG,
