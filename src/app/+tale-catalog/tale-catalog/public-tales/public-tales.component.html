@@ -1,0 +1,60 @@
+
+
+   <!-- Public Tales -->
+    <div class="row" style="margin-bottom:30px;">
+      <div class="sixteen wide column">
+
+        <div class="ui message" *ngIf="!(tales$ | async)">
+            No Public Tales have been shared.
+        </div>
+
+				<div class="ui four stackable doubling selectable special cards">
+
+          <!-- Card for each Tale -->
+          <div class="ui card" *ngFor="let tale of (tales$ | async); index as i; trackBy: trackById">
+            <div class="blurring dimmable segment fluid image" id="{{ tale._id }}-dimmer" (mouseover)="showDimmer(tale)" (mouseout)="hideDimmer(tale)">
+
+              <!-- Abstract card into reusable template? Card component? -->
+              <div class="ui dimmer transition hidden">
+                <div class="content">
+                  <div class="center">
+                    <a class="ui inverted button" [routerLink]="'/run/' + tale._id + '/metadata'" routerLinkActive="active">View</a>
+                    <a class="ui tiny bottom right attached label" (click)="openDeleteTaleModal(tale)" *ngIf="tale._accessLevel > 1">
+                        <i class="red remove icon"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <img class="pic" [src]="tale.illustration" alt="Research image">
+              <span class="zoom-icon">
+                <img [src]="tale.icon" width="80" style="width: 80px;" alt="Compute Icon">
+              </span>
+            </div>
+            <div class="content">
+              <div style="text-transform: uppercase; color: #ba975e;font-weight: 700;">
+                  {{ tale.categories }}
+              </div>
+              <div class="t-title">
+                <h3>
+                  <a class="ui link" style="text-decoration:none;" [routerLink]="'/run/' + tale._id + '/metadata'" routerLinkActive="active">{{ tale.title }}</a>
+                </h3>
+              </div>
+              <div>
+                  by
+                  <span *ngFor="let author of tale.authors; index as ii; trackBy: trackByAuthorOrcid" style="color:#67c096">
+                      <span *ngIf="ii > 0">, </span> <a [href]="author.orcid">{{ author.firstName }} {{ author.lastName }}</a>
+                  </span>
+                  <span *ngIf="!tale.authors.length && creators[tale._id]" style="color:#67c096">{{ creators[tale._id].firstName }} {{ creators[tale._id].lastName }}</span>
+                  <span *ngIf="!tale.authors.length && !creators[tale._id]" style="color:#67c096">???</span>
+              </div>
+            </div>
+            <div class="extra content">
+              <span style="text-transform:uppercase">
+                  {{ tale.public ? 'public' : 'private' }}
+              </span>
+              <tale-run-button [tale]="tale" [instances]="instances" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></tale-run-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
