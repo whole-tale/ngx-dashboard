@@ -7,7 +7,33 @@
   max-width: 40vw;
 }
 
+/** TODO: Move to root as generic style */
 .nomargin {
-  margin: 0;
-  padding: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.event-progress > .label {
+  margin-top: 0;
+  width: unset;
+}
+
+/** Notification Stream styles */
+#event-notification-placeholder {
+  margin-top: 40px;
+}
+#event-notification-stream {
+  position: fixed;
+  top: 32px;
+  left: 40vw;
+  width: 55vw;
+  background: #fff;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 0;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+#event-stream-header {
+  padding: 6px;
 }

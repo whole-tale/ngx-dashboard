@@ -12,7 +12,7 @@ import { bypassSanitizationTrustResourceUrl } from '@angular/core/src/sanitizati
 class NotificationStreamService implements OnDestroy {
   static readonly Path = '/notification/stream';
   static readonly TimeoutMs = 360000;
-  static readonly IntervalDelayMs = 40000;
+  static readonly IntervalDelayMs = 30000;
 
   interval: any;
 
@@ -96,8 +96,10 @@ class NotificationStreamService implements OnDestroy {
   onOpen(ack: any) {
     console.log('Connection established:', ack);
 
-    // Send a noop every ~40s to keep the connection open
+    // Reconnect every ~30s to keep the connection open
+    // XXX: This may be due to Girder not sending keep-alive bytes
     this.interval = setTimeout(() => {
+      console.log('Attempting preemptive reconnection...');
       this.reconnect(true);
     }, NotificationStreamService.IntervalDelayMs);
   }

@@ -1,4 +1,4 @@
-<div id="notificationStream" *ngIf="notificationStream.showNotificationStream">
+<div id="notificationStream" [hidden]="!notificationStream.showNotificationStream">
   <h3 id="event-stream-header" class="ui header">Current Tasks</h3>
 
   <!-- Placeholder message -->
@@ -15,7 +15,6 @@
       <!-- TODO: Truncate name -->
       <td width="30%" *ngIf="event.data.resource.tale">{{ event.data.resource.tale.title }}</td>
       <td width="40%" [ngSwitch]="event.data.state">
-        <pre>{{ event.data.state | json }}</pre>
         <div class="ui tiny teal indicating progress event-progress nomargin" *ngSwitchCase="'active'">
           <div id="event-progress-{{ event._id }}" class="ui progress">
             <div class="bar nomargin">
@@ -27,8 +26,14 @@
             </div>
           </div>
         </div>
-        <i class="ui fas fa-fw fa-check-circle green icon" *ngSwitchCase="'success'"></i> Success
-        <i class="ui fas fa-fw fa-ban red icon" *ngSwitchDefault></i> Error<span *ngIf="event.data.message">: {{ event.data.message }}</span>
+        <span *ngSwitchCase="'success'">
+          <i class="ui fas fa-fw fa-check-circle green icon"></i>
+          Success
+        </span>
+        <span  *ngSwitchDefault>
+          <i class="ui fas fa-fw fa-ban red icon"></i>
+          Error<span *ngIf="event.data.message">: {{ event.data.message }}</span>
+        </span>
       </td>
       <td width="10%">
           <button (click)="openLogViewerModal(event)" class="ui tiny primary basic right floated button">
