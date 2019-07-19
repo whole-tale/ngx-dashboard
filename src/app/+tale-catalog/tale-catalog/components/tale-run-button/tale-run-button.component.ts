@@ -7,7 +7,7 @@ import { TaleService } from '@api/services/tale.service';
 import { Instance } from '@api/models/instance';
 import { InstanceService } from '@api/services/instance.service';
 
-import { CopyOnLaunchModalComponent } from '../modals/copy-on-launch-modal/copy-on-launch-modal.component';
+import { CopyOnLaunchModalComponent } from '../../modals/copy-on-launch-modal/copy-on-launch-modal.component';
 import { ErrorModalComponent } from '@shared/error-modal/error-modal.component';
 
 @Component({

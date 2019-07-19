@@ -4,14 +4,14 @@
     <div class="row" style="margin-bottom:30px;">
       <div class="sixteen wide column">
 
-        <div class="ui message" *ngIf="!(tales$ | async)">
+        <div class="ui message" *ngIf="!(tales$ | async | publicTales).length">
             No Public Tales have been shared.
         </div>
 
 				<div class="ui four stackable doubling selectable special cards">
 
           <!-- Card for each Tale -->
-          <div class="ui card" *ngFor="let tale of (tales$ | async); index as i; trackBy: trackById">
+          <div class="ui card" *ngFor="let tale of (tales$ | async | publicTales); index as i; trackBy: trackById">
             <div class="blurring dimmable segment fluid image" id="{{ tale._id }}-dimmer" (mouseover)="showDimmer(tale)" (mouseout)="hideDimmer(tale)">
 
               <!-- Abstract card into reusable template? Card component? -->

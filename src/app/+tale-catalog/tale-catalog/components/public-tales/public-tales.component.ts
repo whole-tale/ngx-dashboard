@@ -15,7 +15,7 @@ import { InstanceService } from '@api/services/instance.service';
 
 import { TokenService } from '@api/token.service';
 
-import { DeleteTaleModalComponent } from '../modals/delete-tale-modal/delete-tale-modal.component';
+import { DeleteTaleModalComponent } from '../../modals/delete-tale-modal/delete-tale-modal.component';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -27,6 +27,8 @@ declare var $: any;
 })
 export class PublicTalesComponent implements OnInit {
   tales$: Observable<Array<Tale>>;
+  tales: Array<Tale> = [];
+  private publicTales: Array<Tale> = [];
 
   instances: Map<string, Instance> = new Map<string, Instance> ();
   creators: Map<string, User> = new Map<string, User> ();
@@ -69,51 +71,42 @@ export class PublicTalesComponent implements OnInit {
   }
 
   /** 
-   * Filter down to show only public tales
-   */
-  filter(tales: Array<Tale>) {
-    //return source.pipe(filter(tale => tale.public));
-    return tales.filter(tale => tale.public);
-  }
-
-  /** 
    * Refresh tale/instance data from the server
    */
   refresh() {
-    this.zone.run(() => {
-      // Fetch a map of taleId => instance
-      let listInstancesParams = {};
-      this.instanceService.instanceListInstances(listInstancesParams).subscribe((instances: Array<Instance>) => {
-        this.zone.run(() => {
-          // Convert array to map of taleId -> instance
-          this.instances = Object.assign({}, ...instances.map(i => ({[i.taleId]: i})));
-          //this.refilter();
-        });
-      }, err => {
-        console.error("Failed to GET /tales:", err);
+    // Fetch a map of taleId => instance
+    let listInstancesParams = {};
+    this.instanceService.instanceListInstances(listInstancesParams).subscribe((instances: Array<Instance>) => {
+      this.zone.run(() => {
+        // Convert array to map of taleId -> instance
+        this.instances = Object.assign({}, ...instances.map(i => ({[i.taleId]: i})));
+        //this.refilter();
+      });
+    }, err => {
+      console.error("Failed to GET /instance:", err);
+    });
+
+    // Fetch the list of public tales
+    let listTalesParams = {};
+    this.tales$ = this.taleService.taleListTales(listTalesParams)
+    this.tales$.subscribe((tales: Array<Tale>) => {
+      this.zone.run(() => {
+        this.tales = tales;
+        //this.refilter();
       });
 
-      // Fetch the list of public tales
-      // TODO: How to filter when subscribing to an RXJS stream?
-      let listTalesParams = {};
-      this.tales$ = this.taleService.taleListTales(listTalesParams);
-      this.tales$.subscribe((tales: Array<Tale>) => {
-        this.zone.run(() => {
-          // For each tale, also fetch its creator
-          tales.forEach(tale => {
-            this.userService.userGetUser(tale.creatorId).subscribe(creator => {
-                this.creators[tale._id] = creator;
-            });
+      // For each tale, also fetch its creator
+      this.tales.forEach(tale => {
+        this.userService.userGetUser(tale.creatorId).subscribe(creator => {
+          this.zone.run(() => {
+            this.creators[tale._id] = creator;
           });
-
-          // Filter tales accordingly
-          //this.tales = this.filter(tales);
-
-          //this.refilter();
+        }, err => {
+          console.error("Failed to GET /user/" + tale.creatorId + ":", err);
         });
-      }, (err: any) => {
-        console.error("Failed to GET /tales:", err);
       });
+    }, (err: any) => {
+      console.error("Failed to GET /tale:", err);
     });
   }
 
