@@ -18,7 +18,7 @@
               <div class="ui dimmer transition hidden">
                 <div class="content">
                   <div class="center">
-                    <a class="ui inverted button" [routerLink]="'/run/' + tale._id + '/metadata'" routerLinkActive="active">View</a>
+                    <a class="ui inverted button" [routerLink]="'/run/' + tale._id" [queryParams]="{ tab: 'metadata'}" routerLinkActive="active">View</a>
                     <a class="ui tiny bottom right attached label" (click)="openDeleteTaleModal(tale)" *ngIf="tale._accessLevel > 1">
                         <i class="red remove icon"></i>
                     </a>
@@ -36,7 +36,7 @@
               </div>
               <div class="t-title">
                 <h3>
-                  <a class="ui link" style="text-decoration:none;" [routerLink]="'/run/' + tale._id + '/metadata'" routerLinkActive="active">{{ tale.title }}</a>
+                  <a class="ui link" style="text-decoration:none;" [routerLink]="'/run/' + tale._id" [queryParams]="{ tab: 'metadata'}" routerLinkActive="active">{{ tale.title }}</a>
                 </h3>
               </div>
               <div>
@@ -52,7 +52,7 @@
               <span style="text-transform:uppercase">
                   {{ tale.public ? 'public' : 'private' }}
               </span>
-              <tale-run-button [tale]="tale" [instances]="instances" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></tale-run-button>
+              <tale-run-button [tale]="tale" [instance]="instances[tale._id]" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></tale-run-button>
             </div>
           </div>
         </div>

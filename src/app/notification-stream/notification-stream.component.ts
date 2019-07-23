@@ -19,15 +19,17 @@ export class NotificationStreamComponent {
     this.events = this.notificationStream.events;
     this.source = this.notificationStream.source;
 
-    this.source.onmessage = event => {
-      this.zone.run(() => {
-        this.onMessage.call(this, event);
-      });
-    };
+    if (this.source) {
+      this.source.onmessage = event => {
+        this.zone.run(() => {
+          this.onMessage.call(this, event);
+        });
+      };
+    }
   }
 
   onMessage(event: any) {
-    // TODO: Discard everything outside of "data"
+    // Discard everything outside of "data"
     event = JSON.parse(event.data);
 
     // Ignore everything except for progress updates

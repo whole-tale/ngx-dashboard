@@ -20,7 +20,13 @@ export const routes = [
   {
     path: ':id',
     component: RunTaleComponent,
-    children: [
+    data: {
+      meta: {
+        title: 'PUBLIC.SECURE.PAGE_TITLE',
+        description: 'PUBLIC.SECURE.META_DESCRIPTION'
+      }
+    }
+    /*children: [
       {
         path: 'interact',
         component: TaleInteractComponent,
@@ -67,6 +73,6 @@ export const routes = [
       i18n: {
         isRoot: true
       }
-    }
+    }*/
   }
 ];

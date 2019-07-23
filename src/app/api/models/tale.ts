@@ -104,7 +104,7 @@ export interface Tale {
    * If set to true the Tale is accessible by anyone.
    */
   public?: boolean;
-  publishInfo?: PublishInfo;
+  publishInfo?: Array<PublishInfo>;
 
   /**
    * Title of the Tale

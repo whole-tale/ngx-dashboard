@@ -22,7 +22,7 @@
             <div class="ui dimmer transition hidden">
               <div class="content">
                 <div class="center">
-                  <a [href]="'/run/' + tale._id + '/metadata/'" class="ui inverted button">View</a>
+                  <a [routerLink]="'/run/' + tale._id" [queryParams]="{ tab: 'metadata' }" routerLinkActive="active" class="ui inverted button">View</a>
                 </div>
               </div>
             </div>
@@ -54,7 +54,7 @@
             <span style="text-transform:uppercase">
                 {{ tale.public ? 'public' : 'private' }}
             </span>
-            <tale-run-button [tale]="tale" [instances]="instances" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></tale-run-button>
+            <tale-run-button [tale]="tale" [instance]="instances[tale._id]" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></tale-run-button>
           </div>
         </div>
       </div>
@@ -88,7 +88,7 @@
           <div class="ui dimmer transition hidden">
             <div class="content">
               <div class="center">
-                <a class="ui inverted button" [routerLink]="'/run/' + tale._id + '/metadata'" routerLinkActive="active">View</a>
+                <a class="ui inverted button" [routerLink]="'/run/' + tale._id" [queryParams]="{ tab: 'metadata' }" routerLinkActive="active">View</a>
                 <a class="ui tiny bottom right attached label" (click)="openDeleteTaleModal(tale)">
                     <i class="red remove icon"></i>
                 </a>
@@ -124,7 +124,7 @@
           <span style="text-transform:uppercase">
               {{ tale.public ? 'public' : 'private' }}
           </span>
-          <tale-run-button [tale]="tale" [instances]="instances" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></tale-run-button>
+          <tale-run-button [tale]="tale" [instance]="instances[tale._id]" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></tale-run-button>
         </div>
       </div>
     </div>

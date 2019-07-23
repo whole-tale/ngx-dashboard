@@ -1,62 +1,144 @@
 <div class="ui stretched stackable grid">
-  <div class="ui ten wide column">
+  <div class="row">
+    <div class="ui ten wide column">
 
-    <div class="ui list">
-      <div class="item">
-        <b>Category:</b>
-        <span class="category">Materials Science</span>
-      </div>
-      <div class="item">
-        <b>Title:</b>
-        Accelerated discovery of metallic glasses through iteration of machine learning and high-throughput experiments
-      </div>
-      <div class="item">
-        <b>Authors:</b>
-        Logan Ward
-      </div>
-      <div class="item">
-        <b>Description:</b>
-        This tale includes scripts for creating and validating machine learning models to predict the glass-forming ability of metal alloys, and then using those models to discover new metallic glasses.
-      </div>
-      <div class="item">
-        <b>License:</b>
-        Creative Commons Attribution 4.0 International 
-      </div>
-      <div class="item">
-        <b>Published location:</b>
-        http:// 
-      </div>
-      <div class="item spaced">
-        <b>Tale Specifics</b>
-        <div class="list">
-          <div class="item">
-            <b>Tale ID</b>
-            5ad4eb52f4b80b00018d92e1
+      <form class="ui form" *ngIf="editing">
+        <div class="fields">
+          <div class="field">
+            <label>Category</label>
+            <input type="text" name="category" placeholder="Category is required." [(ngModel)]="tale.category" required>
           </div>
-          <div class="item">
-            <b>Involatile Data:</b>
-            No citable data
+          <div class="field">
+            <label>Title</label>
+            <input type="text" name="title" placeholder="Title is required." [(ngModel)]="tale.title" required>
           </div>
-          <div class="item">
-            <b>Environment:</b>
-            <img class="ui image" src="https://raw.githubusercontent.com/whole-tale/jupyter-base/master/squarelogo-greytext-orangebody-greymoons.png" style="height:1.5em; margin:0 .4em; display: inline-block">
-            Jupyter Notebook
+          <div class="field">
+            <label>Authors</label>
+            <form class="ui form">
+              <table class="ui table striped condensed">
+                <tr>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>ORCID</th>
+                  <th></th>
+                </tr>
+                <tr *ngFor="let author of tale.authors">
+                  <td>{{ author.firstName }}</td>
+                  <td>{{ author.lastName }}</td>
+                  <td>{{ author.orcid }}</td>
+                  <td><button class="ui tiny negative button" (click)="removeAuthor(author)"><i class="fas fa-trash"></i></button></td>
+                </tr>
+                <tr *ngFor="let author of tale.authors">
+                  <td>
+                    <input type="text" name="firstName" placeholder="Enter first name" [(ngModel)]="newAuthor.firstName" required>
+                  </td>
+                  <td>
+                    <input type="text" name="lastName" placeholder="Enter last name" [(ngModel)]="newAuthor.lastName" required>
+                  </td>
+                  <td>
+                    <input type="text" name="orcid" placeholder="Enter ORCID" [(ngModel)]="newAuthor.orcid" required>
+                  </td>
+                  <td>
+                    <button class="ui tiny positive button" (click)="addAuthor(newAuthor)"><i class="fas fa-trash"></i></button>
+                  </td>
+                </tr>
+              </table>
+            </form>
           </div>
-          <div class="item">
-            <b>Tale Created:</b>
-            Tue Nov 01 2016
+          <div class="field">
+            <label>Description</label>
+            <input type="text" name="description" placeholder="Description is required." [(ngModel)]="tale.description" required>
           </div>
-          <div class="item">
-            <b>Tale Updated:</b>
-            Thu May 16 2019
+          <div class="field">
+            <label>License</label>
+            <!-- TODO: dropdown -->
+            <input type="text" name="license" placeholder="License is required." [(ngModel)]="tale.licenseSPDY" required>
+          </div>
+          <div class="field">
+            <label>Environment</label>
+            <!-- TODO: dropdown -->
+            <input type="text" name="imageId" placeholder="Environment is required." [(ngModel)]="tale.imageId" required>
+          </div>
+        </div>
+      </form>
+
+      <div class="ui list" *ngIf="!editing">
+        <div class="item">
+          <b>Category:</b> 
+          <span class="category">{{ tale.category }}</span>
+        </div>
+        <div class="item">
+          <b>Title:</b>
+          {{ tale.title }}
+        </div>
+        <div class="item">
+          <b>Authors:</b> 
+          <span *ngFor="let author of tale.authors; index as i; trackBy: trackByAuthorOrcid">
+              <span *ngIf="i > 0">, </span> <span [title]="author.orcid">{{ author.firstName }} {{ author.lastName }}</span>
+          </span>
+          <span *ngIf="!tale.authors.length && creator">{{ creator.firstName }} {{ creator.lastName }}</span>
+          <span *ngIf="!tale.authors.length && !creator">???</span>
+        </div>
+        <div class="item">
+          <b>Description:</b>
+          {{ tale.description }}
+        </div>
+        <div class="item">
+          <b>License:</b>
+          {{ tale.licenseSPDY }}
+        </div>
+        <div class="item" *ngIf="tale.publishInfo.length">
+          <b>Published location:</b>
+          {{ tale.publishInfo[0].uri }}
+        </div>
+        <div class="item spaced">
+          <b>Tale Specifics</b>
+          <div class="list">
+            <div class="item">
+              <b>Tale ID</b>
+              {{ tale._id }}
+            </div>
+            <div class="item">
+              <b>Involatile Data:</b>
+              <span *ngIf="!tale.dataSet.length">No citable data</span>
+              <ul *ngIf="tale.dataSet.length">
+                <li *ngFor="let dataset of tale.dataSet; index as i; trackBy: trackById"><a [href]="dataset.doi">{{ dataset.mountPath }}</a></li>
+              </ul>
+            </div>
+            <div class="item">
+              <b>Environment:</b>
+              <img class="ui image" [src]="tale.icon" style="height:1.5em; margin:0 .4em; display: inline-block">
+              {{ environment.name }}
+            </div>
+            <div class="item">
+              <b>Tale Created:</b>
+              {{ tale.created | date }}
+            </div>
+            <div class="item">
+              <b>Tale Updated:</b>
+              {{ tale.updated | date }}
+            </div>
           </div>
         </div>
       </div>
+
     </div>
 
+    <div class="ui six wide column">
+      <img class="ui image img-responsive" [src]="tale.illustration">
+    </div>
   </div>
-
-  <div class="ui six wide column">
-    <img class="ui image img-responsive" src="http://advances.sciencemag.org/content/advances/4/4/eaaq1566/F1.large.jpg?width=800&amp;height=600&amp;carousel=1">
+  <div class="row">
+    <div class="ten wide column">
+      <button class="ui primary button" *ngIf="!editing" (click)="editTale()">
+        Edit
+      </button>
+      <button class="ui button" *ngIf="editing" (click)="cancelTaleEdit()">
+        Cancel
+      </button>
+      <button class="ui primary button" *ngIf="editing" (click)="saveTaleEdit()">
+        Save
+      </button>
+    </div>
   </div>
 </div>

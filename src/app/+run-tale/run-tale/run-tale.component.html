@@ -4,7 +4,10 @@
             <div class="sixteen wide column">
 
                 <div class="ui breadcrumb">
-                    <a routerLink="/home" routerLinkActive="active" class="section"><i class="left angle icon"></i> Return to Dashboard</a>
+                    <a routerLink="/" routerLinkActive="active" class="section">
+                      <i class="left angle icon"></i>
+                      Return to Dashboard
+                    </a>
                 </div>
 
                 <div class="wt-panel">
@@ -13,25 +16,46 @@
                             <div class="ui stackable grid">
                                 <div class="ten wide column">
                                     <div class="title-info">
-                                        <img src="assets/img/tale-img-2.png">
-                                        <img src="assets/img/frontends/logo-jupyter.png" class="env">
-                                        <p>Accelerated discovery of metallic glasses through iteration of machine learning and high-throughput experiments</p>
-                                        <p class="qualifier">Logan Ward</p>
+                                        <img [src]="tale.illustration">
+                                        <img [src]="tale.icon" class="env">
+                                        <p>{{ tale.title }}</p>
+                                        
+                                        <p class="qualifier">
+                                            <span *ngFor="let author of tale.authors; index as i; trackBy: trackByAuthorOrcid">
+                                                <span *ngIf="i > 0">, </span> <span [title]="author.orcid">{{ author.firstName }} {{ author.lastName }}</span>
+                                            </span>
+                                            <span *ngIf="!tale.authors.length && creator">{{ creator.firstName }} {{ creator.lastName }}</span>
+                                            <span *ngIf="!tale.authors.length && !creator">???</span>
+                                        </p>
                                     </div>
                                 </div>
                                 <div class="six wide column" style="text-align: right">
-                                    <a href="run.html" class="ui button primary">
+                                    <!-- TODO: Replace with tale-run-button component -->
+                                    <button class="ui button primary">
                                         <i class="play icon"></i> Run
-                                    </a>
-                                    <a routerLink="/home" routerLinkActive="active" class="ui button" style="margin-right: 10px">
+                                    </button>
+                                    <a routerLink="/" routerLinkActive="active" class="ui button" style="margin-right: 10px">
                                       Close
                                     </a>
                                     <div class="ui floating dropdown theme" tabindex="0">
                                         <mat-icon fontSet="fa" fontIcon="fa-ellipsis-v"></mat-icon>
 
+                                        <!-- TODO: Wire up, add icons -->
                                         <div class="menu transition hidden" tabindex="-1">
+                                            <div class="item">Rebuild Tale</div>
+                                            <div class="item">Restart Tale</div>
                                             <div class="item">Duplicate Tale</div>
+                                            <div class="item">Publish Tale</div>
                                             <div class="item">View Fullscreen</div>
+                                            <div class="item">View Documentation</div>
+                                            <div class="ui dropdown item">
+                                              Export
+                                              <i class="dropdown icon"></i>
+                                              <div class="menu">
+                                                <a class="item"><i class="archive icon"></i> to ZIP</a>
+                                                <a class="item"><i class="bag icon"></i> to BagIt</a>
+                                              </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -39,19 +63,39 @@
                         </div>
                     </div>
                     <div class="ui secondary pointing menu" style="margin-top: 0">
-                        <a class="item" [ngClass]="{ 'active':currentTab==='interact' }" routerLink="/run/12345/interact" routerLinkActive="active" (click)="currentTab='interact'">
+                        <a class="item" [ngClass]="{ 'active': currentTab==='interact' }" [routerLink]="'/run/' + taleId" [queryParams]="{ tab:'interact' }">
                           Interact
                         </a>
-                        <a class="item" [ngClass]="{ 'active':currentTab==='files' }" routerLink="/run/12345/files" routerLinkActive="active" (click)="currentTab='data'">
+                        <a class="item" [ngClass]="{ 'active': currentTab==='files' }" [routerLink]="'/run/' + taleId" [queryParams]="{ tab:'files' }">
                           Files
                         </a>
-                        <a class="item" [ngClass]="{ 'active':currentTab==='metadata' }" routerLink="/run/12345/metadata" routerLinkActive="active"  (click)="currentTab='metadata'">
+                        <a class="item" [ngClass]="{ 'active': currentTab==='metadata' }" [routerLink]="'/run/' + taleId" [queryParams]="{ tab:'metadata' }">
                           Metadata
                         </a>
                     </div>
-                    <div class="wt-panel-body" style="padding-bottom:40px">
-                      <router-outlet></router-outlet>
+                    <div class="wt-panel-body" style="padding-bottom:40px" [ngSwitch]="currentTab">
+                        <!--<router-outlet></router-outlet>-->
+                        <div *ngSwitchCase="'interact'">
+                          <tale-interact [tale]="tale"></tale-interact>
+                        </div>
+
+                        <div *ngSwitchCase="'files'">
+                          <tale-files [tale]="tale"></tale-files>
+                        </div>
+
+                        <div *ngSwitchCase="'metadata'">
+                          <tale-metadata [tale]="tale" [creator]="creator"></tale-metadata>
+                        </div>
+
+                        <div *ngSwitchDefault>
+                            Select a tab to continue
+                        </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 
@@ -118,8 +162,3 @@
                         </div>
 
                     </div> -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>

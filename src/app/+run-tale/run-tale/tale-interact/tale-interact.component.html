@@ -7,7 +7,11 @@
 </div>
 -->
 <div class="ui stretched stackable grid">
-  <div class="sixteen wide column">
-    <iframe height="500px" width="100%" src="https://dashboard.stage.wholetale.org"></iframe>
+  <div class="sixteen wide column" *ngIf="instance">
+    <iframe height="500px" width="100%" [src]="instance.url"></iframe>
+  </div>
+
+  <div class="sixteen wide column" *ngIf="!instance">
+    You must Run this Tale before you can Interact.
   </div>
 </div>

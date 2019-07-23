@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 
 import { FileElement } from '@files/models/file-element';
 import { FilesService } from '@files/files.service';
+
+import { Tale } from '@api/models/tale';
 
 @Component({
   selector: 'tale-files',
@@ -11,6 +13,8 @@ import { FilesService } from '@files/files.service';
   styleUrls: ['./tale-files.component.scss']
 })
 export class TaleFilesComponent implements OnInit {
+  @Input() tale: Tale;
+
   fileElements: Observable<FileElement[]>;
   currentRoot: FileElement;
   currentPath: string;
@@ -19,28 +23,28 @@ export class TaleFilesComponent implements OnInit {
   constructor(public route: ActivatedRoute, public fileService: FilesService) { }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-        const folderid = params['folderid'] || null;
-        if (folderid) {
-          this.currentRoot = this.fileService.get(folderid);
-          console.log(`currentRoot is now: ${this.currentRoot.name}`);
-          
-          this.canNavigateUp = this.currentRoot ? true : false;
+    const params = this.route.snapshot.queryParams;
+    const folderid = params['folderid'] || null;
+    if (folderid) {
+      this.currentRoot = this.fileService.get(folderid);
+      console.log(`currentRoot is now: ${this.currentRoot.name}`);
+      
+      this.canNavigateUp = this.currentRoot ? true : false;
 
-          // Build up currentPath by traversing up from currentRoot
-          let path = "";
-          let currentDir = this.currentRoot;
-          while (currentDir != null) {
-            path = `${currentDir.name}/` + path; 
-            currentDir = this.fileService.get(currentDir.baseParentId);
-          }
-          this.currentPath = path;
-        } else {
-          console.log("No fileId given, so no currentRoot set");
-        }
-          
-        this.fileElements = this.fileService.queryInFolder(this.currentRoot ? this.currentRoot._id : null);
-    });
+      // Build up currentPath by traversing up from currentRoot
+      let path = "";
+      let currentDir = this.currentRoot;
+      while (currentDir != null) {
+        path = `${currentDir.name}/` + path; 
+        currentDir = this.fileService.get(currentDir.baseParentId);
+      }
+      this.currentPath = path;
+    } else {
+      console.log("No fileId given, so no currentRoot set");
+    }
+      
+    this.fileElements = this.fileService.queryInFolder(this.currentRoot ? this.currentRoot._id : null);
+
   }
 
   addFolder(folder: { name: string }) {

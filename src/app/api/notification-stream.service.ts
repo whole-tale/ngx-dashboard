@@ -37,7 +37,7 @@ class NotificationStreamService implements OnDestroy {
     localStorage.setItem('lastRead', lastRead.toFixed().toString());
   }
   getSince(): number {
-    // The leading +converts the value to a number
+    // The leading "+" converts the value to a number
     return +localStorage.getItem('lastRead');
   }
 
@@ -63,7 +63,7 @@ class NotificationStreamService implements OnDestroy {
   }
 
   constructor(private config: ApiConfiguration, private tokenService: TokenService) {
-    this.connect();
+    //this.connect();
   }
 
   ngOnDestroy() {
@@ -98,10 +98,10 @@ class NotificationStreamService implements OnDestroy {
 
     // Reconnect every ~30s to keep the connection open
     // XXX: This may be due to Girder not sending keep-alive bytes
-    this.interval = setTimeout(() => {
+    /*this.interval = setTimeout(() => {
       console.log('Attempting preemptive reconnection...');
       this.reconnect(true);
-    }, NotificationStreamService.IntervalDelayMs);
+    }, NotificationStreamService.IntervalDelayMs);*/
   }
 }
 

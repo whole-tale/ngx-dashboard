@@ -28,6 +28,6 @@ body {
   cursor: not-allowed;
 }
 
-.wt-top > a:hover {
-  text-decoration: none;
+a:hover {
+  text-decoration: none !important;
 }

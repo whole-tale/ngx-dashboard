@@ -17,7 +17,7 @@ import { ErrorModalComponent } from '@shared/error-modal/error-modal.component';
 })
 export class TaleRunButtonComponent implements OnInit {
   
-  @Input() instances: Map<string, Instance>;
+  @Input() instance: Instance;
   @Input() tale: Tale;
 
   @Output()
@@ -57,7 +57,7 @@ export class TaleRunButtonComponent implements OnInit {
     this.instanceService.instanceCreateInstance(params).subscribe((instance: Instance) => {
       this.zone.run(() => {
         console.log("Starting tale:", this.tale._id);
-        this.instances[this.tale._id] = instance;
+        this.instance = instance;
         this.taleInstanceStateChanged.emit(this.tale);
         //this.refilter();
 
@@ -73,7 +73,7 @@ export class TaleRunButtonComponent implements OnInit {
               // Once instance is running, stop the polling
               if (watched.status === 1) {
                 this.zone.run(() => {
-                  this.instances[this.tale._id] = watched;
+                  this.instance = watched;
                   stopPolling(interval);
                 });
               }
@@ -102,7 +102,7 @@ export class TaleRunButtonComponent implements OnInit {
       this.ref.detectChanges();
     }, 3000);*/
 
-    let instance = this.instances[this.tale._id];
+    let instance = this.instance;
     if (!instance) {
         console.log("No instance found for taleId=", this.tale._id);
         return;
@@ -111,7 +111,7 @@ export class TaleRunButtonComponent implements OnInit {
     this.instanceService.instanceDeleteInstance(instance._id).subscribe((instance: Instance) => {
       this.zone.run(() => {
         console.log("Stopping tale:", this.tale._id);
-        this.instances[this.tale._id] = null;
+        this.instance = null;
         //this.refilter();
         this.taleInstanceStateChanged.emit(this.tale);
       });
