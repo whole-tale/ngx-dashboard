@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, NgZone, Component, AfterViewInit, Output, EventEmitter } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { BaseComponent } from '~/app/framework/core';
 import { routeAnimation } from '~/app/shared';
@@ -23,6 +23,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
 
     constructor(
       private zone: NgZone,
+      private router: Router,
       private taleService: TaleService,
       private route: ActivatedRoute,
       public dialog: MatDialog
@@ -41,6 +42,9 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
         console.log("Detecting parameters");
         const queryParams = this.route.snapshot.queryParams;
         if (queryParams.name || queryParams.uri || queryParams.environment) {
+          // Clear querystring parameters and open the Create Tale modal
+          this.router.navigateByUrl('/', { replaceUrl: true });
+
           this.zone.run(() => {
             const dialogRef = this.dialog.open(CreateTaleModalComponent, {
               width: '600px',
