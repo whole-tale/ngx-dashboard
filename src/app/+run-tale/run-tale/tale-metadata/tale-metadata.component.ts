@@ -1,4 +1,4 @@
-import { Component, OnChanges, Input, ChangeDetectorRef } from '@angular/core';
+import { Component, OnChanges, OnInit, Input, ChangeDetectorRef } from '@angular/core';
 
 import { Tale } from '@api/models/tale';
 import { User } from '@api/models/user';
@@ -14,16 +14,26 @@ import { TaleService } from '@api/services/tale.service';
   templateUrl: './tale-metadata.component.html',
   styleUrls: ['./tale-metadata.component.scss']
 })
-export class TaleMetadataComponent implements OnChanges {
+export class TaleMetadataComponent implements OnChanges, OnInit {
   @Input() tale: Tale;
   @Input() creator: User;
   environment: Image;
+
+  newAuthor: TaleAuthor;
 
   // Edit mode
   _previousState: Tale;
   editing: boolean = false;
 
   constructor(private ref: ChangeDetectorRef, private taleService: TaleService, private imageService: ImageService) { }
+
+  ngOnInit() {
+    this.newAuthor = {
+      firstName: '',
+      lastName: '',
+      orcid: ''
+    };
+  }
 
   ngOnChanges() {
     if (this.tale) {
@@ -41,23 +51,28 @@ export class TaleMetadataComponent implements OnChanges {
       return dataset.itemId;
   }
 
+  copy(json: any) {
+    return JSON.parse(JSON.stringify(json));
+  }
+
   editTale() {
-    this._previousState = JSON.parse(JSON.stringify(this.tale));
+    this._previousState = this.copy(this.tale);
     this.editing = true;
   }
 
   saveTaleEdit() {
-    this.editing = false;
     let params = { id: this.tale._id , tale: this.tale };
     this.taleService.taleUpdateTale(params).subscribe(res => {
       console.log("Successfully saved tale state:", this.tale);
+      this.editing = false;
     }, err => {
       console.error("Failed updating tale:", err);
     });
   }
 
   cancelTaleEdit() {
-    this.tale = this._previousState;
+    this.tale = this.copy(this._previousState);
+    this.editing = false;
   }
 
   addAuthor(author: TaleAuthor) {

@@ -2,13 +2,37 @@
   <mat-icon *ngIf="canNavigateUp" class="pointer" (click)="navigateUp()">
     arrow_back
   </mat-icon>
-  <span style="margin-left: 8px"> {{ path || 'Files' }} </span>
+  <span style="margin-left: 8px"> {{ path || currentNav === 'external_data' ? 'External Data' : 'Tale' }} </span>
   <span class="spacer"></span>
+  <!-- TODO: dropdown -->
   <mat-icon class="pointer" (click)="openNewFolderDialog()">
     create_new_folder
   </mat-icon>
 </mat-toolbar>
 
+<div class="container" fxFlex fxLayout="row" fxLayoutAlign="space-between stretch">
+  <table class="ui basic selectable very compact striped blue table">
+    <thead>
+      <tr>
+        <th width="5%"></th>
+        <th width="55%">Name</th>
+        <th width="15%">Updated</th>
+        <th width="10%" class="right aligned">Size</th>
+        <th width="5%">More</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let ele of fileElements" (click)="navigate(ele)">
+        <th class="center aligned"><i class="fas fa-fw fa-2x" [ngClass]="{ 'fa-folder': ele._modelType === 'folder' || ele._modelType === 'dataset' || ele._modelType === 'workspace', 'fa-file': ele._modelType === 'file' || ele._modelType === 'item' }"></i></th>
+        <td [title]="ele.name">{{ ele.name | truncate:100 }}</td>
+        <td [title]="ele.updated">{{ ele.updated | date }}</td>
+        <td class="right aligned" [title]="ele.size">{{ ele.size | fileSize }}</td>
+        <td class="center aligned"><i class="fas fa-caret-down"></i></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<!--
 <div
   class="container"
   fxFlex
@@ -54,6 +78,7 @@
     </mat-grid-list>
   </div>
 </div>
+-->
 
 <mat-menu #rootMenu="matMenu" [overlapTrigger]="false">
   <ng-template matMenuContent let-element="element">

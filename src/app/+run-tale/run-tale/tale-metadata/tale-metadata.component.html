@@ -3,15 +3,15 @@
     <div class="ui ten wide column">
 
       <form class="ui form" *ngIf="editing">
-        <div class="fields">
-          <div class="field">
-            <label>Category</label>
-            <input type="text" name="category" placeholder="Category is required." [(ngModel)]="tale.category" required>
-          </div>
-          <div class="field">
-            <label>Title</label>
-            <input type="text" name="title" placeholder="Title is required." [(ngModel)]="tale.title" required>
-          </div>
+        <div class="field">
+          <label>Category</label>
+          <input type="text" name="category" placeholder="Category is required." [(ngModel)]="tale.category" required>
+        </div>
+        <div class="field">
+          <label>Title</label>
+          <input type="text" name="title" placeholder="Title is required." [(ngModel)]="tale.title" required>
+        </div>
+        <div class="fields" style="width:100%;">
           <div class="field">
             <label>Authors</label>
             <form class="ui form">
@@ -28,7 +28,7 @@
                   <td>{{ author.orcid }}</td>
                   <td><button class="ui tiny negative button" (click)="removeAuthor(author)"><i class="fas fa-trash"></i></button></td>
                 </tr>
-                <tr *ngFor="let author of tale.authors">
+                <tr>
                   <td>
                     <input type="text" name="firstName" placeholder="Enter first name" [(ngModel)]="newAuthor.firstName" required>
                   </td>
@@ -39,26 +39,32 @@
                     <input type="text" name="orcid" placeholder="Enter ORCID" [(ngModel)]="newAuthor.orcid" required>
                   </td>
                   <td>
-                    <button class="ui tiny positive button" (click)="addAuthor(newAuthor)"><i class="fas fa-trash"></i></button>
+                    <button class="ui tiny positive button" (click)="addAuthor(newAuthor)"><i class="fas fa-plus"></i></button>
                   </td>
                 </tr>
               </table>
             </form>
           </div>
-          <div class="field">
-            <label>Description</label>
-            <input type="text" name="description" placeholder="Description is required." [(ngModel)]="tale.description" required>
-          </div>
-          <div class="field">
-            <label>License</label>
-            <!-- TODO: dropdown -->
-            <input type="text" name="license" placeholder="License is required." [(ngModel)]="tale.licenseSPDY" required>
-          </div>
-          <div class="field">
-            <label>Environment</label>
-            <!-- TODO: dropdown -->
-            <input type="text" name="imageId" placeholder="Environment is required." [(ngModel)]="tale.imageId" required>
-          </div>
+        </div>
+        <div class="field">
+          <label>Description</label>
+          <textarea *ngIf="!previewMarkdown" rows="5" type="text" name="description" placeholder="Description is required." [(ngModel)]="tale.description" required></textarea>
+          <markdown *ngIf="previewMarkdown" ngPreserveWhitespaces [data]="tale.description"></markdown>
+          <button class="ui right floated button" (click)="previewMarkdown=!previewMarkdown">
+            <i class="fas fa-pencil" *ngIf="previewMarkdown"></i>
+            <i class="fas fa-eye" *ngIf="!previewMarkdown"></i>
+            {{ previewMarkdown ? 'Edit' : 'Preview' }}
+          </button>
+        </div>
+        <div class="field">
+          <label>License</label>
+          <!-- TODO: dropdown -->
+          <input type="text" name="license" placeholder="License is required." [(ngModel)]="tale.licenseSPDY" required>
+        </div>
+        <div class="field">
+          <label>Environment</label>
+          <!-- TODO: dropdown -->
+          <input type="text" name="imageId" placeholder="Environment is required." [(ngModel)]="tale.imageId" required>
         </div>
       </form>
 
@@ -81,7 +87,7 @@
         </div>
         <div class="item">
           <b>Description:</b>
-          {{ tale.description }}
+          <markdown ngPreserveWhitespaces [data]="tale.description"></markdown>
         </div>
         <div class="item">
           <b>License:</b>
@@ -105,9 +111,9 @@
                 <li *ngFor="let dataset of tale.dataSet; index as i; trackBy: trackById"><a [href]="dataset.doi">{{ dataset.mountPath }}</a></li>
               </ul>
             </div>
-            <div class="item">
+            <div class="item" *ngIf="environment">
               <b>Environment:</b>
-              <img class="ui image" [src]="tale.icon" style="height:1.5em; margin:0 .4em; display: inline-block">
+              <img *ngIf="tale.icon" class="ui image" [src]="tale.icon" style="height:1.5em; margin:0 .4em; display: inline-block">
               {{ environment.name }}
             </div>
             <div class="item">
@@ -125,7 +131,7 @@
     </div>
 
     <div class="ui six wide column">
-      <img class="ui image img-responsive" [src]="tale.illustration">
+      <img class="ui image img-responsive" [src]="tale.illustration" *ngIf="tale.illustration">
     </div>
   </div>
   <div class="row">

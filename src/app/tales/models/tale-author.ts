@@ -1,6 +1,6 @@
 import { BaseDocument } from '~/app/framework/ngrx';
 
-export interface TaleAuthor extends BaseDocument {
+export interface TaleAuthor {
   firstName: string;
   lastName: string;
   orcid: string;

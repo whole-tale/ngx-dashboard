@@ -8,7 +8,7 @@
 -->
 <div class="ui stretched stackable grid">
   <div class="sixteen wide column" *ngIf="instance">
-    <iframe height="500px" width="100%" [src]="instance.url"></iframe>
+    <iframe height="500px" width="100%" [src]="instance.url" *ngIf="instance && instance.url"></iframe>
   </div>
 
   <div class="sixteen wide column" *ngIf="!instance">

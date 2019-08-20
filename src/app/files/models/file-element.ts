@@ -23,6 +23,7 @@ export interface IFileElement extends BaseDocument {
 
   // folders only
   parentCollection: string;
+  parentId?: string;
 
   // items only
   folderId: string;
@@ -53,7 +54,8 @@ export class FileElement implements IFileElement {
   public = false;
 
   // folders only
-  parentCollection = 'user';
+  parentCollection = 'folder';
+  parentId?: string = null;
 
   // items only
   folderId: string = null;

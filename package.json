@@ -127,6 +127,7 @@
     "ng-event-source": "^1.0.14",
     "ng-swagger-gen": "^1.7.0-b",
     "ngx-cookie-service": "2.2.0",
+    "ngx-markdown": "^8.1.0",
     "nightmare": "~3.0.1",
     "prettier": "~1.15.3",
     "prettier-tslint": "~0.4.1",

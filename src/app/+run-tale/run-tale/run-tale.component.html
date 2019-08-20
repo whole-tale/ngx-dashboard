@@ -1,6 +1,6 @@
-<div fxLayoutAlign="center" [@routeAnimation]>
-    <div class="ui stretched stackable grid">
-        <div class="row panel-container" style="padding-top:20px">
+<div fxFlex fxLayout="row" fxLayoutAlign="space-between stretch" [@routeAnimation]>
+    <div class="ui stretched stackable grid panel-container">
+        <div class="row" style="padding-top:20px">
             <div class="sixteen wide column">
 
                 <div class="ui breadcrumb">
@@ -16,8 +16,8 @@
                             <div class="ui stackable grid">
                                 <div class="ten wide column">
                                     <div class="title-info">
-                                        <img [src]="tale.illustration">
-                                        <img [src]="tale.icon" class="env">
+                                        <img [src]="tale.illustration" *ngIf="tale.illustration">
+                                        <img [src]="tale.icon" class="env" *ngIf="tale.icon">
                                         <p>{{ tale.title }}</p>
                                         
                                         <p class="qualifier">
@@ -30,10 +30,7 @@
                                     </div>
                                 </div>
                                 <div class="six wide column" style="text-align: right">
-                                    <!-- TODO: Replace with tale-run-button component -->
-                                    <button class="ui button primary">
-                                        <i class="play icon"></i> Run
-                                    </button>
+                                    <tale-run-button [tale]="tale" [instance]="instance" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></tale-run-button>
                                     <a routerLink="/" routerLinkActive="active" class="ui button" style="margin-right: 10px">
                                       Close
                                     </a>
@@ -42,18 +39,18 @@
 
                                         <!-- TODO: Wire up, add icons -->
                                         <div class="menu transition hidden" tabindex="-1">
-                                            <div class="item">Rebuild Tale</div>
-                                            <div class="item">Restart Tale</div>
-                                            <div class="item">Duplicate Tale</div>
-                                            <div class="item">Publish Tale</div>
-                                            <div class="item">View Fullscreen</div>
-                                            <div class="item">View Documentation</div>
+                                            <div class="item" (click)="rebuildTale()">Rebuild Tale</div>
+                                            <div class="item" (click)="restartTale()">Restart Tale</div>
+                                            <div class="item" (click)="copyTale()">Duplicate Tale</div>
+                                            <div class="item" (click)="publishTale()">Publish Tale</div>
+                                            <div class="item" (click)="viewFullScreen()">View Fullscreen</div>
+                                            <div class="item" (click)="gotoDocs()">View Documentation</div>
                                             <div class="ui dropdown item">
                                               Export
                                               <i class="dropdown icon"></i>
                                               <div class="menu">
-                                                <a class="item"><i class="archive icon"></i> to ZIP</a>
-                                                <a class="item"><i class="bag icon"></i> to BagIt</a>
+                                                <a class="item" (click)="exportTale()"><i class="archive icon"></i> to ZIP</a>
+                                                <a class="item" (click)="exportTale()"><i class="bag icon"></i> to BagIt</a>
                                               </div>
                                             </div>
                                         </div>
@@ -63,13 +60,13 @@
                         </div>
                     </div>
                     <div class="ui secondary pointing menu" style="margin-top: 0">
-                        <a class="item" [ngClass]="{ 'active': currentTab==='interact' }" [routerLink]="'/run/' + taleId" [queryParams]="{ tab:'interact' }">
+                        <a class="item" [ngClass]="{ 'active': isTabActive('interact') }" (click)="switchTab('interact')">
                           Interact
                         </a>
-                        <a class="item" [ngClass]="{ 'active': currentTab==='files' }" [routerLink]="'/run/' + taleId" [queryParams]="{ tab:'files' }">
+                        <a class="item" [ngClass]="{ 'active': isTabActive('files') }" (click)="switchTab('files')">
                           Files
                         </a>
-                        <a class="item" [ngClass]="{ 'active': currentTab==='metadata' }" [routerLink]="'/run/' + taleId" [queryParams]="{ tab:'metadata' }">
+                        <a class="item" [ngClass]="{ 'active': isTabActive('metadata') }" (click)="switchTab('metadata')">
                           Metadata
                         </a>
                     </div>
@@ -80,7 +77,7 @@
                         </div>
 
                         <div *ngSwitchCase="'files'">
-                          <tale-files [tale]="tale"></tale-files>
+                          <tale-files [tale]="tale" [taleId]="taleId"></tale-files>
                         </div>
 
                         <div *ngSwitchCase="'metadata'">

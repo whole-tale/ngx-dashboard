@@ -16,6 +16,7 @@ export class FileExplorerComponent implements OnInit {
   @Input() fileElements: Array<FileElement>;
   @Input() canNavigateUp: string;
   @Input() path: string;
+  @Input() currentNav: string;
 
   @Output() folderAdded = new EventEmitter<{ name: string }>();
   @Output() elementRemoved = new EventEmitter<FileElement>();

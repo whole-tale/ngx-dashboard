@@ -4,6 +4,9 @@ import { FlexLayoutModule, LAYOUT_CONFIG } from '@angular/flex-layout';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
+import { FileSizePipe } from '@framework/core/filesize.pipe';
+import { TruncatePipe } from '@framework/core/truncate.pipe';
+
 export const APP_LAYOUT_CONFIG = {
   addFlexToParent: true,
   addOrientationBps: false,
@@ -14,7 +17,8 @@ export const APP_LAYOUT_CONFIG = {
 };
 
 @NgModule({
-  exports: [CommonModule, FormsModule, FlexLayoutModule, TranslateModule],
+  declarations: [TruncatePipe, FileSizePipe],
+  exports: [CommonModule, FormsModule, FlexLayoutModule, TranslateModule, TruncatePipe, FileSizePipe],
   providers: [
     {
       provide: LAYOUT_CONFIG,
