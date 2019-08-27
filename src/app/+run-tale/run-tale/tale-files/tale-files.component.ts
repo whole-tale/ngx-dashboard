@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, ChangeDetectorRef, NgZone } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, forkJoin } from 'rxjs';
 
@@ -8,9 +8,14 @@ import { ItemService } from '@api/services/item.service';
 import { CollectionService } from '@api/services/collection.service';
 import { DatasetService } from '@api/services/dataset.service';
 import { WorkspaceService } from '@api/services/workspace.service';
+import { ResourceService } from '@api/services/resource.service';
 import { TokenService } from '@api/token.service';
 
 import { Tale } from '@api/models/tale';
+
+// TODO: Is there a better place to store these constants?
+const DATA_ROOT_PATH = '/collection/WholeTale Catalog/WholeTale Catalog';
+const WORKSPACES_ROOT_PATH = '/collection/WholeTale Workspaces/WholeTale Workspaces';
 
 enum ParentType {
     Folder = "folder",
@@ -26,12 +31,19 @@ enum ParentType {
 export class TaleFilesComponent implements OnInit, OnChanges {
   @Input() tale: Tale;
   @Input() taleId: string;
+
+  @Input() allowDataRoot = false;
+  @Input() allowWorkspaceRoot = false;
+
+  dataRoot: FileElement;
+  wsRoot: FileElement;
   
   folders: FileElement[] = [];
   files: FileElement[] = [];
   currentFolder: FileElement;
   currentFolderId: string;
 
+  placeholderMessage: string;
   fileElements: FileElement[] = [];
   currentRoot: FileElement;
   currentPath: string;
@@ -44,6 +56,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
   constructor(
     private ref: ChangeDetectorRef,
+    private zone: NgZone,
     private router: Router,
     private route: ActivatedRoute,
     private folderService: FolderService,
@@ -52,15 +65,34 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     private datasetService: DatasetService,
     private workspaceService: WorkspaceService,
     private tokenService: TokenService,
+    private resourceService: ResourceService,
   ) {
+    // Fetch Data root
+    const dataRootParams = { test: false, path: DATA_ROOT_PATH };
+    this.resourceService.resourceLookup(dataRootParams).subscribe(resource => {
+      this.dataRoot = resource;
+    });
 
+    // Fetch Workspace root
+    const wsRootParams = { test: false, path: WORKSPACES_ROOT_PATH };
+    this.resourceService.resourceLookup(wsRootParams).subscribe(resource => {
+      this.wsRoot = resource;
+    });
   }
 
   load() {
     if (this.currentFolderId) {
+      if (this.currentNav === 'external_data') {
+        // Set the placeholder to describe how to Create Folder or Upload File
+        this.placeholderMessage = 'This folder is empty, but Datasets are immutable and no folders/files can be added.';
+      } else {
+        // Set the placeholder to describe how to Create Folder or Upload File
+        this.placeholderMessage = 'This folder is empty. Add some folders or files using the (+) icon at the top-right.';
+      }
+
       // TODO: Load a particular folder's contents
-      let itemParams = { folderId: this.currentFolderId };
-      let folderParams = { parentId: this.currentFolderId, parentType: ParentType.Folder };
+      const itemParams = { folderId: this.currentFolderId };
+      const folderParams = { parentId: this.currentFolderId, parentType: ParentType.Folder };
 
       // FIXME: GET /folders/:id doesn't return full models for files/folders
       this.folders = [];
@@ -80,16 +112,19 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     }
     switch (this.currentNav) {
       case 'external_data':
-        // Display Tale datasets
-        let dsParams = { myData: false };
+        // Set the placeholder to describe how to Register a Dataset with this Tale
+        this.placeholderMessage = 'This Tale does not have any datasets registered. Register a dataset to see it listed here.';
+
+        // Fetch registered datasets
         this.files = [];
         this.folders = [];
-        let params = {};
-        this.datasetService.datasetListDatasets(params).subscribe(datasets => {
-          let matches: any[] = [];
-          (datasets || []).forEach(ds => {
-            if (this.tale.dataSet.find(mount => mount.itemId === ds._id)) {
-              matches.push(ds);
+        const params = { myData: false };
+        this.datasetService.datasetListDatasets(params).subscribe((datasets: FileElement[]) => {
+          const matches: FileElement[] = [];
+          this.tale.dataSet.forEach(mount => {
+            let match = datasets.find(ds => mount.itemId === ds._id);
+            if (match) {
+              matches.push(match);
             }
           });
           this.folders = matches;
@@ -101,20 +136,22 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         this.canNavigateUp = false;
         break;
       case 'tale_workspace':
+        // Set the placeholder to describe how to Create Folder or Upload File
+        this.placeholderMessage = 'This Tale does not have any datasets registered. Register a dataset to see it listed here.';
+
         // Load folder with same id as tale.workspaceId
         this.currentFolderId = this.tale.workspaceId;
-        let itemParams = { folderId: this.currentFolderId };
-        let folderParams = { parentId: this.currentFolderId, parentType: ParentType.Folder };
+        const itemParams = { folderId: this.currentFolderId };
+        const folderParams = { parentId: this.currentFolderId, parentType: ParentType.Folder };
 
-
-        // FIXME: GET /folders/:id doesn't return full models for files/folders
+        // Fetch folders in the workspace
         this.folders = [];
         this.folderService.folderFind(folderParams).subscribe(folders => {
           this.folders = folders;
           this.ref.detectChanges();
         });
 
-        // FIXME: GET /folders/:id doesn't return full models for files/folders
+        // Fetch items in the workspace
         this.files = [];
         this.itemService.itemFind(itemParams).subscribe(items => {
           this.files = items;
@@ -151,11 +188,15 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
   switchNav(nav: string) {
     this.currentNav = nav;
-    if (this.currentFolderId) {
-      this.router.navigateByUrl('/run/' + this.taleId + '?tab=files&nav=' + nav + '&parentid=' + this.currentFolderId);
-    } else {
-      this.router.navigateByUrl('/run/' + this.taleId + '?tab=files&nav=' + nav);
-    }
+    this.currentFolderId = null;
+    this.currentRoot = null;
+    this.router.navigate(['run', this.taleId ], { 
+      queryParamsHandling: null, 
+      queryParams: { 
+        tab: 'files',
+        nav: nav
+      }
+    });
     //this.load(nav);
   }
 
@@ -239,20 +280,33 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   }
 
   navigateUp() {
-    // If we find that our parent is a collection, that collection is the root
-    if (this.currentRoot && this.currentRoot.parentCollection === ParentType.Collection) {
+    // TODO: Allow user to navigate to root folders?
+    // NOTE: we may need something like this for the Data Catalog, but doesn't need to be this same component
+
+    // If we find that our parentId matches our known root folders, then we have reached the root
+    if (this.currentRoot && (this.currentRoot.parentId === this.dataRoot._id || this.currentRoot.parentId === this.tale.workspaceId)) {
       this.currentRoot = null;
       this.currentFolderId = null;
       this.canNavigateUp = false;
-      this.router.navigateByUrl('/run/' + this.taleId + '?tab=files&nav=' + this.currentNav);
+      this.router.navigate(['run', this.taleId ], { 
+        queryParamsHandling: null, 
+        queryParams: {
+          tab: 'files',
+          nav: this.currentNav
+        }
+      });
     } else {
-      // TODO: GET /folder/:_id
       this.currentFolderId = this.currentRoot.parentId;
-      let parentType = this.currentRoot.parentCollection;
-      this.router.navigateByUrl('/run/' + this.taleId + '?tab=files&nav=' + this.currentNav + '&parentid=' + this.currentFolderId  + '&parentType=' + parentType);
+      this.router.navigate(['run', this.taleId ], { 
+        queryParamsHandling: "merge", 
+        queryParams: { 
+          tab: 'files',
+          nav: this.currentNav, 
+          parentid: this.currentFolderId 
+        }
+      });
     }
     this.currentPath = this.popFromPath(this.currentPath);
-    this.ref.detectChanges();
   }
 
   navigateToFolder(element: FileElement) {
@@ -265,9 +319,15 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     //this.setCurrentRoot(element._id);
     this.currentPath = this.pushToPath(this.currentPath, element.name);
     this.currentFolderId = element._id;
-    this.router.navigateByUrl('/run/' + this.taleId + '?tab=files&nav=' + this.currentNav + '&parentid=' + this.currentFolderId + '&parentType=' + element._modelType);
+    this.router.navigate(['run', this.taleId ], { 
+      queryParamsHandling: "merge", 
+      queryParams: { 
+        tab: 'files',
+        nav: this.currentNav, 
+        parentid: this.currentFolderId 
+      }
+    });
     this.canNavigateUp = true;
-    this.ref.detectChanges();
   }
 
   pushToPath(path: string, folderName: string) {

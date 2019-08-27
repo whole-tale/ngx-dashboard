@@ -2,7 +2,7 @@
   <mat-icon *ngIf="canNavigateUp" class="pointer" (click)="navigateUp()">
     arrow_back
   </mat-icon>
-  <span style="margin-left: 8px"> {{ path || currentNav === 'external_data' ? 'External Data' : 'Tale' }} </span>
+  <span style="margin-left: 8px"> {{ path || currentNav === 'external_data' ? 'External Data' : 'Tale Workspace' }} </span>
   <span class="spacer"></span>
   <!-- TODO: dropdown -->
   <mat-icon class="pointer" (click)="openNewFolderDialog()">
@@ -11,7 +11,13 @@
 </mat-toolbar>
 
 <div class="container" fxFlex fxLayout="row" fxLayoutAlign="space-between stretch">
-  <table class="ui basic selectable very compact striped blue table">
+  <!-- Show placeholder if there are no fileElements to display -->
+  <div class="ui placeholder" *ngIf="!fileElements || !fileElements.length">
+    {{ placeholderMessage }}
+  </div>
+
+  <!-- Show folders/files in table if any exist -->
+  <table class="ui basic selectable very compact striped blue table" *ngIf="fileElements && fileElements.length">
     <thead>
       <tr>
         <th width="5%"></th>

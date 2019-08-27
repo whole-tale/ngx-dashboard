@@ -13,18 +13,26 @@ import { RenameDialogComponent } from './modals/rename-dialog/rename-dialog.comp
   styleUrls: ['./file-explorer.component.scss']
 })
 export class FileExplorerComponent implements OnInit {
+  // List of folders/files in the current folder
   @Input() fileElements: Array<FileElement>;
+
+  // True if we are not at the root
   @Input() canNavigateUp: string;
+
+  // The path to the current directory
   @Input() path: string;
+
+  // Current nav value (either 'external_data' or 'tale_workspaces')
   @Input() currentNav: string;
 
+  // Message to display if current folder is empty
+  @Input() placeholderMessage: string;
+
+  // Events emitted
   @Output() folderAdded = new EventEmitter<{ name: string }>();
   @Output() elementRemoved = new EventEmitter<FileElement>();
   @Output() elementRenamed = new EventEmitter<FileElement>();
-  @Output() elementMoved = new EventEmitter<{
-    element: FileElement;
-    moveTo: FileElement;
-  }>();
+  @Output() elementMoved = new EventEmitter<{ element: FileElement; moveTo: FileElement }>();
   @Output() navigatedDown = new EventEmitter<FileElement>();
   @Output() navigatedUp = new EventEmitter();
 

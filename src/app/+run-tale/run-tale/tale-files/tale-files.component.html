@@ -18,6 +18,7 @@
       <file-explorer
         [fileElements]="folders.concat(files)"
         [path]="currentPath"
+        [placeholderMessage]="placeholderMessage"
         [currentNav]="currentNav"
         [canNavigateUp]="canNavigateUp"
         (folderAdded)="addFolder($event)"

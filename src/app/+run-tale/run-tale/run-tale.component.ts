@@ -56,7 +56,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     detectCurrentTab() {
       this.route.queryParams.subscribe(params => {
         const tab = params['tab'];
-        if (tab) {
+        if (tab && tab != this.currentTab) {
           this.switchTab(tab);
         }
       });
@@ -64,7 +64,12 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
     switchTab(tab: string) {
       this.currentTab = tab;
-      this.router.navigateByUrl('/run/' + this.taleId + '?tab=' + tab);
+      this.router.navigate(['run', this.taleId ], {
+        queryParamsHandling: null,
+        queryParams: { 
+          tab: tab 
+        }
+      });
     }
 
     isTabActive(tab: string) {
