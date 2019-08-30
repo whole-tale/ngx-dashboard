@@ -393,7 +393,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     } else if (this.files.indexOf(element) !== -1) {
       // Element is an item, move it
       this.itemService.itemUpdateItem(params).subscribe(resp => {
-        console.log("Item deleted successfully:", resp);
+        console.log("Item renamed successfully:", resp);
         const index = this.files.indexOf(element);
         this.files[index] = resp;
         this.ref.detectChanges();
