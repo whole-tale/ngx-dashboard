@@ -1,5 +1,6 @@
 import { Component, OnChanges, Input, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 import { InstanceService } from '@api/services/instance.service';
 import { Instance } from '@api/models/instance';
@@ -14,9 +15,11 @@ export class TaleInteractComponent implements OnChanges {
   @Input() tale: Tale;
   instance: Instance;
 
-  constructor(private ref: ChangeDetectorRef, private route: ActivatedRoute, private instanceService: InstanceService) { }
+  instanceSubscription: Subscription;
 
-  ngOnChanges() {
+  constructor(private ref: ChangeDetectorRef, private route: ActivatedRoute, private instanceService: InstanceService) {  }
+
+  ngOnChanges(): void {
     if (this.tale) {
       this.instanceService.instanceGetInstance(this.tale._id).subscribe(instance => {
         this.instance = instance;

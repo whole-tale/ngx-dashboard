@@ -19,6 +19,11 @@ import { TaleAuthor } from '@tales/models/tale-author';
 // import * as $ from 'jquery';
 declare var $: any;
 
+enum TaleExportFormat {
+  ZIP = 'native',
+  BagIt = 'bagit'
+}
+
 @Component({
     templateUrl: './run-tale.component.html',
     styleUrls: ['./run-tale.component.scss'],
@@ -161,12 +166,10 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       this.windowService.location.href = "https://wholetale.readthedocs.io/en/stable/users_guide/run.html";
     }
 
-    // TODO: How do I specify target format? (e.g. ZIP, BagIt, etc)
-    exportTale() {
-      let params = { id: this.tale._id };
+    exportTale(format: TaleExportFormat = TaleExportFormat.ZIP) {
+      let params = { id: this.tale._id, taleFormat: format };
       this.taleService.taleExportTale(params).subscribe(res => {
-        // TODO: What format is this exporting?
-        console.log("Exporting tale:", res);
+        console.log(`Exporting tale=${this.tale._id} to ${format}`, res);
       });
     }
 }

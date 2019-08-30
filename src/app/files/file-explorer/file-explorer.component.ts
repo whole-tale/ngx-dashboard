@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatMenuTrigger } from '@angular/material';
 import { MatDialog } from '@angular/material/dialog';
 import { FilesService } from '@files/files.service';
@@ -13,6 +13,8 @@ import { RenameDialogComponent } from './modals/rename-dialog/rename-dialog.comp
   styleUrls: ['./file-explorer.component.scss']
 })
 export class FileExplorerComponent implements OnInit {
+  @ViewChild('file') file: any;
+
   // List of folders/files in the current folder
   @Input() fileElements: Array<FileElement>;
 
@@ -30,6 +32,7 @@ export class FileExplorerComponent implements OnInit {
 
   // Events emitted
   @Output() folderAdded = new EventEmitter<{ name: string }>();
+  @Output() fileUploadsAdded = new EventEmitter<{ files: { [key: string]: File } }>();
   @Output() elementRemoved = new EventEmitter<FileElement>();
   @Output() elementRenamed = new EventEmitter<FileElement>();
   @Output() elementMoved = new EventEmitter<{ element: FileElement; moveTo: FileElement }>();
@@ -39,6 +42,14 @@ export class FileExplorerComponent implements OnInit {
   constructor(public dialog: MatDialog, public fileService: FilesService) {}
 
   ngOnInit() {}
+
+  openFileUploadDialog() {
+    this.file.nativeElement.click();
+  }
+
+  onUploadsAdded() {
+    this.fileUploadsAdded.emit(this.file.nativeElement.files);
+  }
 
   deleteElement(element: FileElement) {
     this.elementRemoved.emit(element);

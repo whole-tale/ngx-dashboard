@@ -2,13 +2,18 @@
   <mat-icon *ngIf="canNavigateUp" class="pointer" (click)="navigateUp()">
     arrow_back
   </mat-icon>
-  <span style="margin-left: 8px"> {{ path || currentNav === 'external_data' ? 'External Data' : 'Tale Workspace' }} </span>
+  <span style="margin-left: 8px"> {{ '/' + (path || '') }} </span>
   <span class="spacer"></span>
   <!-- TODO: dropdown -->
-  <mat-icon class="pointer" (click)="openNewFolderDialog()">
+  <mat-icon *ngIf="currentNav !== 'external_data'" class="pointer" (click)="openFileUploadDialog()">
+    insert_drive_file
+  </mat-icon>
+  <mat-icon *ngIf="currentNav !== 'external_data'" class="pointer" (click)="openNewFolderDialog()">
     create_new_folder
   </mat-icon>
 </mat-toolbar>
+
+<input #file multiple type="file" style="display: none" (change)="onUploadsAdded()" />
 
 <div class="container" fxFlex fxLayout="row" fxLayoutAlign="space-between stretch">
   <!-- Show placeholder if there are no fileElements to display -->

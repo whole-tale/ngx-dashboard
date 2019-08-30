@@ -113,6 +113,9 @@ class FileService extends __BaseService {
     __headers.append('Content-Type', 'multipart/form-data');
     let __formData = new FormData();
     __body = __formData;
+    if (params.chunk !== null && typeof params.chunk !== 'undefined') {
+      __formData.append('chunk', params.chunk as string | Blob);
+    }
     if (params.uploadId !== null && typeof params.uploadId !== 'undefined') {
       __formData.append('uploadId', params.uploadId as string | Blob);
     }
@@ -139,6 +142,8 @@ class FileService extends __BaseService {
    * - `uploadId`: The ID of the document.
    *
    * - `offset`: Offset of the chunk in the file.
+   *
+   * - `chunk`: Binary data chunk to upload.
    */
   fileReadChunk(params: FileService.FileReadChunkParams): __Observable<null> {
     return this.fileReadChunkResponse(params).pipe(__map(_r => _r.body as null));
@@ -633,6 +638,11 @@ module FileService {
      * Offset of the chunk in the file.
      */
     offset: number;
+
+    /**
+     * Binary data chunk to attach.
+     */
+    chunk: string | Blob | ArrayBuffer;
   }
 
   /**
