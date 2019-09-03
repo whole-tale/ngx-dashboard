@@ -48,11 +48,13 @@ class FileService extends __BaseService {
    * - `linkUrl`: If this is a link file, pass its URL instead of size and mimeType using this parameter.
    *
    * - `assetstoreId`: Direct the upload to a specific assetstore (admin-only).
+   *
+   * - `chunk`: (optional) First binary data chunk to upload.
    */
   fileInitUploadResponse(params: FileService.FileInitUploadParams): __Observable<__StrictHttpResponse<null>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
-    let __body: any = null;
+    let __body: any = params.chunk;
     if (params.parentType != null) __params = __params.set('parentType', params.parentType.toString());
     if (params.parentId != null) __params = __params.set('parentId', params.parentId.toString());
     if (params.name != null) __params = __params.set('name', params.name.toString());
@@ -93,6 +95,8 @@ class FileService extends __BaseService {
    * - `linkUrl`: If this is a link file, pass its URL instead of size and mimeType using this parameter.
    *
    * - `assetstoreId`: Direct the upload to a specific assetstore (admin-only).
+   *
+   * - `chunk`: (optional) First binary data chunk to upload.
    */
   fileInitUpload(params: FileService.FileInitUploadParams): __Observable<null> {
     return this.fileInitUploadResponse(params).pipe(__map(_r => _r.body as null));
@@ -105,23 +109,16 @@ class FileService extends __BaseService {
    * - `uploadId`: The ID of the document.
    *
    * - `offset`: Offset of the chunk in the file.
+   *
+   * - `chunk`: Binary data chunk to upload.
    */
   fileReadChunkResponse(params: FileService.FileReadChunkParams): __Observable<__StrictHttpResponse<null>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
-    let __body: any = null;
-    __headers.append('Content-Type', 'multipart/form-data');
-    let __formData = new FormData();
-    __body = __formData;
-    if (params.chunk !== null && typeof params.chunk !== 'undefined') {
-      __formData.append('chunk', params.chunk as string | Blob);
-    }
-    if (params.uploadId !== null && typeof params.uploadId !== 'undefined') {
-      __formData.append('uploadId', params.uploadId as string | Blob);
-    }
-    if (params.offset !== null && typeof params.offset !== 'undefined') {
-      __formData.append('offset', JSON.stringify(params.offset));
-    }
+    __headers.append('Content-Type', 'application/octet-stream');
+    let __body: any = params.chunk;
+    if (params.uploadId != null) __params = __params.set('uploadId', params.uploadId.toString());
+    if (params.offset != null) __params = __params.set('offset', params.offset.toString());
     let req = new HttpRequest<any>('POST', this.rootUrl + `/file/chunk`, __body, {
       headers: __headers,
       params: __params,
@@ -623,6 +620,11 @@ module FileService {
      * Direct the upload to a specific assetstore (admin-only).
      */
     assetstoreId?: string;
+
+    /*
+     * First binary data chunk to upload (optional).
+     */
+    chunk: ArrayBuffer;
   }
 
   /**

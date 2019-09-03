@@ -100,36 +100,37 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     }
     console.log(`${files.length} files added... upload queue contents:`, this.uploadQueue);
 
+    const self = this;
     this.uploadQueue.forEach(upload => {
-      const params = {
-        parentType: UploadType.Folder, 
-        parentId: this.currentFolderId ? this.currentFolderId : this.tale.workspaceId,
-        name: upload.name,
-        size: upload.size
-      };
-      console.log(`Starting upload for ${params.name}...`);
-      this.fileService.fileInitUpload(params).subscribe((initResp: any) => {
-        console.log(`Uploading chunks for ${params.name}:`, initResp);
-        const offset = 0;
-        const self = this;
-        this.files.push(initResp);
-        this.ref.detectChanges();
+      let url = window.URL.createObjectURL(upload);
+      fetch(url).then(resp => resp.arrayBuffer()).then(contents => {
+        const params = {
+          parentType: UploadType.Folder, 
+          parentId: self.currentFolderId ? self.currentFolderId : self.tale.workspaceId,
+          name: upload.name,
+          size: upload.size,
+          chunk: contents
+        };
 
-        // Create a URL to the file blob and start the upload
-        let url = window.URL.createObjectURL(upload);
-        fetch(url).then(resp => resp.json()).then(contents => {
-          const chunkMaxSize = 1024 * 1024 * 1;   // 1 MB
-            const chunkParams = { uploadId: initResp._id, offset, chunk: contents };
-            self.fileService.fileReadChunk(chunkParams).subscribe((chunkResp: any) => {
-              console.log(`Uploading chunk ${offset} of ${params.name}:`, chunkResp);
-              if (chunkResp.size === upload.size) {
-                console.log("Upload complete: ", chunkResp.name);
-              }
-              let existing = self.files.find(file => file._id === chunkResp._id);
-              let index = self.files.indexOf(existing);
-              self.files[index] = chunkResp;
-              self.ref.detectChanges();
-            });
+        console.log(`Starting upload for ${params.name}...`);
+        self.fileService.fileInitUpload(params).subscribe((initResp: any) => {
+          console.log(`Uploading chunks for ${params.name}:`, initResp);
+          const offset = 0;
+          self.files.push(initResp);
+          self.ref.detectChanges();
+
+          // Create a URL to the file blob and start the upload
+          const chunkParams = { uploadId: initResp._id, offset, chunk: contents };
+          self.fileService.fileReadChunk(chunkParams).subscribe((chunkResp: any) => {
+            console.log(`Uploading chunk ${offset} of ${params.name}:`, chunkResp);
+            if (chunkResp.size === upload.size) {
+              console.log("Upload complete: ", chunkResp.name);
+            }
+            let existing = self.files.find(file => file._id === chunkResp._id);
+            let index = self.files.indexOf(existing);
+            self.files[index] = chunkResp;
+            self.ref.detectChanges();
+          });
         });
       });
     });
