@@ -7,6 +7,62 @@ import { FileElement } from '@files/models/file-element';
 import { NewFolderDialogComponent } from './modals/new-folder-dialog/new-folder-dialog.component';
 import { RenameDialogComponent } from './modals/rename-dialog/rename-dialog.component';
 
+// Mapping of file extension to the icon that should be displayed
+// See https://fontawesome.com/icons?d=listing&q=file-&s=solid
+const FILE_TYPES = {
+  // Text / Rich Text / CSV
+  txt: 'file-alt',
+  text: 'file-alt',
+  pdf: 'file-pdf',
+  doc: 'file-word',
+  docx: 'file-word',
+  ppt: 'file-powerpoint',
+  xlsx: 'file-excel',
+  xls: 'file-excel',
+  csv: 'file-csv',
+
+  // Audio / Image / Video
+  wav: 'file-audio',
+  mp3: 'file-audio',
+  fla: 'file-audio',
+  flac: 'file-audio',
+  org: 'file-audio',
+  jpg: 'file-image',
+  jpeg: 'file-image',
+  png: 'file-image',
+  tiff: 'file-image',
+  svg: 'file-image',
+  mp4: 'file-video',
+  avi: 'file-video',
+
+  // Archive / Code
+  tgz: 'file-archive',
+  '7z': 'file-archive',
+  zip: 'file-archive',
+  rar: 'file-archive',
+  tar: 'file-archive',
+  gz: 'file-archive',
+  r: 'file-code',
+  py: 'file-code',
+  java: 'file-code',
+  js: 'file-code',
+  ts: 'file-code',
+  c: 'file-code',
+  cpp: 'file-code',
+  C: 'file-code',
+  h: 'file-code',
+  go: 'file-code',
+  php: 'file-code',
+
+  // ???
+  dta: 'file-code',
+  ado: 'file-code',
+  do: 'file-code',
+  tsv: 'file-csv',
+  tab: 'file-csv',
+  json: 'file-alt'
+};
+
 @Component({
   selector: 'file-explorer',
   templateUrl: './file-explorer.component.html',
@@ -42,6 +98,20 @@ export class FileExplorerComponent implements OnInit {
   constructor(public dialog: MatDialog, public fileService: FilesService) {}
 
   ngOnInit() {}
+
+  getIcon(element: FileElement) {
+    if (element._modelType === 'folder' || element._modelType === 'dataset' || element._modelType === 'workspace') {
+      return 'fa-folder';
+    } else if (element._modelType === 'file' || element._modelType === 'item') {
+      const name = element.name || '';
+      const segments = name.split('.');
+      const ext = segments[segments.length - 1].split(' ')[0];
+
+      const icon = FILE_TYPES[ext] || 'file';
+
+      return 'fa-' + icon;
+    }
+  }
 
   openFileUploadDialog() {
     this.file.nativeElement.click();
