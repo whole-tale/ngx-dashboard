@@ -1,9 +1,7 @@
-import { ViewChild, Component, OnInit, Input, OnChanges, ChangeDetectorRef, NgZone } from '@angular/core';
+import { ViewChild, Component, OnInit, Input, OnChanges, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription, Observable } from 'rxjs';
 
-import { switchMap, filter } from 'rxjs/operators';
-import { enterZone } from '@framework/ngrx/enter-zone.operator';
+//import { enterZone } from '@framework/ngrx/enter-zone.operator';
 
 import { FileElement } from '@files/models/file-element';
 import { FolderService } from '@api/services/folder.service';
@@ -16,6 +14,8 @@ import { ResourceService } from '@api/services/resource.service';
 import { TokenService } from '@api/token.service';
 
 import { Tale } from '@api/models/tale';
+
+import { TruncatePipe } from '@framework/core/truncate.pipe';
 
 // TODO: Is there a better place to store these constants?
 const DATA_ROOT_PATH = '/collection/WholeTale Catalog/WholeTale Catalog';
@@ -43,32 +43,22 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   @Input() tale: Tale;
   @Input() taleId: string;
 
-  @Input() allowDataRoot = false;
-  @Input() allowWorkspaceRoot = false;
-
   dataRoot: FileElement;
   wsRoot: FileElement;
   
   folders: FileElement[] = [];
   files: FileElement[] = [];
-  currentFolder: FileElement;
   currentFolderId: string;
 
   placeholderMessage: string;
-  fileElements: FileElement[] = [];
   currentRoot: FileElement;
   currentPath: string = '';
   canNavigateUp = false;
 
   currentNav = 'external_data';
 
-  dataNavRootId : string;
-  wsNavRootId : string;
-
   constructor(
-
     private ref: ChangeDetectorRef,
-    private zone: NgZone,
     private router: Router,
     private route: ActivatedRoute,
     private folderService: FolderService,
@@ -79,6 +69,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     private fileService: FileService,
     private tokenService: TokenService,
     private resourceService: ResourceService,
+    private truncate: TruncatePipe,
   ) {
     // Fetch Data root
     const dataRootParams = { test: false, path: DATA_ROOT_PATH };
@@ -206,37 +197,43 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         this.currentRoot = null;
         this.currentFolderId = null;
         this.canNavigateUp = false;
+        this.currentPath = '';
         break;
       case 'tale_workspace':
         // Set the placeholder to describe how to Create Folder or Upload File
         this.placeholderMessage = 'This Tale\'s workspace is empty. Add a folder or file using the (+) button at the top-right.';
 
-        // Load folder with same id as tale.workspaceId
-        this.currentFolderId = this.tale.workspaceId;
-        const itemParams = { folderId: this.currentFolderId };
-        const folderParams = { parentId: this.currentFolderId, parentType: ParentType.Folder };
+        // Short-circuit for if we haven't loaded the tale yet
+        // FIXME: Can we avoid this race condition in a more elegant way?
+        if (this.tale.workspaceId) {
+          // Load folder with id=tale.workspaceId
+          this.currentFolderId = this.tale.workspaceId;
+          const itemParams = { folderId: this.currentFolderId };
+          const folderParams = { parentId: this.currentFolderId, parentType: ParentType.Folder };
 
-        // Fetch folders in the workspace
-        this.folders = [];
-        this.folderService.folderFind(folderParams)
+          // Fetch folders in the workspace
+          this.folders = [];
+          this.folderService.folderFind(folderParams)
+                            //.pipe(enterZone(this.zone))
+                            .subscribe(folders => {
+                              this.folders = folders;
+                              this.ref.detectChanges();
+                            });
+
+          // Fetch items in the workspace
+          this.files = [];
+          this.itemService.itemFind(itemParams)
                           //.pipe(enterZone(this.zone))
-                          .subscribe(folders => {
-                            this.folders = folders;
+                          .subscribe(items => {
+                            this.files = items;
                             this.ref.detectChanges();
                           });
 
-        // Fetch items in the workspace
-        this.files = [];
-        this.itemService.itemFind(itemParams)
-                        //.pipe(enterZone(this.zone))
-                        .subscribe(items => {
-                          this.files = items;
-                          this.ref.detectChanges();
-                        });
-
-        this.currentRoot = null;
-        this.currentFolderId = null;
-        this.canNavigateUp = false;
+          this.currentRoot = null;
+          this.currentFolderId = null;
+          this.canNavigateUp = false;
+          this.currentPath = '';
+        }
         break;
       default:
         console.error("Unrecognized nav encountered:", this.currentNav);
@@ -248,7 +245,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     this.route.queryParams.subscribe(params => {
       const fid = params['parentid'] || null;
       const type = params['parentType'] || 'folder';
-      if (fid && this.currentFolderId !== fid) {
+      if (fid) {
         this.currentFolderId = fid;
         this.setCurrentRoot(fid, type);
       }
@@ -263,13 +260,11 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   }
 
   switchNav(nav: string) {
-    this.zone.run(() => {
-      this.currentNav = nav;
-      this.currentFolderId = null;
-      this.currentRoot = null;
-      this.currentPath = '';
-      this.navigate();
-    });
+    this.currentNav = nav;
+    this.currentFolderId = null;
+    this.currentRoot = null;
+    this.currentPath = '';
+    this.navigate();
     //this.load(nav);
   }
 
@@ -277,28 +272,63 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     return this.currentNav === nav;
   }
 
+  truncatePathSegments(path: string) {
+    let truncatedSegments: string[] = [];
+    path.split('/').forEach((s: string) => {
+      truncatedSegments.push(this.truncate.transform(s, 30));
+    });
+    return truncatedSegments.join('/');
+  }
+
+  setCurrentPath() {
+    // Then set the current path
+    let params = { id: this.currentRoot._id, type: this.currentRoot._modelType };
+    this.resourceService.resourcePath(params).subscribe((resp: string) => {
+      if (this.currentNav === 'external_data') {
+        if (resp.indexOf(DATA_ROOT_PATH) !== -1) {
+          let pathSuffix = resp.split(DATA_ROOT_PATH)[1];
+          this.currentPath = this.truncatePathSegments(pathSuffix);
+          this.ref.detectChanges();
+        } else {
+          console.error("Error: malformed resource path encountered... aborting:", resp);
+        }
+      } else if (this.currentNav === 'tale_workspace') {
+        if (resp.indexOf(this.taleId) !== -1) {
+          let pathSuffix = resp.split(this.taleId)[1];
+          this.currentPath = this.truncatePathSegments(pathSuffix);
+          this.ref.detectChanges();
+        } else {
+          console.error("Error: malformed resource path encountered... aborting:", resp);
+        }
+      }
+    });
+  }
+
   setCurrentRoot(resourceId: string, modelType: string = 'folder') {
+    // Lookup and set our root node
     if (resourceId) {
       switch (modelType) {
         case 'folder':
           this.folderService.folderGetFolder(resourceId)
-                            .pipe(enterZone(this.zone))
+                            //.pipe(enterZone(this.zone))
                             .subscribe(folder => {
             this.currentRoot = folder;
             this.currentFolderId = this.currentRoot._id;
             this.canNavigateUp = this.currentRoot ? true : false;
             console.log(`currentRoot is now: ${this.currentRoot.name}`);
+            this.setCurrentPath();
             this.ref.detectChanges();
           });
           break;
         case 'collection':
           this.collectionService.collectionGetCollection(resourceId)
-                                .pipe(enterZone(this.zone))
+                                //.pipe(enterZone(this.zone))
                                 .subscribe(collection => {
             this.currentRoot = collection;
             this.currentFolderId = this.currentRoot._id;
             this.canNavigateUp = this.currentRoot ? true : false;
             console.log(`currentRoot is now: ${this.currentRoot.name}`);
+            this.setCurrentPath();
             this.ref.detectChanges();
           });
           break;
@@ -310,6 +340,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       this.currentRoot = null;
       this.currentFolderId = null;
       this.canNavigateUp = false;
+      this.currentPath = '';
     }
   }
 
@@ -444,10 +475,11 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       this.canNavigateUp = true;
     } else {
       this.router.navigate(['run', this.taleId ], { 
-        queryParamsHandling: null, 
+        queryParamsHandling: "merge", 
         queryParams: {
           tab: 'files',
-          nav: this.currentNav
+          nav: this.currentNav,
+          parentid: null
         }
       });
       this.canNavigateUp = false;
@@ -468,10 +500,11 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       this.currentRoot = null;
       this.currentFolderId = null;
       this.canNavigateUp = false;
+      this.currentPath = '';
     } else {
       this.currentFolderId = this.currentRoot ? this.currentRoot.parentId : null;
     }
-    this.currentPath = this.popFromPath(this.currentPath);
+    //this.currentPath = this.popFromPath(this.currentPath);
     this.navigate();
   }
 
@@ -481,9 +514,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     } else {
       element.parentId = null;
     }
-    //this.currentRoot = element;
-    //this.setCurrentRoot(element._id);
-    this.currentPath = this.pushToPath(this.currentPath, element.name);
+    this.setCurrentRoot(element._id);
+    //this.currentPath = this.pushToPath(this.currentPath, element.name);
     this.currentFolderId = element._id;
     this.navigate();
   }

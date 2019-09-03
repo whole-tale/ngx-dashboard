@@ -70,9 +70,9 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     switchTab(tab: string) {
       this.currentTab = tab;
       this.router.navigate(['run', this.taleId ], {
-        queryParamsHandling: null,
+        queryParamsHandling: "merge",
         queryParams: { 
-          tab: tab 
+          tab: tab
         }
       });
     }

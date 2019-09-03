@@ -2,7 +2,7 @@
   <mat-icon *ngIf="canNavigateUp" class="pointer" (click)="navigateUp()">
     arrow_back
   </mat-icon>
-  <span style="margin-left: 8px"> {{ '/' + (path || '') }} </span>
+  <span style="margin-left: 8px"> {{ path || '/' }} </span>
   <span class="spacer"></span>
   <!-- TODO: dropdown -->
   <mat-icon *ngIf="currentNav !== 'external_data'" class="pointer" (click)="openFileUploadDialog()">

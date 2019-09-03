@@ -15,6 +15,8 @@ import { TaleMetadataComponent } from './run-tale/tale-metadata/tale-metadata.co
 import { RunTaleComponent } from './run-tale/run-tale.component';
 import { routes } from './run-tale.routes';
 
+import { TruncatePipe } from '@framework/core/truncate.pipe';
+
 @NgModule({
   imports: [CommonModule, RouterModule.forChild(routes), SharedModule, MaterialModule, FilesModule, TalesModule, MarkdownModule.forRoot({
     //loader: HttpClient, // optional, only if you use [src] attribute
@@ -31,6 +33,7 @@ import { routes } from './run-tale.routes';
       },
     },*/
   })],
+  providers: [TruncatePipe],
   declarations: [RunTaleComponent, TaleFilesComponent, TaleMetadataComponent, TaleInteractComponent]
 })
 export class RunTaleModule {}
