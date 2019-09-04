@@ -110,6 +110,8 @@ export class FileExplorerComponent implements OnInit {
       const icon = FILE_TYPES[ext] || 'file';
 
       return 'fa-' + icon;
+    } else {
+      console.error('Error: unable to get icon for FileElement - unrecognized modelType:', element);
     }
   }
 
