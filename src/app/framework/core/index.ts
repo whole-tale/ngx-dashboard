@@ -6,4 +6,3 @@ export * from './window.service';
 export * from './core.module';
 export * from './shared.module';
 export * from './truncate.pipe';
-export * from './filesize.pipe';

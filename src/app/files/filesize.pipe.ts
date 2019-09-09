@@ -1,7 +1,10 @@
+import { DecimalPipe } from '@angular/common';
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({ name: 'fileSize' })
 export class FileSizePipe implements PipeTransform {
+  constructor(private readonly decimal: DecimalPipe) {}
+
   round_to_precision(x: number, precision: number = null) {
     const y = +x + (!precision ? 0.5 : precision / 2);
     return y - (y % (!precision ? 1 : +precision));
@@ -21,25 +24,25 @@ export class FileSizePipe implements PipeTransform {
     }
 
     // Round to the nearest hundreth
-    val = this.round_to_precision(val, 0.01);
+    // val = this.round_to_precision(val, 0.01);
 
     // Assign label based on how many times we divided
     switch (magnitude) {
       case 0:
-        return `${val} B`;
+        return `${this.decimal.transform(val)} B`;
       case 1:
-        return `${val} KB`;
+        return `${this.decimal.transform(val)} KB`;
       case 2:
-        return `${val} MB`;
+        return `${this.decimal.transform(val)} MB`;
       case 3:
-        return `${val} GB`;
+        return `${this.decimal.transform(val)} GB`;
       case 4:
-        return `${val} TB`;
+        return `${this.decimal.transform(val)} TB`;
       case 5:
-        return `${val} PB`;
+        return `${this.decimal.transform(val)} PB`;
       default:
         // Higher values are unsupported - display these as raw bytes
-        return `${value} B`;
+        return `${this.decimal.transform(value)} B`;
     }
   }
 }

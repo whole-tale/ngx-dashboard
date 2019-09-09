@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule } from '@angular/forms';
@@ -16,11 +17,12 @@ import { FileExplorerComponent } from './file-explorer/file-explorer.component';
 import { NewFolderDialogComponent } from './file-explorer/modals/new-folder-dialog/new-folder-dialog.component';
 import { RenameDialogComponent } from './file-explorer/modals/rename-dialog/rename-dialog.component';
 import { FilesService } from './files.service';
+import { FileSizePipe } from './filesize.pipe';
 
 @NgModule({
-  declarations: [FileExplorerComponent, NewFolderDialogComponent, RenameDialogComponent],
-  exports: [FileExplorerComponent],
-  providers: [FilesService],
+  declarations: [FileExplorerComponent, NewFolderDialogComponent, RenameDialogComponent, FileSizePipe],
+  exports: [FileExplorerComponent, FileSizePipe],
+  providers: [FilesService, DecimalPipe],
   imports: [
     CommonModule,
     SharedModule,
