@@ -1,10 +1,11 @@
 <mat-toolbar>
-  <mat-icon *ngIf="canNavigateUp" class="pointer" (click)="navigateUp()">
+  <mat-icon *ngIf="!preventNavigation && canNavigateUp" class="pointer" (click)="navigateUp()">
     arrow_back
   </mat-icon>
   <span style="margin-left: 8px"> {{ path || '/' }} </span>
   <span class="spacer"></span>
   <!-- TODO: dropdown -->
+  <!-- TODO: Replace with better icons? -->
   <mat-icon *ngIf="currentNav !== 'external_data'" class="pointer" (click)="openFileUploadDialog()">
     insert_drive_file
   </mat-icon>
@@ -38,7 +39,19 @@
         <td [title]="ele.name">{{ ele.name | truncate:100 }}</td>
         <td [title]="ele.updated">{{ ele.updated | date }}</td>
         <td class="right aligned" [title]="ele.size">{{ ele.size | fileSize }}</td>
-        <td class="center aligned"><i class="fas fa-caret-down"></i></td>
+        <td class="center aligned">
+          <div id="more-actions-{{ ele._id }}" class="ui inline file dropdown" (click)="openMenu($event, ele)">
+            <!--<div class="text">More</div>-->
+            <i class="dropdown icon"></i>
+            <div class="left menu" [ngStyle]="{ 'display': !showMore[ele._id] ? 'none' : 'block' }">
+              <div *ngIf="!readOnly" class="item" (click)="renameElement(ele)"><i class="fas fa-edit"></i> Rename</div>
+              <div *ngIf="!readOnly" class="item" (click)="removeElement(ele)"><i class="fas fa-trash"></i> Remove</div>
+              <div class="item" (click)="downloadElement(ele)"><i class="fas fa-download"></i> Download</div>
+              <div *ngIf="!readOnly" class="item" (click)="moveElement(ele)"><i class="fas fa-exchange-alt"></i> Move To...</div>
+              <div *ngIf="!readOnly" class="item" (click)="copyElement(ele)"><i class="fas fa-clone"></i> Copy To...</div>
+            </div>
+          </div>
+        </td>
       </tr>
     </tbody>
   </table>

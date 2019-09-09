@@ -7,6 +7,9 @@ import { FileElement } from '@files/models/file-element';
 import { NewFolderDialogComponent } from './modals/new-folder-dialog/new-folder-dialog.component';
 import { RenameDialogComponent } from './modals/rename-dialog/rename-dialog.component';
 
+// import * as $ from 'jquery';
+declare var $: any;
+
 // Mapping of file extension to the icon that should be displayed
 // See https://fontawesome.com/icons?d=listing&q=file-&s=solid
 const FILE_TYPES = {
@@ -71,6 +74,10 @@ const FILE_TYPES = {
 export class FileExplorerComponent implements OnInit {
   @ViewChild('file') file: any;
 
+  @Input() preventNavigation = false;
+  @Input() readOnly = false;
+  @Input() allowRoot = false;
+
   // List of folders/files in the current folder
   @Input() fileElements: Array<FileElement>;
 
@@ -91,13 +98,19 @@ export class FileExplorerComponent implements OnInit {
   @Output() fileUploadsAdded = new EventEmitter<{ files: { [key: string]: File } }>();
   @Output() elementRemoved = new EventEmitter<FileElement>();
   @Output() elementRenamed = new EventEmitter<FileElement>();
+  @Output() elementCopied = new EventEmitter<FileElement>();
+  @Output() elementDownloaded = new EventEmitter<FileElement>();
   @Output() elementMoved = new EventEmitter<{ element: FileElement; moveTo: FileElement }>();
   @Output() navigatedDown = new EventEmitter<FileElement>();
   @Output() navigatedUp = new EventEmitter();
 
+  showMore: any = {};
+
   constructor(public dialog: MatDialog, public fileService: FilesService) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    // $('.ui.file.dropdown').dropdown({ action: 'hide' });
+  }
 
   getIcon(element: FileElement) {
     if (element._modelType === 'folder' || element._modelType === 'dataset' || element._modelType === 'workspace') {
@@ -123,11 +136,32 @@ export class FileExplorerComponent implements OnInit {
     this.fileUploadsAdded.emit(this.file.nativeElement.files);
   }
 
-  deleteElement(element: FileElement) {
+  removeElement(element: FileElement) {
+    // Don't navigate if selecting a dropdown option
+    event.stopPropagation();
+
+    // TODO: Prompt for confirmation?
     this.elementRemoved.emit(element);
   }
 
+  downloadElement(element: FileElement) {
+    // Don't navigate if selecting a dropdown option
+    event.stopPropagation();
+
+    this.elementDownloaded.emit(element);
+  }
+
+  copyElement(element: FileElement) {
+    // Don't navigate if selecting a dropdown option
+    event.stopPropagation();
+
+    this.elementCopied.emit(element);
+  }
+
   navigate(element: FileElement) {
+    if (this.preventNavigation) {
+      return;
+    }
     if (element._modelType == 'folder') {
       this.navigatedDown.emit(element);
     }
@@ -138,6 +172,10 @@ export class FileExplorerComponent implements OnInit {
   }
 
   moveElement(element: FileElement, moveTo: FileElement) {
+    // Don't navigate if selecting a dropdown option
+    event.stopPropagation();
+
+    // TODO: Prompt user to select target folder?
     this.elementMoved.emit({ element, moveTo });
   }
 
@@ -151,7 +189,10 @@ export class FileExplorerComponent implements OnInit {
     });
   }
 
-  openRenameDialog(element: FileElement) {
+  renameElement(element: FileElement) {
+    // Don't navigate if selecting a dropdown option
+    event.stopPropagation();
+
     const dialogRef = this.dialog.open(RenameDialogComponent);
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
@@ -162,8 +203,20 @@ export class FileExplorerComponent implements OnInit {
     });
   }
 
-  openMenu(event: MouseEvent, element: FileElement, viewChild: MatMenuTrigger) {
-    event.preventDefault();
-    viewChild.openMenu();
+  closeMenus() {
+    this.showMore = {};
+  }
+
+  openMenu(event: MouseEvent, element: FileElement) {
+    // Don't navigate into folder if we're opening its dropdown
+    event.stopPropagation();
+
+    // If this wasn't the last menu opened, close any other open menus
+    if (!this.showMore[element._id]) {
+      this.closeMenus();
+    }
+
+    // Toggle the 'More Actions' dropdown menu of the clicked element
+    this.showMore[element._id] = !this.showMore[element._id];
   }
 }

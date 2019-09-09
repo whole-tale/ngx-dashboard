@@ -12,10 +12,13 @@ import { DatasetService } from '@api/services/dataset.service';
 import { WorkspaceService } from '@api/services/workspace.service';
 import { ResourceService } from '@api/services/resource.service';
 import { TokenService } from '@api/token.service';
+import { WindowService } from '@framework/core/window.service';
 
 import { Tale } from '@api/models/tale';
 
 import { TruncatePipe } from '@framework/core/truncate.pipe';
+
+const URL = window['webkitURL'] || window.URL;
 
 // TODO: Is there a better place to store these constants?
 const DATA_ROOT_PATH = '/collection/WholeTale Catalog/WholeTale Catalog';
@@ -30,6 +33,11 @@ enum ParentType {
     Folder = "folder",
     Collection = "collection",
     User = "user"
+}
+
+enum ContentDisposition {
+    Attachment = "attachment",
+    Inline = "inline"
 }
 
 @Component({
@@ -69,6 +77,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     private fileService: FileService,
     private tokenService: TokenService,
     private resourceService: ResourceService,
+    private window: WindowService,
     private truncate: TruncatePipe,
   ) {
     // Fetch Data root
@@ -102,7 +111,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
     const self = this;
     this.uploadQueue.forEach(upload => {
-      let url = window.URL.createObjectURL(upload);
+      let url = URL.createObjectURL(upload);
       fetch(url).then(resp => resp.arrayBuffer()).then(contents => {
         const params = {
           parentType: UploadType.Folder, 
@@ -172,6 +181,29 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       return;
     }
     switch (this.currentNav) {
+      case 'home':
+        this.placeholderMessage = 'Your home folder is empty. Add a folder or file using the (+) button at the top-right.';
+        const itemParams = { folderId: this.currentFolderId };
+        const folderParams = { parentId: this.currentFolderId, parentType: ParentType.Folder };
+        
+        // Fetch folders in the home folder
+        this.folders = [];
+        this.folderService.folderFind(folderParams)
+                          //.pipe(enterZone(this.zone))
+                          .subscribe(folders => {
+                            this.folders = folders;
+                            this.ref.detectChanges();
+                          });
+
+        // Fetch items in the home folder
+        this.files = [];
+        this.itemService.itemFind(itemParams)
+                        //.pipe(enterZone(this.zone))
+                        .subscribe(items => {
+                          this.files = items;
+                          this.ref.detectChanges();
+                        });
+        break;
       case 'external_data':
         // Set the placeholder to describe how to Register a Dataset with this Tale
         this.placeholderMessage = 'This Tale does not have any datasets registered. Register a dataset to see it listed here.';
@@ -373,16 +405,15 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   }
 
   removeElement(element: FileElement) {
-    if (this.folders.indexOf(element) !== -1) {
+    if (element._modelType === 'folder') {
       // Element is a folder, delete it 
-      let params = { id: element._id };
-      this.folderService.folderDeleteFolder(params).subscribe(resp => {
+      this.folderService.folderDeleteFolder({ id: element._id }).subscribe(resp => {
         console.log("Folder deleted successfully:", resp);
         const index = this.folders.indexOf(element);
         this.folders.splice(index, 1);
         this.ref.detectChanges();
       });
-    } else if (this.files.indexOf(element) !== -1) {
+    } else if (element._modelType === 'item') {
       // Element is an item, delete it
       this.itemService.itemDeleteItem(element._id).subscribe(resp => {
         console.log("Item deleted successfully:", resp);
@@ -397,13 +428,13 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     const src = event.element;
     const dest = event.moveTo;
     const params = { id: src._id, parentId: dest._id };
-    if (this.folders.indexOf(src) !== -1) {
+    if (src._modelType === 'folder') {
       // Element is a folder, move it 
       this.folderService.folderUpdateFolder(params).subscribe(resp => {
         console.log("Folder moved successfully:", resp);
         this.ref.detectChanges();
       });
-    } else if (this.files.indexOf(src) !== -1) {
+    } else if (src._modelType === 'item') {
       // Element is an item, move it
       this.itemService.itemUpdateItem(params).subscribe(resp => {
         console.log("Item moved successfully:", resp);
@@ -414,7 +445,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
   renameElement(element: FileElement) {
     const params = { id: element._id, name: element.name };
-    if (this.folders.indexOf(element) !== -1) {
+    if (element._modelType === 'folder') {
       // Element is a folder, move it 
       this.folderService.folderUpdateFolder(params).subscribe(resp => {
         console.log("Folder renamed successfully:", resp);
@@ -422,7 +453,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         this.folders[index] = resp;
         this.ref.detectChanges();
       });
-    } else if (this.files.indexOf(element) !== -1) {
+    } else if (element._modelType === 'item') {
       // Element is an item, move it
       this.itemService.itemUpdateItem(params).subscribe(resp => {
         console.log("Item renamed successfully:", resp);
@@ -434,14 +465,15 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   }
 
   copyElement(element: FileElement) {
+    // FIXME: Does not work for copied files, e.g. "apt.txt (2)"
     const params = { id: element._id };
-    if (this.folders.indexOf(element) !== -1) {
+    if (element._modelType === 'folder') {
       this.folderService.folderCopyFolder(params).subscribe(resp => {
         console.log("Folder copied successfully:", resp);
         this.folders.push(resp);
         this.ref.detectChanges();
       });
-    } else {
+    } else if (element._modelType === 'item') {
       this.itemService.itemCopyItem(params).subscribe(resp => {
         console.log("Item copied successfully:", resp);
         this.files.push(resp);
@@ -451,15 +483,12 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   }
 
   downloadElement(element: FileElement) {
-    const params = { id: element._id };
-    if (this.folders.indexOf(element) !== -1) {
-      this.folderService.folderDownloadFolder(params).subscribe(resp => {
-        console.log("Folder downloaded successfully:", resp);
-      });
-    } else {
-      this.itemService.itemDownload(params).subscribe(resp => {
-        console.log("Item downloaded successfully:", resp);
-      });
+    if (element._modelType === 'folder') {
+      const url = `${this.folderService.rootUrl}/${FolderService.folderDownloadFolderPath.replace('{id}', element._id)}?contentDisposition=attachment`;
+      window.open(url, "_blank");
+    } else if (element._modelType === 'item') {
+      const url = `${this.itemService.rootUrl}/${ItemService.itemDownloadPath.replace('{id}', element._id)}?contentDisposition=attachment`;
+      window.open(url, "_blank");
     }
   }
 
