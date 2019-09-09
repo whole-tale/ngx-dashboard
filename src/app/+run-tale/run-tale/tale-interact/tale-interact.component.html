@@ -6,7 +6,7 @@
     <a class="ui button primary" href="tale.instance.url" target="_blank">Click here to comply</a>
 </div>
 -->
-<div class="ui stretched stackable grid">
+<div class="ui stretched stackable grid" id="tale-interact-container">
   <div class="sixteen wide column" *ngIf="instance">
     <iframe height="500px" width="100%" [src]="instance.url" *ngIf="instance && instance.url"></iframe>
   </div>
