@@ -12,11 +12,12 @@
 
   z-index: z(splash_screen);
   display: block;
-  background: mat-color($primary--dark);
+  //background: mat-color($primary--dark);
+  background: rgb(19, 47, 67);
 }
 
 .splash_screen {
-  @include absolute(50%  null null 50%);
+  @include absolute(50% null null 50%);
   @include font(#{$h1}/#{rem(9.6)} $font--preferred, c(white));
 
   display: block;
