@@ -1,6 +1,5 @@
 import { Component, NgZone, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-
 import { Tale } from '@api/models/tale';
 import { Image } from '@api/models/image';
 import { ImageService } from '@api/services/image.service';
@@ -27,11 +26,11 @@ export class CreateTaleModalComponent implements OnInit {
     };
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.parseParameters();
   }
 
-  parseParameters() {
+  parseParameters(): void {
     // TODO: "Analyze in WT" case - Parse querystring to pre-populate dataSet/imageId/title
     this.zone.run(() => {
       $('.ui.dropdown').dropdown();
@@ -45,7 +44,7 @@ export class CreateTaleModalComponent implements OnInit {
     }
 
     // Fetch all Tale environment Images
-    let listImagesParams = {};
+    const listImagesParams = {};
     this.imageService.imageListImages(listImagesParams).subscribe(images => {
       this.zone.run(() => {
         this.environments = images;
@@ -53,7 +52,7 @@ export class CreateTaleModalComponent implements OnInit {
         // If user specified an environment as a parameter, select it by default
         if (this.data && this.data.params && this.data.params.environment) {
           // Search for matching name
-          let match = this.environments.find(env => env.name === this.data.params.environment);
+          const match = this.environments.find(env => env.name === this.data.params.environment);
           if (match) {
             // If found, select it in the dropdown
             this.newTale.imageId = match._id;

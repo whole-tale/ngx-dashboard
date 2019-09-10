@@ -3,10 +3,10 @@ import { ErrorHandler, NgModule } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 
+import { ErrorModalComponent } from './error-modal/error-modal.component';
 import { GlobalErrorHandler } from './global-error.handler';
 import { ServerErrorInterceptor } from './server-error.interceptor';
 
-import { ErrorModalComponent } from './error-modal/error-modal.component';
 import { ErrorService } from './services/error.service';
 import { LoggingService } from './services/logging.service';
 

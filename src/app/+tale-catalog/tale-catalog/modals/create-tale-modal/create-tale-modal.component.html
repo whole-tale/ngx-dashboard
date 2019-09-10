@@ -7,21 +7,8 @@
       <input matInput type="text" name="tale-name" placeholder="Enter a Tale Name" [(ngModel)]="newTale.title" required />
     </div>
 
-    <!-- TODO: dropdown -->
     <div class="field">
-      <!-- <input matInput type="text" name="tale-env" placeholder="Compute Environment" [(ngModel)]="tale.imageId" required />-->
       <label>Compute Environment</label>
-      <!-- <div class="ui fluid dropdown selection">
-        <input type="hidden" name="imageId" [(ngModel)]="newTale.imageId" required />
-        <div class="default text">Select a Compute Environment</div>
-        <i class="dropdown icon"></i>
-        <div class="menu">
-          <div class="item" *ngFor="let env of environments; index as i; trackBy: trackById" (click)="newTale.imageId = env._id">
-            <img class="ui avatar image" [src]="env.icon">
-            {{ env.name }}
-          </div>
-        </div>
-      </div> -->
       <select class="ui dropdown" name="imageId" [(ngModel)]="newTale.imageId" required>
         <option value="">Choose a Compute Environment...</option>
         <option class="item" [ngValue]="env._id" *ngFor="let env of environments; index as i; trackBy: trackById">

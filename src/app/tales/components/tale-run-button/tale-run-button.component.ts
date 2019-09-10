@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, NgZone, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, NgZone, Output } from '@angular/core';
 import { MatDialog } from '@angular/material';
 
 import { Tale } from '@api/models/tale';
@@ -15,7 +15,7 @@ import { CopyOnLaunchModalComponent } from '@tales/components/modals/copy-on-lau
   templateUrl: './tale-run-button.component.html',
   styleUrls: ['./tale-run-button.component.scss']
 })
-export class TaleRunButtonComponent implements OnInit {
+export class TaleRunButtonComponent {
   @Input() instance: Instance;
   @Input() tale: Tale;
 
@@ -27,8 +27,6 @@ export class TaleRunButtonComponent implements OnInit {
     private readonly taleService: TaleService,
     private readonly instanceService: InstanceService
   ) {}
-
-  ngOnInit() {}
 
   startTale() {
     /* MOCK DATA:

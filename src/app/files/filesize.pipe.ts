@@ -5,11 +5,6 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class FileSizePipe implements PipeTransform {
   constructor(private readonly decimal: DecimalPipe) {}
 
-  round_to_precision(x: number, precision: number = null) {
-    const y = +x + (!precision ? 0.5 : precision / 2);
-    return y - (y % (!precision ? 1 : +precision));
-  }
-
   transform(value: number): string {
     if (!value) {
       return '';
@@ -22,9 +17,6 @@ export class FileSizePipe implements PipeTransform {
       magnitude++;
       val /= 1024;
     }
-
-    // Round to the nearest hundreth
-    // val = this.round_to_precision(val, 0.01);
 
     // Assign label based on how many times we divided
     switch (magnitude) {

@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, NgZone, Component, AfterViewInit, Output, EventEmitter } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { BaseComponent } from '~/app/framework/core';
-import { routeAnimation } from '~/app/shared';
-
+import { ActivatedRoute, Router } from '@angular/router';
 import { Tale } from '@api/models/tale';
 import { TaleService } from '@api/services/tale.service';
+import { BaseComponent } from '@framework/core';
+
+import { routeAnimation } from '~/app/shared';
 
 import { CreateTaleModalComponent } from './modals/create-tale-modal/create-tale-modal.component';
 
@@ -52,7 +52,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
             });
             dialogRef.afterClosed().subscribe(tale => {
               // TODO: "Analyze in WT" case
-              let params = {
+              const params = {
                 url: queryParams.uri ? queryParams.uri : '', // Pull from querystring
                 imageId: tale.imageId, // Pull from user input
                 //asTale: true, // Pull from querystring?
