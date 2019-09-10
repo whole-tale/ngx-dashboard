@@ -19,7 +19,7 @@
   <div class="twelve wide stretched column">
     <div class="ui segment">
       <file-explorer id="tale-files-browser"
-        [fileElements]="folders.concat(files)"
+        [fileElements]="(folders | async).concat(files | async)"
         [path]="currentPath"
         [placeholderMessage]="placeholderMessage"
         [preventNavigation]="isNavActive('external_data')"

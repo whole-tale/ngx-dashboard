@@ -1,4 +1,6 @@
-import { Component, OnChanges, OnInit, Input, ChangeDetectorRef } from '@angular/core';
+import { Component, OnChanges, OnInit, Input, ChangeDetectorRef, NgZone } from '@angular/core';
+import { Observable } from 'rxjs';
+import { enterZone } from '@framework/ngrx/enter-zone.operator';
 
 import { Tale } from '@api/models/tale';
 import { User } from '@api/models/user';
@@ -9,6 +11,9 @@ import { TaleAuthor } from '@tales/models/tale-author';
 import { ImageService } from '@api/services/image.service';
 import { TaleService } from '@api/services/tale.service';
 
+// import * as $ from 'jquery';
+declare var $: any;
+
 @Component({
   selector: 'tale-metadata',
   templateUrl: './tale-metadata.component.html',
@@ -17,31 +22,32 @@ import { TaleService } from '@api/services/tale.service';
 export class TaleMetadataComponent implements OnChanges, OnInit {
   @Input() tale: Tale;
   @Input() creator: User;
-  environment: Image;
 
+  environments: Observable<Array<Image>>;
+  environment: Image;
   newAuthor: TaleAuthor;
 
   // Edit mode
   _previousState: Tale;
-  editing: boolean = false;
+  editing = false;
 
-  constructor(private ref: ChangeDetectorRef, private taleService: TaleService, private imageService: ImageService) { }
+  constructor(private ref: ChangeDetectorRef,
+              private zone: NgZone,
+              private taleService: TaleService,
+              private imageService: ImageService) {
+    this.resetNewAuthor();
+  }
 
   ngOnInit() {
-    this.newAuthor = {
-      firstName: '',
-      lastName: '',
-      orcid: ''
-    };
+    const params = {};
+    this.environments = this.imageService.imageListImages(params);
+    $('.ui.dropdown').dropdown();
   }
 
   ngOnChanges() {
     if (this.tale) {
-      this.imageService.imageGetImage(this.tale.imageId).subscribe(image => {
-        this.environment = image;
-        this.ref.detectChanges();
-      }, err => {
-        console.error(`Failed to pull imageId=${this.tale.imageId} for taleId=${this.tale._id}`, err);
+      this.imageService.imageGetImage(this.tale.imageId).subscribe(env => {
+        this.zone.run(() => { this.environment = env; });
       });
     }
   }
@@ -61,10 +67,13 @@ export class TaleMetadataComponent implements OnChanges, OnInit {
   }
 
   saveTaleEdit() {
-    let params = { id: this.tale._id , tale: this.tale };
-    this.taleService.taleUpdateTale(params).subscribe(res => {
+    const params = { id: this.tale._id , tale: this.tale };
+    this.taleService.taleUpdateTale(params)
+                    .subscribe(res => {
       console.log("Successfully saved tale state:", this.tale);
-      this.editing = false;
+      this.zone.run(() => {
+        this.editing = false;
+      });
     }, err => {
       console.error("Failed updating tale:", err);
     });
@@ -77,10 +86,19 @@ export class TaleMetadataComponent implements OnChanges, OnInit {
 
   addAuthor(author: TaleAuthor) {
     this.tale.authors.push(author);
+    this.resetNewAuthor();
   }
 
   removeAuthor(author: TaleAuthor) {
-    let index = this.tale.authors.indexOf(author);
+    const index = this.tale.authors.indexOf(author);
     this.tale.authors.splice(index, 1);
+  }
+
+  resetNewAuthor() {
+    this.newAuthor = {
+      firstName: '',
+      lastName: '',
+      orcid: ''
+    };
   }
 }

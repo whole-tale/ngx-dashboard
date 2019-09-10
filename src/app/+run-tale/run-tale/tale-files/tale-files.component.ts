@@ -1,7 +1,8 @@
-import { ViewChild, Component, OnInit, Input, OnChanges, ChangeDetectorRef } from '@angular/core';
+import { ViewChild, Component, OnInit, Input, OnChanges, ChangeDetectorRef, NgZone } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
 
-//import { enterZone } from '@framework/ngrx/enter-zone.operator';
+import { enterZone } from '@framework/ngrx/enter-zone.operator';
 
 import { FileElement } from '@files/models/file-element';
 import { FolderService } from '@api/services/folder.service';
@@ -54,8 +55,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   dataRoot: FileElement;
   wsRoot: FileElement;
   
-  folders: FileElement[] = [];
-  files: FileElement[] = [];
+  folders: BehaviorSubject<FileElement[]> = new BehaviorSubject<FileElement[]>([]);
+  files: BehaviorSubject<FileElement[]> = new BehaviorSubject<FileElement[]>([]);
   currentFolderId: string;
 
   placeholderMessage: string;
@@ -67,6 +68,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
   constructor(
     private ref: ChangeDetectorRef,
+    private zone: NgZone,
     private router: Router,
     private route: ActivatedRoute,
     private folderService: FolderService,
@@ -82,13 +84,17 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   ) {
     // Fetch Data root
     const dataRootParams = { test: false, path: DATA_ROOT_PATH };
-    this.resourceService.resourceLookup(dataRootParams).subscribe(resource => {
+    this.resourceService.resourceLookup(dataRootParams)
+                        .pipe(enterZone(this.zone))
+                        .subscribe(resource => {
       this.dataRoot = resource;
     });
 
     // Fetch Workspace root
     const wsRootParams = { test: false, path: WORKSPACES_ROOT_PATH };
-    this.resourceService.resourceLookup(wsRootParams).subscribe(resource => {
+    this.resourceService.resourceLookup(wsRootParams)
+                        .pipe(enterZone(this.zone))
+                        .subscribe(resource => {
       this.wsRoot = resource;
     });
   }
@@ -125,8 +131,10 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         self.fileService.fileInitUpload(params).subscribe((initResp: any) => {
           console.log(`Uploading chunks for ${params.name}:`, initResp);
           const offset = 0;
-          self.files.push(initResp);
-          self.ref.detectChanges();
+          let files = self.files.value;
+          files.push(initResp);
+          self.files.next(files);
+          //self.ref.detectChanges();
 
           // Create a URL to the file blob and start the upload
           const chunkParams = { uploadId: initResp._id, offset, chunk: contents };
@@ -135,10 +143,12 @@ export class TaleFilesComponent implements OnInit, OnChanges {
             if (chunkResp.size === upload.size) {
               console.log("Upload complete: ", chunkResp.name);
             }
-            let existing = self.files.find(file => file._id === chunkResp._id);
-            let index = self.files.indexOf(existing);
-            self.files[index] = chunkResp;
-            self.ref.detectChanges();
+            let files = self.files.value;
+            let existing = files.find(file => file._id === chunkResp._id);
+            let index = files.indexOf(existing);
+            files[index] = chunkResp;
+            self.files.next(files);
+            //self.ref.detectChanges();
           });
         });
       });
@@ -146,6 +156,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   }
 
   load() {
+    const self = this;
     if (this.currentFolderId) {
       if (this.currentNav === 'external_data') {
         // Set the placeholder to describe how to Create Folder or Upload File
@@ -160,21 +171,21 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       const folderParams = { parentId: this.currentFolderId, parentType: ParentType.Folder };
 
       // FIXME: GET /folders/:id doesn't return full models for files/folders
-      this.folders = [];
+      //this.folders = [];
       this.folderService.folderFind(folderParams)
-                        //.pipe(enterZone(this.zone))
+                        .pipe(enterZone(this.zone))
                         .subscribe(folders => {
-                          this.folders = folders;
-                          this.ref.detectChanges();
+                          this.folders.next(folders);
+                          //this.ref.detectChanges();
                         });
 
       // FIXME: GET /folders/:id doesn't return full models for files/folders
-      this.files = [];
+      //this.files = [];
       this.itemService.itemFind(itemParams)
-                      //.pipe(enterZone(this.zone))
+                      .pipe(enterZone(this.zone))
                       .subscribe(items => {
-                        this.files = items;
-                        this.ref.detectChanges();
+                        this.files.next(items);
+                        //this.ref.detectChanges();
                       });
 
       //this.setCurrentRoot(folderId);
@@ -187,21 +198,21 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         const folderParams = { parentId: this.currentFolderId, parentType: ParentType.Folder };
         
         // Fetch folders in the home folder
-        this.folders = [];
+        //this.folders = [];
         this.folderService.folderFind(folderParams)
-                          //.pipe(enterZone(this.zone))
-                          .subscribe(folders => {
-                            this.folders = folders;
-                            this.ref.detectChanges();
-                          });
+                        .pipe(enterZone(this.zone))
+                        .subscribe(folders => {
+                          this.folders.next(folders);
+                          //this.ref.detectChanges();
+                        });
 
         // Fetch items in the home folder
-        this.files = [];
+        //this.files = [];
         this.itemService.itemFind(itemParams)
-                        //.pipe(enterZone(this.zone))
+                        .pipe(enterZone(this.zone))
                         .subscribe(items => {
-                          this.files = items;
-                          this.ref.detectChanges();
+                          this.files.next(items);
+                          //this.ref.detectChanges();
                         });
         break;
       case 'external_data':
@@ -209,11 +220,11 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         this.placeholderMessage = 'This Tale does not have any datasets registered. Register a dataset to see it listed here.';
 
         // Fetch registered datasets
-        this.files = [];
-        this.folders = [];
+        //this.files = [];
+        //this.folders = [];
         const params = { myData: false };
         this.datasetService.datasetListDatasets(params)
-                           //.pipe(enterZone(this.zone))
+                           .pipe(enterZone(this.zone))
                            .subscribe((value: FileElement[]) => {
           const matches: FileElement[] = [];
           this.tale.dataSet.forEach(mount => {
@@ -222,9 +233,11 @@ export class TaleFilesComponent implements OnInit, OnChanges {
               matches.push(match);
             }
           });
-          this.folders = matches;
-          this.files = [];
-          this.ref.detectChanges();
+          this.zone.run(() => {
+            self.folders.next(matches);
+            self.files.next([]);
+          });
+          //this.ref.detectChanges();
         });
         
         this.currentRoot = null;
@@ -245,21 +258,21 @@ export class TaleFilesComponent implements OnInit, OnChanges {
           const folderParams = { parentId: this.currentFolderId, parentType: ParentType.Folder };
 
           // Fetch folders in the workspace
-          this.folders = [];
+          //this.folders = [];
           this.folderService.folderFind(folderParams)
                             //.pipe(enterZone(this.zone))
                             .subscribe(folders => {
-                              this.folders = folders;
-                              this.ref.detectChanges();
+                              this.zone.run(() => { self.folders.next(folders); });
+                              //this.ref.detectChanges();
                             });
 
           // Fetch items in the workspace
-          this.files = [];
+          //this.files = [];
           this.itemService.itemFind(itemParams)
                           //.pipe(enterZone(this.zone))
                           .subscribe(items => {
-                            this.files = items;
-                            this.ref.detectChanges();
+                            this.zone.run(() => { this.files.next(items); });
+                            //this.ref.detectChanges();
                           });
 
           this.currentRoot = null;
@@ -316,12 +329,14 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   setCurrentPath() {
     // Then set the current path
     let params = { id: this.currentRoot._id, type: this.currentRoot._modelType };
-    this.resourceService.resourcePath(params).subscribe((resp: string) => {
+    this.resourceService.resourcePath(params)
+                        .pipe(enterZone(this.zone))
+                        .subscribe((resp: string) => {
       if (this.currentNav === 'external_data') {
         if (resp.indexOf(DATA_ROOT_PATH) !== -1) {
           let pathSuffix = resp.split(DATA_ROOT_PATH)[1];
           this.currentPath = this.truncatePathSegments(pathSuffix);
-          this.ref.detectChanges();
+          //this.ref.detectChanges();
         } else {
           console.error("Error: malformed resource path encountered... aborting:", resp);
         }
@@ -329,7 +344,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         if (resp.indexOf(this.taleId) !== -1) {
           let pathSuffix = resp.split(this.taleId)[1];
           this.currentPath = this.truncatePathSegments(pathSuffix);
-          this.ref.detectChanges();
+          //this.ref.detectChanges();
         } else {
           console.error("Error: malformed resource path encountered... aborting:", resp);
         }
@@ -343,26 +358,26 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       switch (modelType) {
         case 'folder':
           this.folderService.folderGetFolder(resourceId)
-                            //.pipe(enterZone(this.zone))
+                            .pipe(enterZone(this.zone))
                             .subscribe(folder => {
             this.currentRoot = folder;
             this.currentFolderId = this.currentRoot._id;
             this.canNavigateUp = this.currentRoot ? true : false;
             console.log(`currentRoot is now: ${this.currentRoot.name}`);
             this.setCurrentPath();
-            this.ref.detectChanges();
+            //this.ref.detectChanges();
           });
           break;
         case 'collection':
           this.collectionService.collectionGetCollection(resourceId)
-                                //.pipe(enterZone(this.zone))
+                                .pipe(enterZone(this.zone))
                                 .subscribe(collection => {
             this.currentRoot = collection;
             this.currentFolderId = this.currentRoot._id;
             this.canNavigateUp = this.currentRoot ? true : false;
             console.log(`currentRoot is now: ${this.currentRoot.name}`);
             this.setCurrentPath();
-            this.ref.detectChanges();
+            //this.ref.detectChanges();
           });
           break;
         default:
@@ -398,28 +413,40 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       description: ""
     };
 
-    this.folderService.folderCreateFolder(params).subscribe(newFolder => {
-      this.folders.push(newFolder);
-      this.ref.detectChanges();
+    this.folderService.folderCreateFolder(params)
+                      .pipe(enterZone(this.zone))
+                      .subscribe(newFolder => {
+      let folders = this.folders.value;
+      folders.push(newFolder);
+      this.folders.next(folders);
+      //this.ref.detectChanges();
     });
   }
 
   removeElement(element: FileElement) {
     if (element._modelType === 'folder') {
       // Element is a folder, delete it 
-      this.folderService.folderDeleteFolder({ id: element._id }).subscribe(resp => {
+      this.folderService.folderDeleteFolder({ id: element._id })
+                        .pipe(enterZone(this.zone))
+                        .subscribe(resp => {
         console.log("Folder deleted successfully:", resp);
-        const index = this.folders.indexOf(element);
-        this.folders.splice(index, 1);
-        this.ref.detectChanges();
+        let folders = this.folders.value;
+        const index = folders.indexOf(element);
+        folders.splice(index, 1);
+        this.folders.next(folders);
+        //this.ref.detectChanges();
       });
     } else if (element._modelType === 'item') {
       // Element is an item, delete it
-      this.itemService.itemDeleteItem(element._id).subscribe(resp => {
+      this.itemService.itemDeleteItem(element._id)
+                      .pipe(enterZone(this.zone))
+                      .subscribe(resp => {
         console.log("Item deleted successfully:", resp);
-        const index = this.files.indexOf(element);
-        this.files.splice(index, 1);
-        this.ref.detectChanges();
+        let files = this.files.value;
+        const index = files.indexOf(element);
+        files.splice(index, 1);
+        this.files.next(files);
+        //this.ref.detectChanges();
       });
     }
   }
@@ -430,15 +457,19 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     const params = { id: src._id, parentId: dest._id };
     if (src._modelType === 'folder') {
       // Element is a folder, move it 
-      this.folderService.folderUpdateFolder(params).subscribe(resp => {
+      this.folderService.folderUpdateFolder(params)
+                        .pipe(enterZone(this.zone))
+                        .subscribe(resp => {
         console.log("Folder moved successfully:", resp);
-        this.ref.detectChanges();
+        //this.ref.detectChanges();
       });
     } else if (src._modelType === 'item') {
       // Element is an item, move it
-      this.itemService.itemUpdateItem(params).subscribe(resp => {
+      this.itemService.itemUpdateItem(params)
+                      .pipe(enterZone(this.zone))
+                      .subscribe(resp => {
         console.log("Item moved successfully:", resp);
-        this.ref.detectChanges();
+        //this.ref.detectChanges();
       });
     }
   }
@@ -447,37 +478,52 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     const params = { id: element._id, name: element.name };
     if (element._modelType === 'folder') {
       // Element is a folder, move it 
-      this.folderService.folderUpdateFolder(params).subscribe(resp => {
+      this.folderService.folderUpdateFolder(params)
+                        .pipe(enterZone(this.zone))
+                        .subscribe(resp => {
         console.log("Folder renamed successfully:", resp);
-        const index = this.folders.indexOf(element);
-        this.folders[index] = resp;
-        this.ref.detectChanges();
+        let folders =  this.folders.value;
+        const index = folders.indexOf(element);
+        folders[index] = resp;
+        this.folders.next(folders);
+        //this.ref.detectChanges();
       });
     } else if (element._modelType === 'item') {
       // Element is an item, move it
-      this.itemService.itemUpdateItem(params).subscribe(resp => {
+      this.itemService.itemUpdateItem(params)
+                      .pipe(enterZone(this.zone))
+                      .subscribe(resp => {
         console.log("Item renamed successfully:", resp);
-        const index = this.files.indexOf(element);
-        this.files[index] = resp;
-        this.ref.detectChanges();
+        let files = this.files.value;
+        const index = files.indexOf(element);
+        files[index] = resp;
+        this.files.next(files);
+        //this.ref.detectChanges();
       });
     }
   }
 
   copyElement(element: FileElement) {
-    // FIXME: Does not work for copied files, e.g. "apt.txt (2)"
     const params = { id: element._id };
     if (element._modelType === 'folder') {
-      this.folderService.folderCopyFolder(params).subscribe(resp => {
+      this.folderService.folderCopyFolder(params)
+                        .pipe(enterZone(this.zone))
+                        .subscribe(resp => {
         console.log("Folder copied successfully:", resp);
-        this.folders.push(resp);
-        this.ref.detectChanges();
+        let folders = this.folders.value;
+        folders.push(resp);
+        this.folders.next(folders);
+        //this.ref.detectChanges();
       });
     } else if (element._modelType === 'item') {
-      this.itemService.itemCopyItem(params).subscribe(resp => {
+      this.itemService.itemCopyItem(params)
+                      .pipe(enterZone(this.zone))
+                      .subscribe(resp => {
         console.log("Item copied successfully:", resp);
-        this.files.push(resp);
-        this.ref.detectChanges();
+        let files = this.files.value;
+        files.push(resp);
+        this.files.next(files);
+        //this.ref.detectChanges();
       });
     }
   }
@@ -514,10 +560,6 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       });
       this.canNavigateUp = false;
     }
-  }
-
-  navigateUpToFolder(folderName: string) {
-
   }
 
   // TODO: Parameterize to make path clickable?

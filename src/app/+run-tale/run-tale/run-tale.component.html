@@ -73,7 +73,7 @@
                     <div class="wt-panel-body" style="padding-bottom:40px" [ngSwitch]="currentTab">
                         <!--<router-outlet></router-outlet>-->
                         <div *ngSwitchCase="'interact'">
-                          <tale-interact [tale]="tale"></tale-interact>
+                          <tale-interact [tale]="tale" [instance]="instance"></tale-interact>
                         </div>
 
                         <div *ngSwitchCase="'files'">

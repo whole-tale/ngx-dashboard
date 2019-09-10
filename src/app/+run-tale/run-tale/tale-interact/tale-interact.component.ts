@@ -1,6 +1,5 @@
-import { Component, OnChanges, Input, ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Component, OnChanges, Input, ChangeDetectorRef, NgZone } from '@angular/core';
+import { enterZone } from '@framework/ngrx/enter-zone.operator';
 
 import { InstanceService } from '@api/services/instance.service';
 import { Instance } from '@api/models/instance';
@@ -13,19 +12,24 @@ import { Tale } from '@api/models/tale';
 })
 export class TaleInteractComponent implements OnChanges {
   @Input() tale: Tale;
-  instance: Instance;
+  @Input() instance: Instance;
 
-  instanceSubscription: Subscription;
-
-  constructor(private ref: ChangeDetectorRef, private route: ActivatedRoute, private instanceService: InstanceService) {  }
+  constructor(private ref: ChangeDetectorRef,
+              private zone: NgZone,
+              private instanceService: InstanceService) {  }
 
   ngOnChanges(): void {
     if (this.tale) {
-      this.instanceService.instanceGetInstance(this.tale._id).subscribe(instance => {
-        this.instance = instance;
-        this.ref.detectChanges();
+      const params = { taleId: this.tale._id };
+      this.instanceService.instanceListInstances(params)
+                          .pipe(enterZone(this.zone))
+                          .subscribe((instances: Instance[]) => {
+        if (instances && instances.length) {
+          this.instance = instances[0];
+          //this.ref.detectChanges();
+        }
       }, err => {
-        console.error(`Failed to pull instance for taleId=${this.tale._id}`, err);
+        console.error(`Error: Failed to fetch instances for taleId=${this.tale._id}`, err);
       });
     }
   }

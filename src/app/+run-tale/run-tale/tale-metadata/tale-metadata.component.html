@@ -62,9 +62,13 @@
           <input type="text" name="license" placeholder="License is required." [(ngModel)]="tale.licenseSPDY" required>
         </div>
         <div class="field">
-          <label>Environment</label>
-          <!-- TODO: dropdown -->
-          <input type="text" name="imageId" placeholder="Environment is required." [(ngModel)]="tale.imageId" required>
+          <label>Compute Environment</label>
+          <select class="ui floating labeled icon selection dropdown" name="imageId" [(ngModel)]="tale.imageId" required>
+            <option class="item" [ngValue]="env._id" *ngFor="let env of (environments | async); index as i; trackBy: trackById">
+              <img class="ui avatar image" [src]="env.icon | safe:'url'" />
+              {{ env.name }}
+            </option>
+          </select>
         </div>
       </form>
 
@@ -113,7 +117,7 @@
             </div>
             <div class="item" *ngIf="environment">
               <b>Environment:</b>
-              <img *ngIf="tale.icon" class="ui image" [src]="tale.icon" style="height:1.5em; margin:0 .4em; display: inline-block">
+              <img *ngIf="tale.icon" class="ui image" [src]="tale.icon | safe:'url'" style="height:1.5em; margin:0 .4em; display: inline-block">
               {{ environment.name }}
             </div>
             <div class="item">
@@ -131,7 +135,7 @@
     </div>
 
     <div class="ui six wide column">
-      <img class="ui image img-responsive" [src]="tale.illustration" *ngIf="tale.illustration">
+      <img class="ui image img-responsive" [src]="tale.illustration | safe:'url'" *ngIf="tale.illustration">
     </div>
   </div>
   <div class="row">

@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnChanges } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnChanges, NgZone } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BaseComponent } from '~/app/framework/core';
 import { routeAnimation } from '~/app/shared';
 
+import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { WindowService } from '@framework/core/window.service';
 
 import { InstanceService } from '@api/services/instance.service';
@@ -27,7 +28,6 @@ enum TaleExportFormat {
 @Component({
     templateUrl: './run-tale.component.html',
     styleUrls: ['./run-tale.component.scss'],
-    //changeDetection: ChangeDetectionStrategy.OnPush,
     animations: [routeAnimation]
 })
 export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges {
@@ -39,6 +39,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
     constructor(
       private ref: ChangeDetectorRef,
+      private zone: NgZone,
       private route: ActivatedRoute,
       private router: Router,
       private windowService: WindowService,
@@ -88,15 +89,20 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         return;
       }
       console.log(`Fetching tale with _id=${this.taleId}`);
-      this.taleService.taleGetTale(this.taleId).subscribe(tale => {
+      this.taleService.taleGetTale(this.taleId)
+                      //.pipe(enterZone(this.zone))
+                      .subscribe(tale => {
         if (!tale) {
           console.error("Tale is null, something went horribly wrong:", tale);
           return;
         }
-
+        
         this.tale = tale;
-        this.userService.userGetUser(this.tale.creatorId).subscribe(creator => {
-          console.log("Fetched tale:", this.tale);
+        console.log("Fetched tale:", this.tale);
+
+        this.userService.userGetUser(this.tale.creatorId)
+                      //.pipe(enterZone(this.zone))
+                      .subscribe(creator => {
           this.creator = creator;
           console.log("Fetched creator:", this.creator);
           this.ref.detectChanges();
@@ -121,6 +127,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     }
 
     ngOnChanges() {
+      this.detectTaleId();
       this.detectCurrentTab();
     }
 

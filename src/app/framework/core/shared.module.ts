@@ -4,6 +4,7 @@ import { FlexLayoutModule, LAYOUT_CONFIG } from '@angular/flex-layout';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
+import { SafePipe } from '@framework/core/safe.pipe';
 import { TruncatePipe } from '@framework/core/truncate.pipe';
 
 export const APP_LAYOUT_CONFIG = {
@@ -16,8 +17,8 @@ export const APP_LAYOUT_CONFIG = {
 };
 
 @NgModule({
-  declarations: [TruncatePipe],
-  exports: [CommonModule, FormsModule, FlexLayoutModule, TranslateModule, TruncatePipe],
+  declarations: [TruncatePipe, SafePipe],
+  exports: [CommonModule, FormsModule, FlexLayoutModule, TranslateModule, TruncatePipe, SafePipe],
   providers: [
     {
       provide: LAYOUT_CONFIG,
