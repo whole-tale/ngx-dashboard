@@ -1,6 +1,6 @@
 import { BaseDocument } from '~/app/framework/ngrx';
 
-export interface IFileElement extends BaseDocument {
+export interface FileElement extends BaseDocument {
   // present on all of folders, items, collections, and datasets
   _id: string;
   _modelType: string;
@@ -32,7 +32,7 @@ export interface IFileElement extends BaseDocument {
   provider: string;
 }
 
-export class FileElement implements IFileElement {
+export class FileElement implements FileElement {
   // present on all of folders, items, collections, and datasets
   _id: string;
   _modelType: string;
@@ -43,10 +43,10 @@ export class FileElement implements IFileElement {
   updated: Date = new Date();
 
   // present only on folders, items, and datasets
-  creatorId: string = null;
+  creatorId: string;
 
   // present only on folders and items
-  baseParentId: string = null;
+  baseParentId: string;
   baseParentType = 'user';
 
   // folders and collections only
@@ -55,11 +55,11 @@ export class FileElement implements IFileElement {
 
   // folders only
   parentCollection = 'folder';
-  parentId?: string = null;
+  parentId?: string;
 
   // items only
-  folderId: string = null;
+  folderId: string;
 
   // datasets only
-  provider: string = null;
+  provider: string;
 }

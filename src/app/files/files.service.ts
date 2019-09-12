@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-
 import { FileElement } from '@files/models/file-element';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { v4 } from 'uuid';
 
-interface IFileService {
+interface FileService {
   add(fileElement: FileElement): FileElement;
   delete(id: string): void;
   update(id: string, update: Partial<FileElement>): void;
@@ -15,7 +14,7 @@ interface IFileService {
 @Injectable({
   providedIn: 'root'
 })
-export class FilesService implements IFileService {
+export class FilesService implements FileService {
   private readonly map = new Map<string, FileElement>();
 
   private querySubject: BehaviorSubject<Array<FileElement>>;
@@ -24,7 +23,7 @@ export class FilesService implements IFileService {
     this.pushMockData();
   }
 
-  createFileElement(id: string, name: string, _modelType = 'folder', baseParentId: string = null) {
+  createFileElement(id: string, name: string, _modelType = 'folder', baseParentId?: string): FileElement {
     const now = new Date();
     const e = new FileElement();
     e._id = id;
@@ -35,10 +34,11 @@ export class FilesService implements IFileService {
     e.baseParentType = e.parentCollection = 'user';
     e.baseParentId = baseParentId;
     e.name = name;
+
     return e;
   }
 
-  pushMockData() {
+  pushMockData(): void {
     const root = this.createFileElement('12345', 'root');
     const file1 = this.createFileElement('11111', 'file 1', 'file', root._id);
     const file2 = this.createFileElement('22222', 'file 2', 'file', root._id);
@@ -56,26 +56,27 @@ export class FilesService implements IFileService {
     this.map.set(folder2._id, folder2);
   }
 
-  getRootFolderId() {
+  getRootFolderId(): string {
     return '12345';
   }
 
-  add(fileElement: FileElement) {
+  add(fileElement: FileElement): FileElement {
     fileElement._id = v4();
     this.map.set(fileElement._id, this.clone(fileElement));
+
     return fileElement;
   }
 
-  delete(id: string) {
+  delete(id: string): void {
     this.map.delete(id);
   }
 
-  update(id: string, update: Partial<FileElement>) {
+  update(id: string, update: Partial<FileElement>): void {
     let element = this.map.get(id);
     element = { ...element, ...update };
     this.map.set(element._id, element);
   }
-  queryInFolder(folderId: string) {
+  queryInFolder(folderId: string): Observable<Array<FileElement>> {
     const result: Array<FileElement> = [];
     this.map.forEach(element => {
       if (element.baseParentId === folderId) {
@@ -87,14 +88,15 @@ export class FilesService implements IFileService {
     } else {
       this.querySubject.next(result);
     }
+
     return this.querySubject.asObservable();
   }
 
-  get(id: string) {
+  get(id: string): FileElement {
     return this.map.get(id);
   }
 
-  clone(element: FileElement) {
+  clone(element: FileElement): FileElement {
     return JSON.parse(JSON.stringify(element));
   }
 }

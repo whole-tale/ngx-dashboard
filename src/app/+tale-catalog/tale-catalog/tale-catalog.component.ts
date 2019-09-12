@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, NgZone, Component, AfterViewInit, Output, EventEmitter } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, NgZone, Output} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Tale } from '@api/models/tale';
 import { TaleService } from '@api/services/tale.service';
 import { BaseComponent } from '@framework/core';
-
+import { LogService } from '@framework/core/log.service';
 import { routeAnimation } from '~/app/shared';
 
 import { CreateTaleModalComponent } from './modals/create-tale-modal/create-tale-modal.component';
@@ -12,18 +12,17 @@ import { CreateTaleModalComponent } from './modals/create-tale-modal/create-tale
 @Component({
     templateUrl: './tale-catalog.component.html',
     styleUrls: ['tale-catalog.component.scss'],
-    //changeDetection: ChangeDetectionStrategy.OnPush,
     animations: [routeAnimation]
 })
 export class TaleCatalogComponent extends BaseComponent implements AfterViewInit {
-    currentPath: string = "tales";
+    currentPath = "tales";
 
-    @Output()
-    taleCreated = new EventEmitter<Tale>();
+    @Output() readonly taleCreated = new EventEmitter<Tale>();
 
     constructor(
       private zone: NgZone,
       private router: Router,
+      private logger: LogService,
       private taleService: TaleService,
       private route: ActivatedRoute,
       public dialog: MatDialog
@@ -31,15 +30,14 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
         super();
     }
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
 
-      /**
-       * environment=RStudio
-       * uri=https%3A%2F%2Fsearch.dataone.org%2Fview%2Fdoi%3A10.18739%2FA2VQ2S94D
-       * name=Fire+influences+on+forest+recovery+and+associated+climate+feedbacks+in+Siberian+Larch+Forests%2C+Russia
-       */
+      // Sample parameters:
+      //    environment=RStudio
+      //    uri=https%3A%2F%2Fsearch.dataone.org%2Fview%2Fdoi%3A10.18739%2FA2VQ2S94D
+      //    name=Fire+influences+on+forest+recovery+and+associated+climate+feedbacks+in+Siberian+Larch+Forests%2C+Russia
       setTimeout(() => {
-        console.log("Detecting parameters");
+        this.logger.debug("Detecting parameters");
         const queryParams = this.route.snapshot.queryParams;
         if (queryParams.name || queryParams.uri || queryParams.environment) {
           // Clear querystring parameters and open the Create Tale modal
@@ -55,15 +53,15 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
               const params = {
                 url: queryParams.uri ? queryParams.uri : '', // Pull from querystring
                 imageId: tale.imageId, // Pull from user input
-                //asTale: true, // Pull from querystring?
+                // asTale: true, // Pull from querystring?
                 spawn: true, // ??
                 taleKwargs: tale.title ? `{ "title": "${tale.title}" }` : '{}', // ??
                 lookupKwargs: '{}', // ??
               };
               this.taleService.taleCreateTaleFromDataset(params).subscribe(resp => {
-                console.log("Successfully submitted 'Analyze in WT' Job:", resp);
+                this.logger.debug("Successfully submitted 'Analyze in WT' Job:", resp);
               }, err => {
-                console.error("Failed to create Tale from Dataset:", err);
+                this.logger.error("Failed to create Tale from Dataset:", err);
               });
             });
           });
@@ -72,17 +70,16 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
       }, 1000);
     }
 
-    openCreateTaleModal() {
+    openCreateTaleModal(): void {
       const dialogRef = this.dialog.open(CreateTaleModalComponent);
       dialogRef.afterClosed().subscribe(tale => {
         if (!tale) { return; }
 
         this.taleService.taleCreateTale(tale).subscribe(response => {
-          console.log("Successfully created Tale:", response);
+          this.logger.debug("Successfully created Tale:", response);
           this.taleCreated.emit(response);
-          //this.refresh();
         }, err => {
-          console.error("Failed to create Tale:", err);
+          this.logger.error("Failed to create Tale:", err);
         });
       });
     }

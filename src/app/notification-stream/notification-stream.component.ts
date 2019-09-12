@@ -1,13 +1,13 @@
 import { Component, NgZone } from '@angular/core';
-import { EventSourcePolyfill as EventSource } from 'ng-event-source';
-
 import { NotificationStreamService } from '@api/notification-stream.service';
+import { LogService } from '@framework/core/log.service';
+import { EventSourcePolyfill as EventSource } from 'ng-event-source';
 
 // import * as $ from 'jquery';
 declare var $: any;
 
 @Component({
-  selector: 'notification-stream',
+  selector: 'app-notification-stream',
   templateUrl: './notification-stream.component.html',
   styleUrls: ['./notification-stream.component.scss']
 })
@@ -15,7 +15,11 @@ export class NotificationStreamComponent {
   events: Array<any>;
   source: EventSource;
 
-  constructor(private readonly zone: NgZone, private readonly notificationStream: NotificationStreamService) {
+  constructor(
+    private readonly zone: NgZone,
+    private readonly logger: LogService,
+    private readonly notificationStream: NotificationStreamService
+  ) {
     this.events = this.notificationStream.events;
     this.source = this.notificationStream.source;
 
@@ -28,45 +32,44 @@ export class NotificationStreamComponent {
     }
   }
 
-  onMessage(event: any) {
+  onMessage(event: any): void {
     // Discard everything outside of "data"
-    event = JSON.parse(event.data);
+    const eventData = JSON.parse(event.data);
 
     // Ignore everything except for progress updates
-    if (event.type !== 'wt_progress') {
-      console.log(`Skipping ignored event type (${event.type}):`, event);
+    if (eventData.type !== 'wt_progress') {
+      this.logger.debug(`Skipping ignored event type (${eventData.type}):`, eventData);
+
       return;
     }
 
-    console.log('Message received:', event);
+    this.logger.debug('Message received:', eventData);
 
     // Check for existing notifications matching this one
-    const existing = this.events.find(evt => event._id === evt._id);
+    const existing = this.events.find(evt => eventData._id === evt._id);
     if (!existing) {
       // If we haven't seen one like this, then display it
       this.zone.run(() => {
-        this.events.push(event);
+        this.events.push(eventData);
         this.notificationStream.openNotificationStream(true);
       });
-    } else if (existing && existing.updated < event.updated) {
+    } else if (existing && existing.updated < eventData.updated) {
       // Replace existing notification with newer updates
       this.zone.run(() => {
         const index = this.events.indexOf(existing);
-        this.events[index] = event;
+        this.events[index] = eventData;
       });
     }
 
     // If task is active, update progress
-    if (event.data.state === 'active') {
+    if (eventData.data.state === 'active') {
       this.zone.run(() => {
-        $('#event-progress-' + event._id).progress({
-          total: event.data.total,
-          value: event.data.current
+        $(`#event-progress-${eventData._id}`).progress({
+          total: eventData.data.total,
+          value: eventData.data.current
         });
       });
     }
-
-    // data-value="{{ event.data.current }}" data-total="{{ event.data.total }}"
   }
 
   trackById(index: number, event: any): string {

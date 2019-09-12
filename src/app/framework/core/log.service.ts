@@ -9,31 +9,31 @@ export class LogService {
   constructor(private readonly config: ConfigService, @Inject(forwardRef(() => ConsoleService)) readonly logger: ConsoleService) {}
 
   // debug (standard output)
-  debug(msg: any): void {
+  debug(msg: any, o?: any): void {
     if (this.config.getSettings('logging.level') >= LogLevel.Debug) {
       // console.debug does not work on {N} apps... use `log`
-      this.logger.log(msg);
+      this.logger.log(msg, o);
     }
   }
 
   // error
-  error(err: any): void {
+  error(err: any, o?: any): void {
     if (this.config.getSettings('logging.level') >= LogLevel.Error) {
-      this.logger.error(err);
+      this.logger.error(err, o);
     }
   }
 
   // warn
-  warn(err: any): void {
+  warn(warning: any, o?: any): void {
     if (this.config.getSettings('logging.level') >= LogLevel.Warn) {
-      this.logger.warn(err);
+      this.logger.warn(warning, o);
     }
   }
 
   // info
-  info(err: any): void {
+  info(msg: any, o?: any): void {
     if (this.config.getSettings('logging.level') >= LogLevel.Info) {
-      this.logger.info(err);
+      this.logger.info(msg, o);
     }
   }
 }

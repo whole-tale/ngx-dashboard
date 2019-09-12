@@ -1,21 +1,17 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnChanges, NgZone } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnChanges, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BaseComponent } from '~/app/framework/core';
-import { routeAnimation } from '~/app/shared';
-
-import { enterZone } from '@framework/ngrx/enter-zone.operator';
-import { WindowService } from '@framework/core/window.service';
-
-import { InstanceService } from '@api/services/instance.service';
 import { Instance } from '@api/models/instance';
-
-import { TaleService } from '@api/services/tale.service';
 import { Tale } from '@api/models/tale';
-
-import { UserService } from '@api/services/user.service';
 import { User } from '@api/models/user';
-
+import { InstanceService } from '@api/services/instance.service';
+import { TaleService } from '@api/services/tale.service';
+import { UserService } from '@api/services/user.service';
+import { BaseComponent } from '@framework/core';
+import { LogService } from '@framework/core/log.service';
+import { WindowService } from '@framework/core/window.service';
+import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { TaleAuthor } from '@tales/models/tale-author';
+import { routeAnimation } from '~/app/shared';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -35,7 +31,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     tale: Tale = { title:'???', authors: [], imageId: '', dataSet: [], publishInfo: [] };
     instance: Instance;
     creator: User;
-    currentTab: string = 'metadata';
+    currentTab = 'metadata';
 
     constructor(
       private ref: ChangeDetectorRef,
@@ -43,6 +39,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       private route: ActivatedRoute,
       private router: Router,
       private windowService: WindowService,
+      private logger: LogService,
       private taleService: TaleService,
       private instanceService: InstanceService,
       private userService: UserService
@@ -50,71 +47,69 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         super();
     }
 
-    trackByAuthorOrcid(index: number, author: TaleAuthor) {
+    trackByAuthorOrcid(index: number, author: TaleAuthor): string {
         return author.orcid;
     }
 
-    taleInstanceStateChanged(event: any) {
+    taleInstanceStateChanged(event: any): void {
       this.instance = event;
       this.refresh();
     }
 
-    detectCurrentTab() {
+    detectCurrentTab(): void {
       this.route.queryParams.subscribe(params => {
-        const tab = params['tab'];
-        if (tab && tab != this.currentTab) {
+        const tab = params.tab;
+        if (tab && tab !== this.currentTab) {
           this.switchTab(tab);
         }
       });
     }
 
-    switchTab(tab: string) {
+    switchTab(tab: string): void {
       this.currentTab = tab;
       this.router.navigate(['run', this.taleId ], {
         queryParamsHandling: "merge",
-        queryParams: { 
-          tab: tab
-        }
+        queryParams: { tab }
       });
     }
 
-    isTabActive(tab: string) {
+    isTabActive(tab: string): boolean {
       return this.currentTab === tab;
     }
 
-    refresh() {
+    refresh(): void {
       if (!this.taleId) {
         // TODO: redirect to catalog view?
-        console.log("No taleId given. Aborting.");
+        this.logger.error("No taleId given. Aborting.");
+
         return;
       }
-      console.log(`Fetching tale with _id=${this.taleId}`);
+      this.logger.debug(`Fetching tale with _id=${this.taleId}`);
       this.taleService.taleGetTale(this.taleId)
-                      //.pipe(enterZone(this.zone))
                       .subscribe(tale => {
         if (!tale) {
-          console.error("Tale is null, something went horribly wrong:", tale);
+          this.logger.error("Tale is null, something went horribly wrong");
+
           return;
         }
         
         this.tale = tale;
-        console.log("Fetched tale:", this.tale);
+        this.logger.info("Fetched tale:", this.tale);
 
         this.userService.userGetUser(this.tale.creatorId)
-                      //.pipe(enterZone(this.zone))
                       .subscribe(creator => {
           this.creator = creator;
-          console.log("Fetched creator:", this.creator);
+          this.logger.info("Fetched creator:", this.creator);
           this.ref.detectChanges();
         });
       }, err => {
-        console.error("Failed to fetch tale:", err);
+        this.logger.error("Failed to fetch tale:", err);
       });
     }
 
-    detectTaleId() {
+    detectTaleId(): void {
       this.route.params.subscribe(params => {
-          this.taleId = params['id'];
+          this.taleId = params.id;
           this.refresh();
       });
     }
@@ -126,57 +121,58 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       this.detectCurrentTab();
     }
 
-    ngOnChanges() {
+    ngOnChanges(): void {
       this.detectTaleId();
       this.detectCurrentTab();
     }
 
-    rebuildTale() {
-      let params = { id: this.tale._id };
+    rebuildTale(): void {
+      const params = { id: this.tale._id };
       this.taleService.taleBuildImage(params).subscribe(res => {
-        console.log("Tale building:", res);
+        this.logger.debug("Tale building:", res);
       });
     }
 
-    restartTale() {
+    restartTale(): void {
       if (!this.instance) {
-        console.log("Cannot restart instance - instance does not exist / is not running:", this.instance);
+        this.logger.error("Cannot restart instance - instance does not exist or is not running:", this.instance);
+
         return;
       }
 
-      let params = { taleId: this.tale._id };
-      //this.instanceService.instanceListInstances(params).subscribe(instance => {
-        this.instanceService.instanceUpdateInstance(this.instance._id).subscribe(res => {
-          console.log("Tale instance updated:", res);
-        });
-      //});
-    }
-
-    copyTale() {
-      this.taleService.taleCopyTale(this.tale._id).subscribe(res => {
-        console.log("Tale copying:", res);
+      const params = { taleId: this.tale._id };
+      this.instanceService.instanceUpdateInstance(this.instance._id).subscribe(res => {
+        this.logger.debug("Tale instance updated:", res);
       });
     }
 
-    publishTale() {
+    copyTale(): void {
+      this.taleService.taleCopyTale(this.tale._id).subscribe(res => {
+        this.logger.debug("Tale copying:", res);
+      });
+    }
+
+    publishTale(): void {
       alert("Insert publish modal here...");
     }
 
-    viewFullScreen() {
-      const e = document.documentElement;
-      const methodToBeInvoked = e.requestFullscreen || e['webkitRequestFullScreen'] || e['mozRequestFullscreen'] || e['msRequestFullscreen'];
-      if (methodToBeInvoked) methodToBeInvoked.call(e);
+    viewFullScreen(): void {
+      const e: any = document.documentElement;
+      const methodToBeInvoked = e.requestFullscreen || e.webkitRequestFullScreen || e.mozRequestFullscreen || e.msRequestFullscreen;
+      if (methodToBeInvoked) {
+        methodToBeInvoked.call(e);
+      }
     }
 
-    gotoDocs() {
+    gotoDocs(): void {
       // TODO: how to avoid hard-coding this link?
       this.windowService.location.href = "https://wholetale.readthedocs.io/en/stable/users_guide/run.html";
     }
 
-    exportTale(format: TaleExportFormat = TaleExportFormat.ZIP) {
-      let params = { id: this.tale._id, taleFormat: format };
+    exportTale(format: TaleExportFormat = TaleExportFormat.ZIP): void {
+      const params = { id: this.tale._id, taleFormat: format };
       this.taleService.taleExportTale(params).subscribe(res => {
-        console.log(`Exporting tale=${this.tale._id} to ${format}`, res);
+        this.logger.debug(`Exporting tale=${this.tale._id} to ${format}`, res);
       });
     }
 }

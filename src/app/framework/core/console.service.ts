@@ -4,23 +4,63 @@ import { Console } from './models/console';
 
 @Injectable()
 export class ConsoleService implements Console {
-  log(m: any): void {
-    return;
+  log(m: any, c?: any): void {
+    if (!console.log) {
+      return;
+    } // tslint:disable-line:no-console
+
+    if (c) {
+      console.log(m, c); // tslint:disable-line:no-console
+    } else {
+      console.log(m); // tslint:disable-line:no-console
+    }
   }
 
-  debug(m: any): void {
-    return;
+  debug(m: any, c?: any): void {
+    if (!console.debug) {
+      return;
+    } // tslint:disable-line:no-console
+
+    if (c) {
+      console.debug(m, c); // tslint:disable-line:no-console
+    } else {
+      console.debug(m); // tslint:disable-line:no-console
+    }
   }
 
-  error(m: any): void {
-    return;
+  error(m: any, c?: any): void {
+    if (!console.error) {
+      return;
+    }
+
+    if (c) {
+      console.error(m, c);
+    } else {
+      console.error(m);
+    }
   }
 
-  warn(m: any): void {
-    return;
+  warn(m: any, c?: any): void {
+    if (!console.warn) {
+      return;
+    }
+
+    if (c) {
+      console.warn(m, c);
+    } else {
+      console.warn(m);
+    }
   }
 
-  info(m: any): void {
-    return;
+  info(m: any, c?: any): void {
+    if (!console.info) {
+      return;
+    } // tslint:disable-line:no-console
+
+    if (c) {
+      console.info(m, c); // tslint:disable-line:no-console
+    } else {
+      console.info(m); // tslint:disable-line:no-console
+    }
   }
 }

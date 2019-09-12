@@ -52,7 +52,7 @@
               <span style="text-transform:uppercase">
                   {{ tale.public ? 'public' : 'private' }}
               </span>
-              <tale-run-button [tale]="tale" [instance]="instances[tale._id]" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></tale-run-button>
+              <app-tale-run-button [tale]="tale" [instance]="instances[tale._id]" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></app-tale-run-button>
             </div>
           </div>
         </div>

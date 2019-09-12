@@ -9,6 +9,7 @@ export class ErrorService {
     if (!navigator.onLine) {
       return 'No Internet Connection';
     }
+
     return error.message ? error.message : error.toString();
   }
 

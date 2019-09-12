@@ -1,14 +1,13 @@
-import { Component, NgZone, OnInit, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Tale } from '@api/models/tale';
+import { Component, Inject, NgZone, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Image } from '@api/models/image';
+import { Tale } from '@api/models/tale';
 import { ImageService } from '@api/services/image.service';
 
 // import * as $ from 'jquery';
 declare var $: any;
 
 @Component({
-  selector: 'create-tale-modal',
   templateUrl: './create-tale-modal.component.html',
   styleUrls: ['./create-tale-modal.component.scss']
 })

@@ -2,6 +2,7 @@
 
 import { Injectable } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { LogService } from '@framework/core/log.service';
 
 @Injectable()
 export class TokenService {
@@ -9,7 +10,9 @@ export class TokenService {
   jwt: JwtHelperService = new JwtHelperService();
 
   // Cache the user that this token represents
-  user: any = null;
+  user: any;
+
+  constructor(private readonly logger: LogService) {}
 
   setToken(token: string): void {
     localStorage.setItem('girderToken', token);
@@ -29,7 +32,7 @@ export class TokenService {
     const expirationDate = this.jwt.getTokenExpirationDate(token);
     const isExpired = this.jwt.isTokenExpired(token);
 
-    console.log(`Token expires: ${expirationDate}. Is Expired? ${isExpired}`);
+    this.logger.debug(`Token expires: ${expirationDate}. Is Expired? ${isExpired}`);
 
     // return a boolean reflecting
     // whether or not the token is expired

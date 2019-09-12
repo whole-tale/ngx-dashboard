@@ -1,12 +1,11 @@
-import { Component, OnChanges, Input, ChangeDetectorRef, NgZone } from '@angular/core';
-import { enterZone } from '@framework/ngrx/enter-zone.operator';
-
-import { InstanceService } from '@api/services/instance.service';
+import { ChangeDetectorRef, Component, Input, NgZone, OnChanges } from '@angular/core';
 import { Instance } from '@api/models/instance';
 import { Tale } from '@api/models/tale';
+import { InstanceService } from '@api/services/instance.service';
+import { enterZone } from '@framework/ngrx/enter-zone.operator';
 
 @Component({
-  selector: 'tale-interact',
+  selector: 'app-tale-interact',
   templateUrl: './tale-interact.component.html',
   styleUrls: ['./tale-interact.component.scss']
 })
@@ -23,10 +22,10 @@ export class TaleInteractComponent implements OnChanges {
       const params = { taleId: this.tale._id };
       this.instanceService.instanceListInstances(params)
                           .pipe(enterZone(this.zone))
-                          .subscribe((instances: Instance[]) => {
+                          .subscribe((instances: Array<Instance>) => {
         if (instances && instances.length) {
           this.instance = instances[0];
-          //this.ref.detectChanges();
+          // this.ref.detectChanges();
         }
       }, err => {
         console.error(`Error: Failed to fetch instances for taleId=${this.tale._id}`, err);

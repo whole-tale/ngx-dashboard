@@ -30,14 +30,13 @@
                                     </div>
                                 </div>
                                 <div class="six wide column" style="text-align: right">
-                                    <tale-run-button [tale]="tale" [instance]="instance" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></tale-run-button>
+                                    <app-tale-run-button [tale]="tale" [instance]="instance" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></app-tale-run-button>
                                     <a routerLink="/" routerLinkActive="active" class="ui button" style="margin-right: 10px">
                                       Close
                                     </a>
                                     <div class="ui floating dropdown theme" tabindex="0">
                                         <mat-icon fontSet="fa" fontIcon="fa-ellipsis-v"></mat-icon>
 
-                                        <!-- TODO: Wire up, add icons -->
                                         <div class="menu transition hidden" tabindex="-1">
                                             <div class="item" (click)="rebuildTale()">Rebuild Tale</div>
                                             <div class="item" (click)="restartTale()">Restart Tale</div>
@@ -71,17 +70,16 @@
                         </a>
                     </div>
                     <div class="wt-panel-body" style="padding-bottom:40px" [ngSwitch]="currentTab">
-                        <!--<router-outlet></router-outlet>-->
                         <div *ngSwitchCase="'interact'">
-                          <tale-interact [tale]="tale" [instance]="instance"></tale-interact>
+                          <app-tale-interact [tale]="tale" [instance]="instance"></app-tale-interact>
                         </div>
 
                         <div *ngSwitchCase="'files'">
-                          <tale-files [tale]="tale" [taleId]="taleId"></tale-files>
+                          <app-tale-files [tale]="tale" [taleId]="taleId"></app-tale-files>
                         </div>
 
                         <div *ngSwitchCase="'metadata'">
-                          <tale-metadata [tale]="tale" [creator]="creator"></tale-metadata>
+                          <app-tale-metadata [tale]="tale" [creator]="creator"></app-tale-metadata>
                         </div>
 
                         <div *ngSwitchDefault>
@@ -93,69 +91,3 @@
         </div>
     </div>
 </div>
-
-
-
-<!--
-                    <div class="wt-panel-body" style="padding-bottom:40px" *ngIf="currentTab==='interact'">
-                      
-                    </div>
-                    <div class="wt-panel-body" style="padding-bottom:40px" *ngIf="currentTab==='data'">
-                      <file-explorer></file-explorer>
-                    </div>
-                    <div class="wt-panel-body" style="padding-bottom:40px" *ngIf="currentTab==='metadata'">
-
-                        <div class="ui stackable grid">
-                            <div class="ui ten wide column">
-
-                                <div class="ui list">
-                                    <div class="item">
-                                        <b>Category:</b>
-                                        <span class="category">Materials Science</span>
-                                    </div>
-                                    <div class="item">
-                                        <b>Title:</b> Accelerated discovery of metallic glasses through iteration of machine learning and high-throughput experiments
-                                    </div>
-                                    <div class="item">
-                                        <b>Authors:</b> Logan Ward
-                                    </div>
-                                    <div class="item">
-                                        <b>Description:</b> This tale includes scripts for creating and validating machine learning models to predict the glass-forming ability of metal alloys, and then using those models to discover new metallic glasses.
-                                    </div>
-                                    <div class="item">
-                                        <b>License:</b> Creative Commons Attribution 4.0 International
-                                    </div>
-                                    <div class="item">
-                                        <b>Published location:</b> http://
-                                    </div>
-                                    <div class="item spaced">
-                                        <b>Tale Specifics</b>
-                                        <div class="list">
-                                            <div class="item">
-                                                <b>Tale ID</b> 5ad4eb52f4b80b00018d92e1
-                                            </div>
-                                            <div class="item">
-                                                <b>Involatile Data:</b> No citable data
-                                            </div>
-                                            <div class="item">
-                                                <b>Environment:</b>
-                                                <img class="ui image" src="https://raw.githubusercontent.com/whole-tale/jupyter-base/master/squarelogo-greytext-orangebody-greymoons.png" style="height:1.5em; margin:0 .4em; display: inline-block"> Jupyter Notebook
-                                            </div>
-                                            <div class="item">
-                                                <b>Tale Created:</b> Tue Nov 01 2016
-                                            </div>
-                                            <div class="item">
-                                                <b>Tale Updated:</b> Thu May 16 2019
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <div class="ui six wide column">
-                                <img class="ui image img-responsive" src="http://advances.sciencemag.org/content/advances/4/4/eaaq1566/F1.large.jpg?width=800&amp;height=600&amp;carousel=1">
-                            </div>
-                        </div>
-
-                    </div> -->

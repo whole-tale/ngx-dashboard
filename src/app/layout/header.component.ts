@@ -1,17 +1,16 @@
 import { ChangeDetectionStrategy, Component, NgZone, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { NotificationStreamService } from '@api/notification-stream.service';
+import { UserService } from '@api/services/user.service';
+import { TokenService } from '@api/token.service';
+import { BaseComponent } from '@framework/core';
+import { LogService } from '@framework/core/log.service';
 import { select, Store } from '@ngrx/store';
 import { AuthService } from '@ngx-auth/core';
 import { ConfigService } from '@ngx-config/core';
-import { Observable } from 'rxjs';
-import { BaseComponent } from '~/app/framework/core';
-import { Language, LanguageSelectors, State } from '~/app/store';
-
-import { UserService } from '@api/services/user.service';
-import { TokenService } from '@api/token.service';
 import { CookieService } from 'ngx-cookie-service';
-
-import { NotificationStreamService } from '@api/notification-stream.service';
+import { Observable } from 'rxjs';
+import { Language, LanguageSelectors, State } from '~/app/store';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -30,11 +29,12 @@ export class HeaderComponent extends BaseComponent implements OnInit {
   availableLanguages: Array<Language>;
   isAuthenticated: boolean; // TODO: access only through getter
   currentRoute = '';
-  user: any = null;
+  user: any;
 
   constructor(
     private readonly zone: NgZone,
     private readonly store$: Store<State>,
+    private readonly logger: LogService,
     private readonly config: ConfigService,
     private readonly auth: AuthService,
     private readonly router: Router,
@@ -48,7 +48,7 @@ export class HeaderComponent extends BaseComponent implements OnInit {
     this.router.events.subscribe(value => {
       if (value instanceof NavigationEnd) {
         this.currentRoute = value.url;
-        // console.log(`Route is now: ${value.url}`);
+        // this.logger.debug(`Route is now: ${value.url}`);
       }
     });
   }
@@ -67,7 +67,7 @@ export class HeaderComponent extends BaseComponent implements OnInit {
 
     this.users.userGetMe().subscribe((user: any) => {
       this.zone.run(() => {
-        console.log('Logged in as:', user);
+        this.logger.debug('Logged in as:', user);
         this.user = this.tokenService.user = user;
       });
     });
@@ -80,7 +80,7 @@ export class HeaderComponent extends BaseComponent implements OnInit {
     return this.auth.invalidate();
   }
 
-  toggleNotificationStream() {
+  toggleNotificationStream(): void {
     this.notificationStream.openNotificationStream(!this.notificationStream.showNotificationStream);
   }
 }

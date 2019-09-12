@@ -1,9 +1,13 @@
-﻿{
+{
   "rulesDirectory": ["node_modules/codelyzer"],
   "extends": ["angular-tslint-rules", "tslint-config-prettier"],
   "rules": {
     "await-promise": [true, "Nightmare"],
-    "no-implicit-dependencies": [true, "dev", ["~", "e2e-config"]],
+    "no-implicit-dependencies": [
+      true,
+      "dev",
+      ["~", "e2e-config", "@files", "@api", "@tales", "@framework", "@shared", "@login", "@layout"]
+    ],
     "ordered-imports": [
       true,
       {

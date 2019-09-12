@@ -3,6 +3,7 @@ import { MatMenuTrigger } from '@angular/material';
 import { MatDialog } from '@angular/material/dialog';
 import { FilesService } from '@files/files.service';
 import { FileElement } from '@files/models/file-element';
+import { LogService } from '@framework/core/log.service';
 
 import { NewFolderDialogComponent } from './modals/new-folder-dialog/new-folder-dialog.component';
 import { RenameDialogComponent } from './modals/rename-dialog/rename-dialog.component';
@@ -67,7 +68,7 @@ const FILE_TYPES = {
 };
 
 @Component({
-  selector: 'file-explorer',
+  selector: 'app-file-explorer',
   templateUrl: './file-explorer.component.html',
   styleUrls: ['./file-explorer.component.scss']
 })
@@ -94,25 +95,25 @@ export class FileExplorerComponent implements OnInit {
   @Input() placeholderMessage: string;
 
   // Events emitted
-  @Output() folderAdded = new EventEmitter<{ name: string }>();
-  @Output() fileUploadsAdded = new EventEmitter<{ files: { [key: string]: File } }>();
-  @Output() elementRemoved = new EventEmitter<FileElement>();
-  @Output() elementRenamed = new EventEmitter<FileElement>();
-  @Output() elementCopied = new EventEmitter<FileElement>();
-  @Output() elementDownloaded = new EventEmitter<FileElement>();
-  @Output() elementMoved = new EventEmitter<{ element: FileElement; moveTo: FileElement }>();
-  @Output() navigatedDown = new EventEmitter<FileElement>();
-  @Output() navigatedUp = new EventEmitter();
+  @Output() readonly folderAdded = new EventEmitter<{ name: string }>();
+  @Output() readonly fileUploadsAdded = new EventEmitter<{ files: { [key: string]: File } }>();
+  @Output() readonly elementRemoved = new EventEmitter<FileElement>();
+  @Output() readonly elementRenamed = new EventEmitter<FileElement>();
+  @Output() readonly elementCopied = new EventEmitter<FileElement>();
+  @Output() readonly elementDownloaded = new EventEmitter<FileElement>();
+  @Output() readonly elementMoved = new EventEmitter<{ element: FileElement; moveTo: FileElement }>();
+  @Output() readonly navigatedDown = new EventEmitter<FileElement>();
+  @Output() readonly navigatedUp = new EventEmitter();
 
   showMore: any = {};
 
-  constructor(public dialog: MatDialog, public fileService: FilesService) {}
+  constructor(private readonly dialog: MatDialog, private readonly logger: LogService, private readonly fileService: FilesService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     // $('.ui.file.dropdown').dropdown({ action: 'hide' });
   }
 
-  getIcon(element: FileElement) {
+  getIcon(element: FileElement): string {
     if (element._modelType === 'folder' || element._modelType === 'dataset' || element._modelType === 'workspace') {
       return 'fa-folder';
     } else if (element._modelType === 'file' || element._modelType === 'item') {
@@ -122,21 +123,25 @@ export class FileExplorerComponent implements OnInit {
 
       const icon = FILE_TYPES[ext] || 'file';
 
-      return 'fa-' + icon;
+      return `fa-${icon}`;
     } else {
-      console.error('Error: unable to get icon for FileElement - unrecognized modelType:', element);
+      this.logger.error('Error: unable to get icon for FileElement - unrecognized modelType:', element);
     }
   }
 
-  openFileUploadDialog() {
+  trackById(index: number, element: FileElement): string {
+    return element._id;
+  }
+
+  openFileUploadDialog(): void {
     this.file.nativeElement.click();
   }
 
-  onUploadsAdded() {
+  onUploadsAdded(): void {
     this.fileUploadsAdded.emit(this.file.nativeElement.files);
   }
 
-  removeElement(element: FileElement) {
+  removeElement(element: FileElement): void {
     // Don't navigate if selecting a dropdown option
     event.stopPropagation();
 
@@ -144,34 +149,34 @@ export class FileExplorerComponent implements OnInit {
     this.elementRemoved.emit(element);
   }
 
-  downloadElement(element: FileElement) {
+  downloadElement(element: FileElement): void {
     // Don't navigate if selecting a dropdown option
     event.stopPropagation();
 
     this.elementDownloaded.emit(element);
   }
 
-  copyElement(element: FileElement) {
+  copyElement(element: FileElement): void {
     // Don't navigate if selecting a dropdown option
     event.stopPropagation();
 
     this.elementCopied.emit(element);
   }
 
-  navigate(element: FileElement) {
+  navigate(element: FileElement): void {
     if (this.preventNavigation) {
       return;
     }
-    if (element._modelType == 'folder') {
+    if (element._modelType === 'folder') {
       this.navigatedDown.emit(element);
     }
   }
 
-  navigateUp() {
+  navigateUp(): void {
     this.navigatedUp.emit();
   }
 
-  moveElement(element: FileElement, moveTo: FileElement) {
+  moveElement(element: FileElement, moveTo: FileElement): void {
     // Don't navigate if selecting a dropdown option
     event.stopPropagation();
 
@@ -179,35 +184,35 @@ export class FileExplorerComponent implements OnInit {
     this.elementMoved.emit({ element, moveTo });
   }
 
-  openNewFolderDialog() {
+  openNewFolderDialog(): void {
     const dialogRef = this.dialog.open(NewFolderDialogComponent);
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
-        console.log(`Folder added: ${res}`);
+        this.logger.debug(`Folder added: ${res}`);
         this.folderAdded.emit({ name: res });
       }
     });
   }
 
-  renameElement(element: FileElement) {
+  renameElement(element: FileElement): void {
     // Don't navigate if selecting a dropdown option
     event.stopPropagation();
 
     const dialogRef = this.dialog.open(RenameDialogComponent);
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
-        console.log(`Folder renamed: ${element.name} -> ${res}`);
+        this.logger.debug(`Folder renamed: ${element.name} -> ${res}`);
         element.name = res;
         this.elementRenamed.emit(element);
       }
     });
   }
 
-  closeMenus() {
+  closeMenus(): void {
     this.showMore = {};
   }
 
-  openMenu(event: MouseEvent, element: FileElement) {
+  openMenu(event: MouseEvent, element: FileElement): void {
     // Don't navigate into folder if we're opening its dropdown
     event.stopPropagation();
 

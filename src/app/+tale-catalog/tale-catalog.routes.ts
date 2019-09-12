@@ -1,6 +1,6 @@
-import { TaleCatalogComponent } from './tale-catalog/tale-catalog.component';
-import { PublicTalesComponent } from './tale-catalog/components/public-tales/public-tales.component';
 import { MyTalesComponent } from './tale-catalog/components/my-tales/my-tales.component';
+import { PublicTalesComponent } from './tale-catalog/components/public-tales/public-tales.component';
+import { TaleCatalogComponent } from './tale-catalog/tale-catalog.component';
 
 export const routes = [
   {

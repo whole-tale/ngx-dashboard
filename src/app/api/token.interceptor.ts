@@ -30,11 +30,12 @@ export class TokenInterceptor implements HttpInterceptor {
     }
 
     // For everything else, attach our girder token as a header
-    request = request.clone({
+    const authRequest = request.clone({
       setHeaders: {
         'Girder-Token': token
       }
     });
-    return next.handle(request);
+
+    return next.handle(authRequest);
   }
 }

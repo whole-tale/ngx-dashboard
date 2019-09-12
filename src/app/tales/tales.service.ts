@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-
+import { LogService } from '@framework/core/log.service';
 import { Tale } from '@tales/models/tale';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,30 +11,30 @@ export class TalesService implements OnDestroy {
   tales: BehaviorSubject<Array<Tale>> = new BehaviorSubject<Array<Tale>>([]);
   subscription: Subscription;
 
-  constructor(private readonly http: HttpClient) {
+  constructor(private readonly http: HttpClient, private readonly logger: LogService) {
     this.refresh();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.unsubscribe();
   }
 
   get(): Observable<any> {
-    console.log('Fetching records');
     return this.http.get('assets/data/tales.json');
   }
 
-  refresh() {
+  refresh(): Observable<Array<Tale>> {
     this.unsubscribe();
     const observable = this.get();
     this.subscription = observable.subscribe((data: Array<Tale>) => {
-      console.log('Service got data:', data);
+      this.logger.debug('Service got data:', data);
       this.tales.next(data);
     });
+
     return observable;
   }
 
-  unsubscribe() {
+  unsubscribe(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }

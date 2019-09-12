@@ -8,36 +8,40 @@ export class SafePipe implements PipeTransform {
   constructor(private readonly sanitizer: DomSanitizer) {}
 
   transform(value: string | SafeValue, context: string | SecurityContext): SafeResourceUrl {
+    let secContext;
     if (typeof context === 'string') {
       // Parse string context into SecurityContext type
       switch (context) {
         case 'none':
-          context = SecurityContext.NONE;
+          secContext = SecurityContext.NONE;
           break;
         case 'html':
-          context = SecurityContext.HTML;
+          secContext = SecurityContext.HTML;
           break;
         case 'style':
-          context = SecurityContext.STYLE;
+          secContext = SecurityContext.STYLE;
           break;
         case 'script':
-          context = SecurityContext.SCRIPT;
+          secContext = SecurityContext.SCRIPT;
           break;
         case 'url':
-          context = SecurityContext.URL;
+          secContext = SecurityContext.URL;
           break;
         case 'resource_url':
-          context = SecurityContext.RESOURCE_URL;
+          secContext = SecurityContext.RESOURCE_URL;
           break;
         default:
           console.error('Error: Unrecognized string security context encountered. Falling back to NONE:', context);
-          context = SecurityContext.NONE;
+          secContext = SecurityContext.NONE;
           break;
       }
+    } else {
+      secContext = context;
     }
 
     // Sanitize the string for use in the given SecurityContext
-    const sanitized = this.sanitizer.sanitize(context, value);
+    const sanitized = this.sanitizer.sanitize(secContext, value);
+
     return this.sanitizer.bypassSecurityTrustResourceUrl(sanitized);
   }
 }

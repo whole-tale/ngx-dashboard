@@ -1,11 +1,11 @@
 export interface Console {
-  log(m: any): void;
+  log(m: any, c?: any): void;
 
-  debug(m: any): void;
+  debug(m: any, c?: any): void;
 
-  error(m: any): void;
+  error(m: any, c?: any): void;
 
-  warn(m: any): void;
+  warn(m: any, c?: any): void;
 
-  info(m: any): void;
+  info(m: any, c?: any): void;
 }

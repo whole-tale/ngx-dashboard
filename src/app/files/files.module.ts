@@ -1,5 +1,4 @@
-import { CommonModule } from '@angular/common';
-import { DecimalPipe } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule } from '@angular/forms';
@@ -10,8 +9,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { SharedModule } from '~/app/framework/core';
-import { MaterialModule } from '~/app/framework/material';
+import { SharedModule } from '@framework/core';
+import { MaterialModule } from '@framework/material';
 
 import { FileExplorerComponent } from './file-explorer/file-explorer.component';
 import { NewFolderDialogComponent } from './file-explorer/modals/new-folder-dialog/new-folder-dialog.component';

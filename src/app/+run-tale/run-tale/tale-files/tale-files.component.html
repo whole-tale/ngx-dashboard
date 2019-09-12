@@ -18,7 +18,7 @@
   </div>
   <div class="twelve wide stretched column">
     <div class="ui segment">
-      <file-explorer id="tale-files-browser"
+      <app-file-explorer id="tale-files-browser"
         [fileElements]="(folders | async).concat(files | async)"
         [path]="currentPath"
         [placeholderMessage]="placeholderMessage"
@@ -35,7 +35,7 @@
         (elementDownloaded)="downloadElement($event)"
         (elementCopied)="copyElement($event)"
         (elementMoved)="moveElement($event)">
-      </file-explorer>
+      </app-file-explorer>
     </div>
   </div>
 </div>
