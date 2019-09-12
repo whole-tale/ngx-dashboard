@@ -6,10 +6,9 @@ import { Console } from './models/console';
 export class ConsoleService implements Console {
   log(m: any, c?: any): void {
     if (!console.log) {
+      // tslint:disable-line:no-console
       return;
-    } // tslint:disable-line:no-console
-
-    if (c) {
+    } else if (c) {
       console.log(m, c); // tslint:disable-line:no-console
     } else {
       console.log(m); // tslint:disable-line:no-console
@@ -18,10 +17,9 @@ export class ConsoleService implements Console {
 
   debug(m: any, c?: any): void {
     if (!console.debug) {
+      // tslint:disable-line:no-console
       return;
-    } // tslint:disable-line:no-console
-
-    if (c) {
+    } else if (c) {
       console.debug(m, c); // tslint:disable-line:no-console
     } else {
       console.debug(m); // tslint:disable-line:no-console
@@ -31,9 +29,7 @@ export class ConsoleService implements Console {
   error(m: any, c?: any): void {
     if (!console.error) {
       return;
-    }
-
-    if (c) {
+    } else if (c) {
       console.error(m, c);
     } else {
       console.error(m);
@@ -43,9 +39,7 @@ export class ConsoleService implements Console {
   warn(m: any, c?: any): void {
     if (!console.warn) {
       return;
-    }
-
-    if (c) {
+    } else if (c) {
       console.warn(m, c);
     } else {
       console.warn(m);
@@ -54,10 +48,9 @@ export class ConsoleService implements Console {
 
   info(m: any, c?: any): void {
     if (!console.info) {
+      // tslint:disable-line:no-console
       return;
-    } // tslint:disable-line:no-console
-
-    if (c) {
+    } else if (c) {
       console.info(m, c); // tslint:disable-line:no-console
     } else {
       console.info(m); // tslint:disable-line:no-console
