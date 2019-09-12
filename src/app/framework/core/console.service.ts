@@ -5,8 +5,8 @@ import { Console } from './models/console';
 @Injectable()
 export class ConsoleService implements Console {
   log(m: any, c?: any): void {
+    // tslint:disable-next-line:no-console
     if (!console.log) {
-      // tslint:disable-line:no-console
       return;
     } else if (c) {
       console.log(m, c); // tslint:disable-line:no-console
@@ -16,8 +16,8 @@ export class ConsoleService implements Console {
   }
 
   debug(m: any, c?: any): void {
+    // tslint:disable-next-line:no-console
     if (!console.debug) {
-      // tslint:disable-line:no-console
       return;
     } else if (c) {
       console.debug(m, c); // tslint:disable-line:no-console
@@ -47,8 +47,8 @@ export class ConsoleService implements Console {
   }
 
   info(m: any, c?: any): void {
+    // tslint:disable-next-line:no-console
     if (!console.info) {
-      // tslint:disable-line:no-console
       return;
     } else if (c) {
       console.info(m, c); // tslint:disable-line:no-console
