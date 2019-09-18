@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
 import { FilesModule } from '@files/files.module';
 import { SharedModule } from '@framework/core';
@@ -10,14 +11,28 @@ import { TalesModule } from '@tales/tales.module';
 import { MarkdownModule, MarkedOptions } from 'ngx-markdown';
 
 import { routes } from './run-tale.routes';
+import { PublishTaleDialogComponent } from './run-tale/modals/publish-tale-dialog/publish-tale-dialog.component';
+import { RegisterDatasetDialogComponent } from './run-tale/modals/register-dataset-dialog/register-dataset-dialog.component';
+import { SelectDataDialogComponent } from './run-tale/modals/select-data-dialog/select-data-dialog.component';
+import { TaleWorkspacesDialogComponent } from './run-tale/modals/tale-workspaces-dialog/tale-workspaces-dialog.component';
 import { RunTaleComponent } from './run-tale/run-tale.component';
 import { TaleFilesComponent } from './run-tale/tale-files/tale-files.component';
 import { TaleInteractComponent } from './run-tale/tale-interact/tale-interact.component';
 import { TaleMetadataComponent } from './run-tale/tale-metadata/tale-metadata.component';
 
 @NgModule({
-  imports: [CommonModule, RouterModule.forChild(routes), SharedModule, MaterialModule, FilesModule, TalesModule, MarkdownModule.forRoot()],
+  imports: [CommonModule, RouterModule.forChild(routes), SharedModule, MaterialModule, MatDialogModule, FilesModule, TalesModule, MarkdownModule.forRoot()],
   providers: [TruncatePipe, SafePipe],
-  declarations: [RunTaleComponent, TaleFilesComponent, TaleMetadataComponent, TaleInteractComponent]
+  declarations: [
+    RunTaleComponent,
+    TaleFilesComponent,
+    TaleInteractComponent,
+    TaleMetadataComponent,
+    PublishTaleDialogComponent,
+    SelectDataDialogComponent,
+    RegisterDatasetDialogComponent,
+    TaleWorkspacesDialogComponent
+  ],
+  entryComponents: [PublishTaleDialogComponent, SelectDataDialogComponent, RegisterDatasetDialogComponent, TaleWorkspacesDialogComponent]
 })
 export class RunTaleModule {}

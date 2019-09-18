@@ -10,11 +10,12 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { BaseContainerComponent } from './base-container.component';
 import { BaseComponent } from './base.component';
-import { ConsoleService } from './console.service';
+import { LocalConsoleService } from './local-console.service';
 import { LogService } from './log.service';
+import { RemoteConsoleService } from './remote-console.service';
 import { WindowService } from './window.service';
 
-const CORE_PROVIDERS: Array<any> = [ConsoleService, LogService, WindowService];
+const CORE_PROVIDERS: Array<any> = [RemoteConsoleService, LocalConsoleService, LogService, WindowService];
 
 export const configFactory = (injector: Injector) => {
   const http = forwardRef(() => injector.get(HttpClient)) as any;

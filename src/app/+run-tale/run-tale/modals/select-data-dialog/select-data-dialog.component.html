@@ -1,12 +1,99 @@
 <h1 mat-dialog-title>Select Data</h1>
 
 <mat-dialog-content>
-  <form class="ui form">
+  <div class="ui grid">
+    <div class="row">
+      <div class="four wide column">
+        <div class="ui vertical menu fluid dta">
+          <a class="item" [ngClass]="{ 'active': isNavActive('web') }" (click)="activateNav('web')">
+            <p>Web</p>
+            <span>DOI or URL</span>
+          </a>
+          <!--<a class="item" [ngClass]="{ 'active': isNavActive('mine') }" (click)="activateNav('mine')">My Data</a>-->
+          <a class="item" [ngClass]="{ 'active': isNavActive('catalog') }" (click)="activateNav('catalog')">
+            <p>WT Catalog</p>
+            <span>Already registered in WT</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="twelve wide column" style="min-height: 300px; min-width: 300px; padding: 20px 20px 40px 0;">
+        <div class="ui form" [ngClass]="{ 'error': registrationError }" *ngIf="isNavActive('web')">
+          <div class="inline field">
+            <label>
+              Reference URI
+              <i class="info circle grey icon" data-tooltip="The DOI or URL of the target dataset" data-position="bottom"></i>
+            </label>
+            <input id="searchbox" [(ngModel)]="registrationUrl" type="text">
+            <div class="ui inline button" (click)="searchDatasetUrl()">Search</div>
+          </div>
+          <div class="info-block">
+            <p>
+              The URL or DOI of the data object. Data packages can be imported into WholeTale from 
+              <a href="https://www.dataone.org">DataONE</a> and select <a href="https://www.globus.org">Globus</a> 
+              repositories. For a full list of DataONE member nodes and supported Globus repositories, visit the 
+              <a href="https://wholetale.readthedocs.io/en/stable/users_guide/manage.html#data-folder">data registration guide</a>.
+            </p>
+          </div>
+          <div class="ui tertiary segment white-bg">
+            <div class="inline field">
+              <label>Folder Name</label>
+              <input [(ngModel)]="registrationFolderName" type="text">
+            </div>
+            <p>DOI:</p>
+            <p>DataID:</p>
+            <p>Repository:</p>
+            <p>Size:</p>
+          </div>
+        </div>
+
+        <table class="ui compact celled definition table" *ngIf="!isNavActive('web')">
+          <thead class="full-width">
+            <tr>
+              <th></th>
+              <th>Name</th>
+              <th>Size</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+
+          <tbody *ngIf="isNavActive('mine')">
+            <tr *ngFor="let dataset of (myDatasets | async); index as i; trackBy:trackById">
+              <td class="collapsing">
+                <div class="ui fitted slider checkbox">
+                  <input type="checkbox"> <label></label>
+                </div>
+              </td>
+              <td>{{ dataset.name | truncate:65 }}</td>
+              <td>{{ dataset.size | fileSize }}</td>
+              <td>{{ dataset.updated | date }}</td>
+            </tr>
+          </tbody>
+
+          <tbody *ngIf="isNavActive('catalog')">
+            <tr *ngFor="let dataset of (allDatasets | async); index as i; trackBy:trackById">
+              <td class="collapsing">
+                <div class="ui fitted slider checkbox">
+                  <input type="checkbox"> <label></label>
+                </div>
+              </td>
+              <td>{{ dataset.name | truncate:65 }}</td>
+              <td>{{ dataset.size | fileSize }}</td>
+              <td>{{ dataset.updated | date }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!--<form class="ui form">
     <div class="field">
       <input matInput type="text" name="folder-name" placeholder="Folder Name" [(ngModel)]="folderName" required />
     </div>
-    <!--<button class="ui button" type="submit">Submit</button>-->
-  </form>
+  </form>-->
 </mat-dialog-content>
 
 <mat-dialog-actions>

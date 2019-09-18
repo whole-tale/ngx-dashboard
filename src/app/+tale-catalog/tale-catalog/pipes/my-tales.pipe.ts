@@ -13,6 +13,6 @@ export class MyTalesPipe implements PipeTransform {
       return [];
     }
 
-    return value.filter(tale => this.tokenService.user && this.tokenService.user._id && tale.creatorId === this.tokenService.user._id);
+    return value.filter(tale => this.tokenService.user && this.tokenService.user.value._id && tale.creatorId === this.tokenService.user.value._id);
   }
 }

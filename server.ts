@@ -19,17 +19,23 @@ server.use(compression());
 const PORT = process.env.PORT || 4000;
 const DIST_FOLDER = join(process.cwd(), 'dist');
 
-server.engine('html', ngExpressEngine({
-  bootstrap: AppServerModuleNgFactory,
-  providers: [
-    provideModuleMap(LAZY_MODULE_MAP)
-  ]
-}));
+server.engine(
+  'html',
+  ngExpressEngine({
+    bootstrap: AppServerModuleNgFactory,
+    providers: [provideModuleMap(LAZY_MODULE_MAP)]
+  })
+);
 
 server.set('view engine', 'html');
 server.set('views', join(DIST_FOLDER, 'browser'));
 
-server.use('/', express.static(join(DIST_FOLDER, 'browser'), {index: false}));
+server.post('/log', (req, res) => {
+  // tslint:disable-next-line
+  console.log('Received log message:', req);
+});
+
+server.use('/', express.static(join(DIST_FOLDER, 'browser'), { index: false }));
 
 server.get('*', (req, res) => {
   res.render(join(DIST_FOLDER, 'browser', 'index.html'), {

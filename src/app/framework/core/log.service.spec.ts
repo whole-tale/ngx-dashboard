@@ -5,7 +5,7 @@ import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@ang
 import { ConfigLoader, ConfigModule, ConfigService, ConfigStaticLoader } from '@ngx-config/core';
 import { t } from '~/app/framework/testing';
 
-import { ConsoleService } from './console.service';
+import { LocalConsoleService } from './local-console.service';
 import { LogService } from './log.service';
 import { LogLevel } from './models/log-level';
 
@@ -31,7 +31,7 @@ const testModuleConfig = (logLevel: LogLevel) => {
         useValue: logLevel
       },
       {
-        provide: ConsoleService,
+        provide: LocalConsoleService,
         useValue: console
       },
       LogService

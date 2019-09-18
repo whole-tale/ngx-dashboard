@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Console } from './models/console';
 
 @Injectable()
-export class ConsoleService implements Console {
+export class LocalConsoleService implements Console {
   log(m: any, c?: any): void {
     // tslint:disable-next-line:no-console
     if (!console.log) {

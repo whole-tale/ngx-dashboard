@@ -1,11 +1,11 @@
 import { ElementRef, ModuleWithProviders, NgModule, PLATFORM_ID } from '@angular/core';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ANALYTICS_PROVIDERS } from '@framework/analytics';
+import { LocalConsoleService, LogService, WindowService } from '@framework/core';
 import { CacheService } from '@ngx-cache/core';
 import { ConfigService } from '@ngx-config/core';
 import { MetaService } from '@ngx-meta/core';
 import { get } from 'lodash/fp';
-import { ANALYTICS_PROVIDERS } from '~/app/framework/analytics';
-import { ConsoleService, LogService, WindowService } from '~/app/framework/core';
 import { getOrNil } from '~/app/shared';
 
 import { MockCacheService } from './mocks/cache-service.mock';
@@ -26,7 +26,7 @@ import { MockWindow } from './mocks/window.mock';
       useClass: MockWindow
     },
     {
-      provide: ConsoleService,
+      provide: LocalConsoleService,
       useValue: console
     },
     LogService,

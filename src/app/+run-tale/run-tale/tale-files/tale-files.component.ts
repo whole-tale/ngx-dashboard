@@ -1,5 +1,7 @@
-import { ChangeDetectorRef, Component, Input, NgZone, OnChanges, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnInit, Output } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Dataset } from '@api/models/dataset';
 import { Tale } from '@api/models/tale';
 import { CollectionService } from '@api/services/collection.service';
 import { DatasetService } from '@api/services/dataset.service';
@@ -7,6 +9,7 @@ import { FileService } from '@api/services/file.service';
 import { FolderService } from '@api/services/folder.service';
 import { ItemService } from '@api/services/item.service';
 import { ResourceService } from '@api/services/resource.service';
+import { TaleService } from '@api/services/tale.service';
 import { WorkspaceService } from '@api/services/workspace.service';
 import { TokenService } from '@api/token.service';
 import { FileElement } from '@files/models/file-element';
@@ -16,9 +19,12 @@ import { WindowService } from '@framework/core/window.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { BehaviorSubject } from 'rxjs';
 
+import { SelectDataDialogComponent } from '../modals/select-data-dialog/select-data-dialog.component';
+
 const URL = window['webkitURL'] || window.URL;  // tslint:disable-line
 
 // TODO: Is there a better place to store these constants?
+const HOME_ROOT_NAME = 'Home';
 const DATA_ROOT_PATH = '/collection/WholeTale Catalog/WholeTale Catalog';
 const WORKSPACES_ROOT_PATH = '/collection/WholeTale Workspaces/WholeTale Workspaces';
 
@@ -49,6 +55,9 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   @Input() tale: Tale;
   @Input() taleId: string;
 
+  @Output() readonly taleUpdated = new EventEmitter<Tale>();
+
+  homeRoot: FileElement;
   dataRoot: FileElement;
   wsRoot: FileElement;
   
@@ -76,10 +85,28 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     private workspaceService: WorkspaceService,
     private fileService: FileService,
     private tokenService: TokenService,
+    private taleService: TaleService,
     private resourceService: ResourceService,
     private window: WindowService,
     private truncate: TruncatePipe,
-  ) {
+    private dialog: MatDialog
+  ) {}
+
+  ngOnInit(): void {
+    this.detectQueryString();
+
+    // Fetch Home rootUrl
+    this.tokenService.user.subscribe(user => {
+      const homeRootParams = { parentId: user._id, parentType: ParentType.User, text: HOME_ROOT_NAME };
+      this.folderService.folderFind(homeRootParams)
+                        .pipe(enterZone(this.zone))
+                        .subscribe(folders => {
+        if (folders && folders.length) {
+          this.homeRoot = folders[0];
+        }
+      });
+    });
+
     // Fetch Data root
     const dataRootParams = { test: false, path: DATA_ROOT_PATH };
     this.resourceService.resourceLookup(dataRootParams)
@@ -95,10 +122,6 @@ export class TaleFilesComponent implements OnInit, OnChanges {
                         .subscribe(resource => {
       this.wsRoot = resource;
     });
-  }
-
-  ngOnInit(): void {
-    this.detectQueryString();
   }
 
   ngOnChanges(): void {
@@ -170,14 +193,14 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     switch (this.currentNav) {
       case 'home':        
         // Fetch folders in the home folder
-        this.folderService.folderFind({ parentId: this.currentFolderId, parentType: ParentType.Folder })
+        this.folderService.folderFind({ parentId: this.homeRoot._id, parentType: ParentType.Folder })
                         .pipe(enterZone(this.zone))
                         .subscribe(folders => {
                           this.folders.next(folders);
                         });
 
         // Fetch items in the home folder
-        this.itemService.itemFind({ folderId: this.currentFolderId })
+        this.itemService.itemFind({ folderId: this.homeRoot._id })
                         .pipe(enterZone(this.zone))
                         .subscribe(items => {
                           this.files.next(items);
@@ -287,20 +310,38 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     this.resourceService.resourcePath(params)
                         .pipe(enterZone(this.zone))
                         .subscribe((resp: string) => {
-      if (this.currentNav === 'external_data') {
-        if (resp.indexOf(DATA_ROOT_PATH) !== -1) {
-          const pathSuffix = resp.split(DATA_ROOT_PATH)[1];
+      let pathSuffix: string;                    
+      switch (this.currentNav) {
+        case 'external_data':
+          if (resp.indexOf(DATA_ROOT_PATH) !== -1) {
+            pathSuffix = resp.split(DATA_ROOT_PATH)[1];
+          } else {
+            this.logger.error("Error: malformed resource path encountered... aborting:", resp);
+          }
+          break;
+        case 'tale_workspace':
+          if (resp.indexOf(this.taleId) !== -1) {
+            pathSuffix = resp.split(this.taleId)[1];
+          } else {
+            this.logger.error("Error: malformed resource path encountered... aborting:", resp);
+          }
+          break;
+        case 'home':
+          if (resp.indexOf(HOME_ROOT_NAME) !== -1) {
+            pathSuffix = resp.split(HOME_ROOT_NAME)[1];
+          } else {
+            this.logger.error("Error: malformed resource path encountered... aborting:", resp);
+          }
+          break;
+        default:
+          this.logger.error("Error: unexpected nav encountered... aborting:", this.currentNav);
+          break;
+      }
+
+      if (pathSuffix) {
+        this.zone.run(() => {
           this.currentPath = this.truncatePathSegments(pathSuffix);
-        } else {
-          this.logger.error("Error: malformed resource path encountered... aborting:", resp);
-        }
-      } else if (this.currentNav === 'tale_workspace') {
-        if (resp.indexOf(this.taleId) !== -1) {
-          const pathSuffix = resp.split(this.taleId)[1];
-          this.currentPath = this.truncatePathSegments(pathSuffix);
-        } else {
-          this.logger.error("Error: malformed resource path encountered... aborting:", resp);
-        }
+        });
       }
     });
   }
@@ -499,6 +540,27 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       const url = `${this.itemService.rootUrl}/${ItemService.itemDownloadPath.replace('{id}', element._id)}?contentDisposition=attachment`;
       window.open(url, "_blank");
     }
+  }
+  
+  openSelectDataModal(): void {
+    const dialogRef = this.dialog.open(SelectDataDialogComponent);
+    dialogRef.afterClosed().subscribe((datasets: Array<Dataset>) => {
+      if (!datasets) { return; }
+
+      const tale = this.tale;
+      tale.dataSet = [];
+      datasets.forEach(ds => {
+        // TODO: leading slash?
+        tale.dataSet.push({ itemId: ds._id, mountPath: ds.name })
+      });
+
+      this.taleService.taleUpdateTale({ id: tale._id, tale}).subscribe(response => {
+        this.logger.debug("Successfully updated Tale datasets:", response);
+        this.taleUpdated.emit(response);
+      }, err => {
+        this.logger.error("Failed to update Tale:", err);
+      });
+    });
   }
 
   navigate(): void {

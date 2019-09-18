@@ -2,9 +2,6 @@
 
   <div class="four wide column">
     <div class="ui secondary fluid vertical pointing menu">
-      <!--<a class="item" [ngClass]="{ 'active': isNavActive('home') }" (click)="switchNav('home')">
-        Home Folder
-      </a>-->
       <a *ngIf="tale._accessLevel > 1" class="item" [ngClass]="{ 'active': isNavActive('home') }" (click)="switchNav('home')">
         Home
       </a>
@@ -18,6 +15,7 @@
   </div>
   <div class="twelve wide stretched column">
     <div class="ui segment">
+      <button (click)="openSelectDataModal()">Register</button>
       <app-file-explorer id="tale-files-browser"
         [fileElements]="(folders | async).concat(files | async)"
         [path]="currentPath"
