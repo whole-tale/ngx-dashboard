@@ -1,18 +1,42 @@
-<h1 mat-dialog-title>Tale Workspaces</h1>
+<h1 mat-dialog-title>Select Data</h1>
 
 <mat-dialog-content>
-  <form class="ui form">
-    <div class="field">
-      <input matInput type="text" name="folder-name" placeholder="Folder Name" [(ngModel)]="folderName" required />
+  <div class="ui grid">
+    <div class="row">
+      <div class="four wide column">
+        <div class="ui vertical menu fluid dta">
+          <a class="item" [ngClass]="{ 'active': isNavActive('tale_workspaces') }" (click)="activateNav('tale_workspaces')">
+            <p>Tale Workspaces</p>
+            <span>Other accessible Tales</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="twelve wide column" style="min-height: 300px; min-width: 300px; padding: 20px 20px 40px 0;">
+        <table class="ui compact striped table" *ngIf="isNavActive('tale_workspaces')">
+          <tbody>
+            <tr *ngFor="let tale of tales; index as i; trackBy:trackById">
+              <td width="5%" class="collapsing">
+                <div class="ui fitted slider checkbox">
+                  <input type="checkbox"> <label></label>
+                </div>
+              </td>
+              <td width="5%"><i class="fas fa-folder fa-fw"></i></td>
+              <td width="50%">{{ tale.title | truncate:45 }}</td>
+              <td width="20%" *ngIf="(tale | taleImage | async) as environment">{{ environment.name }}</td>
+              <td width="20%" *ngIf="(tale | taleCreator | async) as creator">{{ creator.firstName }} {{ creator.lastName }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-    <!--<button class="ui button" type="submit">Submit</button>-->
-  </form>
+  </div>
 </mat-dialog-content>
 
 <mat-dialog-actions>
   <button class="ui black deny button" mat-dialog-close>Cancel</button>
-  <button class="ui positive right labeled icon button" [mat-dialog-close]="folderName">
-    Submit
+  <button class="ui primary right labeled icon button" [mat-dialog-close]="folderName">
+    Select
     <i class="checkmark icon"></i>
   </button>
 </mat-dialog-actions>

@@ -35,25 +35,40 @@
               <a href="https://wholetale.readthedocs.io/en/stable/users_guide/manage.html#data-folder">data registration guide</a>.
             </p>
           </div>
-          <div class="ui tertiary segment white-bg">
+
+          <div class="search-results" [ngClass]="{ 'active inverted dimmer': searchResultsLoading }" *ngIf="showSearchResults">
+            <div class="ui secondary segment" id="results" style="background-color: white">
+              <div class="ui active inverted dimmer" *ngIf="searchResultsLoading">
+                <div class="ui text loader">Loading</div>
+              </div>
+              <div *ngIf="!searchResultsLoading">
+                <p>Found {{ searchResults.length }} result{{ searchResults.length > 1 ? 's' : '' }}</p>
+                <select id="harvester-dropdown" *ngIf="searchResults.length > 0" name="new-dataset" class="ui fluid dropdown" [(ngModel)]="selectedResult" (ngModelChange)="onSelectedResultChanged($event)">
+                  <option *ngFor="let result of searchResults; index as i; trackBy:trackByDataId" [ngValue]="result">{{ result.name }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <div class="ui tertiary segment white-bg" *ngIf="selectedResult">
             <div class="inline field">
               <label>Folder Name</label>
               <input [(ngModel)]="registrationFolderName" type="text">
             </div>
-            <p>DOI:</p>
-            <p>DataID:</p>
-            <p>Repository:</p>
-            <p>Size:</p>
+            <p>DOI: {{ selectedResult.doi }}</p>
+            <p>DataID: {{ selectedResult.dataId }}</p>
+            <p>Repository: {{ selectedResult.repository }}</p>
+            <p>Size: {{ selectedResult.size | fileSize }}</p>
           </div>
         </div>
 
         <table class="ui compact celled definition table" *ngIf="!isNavActive('web')">
           <thead class="full-width">
             <tr>
-              <th></th>
-              <th>Name</th>
-              <th>Size</th>
-              <th>Date</th>
+              <th width="10%"></th>
+              <th width="55%">Name</th>
+              <th width="15%">Size</th>
+              <th width="20%">Date</th>
             </tr>
           </thead>
 
@@ -86,20 +101,12 @@
       </div>
     </div>
   </div>
-
-
-
-  <!--<form class="ui form">
-    <div class="field">
-      <input matInput type="text" name="folder-name" placeholder="Folder Name" [(ngModel)]="folderName" required />
-    </div>
-  </form>-->
 </mat-dialog-content>
 
 <mat-dialog-actions>
   <button class="ui black deny button" mat-dialog-close>Cancel</button>
-  <button class="ui positive right labeled icon button" [mat-dialog-close]="folderName">
-    Submit
+  <button class="ui primary right labeled icon button" [mat-dialog-close]="folderName">
+    Select
     <i class="checkmark icon"></i>
   </button>
 </mat-dialog-actions>

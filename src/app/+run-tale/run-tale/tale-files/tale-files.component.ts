@@ -20,6 +20,7 @@ import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { BehaviorSubject } from 'rxjs';
 
 import { SelectDataDialogComponent } from '../modals/select-data-dialog/select-data-dialog.component';
+import { TaleWorkspacesDialogComponent } from '../modals/tale-workspaces-dialog/tale-workspaces-dialog.component';
 
 const URL = window['webkitURL'] || window.URL;  // tslint:disable-line
 
@@ -339,9 +340,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       }
 
       if (pathSuffix) {
-        this.zone.run(() => {
-          this.currentPath = this.truncatePathSegments(pathSuffix);
-        });
+        this.currentPath = this.truncatePathSegments(pathSuffix);
       }
     });
   }
@@ -560,6 +559,15 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       }, err => {
         this.logger.error("Failed to update Tale:", err);
       });
+    });
+  }
+  
+  openTaleWorkspacesModal(): void {
+    const dialogRef = this.dialog.open(TaleWorkspacesDialogComponent);
+    dialogRef.afterClosed().subscribe((workspaces: Array<any>) => {
+      if (!workspaces) { return; }
+
+      // TODO: Import selected files into workspace
     });
   }
 

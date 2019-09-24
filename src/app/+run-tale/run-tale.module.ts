@@ -7,6 +7,8 @@ import { SharedModule } from '@framework/core';
 import { SafePipe } from '@framework/core/safe.pipe';
 import { TruncatePipe } from '@framework/core/truncate.pipe';
 import { MaterialModule } from '@framework/material';
+import { TaleCreatorPipe } from '@tales/pipes/tale-creator.pipe';
+import { TaleImagePipe } from '@tales/pipes/tale-image.pipe';
 import { TalesModule } from '@tales/tales.module';
 import { MarkdownModule, MarkedOptions } from 'ngx-markdown';
 
@@ -20,9 +22,10 @@ import { TaleFilesComponent } from './run-tale/tale-files/tale-files.component';
 import { TaleInteractComponent } from './run-tale/tale-interact/tale-interact.component';
 import { TaleMetadataComponent } from './run-tale/tale-metadata/tale-metadata.component';
 
+
 @NgModule({
   imports: [CommonModule, RouterModule.forChild(routes), SharedModule, MaterialModule, MatDialogModule, FilesModule, TalesModule, MarkdownModule.forRoot()],
-  providers: [TruncatePipe, SafePipe],
+  providers: [TruncatePipe, SafePipe, TaleCreatorPipe, TaleImagePipe],
   declarations: [
     RunTaleComponent,
     TaleFilesComponent,
