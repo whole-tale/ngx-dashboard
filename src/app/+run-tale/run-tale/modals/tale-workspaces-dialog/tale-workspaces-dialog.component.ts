@@ -18,7 +18,9 @@ enum AccessLevel {
 })
 export class TaleWorkspacesDialogComponent implements OnInit {
   selectedNav = 'tale_workspaces';
-  tales: Array<Tale> = new Array<Tale>();
+  tales: Array<Tale> = [];
+
+  selected: Array<string> = [];
 
   constructor(private logger: LogService, private taleService: TaleService) {}
 
@@ -29,6 +31,15 @@ export class TaleWorkspacesDialogComponent implements OnInit {
     }, err => {
       this.logger.error("Failed to fetch Tales:", err)
     });
+  }
+  
+  toggledCheckbox(e: any, tale: Tale) {
+    if (e.target.checked) {
+      this.selected.push(tale._id);
+    } else {
+      const index = this.selected.indexOf(tale._id);
+      this.selected.splice(index, 1);
+    }
   }
 
   trackById(index: number, workspace: any): string {

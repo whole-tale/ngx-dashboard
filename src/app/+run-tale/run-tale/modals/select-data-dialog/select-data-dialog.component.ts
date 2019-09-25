@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Dataset } from '@api/models/dataset';
+import { Tale } from '@api/models/tale';
 import { DatasetService } from '@api/services/dataset.service';
 import { RepositoryService } from '@api/services/repository.service';
 import { LogService }  from '@framework/core/log.service';
@@ -21,7 +22,7 @@ export class SelectDataDialogComponent implements OnInit {
   showSearchResults = false;
   searchResultsLoading = false;
   searchResults :any = [];
-  selectedResult: any;
+  selected: Array<string> = [];
 
   // TODO: when to use prod URL?
   devUrl = 'https://dev.nceas.ucsb.edu/knb/d1/mn/v2';
@@ -53,6 +54,15 @@ export class SelectDataDialogComponent implements OnInit {
     });
   }
 
+  toggledCheckbox(e: any, dataset: Dataset) {
+    if (e.target.checked) {
+      this.selected.push(dataset._id);
+    } else {
+      const index = this.selected.indexOf(dataset._id);
+      this.selected.splice(index, 1);
+    }
+  }
+
   onSelectedResultChanged(result: any): void {
     if (event) {
       this.registrationFolderName = result.name;
@@ -73,5 +83,6 @@ export class SelectDataDialogComponent implements OnInit {
 
   activateNav(nav: string): void {
     this.selectedNav = nav;
+    this.selected = [];
   }
 }

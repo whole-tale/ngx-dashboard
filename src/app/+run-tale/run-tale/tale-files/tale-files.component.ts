@@ -96,16 +96,15 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.detectQueryString();
 
-    // Fetch Home rootUrl
-    this.tokenService.user.subscribe(user => {
-      const homeRootParams = { parentId: user._id, parentType: ParentType.User, text: HOME_ROOT_NAME };
-      this.folderService.folderFind(homeRootParams)
-                        .pipe(enterZone(this.zone))
-                        .subscribe(folders => {
-        if (folders && folders.length) {
-          this.homeRoot = folders[0];
-        }
-      });
+    // Fetch Home root
+    const user = this.tokenService.user.value;
+    const homeRootParams = { parentId: user._id, parentType: ParentType.User, text: HOME_ROOT_NAME };
+    this.folderService.folderFind(homeRootParams)
+                      .pipe(enterZone(this.zone))
+                      .subscribe(folders => {
+      if (folders && folders.length) {
+        this.homeRoot = folders[0];
+      }
     });
 
     // Fetch Data root

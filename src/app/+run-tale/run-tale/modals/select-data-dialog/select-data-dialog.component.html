@@ -6,12 +6,12 @@
       <div class="four wide column">
         <div class="ui vertical menu fluid dta">
           <a class="item" [ngClass]="{ 'active': isNavActive('web') }" (click)="activateNav('web')">
-            <p>Web</p>
+            <p style="margin-bottom:0">Web</p>
             <span>DOI or URL</span>
           </a>
           <!--<a class="item" [ngClass]="{ 'active': isNavActive('mine') }" (click)="activateNav('mine')">My Data</a>-->
           <a class="item" [ngClass]="{ 'active': isNavActive('catalog') }" (click)="activateNav('catalog')">
-            <p>WT Catalog</p>
+            <p style="margin-bottom:0">WT Catalog</p>
             <span>Already registered in WT</span>
           </a>
         </div>
@@ -75,8 +75,8 @@
           <tbody *ngIf="isNavActive('mine')">
             <tr *ngFor="let dataset of (myDatasets | async); index as i; trackBy:trackById">
               <td class="collapsing">
-                <div class="ui fitted slider checkbox">
-                  <input type="checkbox"> <label></label>
+                <div class="ui fitted checkbox">
+                  <input type="checkbox" (change)="toggledCheckbox($event, dataset)"> <label></label>
                 </div>
               </td>
               <td>{{ dataset.name | truncate:65 }}</td>
@@ -88,8 +88,8 @@
           <tbody *ngIf="isNavActive('catalog')">
             <tr *ngFor="let dataset of (allDatasets | async); index as i; trackBy:trackById">
               <td class="collapsing">
-                <div class="ui fitted slider checkbox">
-                  <input type="checkbox"> <label></label>
+                <div class="ui fitted checkbox">
+                  <input type="checkbox" (change)="toggledCheckbox($event, dataset)"> <label></label>
                 </div>
               </td>
               <td>{{ dataset.name | truncate:65 }}</td>
@@ -98,6 +98,7 @@
             </tr>
           </tbody>
         </table>
+        <pre>{{ selected | json }}</pre>
       </div>
     </div>
   </div>
@@ -105,7 +106,7 @@
 
 <mat-dialog-actions>
   <button class="ui black deny button" mat-dialog-close>Cancel</button>
-  <button class="ui primary right labeled icon button" [mat-dialog-close]="folderName">
+  <button class="ui primary right labeled icon button" [mat-dialog-close]="selected">
     Select
     <i class="checkmark icon"></i>
   </button>
