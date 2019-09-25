@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { Tale } from '@api/models/tale';
+import { User } from '@api/models/user';
+import { TokenService } from '@api/token.service';
 
 import { PublicTalesComponent } from '../public-tales/public-tales.component';
 
@@ -10,6 +12,10 @@ import { PublicTalesComponent } from '../public-tales/public-tales.component';
 export class MyTalesComponent extends PublicTalesComponent {
   private myStoppedTales: Array<Tale> = [];
   private myRunningTales: Array<Tale> = [];
+  
+  get user(): User {
+    return this.tokenService.user.value;
+  }
 
   get instanceCount(): number {
       return Object.keys(this.instances).length;
