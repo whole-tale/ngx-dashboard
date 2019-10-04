@@ -15,14 +15,20 @@
   </div>
   <div class="twelve wide stretched column">
     <div class="ui segment">
-      <button *ngIf="isNavActive('external_data')" class="ui primary button" (click)="openSelectDataModal()">Select Data...</button>
-      <button *ngIf="isNavActive('tale_workspace')" class="ui primary button" (click)="openTaleWorkspacesModal()">Select Data...</button>
+      <!--<button *ngIf="isNavActive('external_data')" class="ui primary button" (click)="openSelectDataModal()">Select Data...</button>
+      <button *ngIf="isNavActive('external_data')" class="ui primary button" (click)="openRegisterDataModal()">Register Data...</button>
+      <button *ngIf="isNavActive('tale_workspace')" class="ui primary button" (click)="openTaleWorkspacesModal()">Select Data...</button>-->
       <app-file-explorer id="tale-files-browser"
         [fileElements]="(folders | async).concat(files | async)"
         [path]="currentPath"
+        [tale]="tale"
+        [load]="load"
         [placeholderMessage]="placeholderMessage"
         [preventNavigation]="isNavActive('external_data')"
         [readOnly]="isNavActive('external_data')"
+        [openSelectDataModal]="openSelectDataModal"
+        [openTaleWorkspacesModal]="openTaleWorkspacesModal"
+        [openRegisterDataModal]="openRegisterDataModal"
         [currentNav]="currentNav"
         [canNavigateUp]="canNavigateUp"
         (folderAdded)="addFolder($event)"

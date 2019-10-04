@@ -18,8 +18,11 @@ export class RemoteConsoleService implements Console {
         this.logger.debug(message, context);
       },
       err => {
-        context.originalMessage = message;
-        // this.logger.error(`Failed to relay a log message: ${err}`, context);
+        if (context) {
+          context.originalMessage = message;
+        }
+        // TODO: Enable once /log endpoint has been added
+        // this.logger.error(`Failed to relay a log message: ${err}`, context ? context : message);
       }
     );
 

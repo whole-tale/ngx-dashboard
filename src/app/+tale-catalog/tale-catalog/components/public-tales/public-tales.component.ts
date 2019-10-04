@@ -9,7 +9,7 @@ import { UserService } from '@api/services/user.service';
 import { TokenService } from '@api/token.service';
 import { LogService } from '@framework/core/log.service';
 import { TaleAuthor } from '@tales/models/tale-author';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 import { DeleteTaleModalComponent } from '../../modals/delete-tale-modal/delete-tale-modal.component';
@@ -22,9 +22,11 @@ declare var $: any;
   styleUrls: ['./public-tales.component.scss']
 })
 export class PublicTalesComponent implements OnInit {
-  tales$: Observable<Array<Tale>>;
+  tales$: Observable<Array<Tale>> = new Observable<Array<Tale>>();
   tales: Array<Tale> = [];
   publicTales: Array<Tale> = [];
+
+  user: User;
 
   instances: Map<string, Instance> = new Map<string, Instance> ();
   creators: Map<string, User> = new Map<string, User> ();
@@ -35,11 +37,15 @@ export class PublicTalesComponent implements OnInit {
     private logger: LogService,
     private taleService: TaleService,
     private instanceService: InstanceService,
-    private userService: UserService,
-    protected tokenService: TokenService
+    private userService: UserService
   ) { }
 
   ngOnInit(): void {
+    const listTalesParams = {};
+    this.tales$ = this.taleService.taleListTales(listTalesParams);
+    this.userService.userGetMe().subscribe(user => {
+      this.user = user;
+    });
     this.refresh();
   }
 
@@ -76,25 +82,24 @@ export class PublicTalesComponent implements OnInit {
         // Convert array to map of taleId -> instance
         this.instances = Object.assign({}, ...instances.map(i => ({[i.taleId]: i})));
       });
-    }, err => {
+    }, (err: any) => {
       this.logger.error("Failed to GET /instance:", err);
     });
 
     // Fetch the list of public tales
     const listTalesParams = {};
-    this.tales$ = this.taleService.taleListTales(listTalesParams)
-    this.tales$.subscribe((tales: Array<Tale>) => {
+    this.taleService.taleListTales(listTalesParams).subscribe((tales: Array<Tale>) => {
       this.zone.run(() => {
         this.tales = tales;
       });
 
       // For each tale, also fetch its creator
       this.tales.forEach(tale => {
-        this.userService.userGetUser(tale.creatorId).subscribe(creator => {
+        this.userService.userGetUser(tale.creatorId).subscribe((creator: User) => {
           this.zone.run(() => {
             this.creators[tale._id] = creator;
           });
-        }, err => {
+        }, (err: any) => {
           this.logger.error(`Failed to GET /user/${tale.creatorId}:`, err);
         });
       });

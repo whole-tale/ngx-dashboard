@@ -1,8 +1,9 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnInit, Output } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Dataset } from '@api/models/dataset';
 import { Tale } from '@api/models/tale';
+import { User } from '@api/models/user';
 import { CollectionService } from '@api/services/collection.service';
 import { DatasetService } from '@api/services/dataset.service';
 import { FileService } from '@api/services/file.service';
@@ -10,8 +11,8 @@ import { FolderService } from '@api/services/folder.service';
 import { ItemService } from '@api/services/item.service';
 import { ResourceService } from '@api/services/resource.service';
 import { TaleService } from '@api/services/tale.service';
+import { UserService } from '@api/services/user.service';
 import { WorkspaceService } from '@api/services/workspace.service';
-import { TokenService } from '@api/token.service';
 import { FileElement } from '@files/models/file-element';
 import { LogService } from '@framework/core/log.service';
 import { TruncatePipe } from '@framework/core/truncate.pipe';
@@ -19,6 +20,7 @@ import { WindowService } from '@framework/core/window.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { BehaviorSubject } from 'rxjs';
 
+import { RegisterDataDialogComponent } from '../modals/register-data-dialog/register-data-dialog.component';
 import { SelectDataDialogComponent } from '../modals/select-data-dialog/select-data-dialog.component';
 import { TaleWorkspacesDialogComponent } from '../modals/tale-workspaces-dialog/tale-workspaces-dialog.component';
 
@@ -85,7 +87,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     private datasetService: DatasetService,
     private workspaceService: WorkspaceService,
     private fileService: FileService,
-    private tokenService: TokenService,
+    private userService: UserService,
     private taleService: TaleService,
     private resourceService: ResourceService,
     private window: WindowService,
@@ -97,14 +99,15 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     this.detectQueryString();
 
     // Fetch Home root
-    const user = this.tokenService.user.value;
-    const homeRootParams = { parentId: user._id, parentType: ParentType.User, text: HOME_ROOT_NAME };
-    this.folderService.folderFind(homeRootParams)
-                      .pipe(enterZone(this.zone))
-                      .subscribe(folders => {
-      if (folders && folders.length) {
-        this.homeRoot = folders[0];
-      }
+    this.userService.userGetMe().subscribe((user : User) => {
+      const homeRootParams = { parentId: user._id, parentType: ParentType.User, text: HOME_ROOT_NAME };
+      this.folderService.folderFind(homeRootParams)
+                        .pipe(enterZone(this.zone))
+                        .subscribe(folders => {
+        if (folders && folders.length) {
+          this.homeRoot = folders[0];
+        }
+      });
     });
 
     // Fetch Data root
@@ -507,27 +510,31 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     }
   }
 
-  copyElement(element: FileElement): void {
-    const params = { id: element._id };
-    if (element._modelType === 'folder') {
-      this.folderService.folderCopyFolder(params)
+  copyElement(element: FileElement): Promise<FileElement> {
+    return new Promise((resolve, reject) => {
+      const params = { id: element._id };
+      if (element._modelType === 'folder') {
+        this.folderService.folderCopyFolder(params)
+                          .pipe(enterZone(this.zone))
+                          .subscribe((resp: FileElement) => {
+          this.logger.debug("Folder copied successfully:", resp);
+          const folders = this.folders.value;
+          folders.push(resp);
+          this.folders.next(folders);
+          resolve(resp);
+        }, reject);
+      } else if (element._modelType === 'item') {
+        this.itemService.itemCopyItem(params)
                         .pipe(enterZone(this.zone))
-                        .subscribe(resp => {
-        this.logger.debug("Folder copied successfully:", resp);
-        const folders = this.folders.value;
-        folders.push(resp);
-        this.folders.next(folders);
-      });
-    } else if (element._modelType === 'item') {
-      this.itemService.itemCopyItem(params)
-                      .pipe(enterZone(this.zone))
-                      .subscribe(resp => {
-        this.logger.debug("Item copied successfully:", resp);
-        const files = this.files.value;
-        files.push(resp);
-        this.files.next(files);
-      });
-    }
+                        .subscribe((resp:FileElement) => {
+          this.logger.debug("Item copied successfully:", resp);
+          const files = this.files.value;
+          files.push(resp);
+          this.files.next(files);
+          resolve(resp);
+        }, reject);
+      }
+    });
   }
 
   downloadElement(element: FileElement): void {
@@ -540,8 +547,26 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     }
   }
   
+  
+  // Expected parameter format:
+  //    dataMap: [{"name":"Elevation per SASAP region and Hydrolic Unit (HUC8) boundary for Alaskan watersheds","dataId":"resource_map_doi:10.5063/F1Z60M87","repository":"DataONE","doi":"10.5063/F1Z60M87","size":10293583}]
+  openRegisterDataModal(): void {
+    const dialogRef = this.dialog.open(RegisterDataDialogComponent);
+    dialogRef.afterClosed().subscribe((selectedResult: any) => {
+      if (!selectedResult) { return; }
+      const dataMap = JSON.stringify([selectedResult]);
+      const params = { dataMap };
+      this.datasetService.datasetImportData(params).subscribe(resp => {
+        this.logger.info("Dataset registered:", resp);
+      });
+    });
+  }
+  
   openSelectDataModal(): void {
-    const dialogRef = this.dialog.open(SelectDataDialogComponent);
+    const config: MatDialogConfig = {
+      data: { tale: this.tale }
+    };
+    const dialogRef = this.dialog.open(SelectDataDialogComponent, config);
     dialogRef.afterClosed().subscribe((datasets: Array<Dataset>) => {
       if (!datasets) { return; }
 
@@ -552,9 +577,10 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         tale.dataSet.push({ itemId: ds._id, mountPath: ds.name })
       });
 
-      this.taleService.taleUpdateTale({ id: tale._id, tale}).subscribe(response => {
+      this.taleService.taleUpdateTale({ id: tale._id, tale }).subscribe(response => {
         this.logger.debug("Successfully updated Tale datasets:", response);
         this.taleUpdated.emit(response);
+        this.load();
       }, err => {
         this.logger.error("Failed to update Tale:", err);
       });
@@ -563,10 +589,38 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   
   openTaleWorkspacesModal(): void {
     const dialogRef = this.dialog.open(TaleWorkspacesDialogComponent);
-    dialogRef.afterClosed().subscribe((workspaces: Array<any>) => {
-      if (!workspaces) { return; }
+    dialogRef.afterClosed().subscribe((result: { action: string, selected: Array<Tale> }) => {
+      if (!result) { return; }
 
       // TODO: Import selected files into workspace
+      this.logger.info('Result', result);
+
+      switch (result.action) {
+        case 'move':
+          this.logger.debug('Moving folders/files to workspace:', result.selected);
+          result.selected.forEach((sel, i) => {
+            this.logger.debug(`Moving item ${i}/${result.selected.length} to workspace:`, sel);
+            this.folderService.folderGetFolder(sel.workspaceId).subscribe(workspace => {
+              this.moveElement({ element: workspace, moveTo: this.wsRoot });
+            });
+          });
+          break;
+        case 'copy':
+          this.logger.debug('Copying folders/files to workspace:', result.selected);
+          result.selected.forEach((sel, i) => {
+            this.logger.debug(`Copying item ${i}/${result.selected.length} to workspace:`, sel);
+            this.folderService.folderGetFolder(sel.workspaceId).subscribe(workspace => {
+              this.copyElement(workspace).then(itemCopy => {
+                this.logger.debug(`Moving copied item ${i}/${result.selected.length} to workspace:`, itemCopy);
+                this.moveElement({ element: itemCopy, moveTo: this.wsRoot });
+              });
+            });
+          });
+          break;
+        default:
+          this.logger.error("Error: unexpected action encountered from TaleWorkspacesDialogComponent:", result.action);
+          break;
+      }
     });
   }
 

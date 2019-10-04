@@ -5,7 +5,7 @@ import { User } from '@api/models/user';
 import { UserService } from '@api/services/user.service';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { LogService } from '@framework/core/log.service';
-import { BehaviorSubject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 
 @Injectable()
 export class TokenService {
@@ -13,7 +13,7 @@ export class TokenService {
   jwt: JwtHelperService = new JwtHelperService();
 
   // Cache the user that this token represents (for display)
-  user: BehaviorSubject<User> = new BehaviorSubject<User>({});
+  user: ReplaySubject<User> = new ReplaySubject<User>();
 
   constructor(private readonly userService: UserService, private readonly logger: LogService) {}
 

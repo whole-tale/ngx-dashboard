@@ -1,0 +1,70 @@
+<h1 mat-dialog-title>Select Data</h1>
+
+<mat-dialog-content>
+  <div class="ui grid">
+    <div class="row">
+      <div class="four wide column">
+        <div class="ui vertical menu fluid dta">
+          <a class="item" [ngClass]="{ 'active': isNavActive('web') }" (click)="activateNav('web')">
+            <p style="margin-bottom:0">Web</p>
+            <span>DOI or URL</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="twelve wide column" style="min-height: 300px; min-width: 300px; padding: 20px 20px 40px 0;">
+        <div class="ui form" [ngClass]="{ 'error': registrationError }" *ngIf="isNavActive('web')">
+          <div class="inline field">
+            <label>
+              Reference URI
+              <i class="info circle grey icon" data-tooltip="The DOI or URL of the target dataset" data-position="bottom"></i>
+            </label>
+            <input id="searchbox" [(ngModel)]="registrationUrl" type="text">
+            <div class="ui inline button" (click)="searchDatasetUrl()">Search</div>
+          </div>
+          <div class="info-block">
+            <p>
+              The URL or DOI of the data object. Data packages can be imported into WholeTale from 
+              <a href="https://www.dataone.org">DataONE</a> and select <a href="https://www.globus.org">Globus</a> 
+              repositories. For a full list of DataONE member nodes and supported Globus repositories, visit the 
+              <a href="https://wholetale.readthedocs.io/en/stable/users_guide/manage.html#data-folder">data registration guide</a>.
+            </p>
+          </div>
+
+          <div class="search-results" [ngClass]="{ 'active inverted dimmer': searchResultsLoading }" *ngIf="showSearchResults">
+            <div class="ui secondary segment" id="results" style="background-color: white">
+              <div class="ui active inverted dimmer" *ngIf="searchResultsLoading">
+                <div class="ui text loader">Loading</div>
+              </div>
+              <div *ngIf="!searchResultsLoading">
+                <p>Found {{ searchResults.length }} result{{ searchResults.length > 1 ? 's' : '' }}</p>
+                <select id="harvester-dropdown" *ngIf="searchResults.length > 0" name="new-dataset" class="ui fluid dropdown" [(ngModel)]="selectedResult" (ngModelChange)="onSelectedResultChanged($event)">
+                  <option *ngFor="let result of searchResults; index as i; trackBy:trackByDataId" [ngValue]="result">{{ result.name }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <div class="ui tertiary segment white-bg" *ngIf="selectedResult">
+            <div class="inline field">
+              <label>Folder Name</label>
+              <input [(ngModel)]="registrationFolderName" type="text">
+            </div>
+            <p>DOI: {{ selectedResult.doi }}</p>
+            <p>DataID: {{ selectedResult.dataId }}</p>
+            <p>Repository: {{ selectedResult.repository }}</p>
+            <p>Size: {{ selectedResult.size | fileSize }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button class="ui black deny button" mat-dialog-close>Cancel</button>
+  <button class="ui primary right labeled icon button" [disabled]="!selectedResult" [mat-dialog-close]="selectedResult">
+    Register
+    <i class="checkmark icon"></i>
+  </button>
+</mat-dialog-actions>

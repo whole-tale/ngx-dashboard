@@ -36,6 +36,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
       //    environment=RStudio
       //    uri=https%3A%2F%2Fsearch.dataone.org%2Fview%2Fdoi%3A10.18739%2FA2VQ2S94D
       //    name=Fire+influences+on+forest+recovery+and+associated+climate+feedbacks+in+Siberian+Larch+Forests%2C+Russia
+      //    asTale=true
       setTimeout(() => {
         this.logger.debug("Detecting parameters");
         const queryParams = this.route.snapshot.queryParams;
@@ -53,7 +54,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
               const params = {
                 url: queryParams.uri ? queryParams.uri : '', // Pull from querystring
                 imageId: tale.imageId, // Pull from user input
-                // asTale: true, // Pull from querystring?
+                asTale: queryParams.asTale, // TODO: Pull from querystring
                 spawn: true, // ??
                 taleKwargs: tale.title ? `{ "title": "${tale.title}" }` : '{}', // ??
                 lookupKwargs: '{}', // ??

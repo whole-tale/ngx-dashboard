@@ -20,9 +20,17 @@ export class TaleWorkspacesDialogComponent implements OnInit {
   selectedNav = 'tale_workspaces';
   tales: Array<Tale> = [];
 
-  selected: Array<string> = [];
+  selected: Array<Tale> = [];
 
   constructor(private logger: LogService, private taleService: TaleService) {}
+
+  get move(): { action: string, selected: Array<Tale> }  {
+    return { action: 'move', selected: this.selected };
+  }
+
+  get copy(): { action: string, selected: Array<Tale> } {
+    return { action: 'copy', selected: this.selected };
+  }
 
   ngOnInit(): void {
     const params = { level: AccessLevel.Read };
@@ -33,17 +41,17 @@ export class TaleWorkspacesDialogComponent implements OnInit {
     });
   }
   
-  toggledCheckbox(e: any, tale: Tale) {
+  toggledCheckbox(e: any, tale: Tale): void {
     if (e.target.checked) {
-      this.selected.push(tale._id);
+      this.selected.push(tale);
     } else {
-      const index = this.selected.indexOf(tale._id);
+      const index = this.selected.indexOf(tale);
       this.selected.splice(index, 1);
     }
   }
 
   trackById(index: number, workspace: any): string {
-      return workspace._id;
+    return workspace._id;
   }
 
   isNavActive(nav: string): boolean {

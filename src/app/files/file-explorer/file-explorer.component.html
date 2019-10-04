@@ -6,12 +6,33 @@
   <span class="spacer"></span>
   <!-- TODO: dropdown -->
   <!-- TODO: Replace with better icons? -->
-  <mat-icon *ngIf="currentNav !== 'external_data'" class="pointer" (click)="openFileUploadDialog()">
+  <!--<mat-icon *ngIf="currentNav !== 'external_data'" class="pointer" (click)="openFileUploadDialog()">
     insert_drive_file
   </mat-icon>
   <mat-icon *ngIf="currentNav !== 'external_data'" class="pointer" (click)="openNewFolderDialog()">
     create_new_folder
-  </mat-icon>
+  </mat-icon>-->
+  <div class="ui icon top right pointing primary dropdown mini circular button">
+    <i class="plus icon"></i>
+    <div class="menu">
+      <div class="header">{{ currentNav | uppercase }} OPTIONS</div>
+      <div class="item" *ngIf="currentNav !== 'external_data'" (click)="openFileUploadDialog()">
+        <i class="fas fa-upload"></i> Upload File...
+      </div>
+      <div class="item" *ngIf="currentNav !== 'external_data'" (click)="openNewFolderDialog()">
+        <i class="fas fa-folder-plus"></i> Create Folder...
+      </div>
+      <div class="item" *ngIf="currentNav === 'external_data'" (click)="openSelectDataModal()">
+        <i class="fas fa-file-import"></i> WT Data Catalog
+      </div>
+      <div class="item" *ngIf="currentNav === 'external_data'" (click)="openRegisterDataModal()">
+        <i class="fas fa-file-plus"></i> Web (DOI or URL)
+      </div>
+      <div class="item" *ngIf="currentNav === 'tale_workspace'" (click)="openTaleWorkspacesModal()">
+        <i class="fas fa-file-import"></i> Select Data...
+      </div>
+    </div>
+  </div>
 </mat-toolbar>
 
 <input #file multiple type="file" style="display: none" (change)="onUploadsAdded()" />

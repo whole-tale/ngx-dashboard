@@ -10,11 +10,11 @@ import { MaterialModule } from '@framework/material';
 import { TaleCreatorPipe } from '@tales/pipes/tale-creator.pipe';
 import { TaleImagePipe } from '@tales/pipes/tale-image.pipe';
 import { TalesModule } from '@tales/tales.module';
-import { MarkdownModule, MarkedOptions } from 'ngx-markdown';
+import { MarkdownModule } from 'ngx-markdown';
 
 import { routes } from './run-tale.routes';
 import { PublishTaleDialogComponent } from './run-tale/modals/publish-tale-dialog/publish-tale-dialog.component';
-import { RegisterDatasetDialogComponent } from './run-tale/modals/register-dataset-dialog/register-dataset-dialog.component';
+import { RegisterDataDialogComponent } from './run-tale/modals/register-data-dialog/register-data-dialog.component';
 import { SelectDataDialogComponent } from './run-tale/modals/select-data-dialog/select-data-dialog.component';
 import { TaleWorkspacesDialogComponent } from './run-tale/modals/tale-workspaces-dialog/tale-workspaces-dialog.component';
 import { RunTaleComponent } from './run-tale/run-tale.component';
@@ -33,9 +33,9 @@ import { TaleMetadataComponent } from './run-tale/tale-metadata/tale-metadata.co
     TaleMetadataComponent,
     PublishTaleDialogComponent,
     SelectDataDialogComponent,
-    RegisterDatasetDialogComponent,
+    RegisterDataDialogComponent,
     TaleWorkspacesDialogComponent
   ],
-  entryComponents: [PublishTaleDialogComponent, SelectDataDialogComponent, RegisterDatasetDialogComponent, TaleWorkspacesDialogComponent]
+  entryComponents: [PublishTaleDialogComponent, SelectDataDialogComponent, RegisterDataDialogComponent, TaleWorkspacesDialogComponent]
 })
 export class RunTaleModule {}

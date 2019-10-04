@@ -36,8 +36,12 @@
 
 <mat-dialog-actions>
   <button class="ui black deny button" mat-dialog-close>Cancel</button>
-  <button class="ui primary right labeled icon button" [mat-dialog-close]="selected">
-    Select
+  <button class="ui primary right labeled icon button" [mat-dialog-close]="move">
+    Move To Home
+    <i class="checkmark icon"></i>
+  </button>
+  <button class="ui primary right labeled icon button" [mat-dialog-close]="copy">
+    Copy To Home
     <i class="checkmark icon"></i>
   </button>
 </mat-dialog-actions>

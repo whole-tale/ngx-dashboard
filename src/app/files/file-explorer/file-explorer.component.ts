@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { MatMenuTrigger } from '@angular/material';
 import { MatDialog } from '@angular/material/dialog';
+import { Tale } from '@api/models/tale';
+import { TaleService } from '@api/services/tale.service';
 import { FilesService } from '@files/files.service';
 import { FileElement } from '@files/models/file-element';
 import { LogService } from '@framework/core/log.service';
@@ -94,6 +95,14 @@ export class FileExplorerComponent implements OnInit {
   // Message to display if current folder is empty
   @Input() placeholderMessage: string;
 
+  // Passed in dialog events from parent
+  // FIXME: Feature envy
+  @Input() openRegisterDataModal: Function;
+  @Input() openSelectDataModal: Function;
+  @Input() openTaleWorkspacesModal: Function;
+  @Input() tale: Tale;
+  @Input() load: Function;
+
   // Events emitted
   @Output() readonly folderAdded = new EventEmitter<{ name: string }>();
   @Output() readonly fileUploadsAdded = new EventEmitter<{ files: { [key: string]: File } }>();
@@ -107,10 +116,15 @@ export class FileExplorerComponent implements OnInit {
 
   showMore: any = {};
 
-  constructor(private readonly dialog: MatDialog, private readonly logger: LogService, private readonly fileService: FilesService) {}
+  constructor(
+    private readonly dialog: MatDialog,
+    private readonly logger: LogService,
+    private readonly fileService: FilesService,
+    private readonly taleService: TaleService
+  ) {}
 
   ngOnInit(): void {
-    // $('.ui.file.dropdown').dropdown({ action: 'hide' });
+    $('.ui.dropdown').dropdown({ action: 'hide' });
   }
 
   getIcon(element: FileElement): string {

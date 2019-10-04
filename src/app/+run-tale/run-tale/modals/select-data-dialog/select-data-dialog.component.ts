@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Dataset } from '@api/models/dataset';
 import { Tale } from '@api/models/tale';
 import { DatasetService } from '@api/services/dataset.service';
-import { RepositoryService } from '@api/services/repository.service';
 import { LogService }  from '@framework/core/log.service';
 import { Observable } from 'rxjs';
 
@@ -11,9 +11,10 @@ import { Observable } from 'rxjs';
   styleUrls: ['./select-data-dialog.component.scss']
 })
 export class SelectDataDialogComponent implements OnInit {
-  selectedNav = 'web';
+  selectedNav = 'mine';
   allDatasets: Observable<Array<Dataset>>;
   myDatasets: Observable<Array<Dataset>>;
+  datasets: Observable<Array<Dataset>>;
 
   registrationError = '';
   registrationUrl = '';
@@ -22,59 +23,42 @@ export class SelectDataDialogComponent implements OnInit {
   showSearchResults = false;
   searchResultsLoading = false;
   searchResults :any = [];
-  selected: Array<string> = [];
+  selected: Array<Dataset> = [];
 
-  // TODO: when to use prod URL?
-  devUrl = 'https://dev.nceas.ucsb.edu/knb/d1/mn/v2';
-  // URL to the DataONE production server
-  prodUrl = 'https://cn.dataone.org/cn/v2';
-
-  constructor(private logger: LogService, private datasetService: DatasetService, private repositoryService: RepositoryService) {}
+  constructor(
+    private logger: LogService,
+    private datasetService: DatasetService, 
+    public dialogRef: MatDialogRef<SelectDataDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { tale: Tale }
+  ) {}
 
   ngOnInit(): void {
     this.allDatasets = this.datasetService.datasetListDatasets({ myData: false });
-    this.myDatasets = this.datasetService.datasetListDatasets({ myData: true });
-  }
-
-  searchDatasetUrl(): void {
-    if (!this.registrationUrl) { return; }
-    
-    this.searchResults = [];
-    this.showSearchResults = true;
-    this.searchResultsLoading = true;
-
-    const dataId = [this.registrationUrl];
-    const params = { dataId: JSON.stringify(dataId), baseUrl: this.devUrl }
-    this.repositoryService.repositoryLookupData(params).subscribe(data => {
-      this.searchResults = data;
-      this.searchResultsLoading = false;
-    }, err => {
-      this.logger.error(`Failed to search for dataId=${this.registrationUrl}:`, err);
-      this.searchResultsLoading = false;
+    this.datasets = this.myDatasets = this.datasetService.datasetListDatasets({ myData: true });
+    this.datasets.subscribe(datasets => {
+      this.data.tale.dataSet.forEach((ds: { itemId: string, mountPath: string }) => {
+        // Lookup the Dataset by id and push it to our selection
+        const dataset = datasets.find(data => data._id === ds.itemId);
+        this.selected.push(dataset);
+      });
     });
   }
 
-  toggledCheckbox(e: any, dataset: Dataset) {
+  toggledCheckbox(e: any, dataset: Dataset): void {
     if (e.target.checked) {
-      this.selected.push(dataset._id);
+      this.selected.push(dataset);
     } else {
-      const index = this.selected.indexOf(dataset._id);
+      const index = this.selected.indexOf(dataset);
       this.selected.splice(index, 1);
     }
   }
 
-  onSelectedResultChanged(result: any): void {
-    if (event) {
-      this.registrationFolderName = result.name;
-    }
-  }
-
-  trackByDataId(index: number, dataset: any): string {
-      return dataset.dataId;
+  isSelected(dataset: Dataset): Dataset {
+    return this.selected.find(ds => ds._id === dataset._id);
   }
 
   trackById(index: number, dataset: Dataset): string {
-      return dataset._id;
+    return dataset._id;
   }
 
   isNavActive(nav: string): boolean {
@@ -83,6 +67,6 @@ export class SelectDataDialogComponent implements OnInit {
 
   activateNav(nav: string): void {
     this.selectedNav = nav;
-    this.selected = [];
+    this.datasets = (this.selectedNav === 'mine') ? this.myDatasets : this.allDatasets;
   }
 }

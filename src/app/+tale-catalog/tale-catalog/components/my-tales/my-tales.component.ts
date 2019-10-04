@@ -10,14 +10,8 @@ import { PublicTalesComponent } from '../public-tales/public-tales.component';
   styleUrls: ['./my-tales.component.scss']
 })
 export class MyTalesComponent extends PublicTalesComponent {
-  private myStoppedTales: Array<Tale> = [];
-  private myRunningTales: Array<Tale> = [];
-  
-  get user(): User {
-    return this.tokenService.user.value;
-  }
 
   get instanceCount(): number {
-      return Object.keys(this.instances).length;
+    return Object.keys(this.instances).length;
   }
 }

@@ -70,7 +70,7 @@
         <span class="text"><i class="user circle white icon"></i></span>
         <i class="dropdown icon"></i>
         <div class="menu" tabindex="-1">
-          <div class="item" *ngIf="user"><img class="gravatar" [src]="user.gravatar_baseUrl">{{ user.firstName }} {{ user.lastName }}</div>
+          <div class="item" *ngIf="user && user.gravatar_baseUrl"><img class="gravatar" [src]="user.gravatar_baseUrl">{{ user.firstName }} {{ user.lastName }}</div>
           <div class="divider"></div>
           <!--<div class="item" (click)="gotoSettings()">Settings</div>-->
           <div class="item" (click)="logout()">Logout</div>
