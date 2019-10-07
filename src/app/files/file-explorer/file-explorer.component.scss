@@ -10,6 +10,10 @@
   user-select: none;
 }
 
+.toolbar {
+  min-height: 64px;
+}
+
 .file-or-folder {
   padding: 8px;
   overflow: hidden;

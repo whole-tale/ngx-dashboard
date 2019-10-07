@@ -1,17 +1,9 @@
-<mat-toolbar>
+<mat-toolbar class="toolbar">
   <mat-icon *ngIf="!preventNavigation && canNavigateUp" class="pointer" (click)="navigateUp()">
     arrow_back
   </mat-icon>
   <span style="margin-left: 8px"> {{ path || '/' }} </span>
   <span class="spacer"></span>
-  <!-- TODO: dropdown -->
-  <!-- TODO: Replace with better icons? -->
-  <!--<mat-icon *ngIf="currentNav !== 'external_data'" class="pointer" (click)="openFileUploadDialog()">
-    insert_drive_file
-  </mat-icon>
-  <mat-icon *ngIf="currentNav !== 'external_data'" class="pointer" (click)="openNewFolderDialog()">
-    create_new_folder
-  </mat-icon>-->
   <div class="ui icon top right pointing primary dropdown mini circular button">
     <i class="plus icon"></i>
     <div class="menu">
