@@ -97,13 +97,13 @@ export class FileExplorerComponent implements OnInit {
 
   // Passed in dialog events from parent
   // FIXME: Feature envy
-  @Input() openRegisterDataModal: Function;
-  @Input() openSelectDataModal: Function;
-  @Input() openTaleWorkspacesModal: Function;
   @Input() tale: Tale;
   @Input() load: Function;
 
   // Events emitted
+  @Output() readonly openRegisterDataModal = new EventEmitter();
+  @Output() readonly openSelectDataModal = new EventEmitter();
+  @Output() readonly openTaleWorkspacesModal = new EventEmitter();
   @Output() readonly folderAdded = new EventEmitter<{ name: string }>();
   @Output() readonly fileUploadsAdded = new EventEmitter<{ files: { [key: string]: File } }>();
   @Output() readonly elementRemoved = new EventEmitter<FileElement>();
@@ -237,5 +237,17 @@ export class FileExplorerComponent implements OnInit {
 
     // Toggle the 'More Actions' dropdown menu of the clicked element
     this.showMore[element._id] = !this.showMore[element._id];
+  }
+
+  openSelectDataDialog(event: any): void {
+    this.openSelectDataModal.emit(event);
+  }
+
+  openRegisterDataDialog(event: any): void {
+    this.openRegisterDataModal.emit(event);
+  }
+
+  openTaleWorkspacesDialog(event: any): void {
+    this.openTaleWorkspacesModal.emit(event);
   }
 }

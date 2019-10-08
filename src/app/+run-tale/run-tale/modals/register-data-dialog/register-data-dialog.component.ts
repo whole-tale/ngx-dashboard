@@ -19,7 +19,7 @@ export class RegisterDataDialogComponent {
   searchResults :any = [];
 
   // URL to the DataONE production server
-  repositoryBaseUrl = 'https://cn.dataone.org/cn/v2';
+  readonly repositoryBaseUrl = 'https://cn.dataone.org/cn/v2';
 
   constructor(private logger: LogService, private repositoryService: RepositoryService) {}
 

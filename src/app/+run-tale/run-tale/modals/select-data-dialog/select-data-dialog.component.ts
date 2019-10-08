@@ -1,9 +1,10 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, NgZone, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Dataset } from '@api/models/dataset';
 import { Tale } from '@api/models/tale';
 import { DatasetService } from '@api/services/dataset.service';
 import { LogService }  from '@framework/core/log.service';
+import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -27,6 +28,7 @@ export class SelectDataDialogComponent implements OnInit {
 
   constructor(
     private logger: LogService,
+    private zone: NgZone,
     private datasetService: DatasetService, 
     public dialogRef: MatDialogRef<SelectDataDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { tale: Tale }
@@ -35,10 +37,10 @@ export class SelectDataDialogComponent implements OnInit {
   ngOnInit(): void {
     this.allDatasets = this.datasetService.datasetListDatasets({ myData: false });
     this.datasets = this.myDatasets = this.datasetService.datasetListDatasets({ myData: true });
-    this.datasets.subscribe(datasets => {
+    this.datasets.pipe(enterZone(this.zone)).subscribe(datasets => {
       this.data.tale.dataSet.forEach((ds: { itemId: string, mountPath: string }) => {
         // Lookup the Dataset by id and push it to our selection
-        const dataset = datasets.find(data => data._id === ds.itemId);
+        const dataset = datasets.find((data: Dataset) => data._id === ds.itemId);
         this.selected.push(dataset);
       });
     });
@@ -66,7 +68,9 @@ export class SelectDataDialogComponent implements OnInit {
   }
 
   activateNav(nav: string): void {
-    this.selectedNav = nav;
-    this.datasets = (this.selectedNav === 'mine') ? this.myDatasets : this.allDatasets;
+    this.zone.run(() => {
+      this.selectedNav = nav;
+      this.datasets = (this.selectedNav === 'mine') ? this.myDatasets : this.allDatasets;
+    });
   }
 }

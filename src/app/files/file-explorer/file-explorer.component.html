@@ -8,19 +8,19 @@
     <i class="plus icon"></i>
     <div class="menu">
       <div class="header">{{ currentNav | uppercase }} OPTIONS</div>
-      <div class="item" *ngIf="currentNav !== 'external_data'" (click)="openFileUploadDialog()">
+      <div class="item" *ngIf="currentNav !== 'external_data'" (click)="openFileUploadDialog($event)">
         <i class="fas fa-upload"></i> Upload File...
       </div>
-      <div class="item" *ngIf="currentNav !== 'external_data'" (click)="openNewFolderDialog()">
+      <div class="item" *ngIf="currentNav !== 'external_data'" (click)="openNewFolderDialog($event)">
         <i class="fas fa-folder-plus"></i> Create Folder...
       </div>
-      <div class="item" *ngIf="currentNav === 'external_data'" (click)="openSelectDataModal()">
+      <div class="item" *ngIf="currentNav === 'external_data'" (click)="openSelectDataDialog($event)">
         <i class="fas fa-file-import"></i> WT Data Catalog
       </div>
-      <div class="item" *ngIf="currentNav === 'external_data'" (click)="openRegisterDataModal()">
+      <div class="item" *ngIf="currentNav === 'external_data'" (click)="openRegisterDataDialog($event)">
         <i class="fas fa-file-plus"></i> Web (DOI or URL)
       </div>
-      <div class="item" *ngIf="currentNav === 'tale_workspace'" (click)="openTaleWorkspacesModal()">
+      <div class="item" *ngIf="currentNav === 'tale_workspace'" (click)="openTaleWorkspacesDialog($event)">
         <i class="fas fa-file-import"></i> Select Data...
       </div>
     </div>

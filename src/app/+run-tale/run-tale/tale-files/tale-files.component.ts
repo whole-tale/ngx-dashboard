@@ -18,7 +18,7 @@ import { LogService } from '@framework/core/log.service';
 import { TruncatePipe } from '@framework/core/truncate.pipe';
 import { WindowService } from '@framework/core/window.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
 
 import { RegisterDataDialogComponent } from '../modals/register-data-dialog/register-data-dialog.component';
 import { SelectDataDialogComponent } from '../modals/select-data-dialog/select-data-dialog.component';
@@ -68,7 +68,6 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   files: BehaviorSubject<Array<FileElement>> = new BehaviorSubject<Array<FileElement>>([]);
   currentFolderId: string;
 
-  placeholderMessage: string;
   currentRoot: FileElement;
   currentPath = '';
   canNavigateUp = false;
@@ -101,34 +100,53 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     // Fetch Home root
     this.userService.userGetMe().subscribe((user : User) => {
       const homeRootParams = { parentId: user._id, parentType: ParentType.User, text: HOME_ROOT_NAME };
-      this.folderService.folderFind(homeRootParams)
-                        .pipe(enterZone(this.zone))
-                        .subscribe(folders => {
-        if (folders && folders.length) {
-          this.homeRoot = folders[0];
+      const dataRootParams = { test: false, path: DATA_ROOT_PATH };
+      const wsRootParams = { test: false, path: WORKSPACES_ROOT_PATH };
+
+      const homeFind = this.folderService.folderFind(homeRootParams);
+      const dataFind = this.resourceService.resourceLookup(dataRootParams);
+      const wsFind = this.resourceService.resourceLookup(wsRootParams);
+      
+      // Fetch all root folders before loading
+      forkJoin(homeFind, dataFind, wsFind).pipe(enterZone(this.zone)).subscribe((value: Array<any>) => {
+        if (value.length < 2) {
+          this.logger.error("Error: Value mismatch when fethcing root folders");
         }
+
+        const homeFolderResults = value[0];
+
+        if (homeFolderResults && homeFolderResults.length) {
+          this.homeRoot = homeFolderResults[0];
+        }
+
+        this.dataRoot = value[1];
+        this.wsRoot = value[2];
+
+        this.load();
       });
-    });
-
-    // Fetch Data root
-    const dataRootParams = { test: false, path: DATA_ROOT_PATH };
-    this.resourceService.resourceLookup(dataRootParams)
-                        .pipe(enterZone(this.zone))
-                        .subscribe(resource => {
-      this.dataRoot = resource;
-    });
-
-    // Fetch Workspace root
-    const wsRootParams = { test: false, path: WORKSPACES_ROOT_PATH };
-    this.resourceService.resourceLookup(wsRootParams)
-                        .pipe(enterZone(this.zone))
-                        .subscribe(resource => {
-      this.wsRoot = resource;
     });
   }
 
   ngOnChanges(): void {
     this.detectQueryString();
+  }
+
+  detectQueryString(): void {
+    this.route.queryParams.subscribe(params => {
+      const fid = params.parentid || undefined;
+      const type = params.parentType || 'folder';
+      if (fid) {
+        this.currentFolderId = fid;
+        this.setCurrentRoot(fid, type);
+      }
+
+      const nav = params.nav || undefined;
+      if (nav && this.currentNav !== nav) {
+        this.currentNav = nav;
+      }
+
+      this.load();
+    });
   }
 
   uploadFiles(filesToUpload: { [key: string]: File }): void {
@@ -194,7 +212,12 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       return;
     }
     switch (this.currentNav) {
-      case 'home':        
+      case 'home':
+        if (!this.homeRoot) { 
+          this.logger.warn("Warning: Home root not detected. Delaying loading until it has been found:", this.homeRoot);
+          return;
+        }
+
         // Fetch folders in the home folder
         this.folderService.folderFind({ parentId: this.homeRoot._id, parentType: ParentType.Folder })
                         .pipe(enterZone(this.zone))
@@ -210,7 +233,10 @@ export class TaleFilesComponent implements OnInit, OnChanges {
                         });
         break;
       case 'external_data':
-
+        if (!this.dataRoot) { 
+          this.logger.warn("Warning: Data root not detected. Delaying loading until it has been found:", this.dataRoot);
+          return;
+        }
         // Fetch registered datasets
         const params = { myData: false };
         this.datasetService.datasetListDatasets(params)
@@ -236,6 +262,10 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         this.currentPath = '';
         break;
       case 'tale_workspace':
+        if (!this.tale || !this.tale.workspaceId) { 
+          this.logger.warn("Warning: Tale or Tale workspace root not detected. Delaying loading until it has been found:", this.dataRoot);
+          return;
+        }
 
         // Short-circuit for if we haven't loaded the tale yet
         // FIXME: Can we avoid this race condition in a more elegant way?
@@ -262,28 +292,9 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         }
         break;
       default:
-        console.error("Unrecognized nav encountered:", this.currentNav);
+        this.logger.warn("Unrecognized nav encountered:", this.currentNav);
         break;
     }
-  }
-
-  detectQueryString(): void {
-    this.route.queryParams.subscribe((params) => {
-      const fid = params.parentid || undefined;
-      const type = params.parentType || 'folder';
-      if (fid) {
-        this.currentFolderId = fid;
-        this.setCurrentRoot(fid, type);
-      }
-
-      const nav = params.nav || undefined;
-      if (nav && this.currentNav !== nav) {
-        this.currentNav = nav;
-      }
-
-      this.placeholderMessage = this.getPlaceholderMessage();
-      this.load();
-    });
   }
 
   switchNav(nav: string): void {
@@ -385,7 +396,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     }
   }
 
-  getPlaceholderMessage(): string {
+  get placeholderMessage(): string {
       if (this.currentFolderId && this.currentNav === 'external_data') {
         // Set the placeholder to describe how to Create Folder or Upload File
         return 'This folder is empty, but Datasets are immutable and no folders/files can be added.';
@@ -579,7 +590,6 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
       this.taleService.taleUpdateTale({ id: tale._id, tale }).subscribe(response => {
         this.logger.debug("Successfully updated Tale datasets:", response);
-        this.taleUpdated.emit(response);
         this.load();
       }, err => {
         this.logger.error("Failed to update Tale:", err);
@@ -639,10 +649,16 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   // TODO: Parameterize to make path clickable?
   navigateUp(): void {
     // TODO: Allow user to navigate to root folders?
-    // NOTE: we may need something like this for the Data Catalog, but doesn't need to be this same component
+    // NOTE: we may need something like this for the Data Catalog, but doesn't need to be this same Component
+    const isDataRoot = this.currentRoot.parentId === this.dataRoot._id;
+    const isTaleWorkspaceRoot = this.currentRoot.parentId === this.tale.workspaceId;
+    const isHomeRoot = this.currentRoot.parentId === this.homeRoot._id;
+
+    // NOTE: This is currently unused, but may be needed
+    const isWorkspaceRoot = this.currentRoot.parentId === this.wsRoot._id;
 
     // If we find that our parentId matches our known root folders, then we have reached the root
-    if (this.currentRoot && (this.currentRoot.parentId === this.dataRoot._id || this.currentRoot.parentId === this.tale.workspaceId)) {
+    if (this.currentRoot && (isDataRoot || isTaleWorkspaceRoot || isHomeRoot)) {
       this.currentRoot = undefined;
       this.currentFolderId = undefined;
       this.canNavigateUp = false;
