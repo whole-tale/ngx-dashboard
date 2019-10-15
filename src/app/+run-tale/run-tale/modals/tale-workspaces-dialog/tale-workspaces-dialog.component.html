@@ -13,22 +13,43 @@
       </div>
 
       <div class="twelve wide column" style="min-height: 300px; min-width: 300px;">
+        
         <table class="ui compact striped table" *ngIf="isNavActive('tale_workspaces')">
-          <tbody>
-            <tr *ngFor="let tale of tales; index as i; trackBy:trackById">
-              <td class="collapsing">
-                <div class="ui fitted checkbox">
-                  <input type="checkbox" (change)="toggledCheckbox($event, tale)"> <label></label>
-                </div>
-              </td>
-              <td><i class="fas fa-folder fa-fw"></i></td>
-              <td>{{ tale.title | truncate:40 }}</td>
+          <!-- If no tale is selected, browse tales -->
+          <tbody *ngIf="!selectedTale">
+            <tr *ngFor="let tale of tales; index as i; trackBy:trackById" 
+                class="clickable" (click)="selectTale(tale)">
+              <td><i class="fas fa-folder fa-fw"></i> {{ tale.title | truncate:40 }}</td>
               <td *ngIf="(tale | taleImage | async) as environment">{{ environment.name }}</td>
               <td *ngIf="(tale | taleCreator | async) as creator">{{ creator.firstName }} {{ creator.lastName }}</td>
             </tr>
           </tbody>
+
+          <!-- If tale is selected, browse folders/files within the tale workspace -->
+          <thead *ngIf="selectedTale">
+            <th colspan="5" class="ui sub header collapsing noselect clickable blue" style="text-transform: none" (click)="navigateUp()">
+              <span class="long alternate blue">
+                <i class="horizontally flipped level up icon"></i>
+                <span *ngIf="currentRoot && currentRoot._id === selectedTale.workspaceId">{{ selectedTale.title | truncate:40 }}</span>
+                <span *ngIf="currentRoot && currentRoot._id !== selectedTale.workspaceId">{{ currentRoot.name | truncate:40 }}</span>
+              </span>
+            </th>
+          </thead>
+          <tbody *ngIf="selectedTale">
+            <tr *ngFor="let elem of (folders | async).concat(files | async); index as i; trackBy:trackById" 
+                [ngClass]="{ 'clickable': elem._modelType === 'folder' }" (click)="toggledCheckbox($event, elem)" (dblclick)="navigateToFolder(elem)">
+              <td class="collapsing">
+                <div class="ui fitted checkbox">
+                  <input type="checkbox" [checked]="isSelected(elem)"> <label></label>
+                </div>
+              </td>
+              <td><i class="fas fa-fw" [ngClass]="{ 'fa-folder': elem._modelType === 'folder', 'fa-file': elem._modelType === 'file' || elem._modelType === 'item' }"></i></td>
+              <td>{{ elem.name | truncate:40 }}</td>
+              <td>{{ elem.size | fileSize }}</td>
+              <td [title]="elem.updated">{{ elem.updated | date }}</td>
+            </tr>
+          </tbody>
         </table>
-        <pre>{{ selected | json }}</pre>
       </div>
     </div>
   </div>
@@ -37,11 +58,11 @@
 <mat-dialog-actions>
   <button class="ui black deny button" mat-dialog-close>Cancel</button>
   <button class="ui primary right labeled icon button" [mat-dialog-close]="move">
-    Move To Home
+    Move To Workspace
     <i class="checkmark icon"></i>
   </button>
   <button class="ui primary right labeled icon button" [mat-dialog-close]="copy">
-    Copy To Home
+    Copy To Workspace
     <i class="checkmark icon"></i>
   </button>
 </mat-dialog-actions>

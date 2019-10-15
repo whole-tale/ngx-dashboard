@@ -39,7 +39,11 @@
                     <input type="text" name="orcid" placeholder="Enter ORCID" [(ngModel)]="newAuthor.orcid" required>
                   </td>
                   <td>
-                    <button class="ui tiny positive button" (click)="addAuthor(newAuthor)"><i class="fas fa-plus"></i></button>
+                    <button class="ui tiny positive button" (click)="addAuthor(newAuthor)"
+                            [ngClass]="{ 'disabled': !newAuthor.firstName || !newAuthor.lastName || !newAuthor.orcid }"
+                            [disabled]="!newAuthor.firstName || !newAuthor.lastName || !newAuthor.orcid">
+                      <i class="fas fa-plus"></i>
+                    </button>
                   </td>
                 </tr>
               </table>

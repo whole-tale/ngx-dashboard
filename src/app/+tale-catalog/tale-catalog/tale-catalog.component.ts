@@ -76,6 +76,8 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
       dialogRef.afterClosed().subscribe(tale => {
         if (!tale) { return; }
 
+        // TODO: Validation
+
         this.taleService.taleCreateTale(tale).subscribe(response => {
           this.logger.debug("Successfully created Tale:", response);
           this.taleCreated.emit(response);

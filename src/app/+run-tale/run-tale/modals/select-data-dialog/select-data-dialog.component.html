@@ -18,26 +18,45 @@
 
       <div class="twelve wide column" style="min-height: 300px; min-width: 300px; padding: 20px 20px 40px 0;">
       
-        <table class="ui compact celled definition table">
-          <thead class="full-width">
-            <tr>
-              <th width="10%"></th>
-              <th width="55%">Name</th>
-              <th width="15%">Size</th>
-              <th width="20%">Date</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr *ngFor="let dataset of (datasets | async); index as i; trackBy:trackById">
+        <table class="ui compact striped table">
+          <!-- If no dataset is selected, browse datasets -->
+          <tbody *ngIf="!selectedDataset">
+            <tr  *ngFor="let dataset of (datasets | async); index as i; trackBy:trackById"
+                [ngClass]="{ 'clickable': dataset._modelType === 'folder' }" (click)="toggledCheckbox($event, dataset)" (dblclick)="selectDataset(dataset)">
               <td class="collapsing">
                 <div class="ui fitted checkbox">
-                  <input type="checkbox" [checked]="isSelected(dataset)" (change)="toggledCheckbox($event, dataset)"> <label></label>
+                  <input type="checkbox" [checked]="isSelected(dataset)"> <label></label>
                 </div>
               </td>
-              <td>{{ dataset.name | truncate:65 }}</td>
+              <td><i class="fas fa-fw" [ngClass]="{ 'fa-folder': dataset._modelType === 'folder', 'fa-file': dataset._modelType === 'item'}"></i></td>
+              <td>{{ dataset.name | truncate:40 }}</td>
               <td>{{ dataset.size | fileSize }}</td>
-              <td>{{ dataset.updated | date }}</td>
+              <td [title]="dataset.updated">{{ dataset.updated | date }}</td>
+            </tr>
+          </tbody>
+
+          <!-- If dataset is selected, browse folders/files within the dataset -->
+          <thead *ngIf="selectedDataset">
+            <th colspan="5" class="ui sub header collapsing noselect clickable blue" style="text-transform: none" (click)="navigateUp()">
+              <span class="long alternate blue">
+                <i class="horizontally flipped level up icon"></i>
+                <span *ngIf="currentRoot && currentRoot._id === selectedDataset._id">{{ selectedDataset.name | truncate:40 }}</span>
+                <span *ngIf="currentRoot && currentRoot._id !== selectedDataset._id">{{ currentRoot.name | truncate:40 }}</span>
+              </span>
+            </th>
+          </thead>
+          <tbody *ngIf="selectedDataset">
+            <tr *ngFor="let elem of (folders | async).concat(files | async); index as i; trackBy:trackById"
+                [ngClass]="{ 'clickable': elem._modelType === 'folder' }" (click)="toggledCheckbox($event, elem)" (dblclick)="navigateToFolder(elem)">
+              <td class="collapsing">
+                <div class="ui fitted checkbox">
+                  <input type="checkbox" [checked]="isSelected(elem)" > <label></label>
+                </div>
+              </td>
+              <td><i class="fas fa-fw" [ngClass]="{ 'fa-folder': elem._modelType === 'folder', 'fa-file': elem._modelType === 'item' || elem._modelType === 'file' }"></i></td>
+              <td>{{ elem.name | truncate:65 }}</td>
+              <td>{{ elem.size | fileSize }}</td>
+              <td [title]="elem.updated">{{ elem.updated | date }}</td>
             </tr>
           </tbody>
         </table>

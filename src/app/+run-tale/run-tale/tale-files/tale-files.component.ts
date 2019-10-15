@@ -31,6 +31,7 @@ const HOME_ROOT_NAME = 'Home';
 const DATA_ROOT_PATH = '/collection/WholeTale Catalog/WholeTale Catalog';
 const WORKSPACES_ROOT_PATH = '/collection/WholeTale Workspaces/WholeTale Workspaces';
 
+// TODO: Abstract/move enums to reuseable helper
 enum UploadType {
     Folder = "folder",
     Item = "item"
@@ -110,7 +111,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       // Fetch all root folders before loading
       forkJoin(homeFind, dataFind, wsFind).pipe(enterZone(this.zone)).subscribe((value: Array<any>) => {
         if (value.length < 2) {
-          this.logger.error("Error: Value mismatch when fethcing root folders");
+          this.logger.error("Error: Value mismatch when fetching root folders");
         }
 
         const homeFolderResults = value[0];
@@ -215,6 +216,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       case 'home':
         if (!this.homeRoot) { 
           this.logger.warn("Warning: Home root not detected. Delaying loading until it has been found:", this.homeRoot);
+
           return;
         }
 
@@ -235,6 +237,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       case 'external_data':
         if (!this.dataRoot) { 
           this.logger.warn("Warning: Data root not detected. Delaying loading until it has been found:", this.dataRoot);
+
           return;
         }
         // Fetch registered datasets
@@ -263,7 +266,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         break;
       case 'tale_workspace':
         if (!this.tale || !this.tale.workspaceId) { 
-          this.logger.warn("Warning: Tale or Tale workspace root not detected. Delaying loading until it has been found:", this.dataRoot);
+          this.logger.warn("Warning: Tale or Tale workspace root not detected. Delaying loading until it has been found:", this.tale);
+          
           return;
         }
 
@@ -598,7 +602,10 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   }
   
   openTaleWorkspacesModal(): void {
-    const dialogRef = this.dialog.open(TaleWorkspacesDialogComponent);
+    const config: MatDialogConfig = {
+      data: { tale: this.tale }
+    };
+    const dialogRef = this.dialog.open(TaleWorkspacesDialogComponent, config);
     dialogRef.afterClosed().subscribe((result: { action: string, selected: Array<Tale> }) => {
       if (!result) { return; }
 
@@ -610,9 +617,25 @@ export class TaleFilesComponent implements OnInit, OnChanges {
           this.logger.debug('Moving folders/files to workspace:', result.selected);
           result.selected.forEach((sel, i) => {
             this.logger.debug(`Moving item ${i}/${result.selected.length} to workspace:`, sel);
-            this.folderService.folderGetFolder(sel.workspaceId).subscribe(workspace => {
-              this.moveElement({ element: workspace, moveTo: this.wsRoot });
-            });
+            switch (sel._modelType) {
+              case "tale":
+                this.folderService.folderGetFolder(sel.workspaceId).subscribe(workspace => {
+                  this.moveElement({ element: workspace, moveTo: this.wsRoot });
+                });
+                break;
+              case "folder":
+                this.folderService.folderGetFolder(sel._id).subscribe(folder => {
+                  this.moveElement({ element: folder, moveTo: this.wsRoot });
+                });
+                break;
+              case "item":
+                this.itemService.itemGetItem(sel._id).subscribe(item => {
+                  this.moveElement({ element: item, moveTo: this.wsRoot });
+                });
+                break;
+              default:
+                console.error("ERROR: Unrecognized selection... skipping:", sel._modelType);
+            }
           });
           break;
         case 'copy':

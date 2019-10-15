@@ -1,8 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Tale } from '@api/models/tale';
-import { TaleService } from '@api/services/tale.service';
-import { FilesService } from '@files/files.service';
 import { FileElement } from '@files/models/file-element';
 import { LogService } from '@framework/core/log.service';
 
@@ -79,6 +77,8 @@ export class FileExplorerComponent implements OnInit {
   @Input() preventNavigation = false;
   @Input() readOnly = false;
   @Input() allowRoot = false;
+  @Input() showButtons = true;
+  @Input() showContextMenu = true;
 
   // List of folders/files in the current folder
   @Input() fileElements: Array<FileElement>;
@@ -94,11 +94,6 @@ export class FileExplorerComponent implements OnInit {
 
   // Message to display if current folder is empty
   @Input() placeholderMessage: string;
-
-  // Passed in dialog events from parent
-  // FIXME: Feature envy
-  @Input() tale: Tale;
-  @Input() load: Function;
 
   // Events emitted
   @Output() readonly openRegisterDataModal = new EventEmitter();
@@ -116,12 +111,7 @@ export class FileExplorerComponent implements OnInit {
 
   showMore: any = {};
 
-  constructor(
-    private readonly dialog: MatDialog,
-    private readonly logger: LogService,
-    private readonly fileService: FilesService,
-    private readonly taleService: TaleService
-  ) {}
+  constructor(private readonly dialog: MatDialog, private readonly logger: LogService) {}
 
   ngOnInit(): void {
     $('.ui.dropdown').dropdown({ action: 'hide' });

@@ -4,24 +4,29 @@
   </mat-icon>
   <span style="margin-left: 8px"> {{ path || '/' }} </span>
   <span class="spacer"></span>
-  <div class="ui icon top right pointing primary dropdown mini circular button">
+  <div class="ui icon top right pointing primary dropdown mini circular button" [hidden]="!currentNav">
     <i class="plus icon"></i>
     <div class="menu">
       <div class="header">{{ currentNav | uppercase }} OPTIONS</div>
       <div class="item" *ngIf="currentNav !== 'external_data'" (click)="openFileUploadDialog($event)">
-        <i class="fas fa-upload"></i> Upload File...
+        <i class="fas fa-fw fa-2x fa-upload"></i> Upload File...
       </div>
       <div class="item" *ngIf="currentNav !== 'external_data'" (click)="openNewFolderDialog($event)">
-        <i class="fas fa-folder-plus"></i> Create Folder...
+        <i class="fas fa-fw fa-2x fa-folder-plus"></i> Create Folder...
       </div>
       <div class="item" *ngIf="currentNav === 'external_data'" (click)="openSelectDataDialog($event)">
-        <i class="fas fa-file-import"></i> WT Data Catalog
+        <!--<i class="fas fa-paperclip"></i>-->
+        <span class="fa-stack fa-fw">
+          <i class="fas fa-file fa-stack-2x"></i>
+          <i class="fas fa-paperclip fa-stack-1x fa-inverse"></i>
+        </span>
+        WT Data Catalog
       </div>
       <div class="item" *ngIf="currentNav === 'external_data'" (click)="openRegisterDataDialog($event)">
-        <i class="fas fa-file-plus"></i> Web (DOI or URL)
+        <i class="fas fa-fw fa-2x fa-file-import"></i> Web (DOI or URL)
       </div>
       <div class="item" *ngIf="currentNav === 'tale_workspace'" (click)="openTaleWorkspacesDialog($event)">
-        <i class="fas fa-file-import"></i> Select Data...
+        <i class="fas fa-fw fa-2x fa-file-import"></i> Select Data...
       </div>
     </div>
   </div>
@@ -53,7 +58,7 @@
         <td [title]="ele.updated">{{ ele.updated | date }}</td>
         <td class="right aligned" [title]="ele.size">{{ ele.size | fileSize }}</td>
         <td class="center aligned">
-          <div id="more-actions-{{ ele._id }}" class="ui inline file dropdown" (click)="openMenu($event, ele)">
+          <div id="more-actions-{{ ele._id }}" class="ui inline file dropdown" (click)="openMenu($event, ele)" *ngIf="showContextMenu">
             <!--<div class="text">More</div>-->
             <i class="dropdown icon"></i>
             <div class="left menu" [ngStyle]="{ 'display': !showMore[ele._id] ? 'none' : 'block' }">

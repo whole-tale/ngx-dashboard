@@ -27,6 +27,8 @@ export interface Tale {
    */
   _accessLevel?: number;
 
+  _modelType?: string;
+
   /**
    * Keyword describing topic of the Tale
    */
