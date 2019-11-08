@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, NgZone, OnChanges, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, NgZone, OnInit } from '@angular/core';
 import { Image } from '@api/models/image';
 import { Tale } from '@api/models/tale';
 import { User } from '@api/models/user';
@@ -17,7 +17,7 @@ declare var $: any;
   templateUrl: './tale-metadata.component.html',
   styleUrls: ['./tale-metadata.component.scss']
 })
-export class TaleMetadataComponent implements OnChanges, OnInit {
+export class TaleMetadataComponent implements OnInit {
   @Input() tale: Tale;
   @Input() creator: User;
 
@@ -43,17 +43,8 @@ export class TaleMetadataComponent implements OnChanges, OnInit {
     $('.ui.dropdown').dropdown();
   }
 
-  ngOnChanges(): void {
-    if (this.tale) {
-      this.imageService.imageGetImage(this.tale.imageId).subscribe(env => {
-        this.zone.run(() => { this.environment = env; });
-      });
-    }
-  }
-
-  // TODO: Consolidate model(s) for DataSet / dataSet?
-  trackByItemId(index: number, dataset: any): string {
-      return dataset.itemId;
+  trackById(index: number, model: any): string {
+      return model._id || model.orcid || model.itemId;
   }
 
   copy(json: any): any {
