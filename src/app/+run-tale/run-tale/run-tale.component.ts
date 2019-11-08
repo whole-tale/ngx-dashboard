@@ -52,7 +52,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     }
 
     taleInstanceStateChanged(event: any): void {
-      this.instance = event;
+      //this.instance = event;
       this.refresh();
     }
 
@@ -84,6 +84,14 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
         return;
       }
+      const params = { taleId: this.taleId };
+      this.instanceService.instanceListInstances(params).subscribe((instances: Array<Instance>) => {
+        const running = instances.filter(i => i.status !== 3);
+        if (running.length > 0) {
+          this.instance = running[0];
+        }
+      });
+
       this.logger.debug(`Fetching tale with _id=${this.taleId}`);
       this.taleService.taleGetTale(this.taleId)
                       .subscribe(tale => {

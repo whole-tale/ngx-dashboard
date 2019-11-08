@@ -30,7 +30,7 @@
                                     </div>
                                 </div>
                                 <div class="six wide column" style="text-align: right">
-                                    <app-tale-run-button [tale]="tale" [instance]="instance" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></app-tale-run-button>
+                                    <app-tale-run-button class="tale-run-button" [tale]="tale" [instance]="instance" isPrimary="true" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></app-tale-run-button>
                                     <a routerLink="/" routerLinkActive="active" class="ui button" style="margin-right: 10px">
                                       Close
                                     </a>

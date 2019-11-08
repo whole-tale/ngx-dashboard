@@ -1,17 +1,17 @@
 <div>
-  <button *ngIf="!instance" class="right floated tale-button" (click)="startTale()">
+  <button *ngIf="!instance" class="right floated" [ngClass]="{ 'tale-button': !isPrimary, 'tale-button-primary': isPrimary }" (click)="startTale()">
       <i class="play icon"></i>
       Run Tale
   </button>
-  <button *ngIf="instance && instance.status === 0" class="right floated tale-button" (click)="startTale()">
-      <i class="fas fa-spinner fa-pulse"></i>
+  <button *ngIf="instance && instance.status === 0" class="right floated" [ngClass]="{ 'tale-button': !isPrimary, 'tale-button-primary': isPrimary }" (click)="startTale()">
+      <i id="loading-spinner" class="fas fa-spinner fa-pulse"></i>
       Please Wait...
   </button>
-  <button *ngIf="instance && instance.status === 1" class="right floated tale-button" (click)="stopTale()">
+  <button *ngIf="instance && instance.status === 1" class="right floated" [ngClass]="{ 'tale-button': !isPrimary, 'tale-button-primary': isPrimary }" (click)="stopTale()">
       <i class="stop icon"></i>
       Stop Tale
   </button>
-  <button *ngIf="instance && instance.status === 2" class="right floated tale-button" (click)="stopTale()">
+  <button *ngIf="instance && instance.status === 2" class="right floated" [ngClass]="{ 'tale-button': !isPrimary, 'tale-button-primary': isPrimary }" (click)="stopTale()">
       <i class="warning icon"></i>
       Error
   </button>

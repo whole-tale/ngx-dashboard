@@ -5,6 +5,7 @@ import { Tale } from '@api/models/tale';
 import { InstanceService } from '@api/services/instance.service';
 import { TaleService } from '@api/services/tale.service';
 import { LogService } from '@framework/core/log.service';
+import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { ErrorModalComponent } from '@shared/error-modal/error-modal.component';
 import { CopyOnLaunchModalComponent } from '@tales/components/modals/copy-on-launch-modal/copy-on-launch-modal.component';
 
@@ -16,6 +17,8 @@ import { CopyOnLaunchModalComponent } from '@tales/components/modals/copy-on-lau
 export class TaleRunButtonComponent {
   @Input() instance: Instance;
   @Input() tale: Tale;
+
+  @Input() isPrimary = false;
 
   interval: any;
 
@@ -41,7 +44,7 @@ export class TaleRunButtonComponent {
       this.interval = undefined;
     };
 
-    const params: InstanceService.InstanceCreateInstanceParams = { taleId: this.tale._id };
+    const params = { taleId: this.tale._id };
     this.instanceService.instanceCreateInstance(params).subscribe(
       (instance: Instance) => {
         this.zone.run(() => {
@@ -97,19 +100,22 @@ export class TaleRunButtonComponent {
       return;
     }
 
-    this.instanceService.instanceDeleteInstance(instance._id).subscribe(
-      (deleted: Instance) => {
-        this.zone.run(() => {
-          this.logger.debug('Stopping tale:', this.tale._id);
+    this.logger.debug('Stopping tale:', this.tale._id);
+    this.instanceService
+      .instanceDeleteInstance(instance._id)
+      .pipe(enterZone(this.zone))
+      .subscribe(
+        (deleted: Instance) => {
+          this.logger.debug('Instance deleted:', deleted);
+          // this.zone.run(() => {
           this.instance = undefined;
-          // this.refilter();
           this.taleInstanceStateChanged.emit(this.tale);
-        });
-      },
-      (err: any) => {
-        this.logger.error('Failed to delete instance:', err);
-      }
-    );
+          // });
+        },
+        err => {
+          this.logger.error('Failed to delete instance:', err);
+        }
+      );
   }
 
   openCopyOnLaunchModal(): void {
