@@ -12,6 +12,8 @@ export class RemoteConsoleService implements Console {
   relayLogMessage(level: LogLevel, message: string, context: any): void {
     // TODO: Create an endpoint
     // TODO: Send HTTP request to log a remote message to the server
+    return;
+
     // FIXME: this won't work with "ng serve"
     this.http.post('/log', { level, message, context }).subscribe(
       resp => {
