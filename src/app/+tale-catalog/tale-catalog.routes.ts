@@ -8,7 +8,12 @@ export const routes = [
     component: TaleCatalogComponent,
     children: [
       {
-        path: '',
+          path: '',
+          pathMatch: 'full',
+          redirectTo: 'public'
+      },
+      {
+        path: 'public',
         component: PublicTalesComponent,
         data: {
           meta: {

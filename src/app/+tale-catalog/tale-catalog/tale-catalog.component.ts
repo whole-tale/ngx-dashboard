@@ -78,9 +78,10 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
 
         // TODO: Validation
 
-        this.taleService.taleCreateTale(tale).subscribe(response => {
+        this.taleService.taleCreateTale(tale).subscribe((response: Tale) => {
           this.logger.debug("Successfully created Tale:", response);
           this.taleCreated.emit(response);
+          this.router.navigate(['run', response._id])
         }, err => {
           this.logger.error("Failed to create Tale:", err);
         });
