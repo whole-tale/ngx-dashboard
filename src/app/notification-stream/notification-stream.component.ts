@@ -2,9 +2,67 @@ import { Component, NgZone } from '@angular/core';
 import { NotificationStreamService } from '@api/notification-stream.service';
 import { LogService } from '@framework/core/log.service';
 import { EventSourcePolyfill as EventSource } from 'ng-event-source';
+import { BehaviorSubject } from 'rxjs';
 
 // import * as $ from 'jquery';
 declare var $: any;
+
+// NOTE: "Event" is already a built-in type name
+interface GirderEvent {
+  // Error details
+  errorCode: number;
+  errorMessage: string;
+
+  target: {}; // The EventSource that received this message
+  data: string; // JSON.stringified EventData (see below)
+  type: string; // Girder message type (e.g. "message")
+}
+
+interface EventData {
+  // ID of this message
+  _id: string;
+
+  // Current time on the Girder server
+  _girderTime: number;
+
+  // Type of the message (we are only interested in type=="wt_progress")
+  type: string;
+
+  // Who is this message for?
+  userId: string;
+
+  // Timing attributes for this message
+  startTime: number;
+  expires: Date;
+  time: Date;
+  updated: Date;
+  updatedTime: number;
+
+  // Data payload for the message
+  data: {
+    // Message payload
+    state: string; // status of the overall operation
+    title: string; // unused - effectively a friendly job name= (e.g. "Creating instance")
+
+    // Progress indication
+    current: number; // Current step number
+    total: number; // Total step number
+    message: string; // Step progress message
+
+    // Time indication
+    estimateTime: boolean; // True if a time estimate is provided
+
+    // Our custom resource, which includes associated IDs relevant to this message
+    resourceName: string;
+    resource: {
+      instance_id?: string; // ID of the Instance for which this message is relevant
+      jobs?: Array<string>; // Job IDs associated with this progress update
+      tale_id?: string; // ID of the Tale for which this message is relevant
+      tale_title?: string; // Title of the Tale
+      type?: string; // WT job name (e.g. "wt_create_instance")
+    };
+  };
+}
 
 @Component({
   selector: 'app-notification-stream',
@@ -12,7 +70,7 @@ declare var $: any;
   styleUrls: ['./notification-stream.component.scss']
 })
 export class NotificationStreamComponent {
-  events: Array<any>;
+  events: BehaviorSubject<Array<EventData>>;
   source: EventSource;
 
   constructor(
@@ -20,11 +78,11 @@ export class NotificationStreamComponent {
     private readonly logger: LogService,
     private readonly notificationStream: NotificationStreamService
   ) {
-    this.events = this.notificationStream.events;
+    this.events = new BehaviorSubject<Array<EventData>>(this.notificationStream.events);
     this.source = this.notificationStream.source;
 
     if (this.source) {
-      this.source.onmessage = event => {
+      this.source.onmessage = (event: GirderEvent) => {
         this.zone.run(() => {
           this.onMessage.call(this, event);
         });
@@ -32,9 +90,9 @@ export class NotificationStreamComponent {
     }
   }
 
-  onMessage(event: any): void {
+  onMessage(event: GirderEvent): void {
     // Discard everything outside of "data"
-    const eventData = JSON.parse(event.data);
+    const eventData: EventData = JSON.parse(event.data);
 
     // Ignore everything except for progress updates
     if (eventData.type !== 'wt_progress') {
@@ -43,21 +101,24 @@ export class NotificationStreamComponent {
       return;
     }
 
-    this.logger.debug('Message received:', eventData);
+    this.logger.warn('Message received:', eventData);
 
     // Check for existing notifications matching this one
-    const existing = this.events.find(evt => eventData._id === evt._id);
+    const events = this.events.value;
+    const existing = events.find(evt => eventData._id === evt._id);
     if (!existing) {
       // If we haven't seen one like this, then display it
       this.zone.run(() => {
-        this.events.push(eventData);
+        events.push(eventData);
         this.notificationStream.openNotificationStream(true);
+        this.events.next(events);
       });
     } else if (existing && existing.updated < eventData.updated) {
       // Replace existing notification with newer updates
       this.zone.run(() => {
-        const index = this.events.indexOf(existing);
-        this.events[index] = eventData;
+        const index = events.indexOf(existing);
+        events[index] = eventData;
+        this.events.next(events);
       });
     }
 
@@ -72,7 +133,7 @@ export class NotificationStreamComponent {
     }
   }
 
-  trackById(index: number, event: any): string {
+  trackById(index: number, event: EventData): string {
     return event._id;
   }
 }

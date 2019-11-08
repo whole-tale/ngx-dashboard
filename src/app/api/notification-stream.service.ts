@@ -23,7 +23,6 @@ class NotificationStreamService implements OnDestroy {
 
   ackAll() {
     this.setSince(new Date().getTime() / 1000);
-    this.events = [];
     this.reconnect(true);
     this.openNotificationStream(false);
   }
@@ -63,7 +62,7 @@ class NotificationStreamService implements OnDestroy {
   }
 
   constructor(private config: ApiConfiguration, private tokenService: TokenService) {
-    //this.connect();
+    this.connect();
   }
 
   ngOnDestroy() {
