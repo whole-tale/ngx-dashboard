@@ -48,6 +48,11 @@ enum ContentDisposition {
     Inline = "inline"
 }
 
+interface Selectable {
+  _modelType: string;
+  _id: string;
+}
+
 @Component({
   selector: 'app-tale-files',
   templateUrl: './tale-files.component.html',
@@ -267,7 +272,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       case 'tale_workspace':
         if (!this.tale || !this.tale.workspaceId) { 
           this.logger.warn("Warning: Tale or Tale workspace root not detected. Delaying loading until it has been found:", this.tale);
-          
+
           return;
         }
 
@@ -606,52 +611,44 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       data: { tale: this.tale }
     };
     const dialogRef = this.dialog.open(TaleWorkspacesDialogComponent, config);
-    dialogRef.afterClosed().subscribe((result: { action: string, selected: Array<Tale> }) => {
+    dialogRef.afterClosed().subscribe((result: { action: string, selected: Array<Selectable> }) => {
       if (!result) { return; }
 
-      // TODO: Import selected files into workspace
-      this.logger.info('Result', result);
+      // Group resources by modelType
+      const resources = {};
+      result.selected.forEach(s => {
+        if (!resources[s._modelType]) {
+          resources[s._modelType] = [];
+        }
 
+        resources[s._modelType].push(s._id);
+      });
+
+      // Build up request parameters
+      const params = { 
+        resources: JSON.stringify(resources),
+        parentType: ParentType.Folder,
+        parentId: this.tale.workspaceId
+      };
+
+      // Determine which endpoint to hit based on the user's chosen "action"
       switch (result.action) {
         case 'move':
+          // Move selected files to the current Tale's Workspace
           this.logger.debug('Moving folders/files to workspace:', result.selected);
-          result.selected.forEach((sel, i) => {
-            this.logger.debug(`Moving item ${i}/${result.selected.length} to workspace:`, sel);
-            switch (sel._modelType) {
-              case "tale":
-                this.folderService.folderGetFolder(sel.workspaceId).subscribe(workspace => {
-                  this.moveElement({ element: workspace, moveTo: this.wsRoot });
-                });
-                break;
-              case "folder":
-                this.folderService.folderGetFolder(sel._id).subscribe(folder => {
-                  this.moveElement({ element: folder, moveTo: this.wsRoot });
-                });
-                break;
-              case "item":
-                this.itemService.itemGetItem(sel._id).subscribe(item => {
-                  this.moveElement({ element: item, moveTo: this.wsRoot });
-                });
-                break;
-              default:
-                console.error("ERROR: Unrecognized selection... skipping:", sel._modelType);
-            }
+          this.resourceService.resourceMoveResources(params).subscribe(resp => {
+            this.logger.debug('Folders/files successfully moved to workspace:', resp);
           });
           break;
         case 'copy':
+          // Copy selected files to the current Tale's Workspace
           this.logger.debug('Copying folders/files to workspace:', result.selected);
-          result.selected.forEach((sel, i) => {
-            this.logger.debug(`Copying item ${i}/${result.selected.length} to workspace:`, sel);
-            this.folderService.folderGetFolder(sel.workspaceId).subscribe(workspace => {
-              this.copyElement(workspace).then(itemCopy => {
-                this.logger.debug(`Moving copied item ${i}/${result.selected.length} to workspace:`, itemCopy);
-                this.moveElement({ element: itemCopy, moveTo: this.wsRoot });
-              });
-            });
+          this.resourceService.resourceCopyResources(params).subscribe(resp => {
+            this.logger.debug('Folders/files successfully copied to workspace:', resp);
           });
           break;
         default:
-          this.logger.error("Error: unexpected action encountered from TaleWorkspacesDialogComponent:", result.action);
+          this.logger.error("Error: unexpected action encountered from TaleWorkspacesDialogComponent:", result);
           break;
       }
     });
