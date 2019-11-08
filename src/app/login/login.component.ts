@@ -13,6 +13,9 @@ import { from as observableFrom, Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { routeAnimation } from '~/app/shared';
 
+// import * as $ from 'jquery';
+declare var $: any;
+
 @Component({
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
@@ -43,29 +46,30 @@ export class LoginComponent extends BaseComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    $('.ui.accordion').accordion();
+
     this.isAuthenticated = this.auth.isAuthenticated;
-    if (this.isAuthenticated) {
-      observableFrom(this.router.navigateByUrl(this.auth.defaultUrl))
+
+    // Try to scrape token from query string param
+    const token = this.route.snapshot.queryParams.token;
+    if (token) {
+      this.tokenService.setToken(token);
+      this.users.userGetMe().subscribe(
+        (user: any) => {
+          this.tokenService.user = user;
+          this.logger.debug('Logging in as:', user);
+          this.login();
+        },
+        err => {
+          this.logger.error('Error fetching user:', err);
+        }
+      );
+    } else if (this.isAuthenticated) {
+      /*observableFrom(this.router.navigateByUrl(this.auth.defaultUrl))
         .pipe(takeUntil(this.ngUnsubscribe))
         .subscribe(() => {
           // Do something
-        });
-    } else {
-      // Try to scrape token from query string param
-      const token = this.route.snapshot.queryParams.token;
-      if (token) {
-        this.tokenService.setToken(token);
-        this.users.userGetMe().subscribe(
-          (user: any) => {
-            this.tokenService.user = user;
-            this.logger.debug('Logging in as:', user);
-            this.login();
-          },
-          err => {
-            this.logger.error('Error fetching user:', err);
-          }
-        );
-      }
+        });*/
     }
   }
 

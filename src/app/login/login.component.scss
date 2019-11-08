@@ -8,52 +8,150 @@
 @import '~src/assets/sass/variables/theme';
 @import '~src/assets/sass/variables/typography';
 
-:host {
-  @include size(100%);
-
-  display: block;
-  background: c(grey);
+.login.icon.backdrop {
+  margin: 0 20%;
+  background-color: #dcd9de;
+  color: #000;
+  margin-top: 10vh;
 }
 
-.login {
-  @include absolute(50%  null null 50%);
-  @include size(rem(38));
-  @include push(0 auto);
-
-  background: c(white);
-  transform: translateX(-50%) translateY(-50%);
-
-  @include el('header') {
-    @include soft($space--xl);
-    @include font(#{$h2}/#{$space--xxl} $font--preferred, c(white));
-
-    width: rem(38);
-    background: mat-color($primary--dark);
-  }
-
-  @include el('body') {
-    @include soft($space--xl rem(4.2) rem(4.2));
-  }
+.login.area {
+  background-image: url(../../assets/img/login-backdrop.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  padding: 100px 0;
+  text-align: center;
+  margin: auto;
+  color: #fff;
+  height: calc(100vh - 94px - 0px - 48px + 1rem);
+  overflow-y: auto;
 }
 
-.form {
-  @include el('control') {
-    @include push(rem(0.6) 0);
+.ui.blue.button {
+  margin-top: 10vh;
+  background-color: #0075d8;
+  color: #fff;
+  text-shadow: none;
+  background-image: none;
+}
 
-    width: 100%;
-  }
+i.icon.criss.cross {
+  background-size: 60px 60px;
+  background-image: url(../../assets/img/criss-cross.png);
+  width: 60px;
+  height: 60px;
+  margin: auto;
+}
 
-  @include el('message') {
-    @include push($space--xl 0 0);
+.ui.white.header {
+  color: white;
+}
+.access-wholetale {
+  font-weight: 700;
+  font-size: 150%;
+  margin: 10px 10px 0 0;
+  float: left;
+}
+.accordion-container {
+  text-align: left;
+  padding: 1rem;
+}
+.nomargin {
+  margin: 0;
+  padding: 0;
+}
+.botmargin {
+  margin: 0 0 -5px 0;
+  padding: 0;
+}
 
-    color: c(grey);
-    text-align: center;
+.ui.inverted.menu {
+  margin-bottom: 0;
+  border-radius: 0;
+  background: #1e2e44;
+  height: 48px;
+  padding: 0 2rem;
+}
 
-    @include mod('error') {
-      @include push($space--xl 0 0);
+.ui.inverted.blue.segment {
+  background-color: #283b49 !important;
+  color: #fff !important;
+  padding: 1em 2.5em;
+}
 
-      color: mat-color($warn);
-      text-align: center;
-    }
-  }
+.footer {
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  border-radius: 0;
+  height: 48px;
+  padding: 0 2rem;
+}
+
+.ui.menu.wt.top {
+  font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+
+.ui.menu.wt.top .item.wt.brand span {
+  font-size: 0.9rem;
+  font-weight: 300;
+  letter-spacing: 0.2rem;
+  padding-top: 0.1rem;
+  padding-left: 0.2rem;
+}
+
+.header span {
+  margin-right: 1rem;
+}
+
+.ui.inverted.menu.wt.top .item:not(.not-nav) {
+  font-size: 1.2rem;
+  letter-spacing: 0.05rem;
+  text-transform: uppercase;
+  color: #fff;
+  border-bottom: 4px solid transparent;
+  padding: 0 0.2em 0.3em;
+  margin-left: 0.75em;
+  margin-right: 0.75em;
+}
+
+.ui.menu.wt.top .item.wt.brand {
+  text-transform: uppercase;
+  font-weight: 400;
+  letter-spacing: 0.1rem;
+  vertical-align: text-bottom;
+  color: #fff;
+}
+
+.ui.inverted.menu.wt.top .item {
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.05rem;
+}
+
+body .ui.inverted.menu {
+  background: #1e2e44;
+  border-radius: 0;
+  height: 48px;
+  padding: 0 2rem;
+}
+
+.ui.menu.wt.top .item.wt.brand img {
+  width: 1.5em;
+  margin-right: 0.5rem;
+}
+
+.ui.grid.centered.footer {
+  position: fixed;
+  width: 100vw;
+  bottom: 48px;
+  margin: 0;
+  padding: 0;
+  font-family: 'Open Sans', 'Helvetica Neue', sans-serif !important;
+}
+
+.description,
+.item,
+p {
+  font-size: 1em;
 }
