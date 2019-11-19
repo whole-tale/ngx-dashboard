@@ -165,10 +165,15 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
     this.uploadQueue.forEach(upload => {
       const url = URL.createObjectURL(upload);
+
+      // Upload to the current folder, if possible
+      const parentId = this.currentFolderId ? this.currentFolderId : 
+        // Otherwise upload to "workspace" if we're on the Workspaces nav and have no currentFolderId, else upload to "Home" folder
+        this.currentNav === 'tale_workspaces' ? this.tale.workspaceId : this.homeRoot._id; 
       fetch(url).then(resp => resp.arrayBuffer()).then(contents => {
         const params = {
           parentType: UploadType.Folder, 
-          parentId: this.currentFolderId ? this.currentFolderId : this.tale.workspaceId,
+          parentId: parentId,
           name: upload.name,
           size: upload.size,
           chunk: contents
