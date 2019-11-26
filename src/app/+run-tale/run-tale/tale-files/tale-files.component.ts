@@ -575,7 +575,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   
   // Expected parameter format:
   //    dataMap: [{"name":"Elevation per SASAP region and Hydrolic Unit (HUC8) boundary for Alaskan watersheds","dataId":"resource_map_doi:10.5063/F1Z60M87","repository":"DataONE","doi":"10.5063/F1Z60M87","size":10293583}]
-  openRegisterDataModal(): void {
+  openRegisterDataModal(event: Event): void {
     const dialogRef = this.dialog.open(RegisterDataDialogComponent);
     dialogRef.afterClosed().subscribe((selectedResult: any) => {
       if (!selectedResult) { return; }
@@ -587,7 +587,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     });
   }
   
-  openSelectDataModal(): void {
+  openSelectDataModal(event: Event): void {
     const config: MatDialogConfig = {
       data: { tale: this.tale }
     };
@@ -611,7 +611,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     });
   }
   
-  openTaleWorkspacesModal(): void {
+  openTaleWorkspacesModal(event: Event): void {
     const config: MatDialogConfig = {
       data: { tale: this.tale }
     };

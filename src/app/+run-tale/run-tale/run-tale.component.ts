@@ -177,7 +177,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       this.windowService.location.href = "https://wholetale.readthedocs.io/en/stable/users_guide/run.html";
     }
 
-    exportTale(format: TaleExportFormat = TaleExportFormat.ZIP): void {
+    exportTale(format: TaleExportFormat = TaleExportFormat.BagIt): void {
       const params = { id: this.tale._id, taleFormat: format };
       this.taleService.taleExportTale(params).subscribe(res => {
         this.logger.debug(`Exporting tale=${this.tale._id} to ${format}`, res);

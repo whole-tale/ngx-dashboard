@@ -4,4 +4,6 @@ import { Component } from '@angular/core';
   templateUrl: './rename-dialog.component.html',
   styleUrls: ['./rename-dialog.component.scss']
 })
-export class RenameDialogComponent {}
+export class RenameDialogComponent {
+  folderName = '';
+}

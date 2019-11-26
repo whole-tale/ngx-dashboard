@@ -76,7 +76,7 @@ export class NotificationStreamComponent {
   constructor(
     private readonly zone: NgZone,
     private readonly logger: LogService,
-    private readonly notificationStream: NotificationStreamService
+    readonly notificationStream: NotificationStreamService
   ) {
     this.events = new BehaviorSubject<Array<EventData>>(this.notificationStream.events);
     this.source = this.notificationStream.source;

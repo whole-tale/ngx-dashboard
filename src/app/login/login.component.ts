@@ -65,6 +65,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
         }
       );
     } else if (this.isAuthenticated) {
+      // FIXME: This causes an endless redirect loop
       /*observableFrom(this.router.navigateByUrl(this.auth.defaultUrl))
         .pipe(takeUntil(this.ngUnsubscribe))
         .subscribe(() => {
@@ -74,7 +75,8 @@ export class LoginComponent extends BaseComponent implements OnInit {
   }
 
   loginWithGlobus(): void {
-    const params = { redirect: 'http://localhost:4200/login?token={girderToken}', list: false };
+    // FIXME: is it ok to use window.location.origin here?
+    const params = { redirect: this.window.location.origin + '/login?token={girderToken}', list: false };
     this.oauth.oauthListProviders(params).subscribe(
       (providers: any) => {
         this.window.location.href = providers.Globus;

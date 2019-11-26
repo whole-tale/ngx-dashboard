@@ -16,6 +16,7 @@ import { CreateTaleModalComponent } from './modals/create-tale-modal/create-tale
 })
 export class TaleCatalogComponent extends BaseComponent implements AfterViewInit {
     currentPath = "tales";
+    searchQuery = '';
 
     @Output() readonly taleCreated = new EventEmitter<Tale>();
 

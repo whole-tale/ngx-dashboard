@@ -16,7 +16,8 @@ export class RegisterDataDialogComponent {
 
   showSearchResults = false;
   searchResultsLoading = false;
-  searchResults :any = [];
+  searchResults: any[] = [];
+  selectedResult: any;
 
   // URL to the DataONE production server
   readonly repositoryBaseUrl = 'https://cn.dataone.org/cn/v2';

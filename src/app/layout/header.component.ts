@@ -41,7 +41,7 @@ export class HeaderComponent extends BaseComponent implements OnInit {
     private readonly cookies: CookieService,
     private readonly users: UserService,
     private readonly tokenService: TokenService,
-    private readonly notificationStream: NotificationStreamService
+    readonly notificationStream: NotificationStreamService
   ) {
     super();
 

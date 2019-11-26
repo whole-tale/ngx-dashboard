@@ -4,4 +4,6 @@ import { Component } from '@angular/core';
   templateUrl: './new-folder-dialog.component.html',
   styleUrls: ['./new-folder-dialog.component.scss']
 })
-export class NewFolderDialogComponent {}
+export class NewFolderDialogComponent {
+  folderName = '';
+}
