@@ -11,7 +11,6 @@ RUN node --max_old_space_size=$MEM_LIMIT /usr/local/bin/yarn install --network-t
 
 # Perform an Angular production build with the higher memory limit
 COPY . ./
-#RUN ng build --prod
 RUN node --max_old_space_size=$MEM_LIMIT ./node_modules/@angular/cli/bin/ng build --prod
 
 # Copy built artifacts from "nodebuild" to nginx
