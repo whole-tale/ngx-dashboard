@@ -15,4 +15,4 @@ ENV NODE="node --max_old_space_size=$MEM_LIMIT" \
 
 # Perform an Angular production build
 ENTRYPOINT ["sh", "-c"]
-CMD ["$YARN install --network-timeout=360000 && $NG serve"]
+CMD ["$YARN install --network-timeout=360000 && $NG build --prod --watch"]
