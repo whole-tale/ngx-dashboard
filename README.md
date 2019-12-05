@@ -155,19 +155,50 @@ $ git merge upstream/master
 
 then handle any conflicts, and go on with building your app.
 
-### <a name="with-docker"> Running with Docker
+### <a name="with-docker"> Building with Docker
 
-Currently, Docker will only build the "production" version of the app. It can altered to run a different type of build, if desired.
+Docker can be used to build and serve the Angular source.
 
-To build the docker mage, run the usual command:
-
+To build a Docker image capable of performing Angular builds, use the following command:
 ```bash
-docker build -t wholetale/ng-dashboard .
+docker build -t bodom0015/ng -f Dockerfile.build .
 ```
 
-This will build the Angular application in a `node:carbon` container, then copy the built files from the `dist/` directory into a fresh `nginx:alpine` container.
+You can then run a development server using this Docker image:
+```bash
+docker run --name=ng-watch -itd -v $(pwd):/srv/app -w /srv/app bodom0015/ng
+```
+
+You can check the logs of the development server by running:
+```bash
+docker logs -f ng-watch
+```
+
+To stop the server:
+```bash
+docker stop ng-watch && docker rm -f ng-watch
+```
+
+### <a name="with-docker"> Running with Docker
+
+Docker can also be used to build and run the "production" version of the app.
+
+To build the docker image, run the following command:
+
+```bash
+docker build -t bodom0015/ng-dashboard:wt .
+```
+
+This will build the Angular application in a customized `node:carbon-slim` container, then copy the built files from the `dist/` directory into a fresh `nginx:stable-alpine` container.
 
 This process ensures that our final production-ready image does not contain any unnecessary build tools, and will actively hinder us from manually performing modifications after the container is deployed.
+
+Run the production image using the following command:
+```bash
+docker run -it bodom0015/ng-dashboard:wt
+```
+
+Optional: you can mount in `-v /path/to/src/wt-ng-dash/dist:/usr/share/nginx/html/`. Note that in this case you will need to provide your own build container mounting the same `/path/to/src/wt-ng-dash` that will produce the appropriate build output in `dist/`.
 
 ### <a name="development-builds"> Development and builds (without Docker)
 
