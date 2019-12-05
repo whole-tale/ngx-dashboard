@@ -1,0 +1,18 @@
+# Docker image for starting and Angular development server
+#   and/or performing production builds.
+#
+# Build: docker build -t bodom0015/ng -f Dockerfile.build .
+# Usage: docker run --rm -it -v /path/to/wt-ng-dash:/internal/container/path/ -w /internal/container/path/ bodom0015/ng
+#
+FROM node:carbon-slim
+RUN npm install -g yarn @angular/cli@7
+
+# Raise NodeJS memory limit and build up some helpers
+ARG MEM_LIMIT=2048
+ENV NODE="node --max_old_space_size=$MEM_LIMIT" \
+    YARN="$NODE /usr/local/bin/yarn" \
+    NG="$NODE ./node_modules/@angular/cli/bin/ng"
+
+# Perform an Angular production build
+ENTRYPOINT ["sh", "-c"]
+CMD ["$YARN install --network-timeout=360000 && $NG serve"]

@@ -1,13 +1,15 @@
-# Perform build in the "nodebuild" container
-FROM node:carbon as nodebuild
-RUN npm install -g yarn @angular/cli@7
-WORKDIR /srv/app/
+# Docker image for WT production build.
+#
+# Build: docker build -t bodom0015/ng-dashboard:wt -f Dockerfile .
+# Usage: docker run --rm -it bodom0015/ng-dashboard:wt
+#
+# Optionally: mount in -v /path/to/src/wt-ng-dash/dist:/usr/share/nginx/html/
+#   for live updates during development
+#
 
-# Raise NodeJS memory limit and build up some helpers
-ARG MEM_LIMIT=2048
-ENV NODE="node --max_old_space_size=$MEM_LIMIT" \
-    YARN="$NODE /usr/local/bin/yarn" \
-    NG="$NODE ./node_modules/@angular/cli/bin/ng"
+# Perform build in the "nodebuild" container
+FROM bodom0015/ng as nodebuild
+WORKDIR /srv/app/
 
 # Install dependencies
 COPY package.json yarn.lock ./
