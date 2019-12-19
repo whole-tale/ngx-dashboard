@@ -24,6 +24,7 @@ class TaleService extends __BaseService {
   static readonly taleCopyTalePath = '/tale/{id}/copy';
   static readonly taleExportTalePath = '/tale/{id}/export';
   static readonly taleGenerateManifestPath = '/tale/{id}/manifest';
+  static readonly talePublishTalePath = '/tale/{id}/publish';
 
   constructor(config: __Configuration, http: HttpClient) {
     super(config, http);
@@ -498,6 +499,45 @@ class TaleService extends __BaseService {
   taleGenerateManifest(params: TaleService.TaleGenerateManifestParams): __Observable<null> {
     return this.taleGenerateManifestResponse(params).pipe(__map(_r => _r.body as null));
   }
+
+  /**
+   * Publish a Tale to the target Repository.
+   * @param params The `TaleService.TalePublishTaleParams` containing the following parameters:
+   *
+   * - `id`: The ID of the tale to publish.
+   *
+   * - `repository`: The repository URL of the publish destination.
+   */
+  talePublishTaleResponse(params: TaleService.TalePublishTaleParams): __Observable<__StrictHttpResponse<null>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    if (params.repository != null) __params = __params.set('repository', params.repository.toString());
+    let req = new HttpRequest<any>('PUT', this.rootUrl + `/tale/${params.id}/manifest`, __body, {
+      headers: __headers,
+      params: __params,
+      responseType: 'json'
+    });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map(_r => {
+        return _r as __StrictHttpResponse<null>;
+      })
+    );
+  }
+  /**
+   * Publish a Tale to the target Repository.
+   * @param params The `TaleService.TalePublishTaleParams` containing the following parameters:
+   *
+   * - `id`: The ID of the tale to publish.
+   *
+   * - `repository`: The repository URL of the publish destination.
+   */
+  talePublishTale(params: TaleService.TalePublishTaleParams): __Observable<null> {
+    return this.talePublishTaleResponse(params).pipe(__map(_r => _r.body as null));
+  }
 }
 
 module TaleService {
@@ -679,6 +719,21 @@ module TaleService {
      * If True, folders in Tale's dataSet are recursively expanded to items in the 'aggregates' section
      */
     expandFolders?: boolean;
+  }
+
+  /**
+   * Parameters for talePublishTale
+   */
+  export interface TalePublishTaleParams {
+    /**
+     * The ID of the Tale that should be published
+     */
+    id: string;
+
+    /**
+     * Repository URL to which the Tale should be published
+     */
+    repository: string;
   }
 }
 
