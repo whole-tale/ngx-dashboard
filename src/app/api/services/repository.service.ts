@@ -11,11 +11,39 @@ import { map as __map, filter as __filter } from 'rxjs/operators';
   providedIn: 'root'
 })
 class RepositoryService extends __BaseService {
+  static readonly repositoryListRepositoryPath = '/repository';
   static readonly repositoryListFilesPath = '/repository/listFiles';
   static readonly repositoryLookupDataPath = '/repository/lookup';
 
   constructor(config: __Configuration, http: HttpClient) {
     super(config, http);
+  }
+
+  /**
+   * Returns a list of repositories inside along with their URLs
+   */
+  repositoryListRepositoryResponse(): __Observable<__StrictHttpResponse<null>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>('GET', this.rootUrl + `/repository`, __body, {
+      headers: __headers,
+      params: __params,
+      responseType: 'json'
+    });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map(_r => {
+        return _r as __StrictHttpResponse<null>;
+      })
+    );
+  }
+  /**
+   * Returns a list of repositories inside along with their URLs
+   */
+  repositoryListRepository(): __Observable<null> {
+    return this.repositoryListRepositoryResponse().pipe(__map(_r => _r.body as null));
   }
 
   /**
@@ -34,7 +62,6 @@ class RepositoryService extends __BaseService {
     if (params.baseUrl != null) __params = __params.set('base_url', params.baseUrl.toString());
     let req = new HttpRequest<any>('GET', this.rootUrl + `/repository/listFiles`, __body, {
       headers: __headers,
-      params: __params,
       responseType: 'json'
     });
 
