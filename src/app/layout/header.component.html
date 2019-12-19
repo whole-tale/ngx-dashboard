@@ -72,7 +72,7 @@
         <div class="menu" tabindex="-1">
           <div class="item" *ngIf="user && user.gravatar_baseUrl"><img class="gravatar" [src]="user.gravatar_baseUrl">{{ user.firstName }} {{ user.lastName }}</div>
           <div class="divider"></div>
-          <!--<div class="item" (click)="gotoSettings()">Settings</div>-->
+          <div class="item"  routerLink="/settings" routerLinkActive="active">Settings</div>
           <div class="item" (click)="logout()">Logout</div>
         </div>
       </div>

@@ -1,0 +1,17 @@
+import { AuthGuard } from '@ngx-auth/core';
+
+import { UserSettingsComponent } from './user-settings.component';
+
+export const routes = [
+  {
+    path: '',
+    component: UserSettingsComponent,
+    // canActivate: [AuthGuard],
+    data: {
+      meta: {
+        title: 'PUBLIC.ABOUT.ABOUT.PAGE_TITLE',
+        description: 'PUBLIC.ABOUT.ABOUT.META_DESCRIPTION'
+      }
+    }
+  }
+];

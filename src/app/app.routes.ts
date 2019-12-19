@@ -35,6 +35,10 @@ export const routes = [
       {
         path: 'run',
         loadChildren: './+run-tale/run-tale.module#RunTaleModule'
+      },
+      {
+        path: 'settings',
+        loadChildren: './+user-settings/user-settings.module#UserSettingsModule'
       }
     ],
     canActivateChild: [MetaGuard, AuthGuard],
