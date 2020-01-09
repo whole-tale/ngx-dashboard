@@ -66,11 +66,11 @@ export class PublicTalesComponent implements OnInit {
   }
 
   trackById(index: number, tale: Tale): string {
-      return tale._id;
+    return tale._id;
   }
 
   trackByAuthorOrcid(index: number, author: TaleAuthor): string {
-      return author.orcid;
+    return author.orcid;
   }
 
   // Refresh tale/instance data from the server

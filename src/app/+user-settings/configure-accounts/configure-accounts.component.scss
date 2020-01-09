@@ -1,0 +1,16 @@
+// ButtonLink/style.css
+.ui.button.basic.tertiary,
+.ui.button.basic.tertiary:hover,
+.ui.button.basic.tertiary:focus {
+  box-shadow: 0 0 !important;
+}
+
+p {
+  font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+
+.connected {
+  padding: 0 2rem 1.5rem;
+  font-size: 1rem;
+  font-weight: normal;
+}

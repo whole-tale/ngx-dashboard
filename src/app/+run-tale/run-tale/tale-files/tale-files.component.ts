@@ -171,9 +171,9 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         // Otherwise upload to "workspace" if we're on the Workspaces nav and have no currentFolderId, else upload to "Home" folder
         this.currentNav === 'tale_workspaces' ? this.tale.workspaceId : this.homeRoot._id; 
       fetch(url).then(resp => resp.arrayBuffer()).then(contents => {
-        const params = {
-          parentType: UploadType.Folder, 
-          parentId: parentId,
+        const params = { 
+          parentId,
+          parentType: UploadType.Folder,
           name: upload.name,
           size: upload.size,
           chunk: contents

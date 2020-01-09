@@ -15,4 +15,6 @@ export interface Job {
   name?: string;
   size?: number;
   updated?: string;
+  progress?: any;
+  status: number;
 }

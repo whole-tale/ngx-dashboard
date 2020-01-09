@@ -1,0 +1,48 @@
+<h1 mat-dialog-title>Connect {{ data.provider.fullName }} Account</h1>
+
+<mat-dialog-content>
+  <div id="connect-apikey-modal" class="ui modal apikey">
+    <i class="close icon"></i>
+    <div class="header">
+      <!-- TODO: Helper to handle article appropriately? (e.g. "a/an ORCID Account") -->
+      <img class="ui avatar image" src="data:image/png;base64,{{ data.provider.logo }}"> Connect {{ data.provider.fullName }} Account
+    </div>
+    <div class="content">
+  
+      <form class="ui form">
+        <div class="two fields">
+          <div class="field">
+            <label>{{ data.provider.fullName }} Repository</label>
+            <div id="newResourceServerDropdown" class="ui fluid selection dropdown">
+              <input type="hidden" name="newResourceServer" [(ngModel)]="newApiKey.resource_server" />
+              <i class="dropdown icon"></i>
+              <div class="default text">Choose a repository...</div>
+              <div class="menu">
+                <div class="item" *ngFor="let target of data.provider.targets">{{ target }}</div>
+              </div>
+              
+            </div>
+          </div>
+          <div class="field">
+            <label>API Token 
+                <a *ngIf="data.provider.docs_href" href="{{ data.provider.docs_href }}" style="float:right; font-weight:normal" target="_blank">Get from {{ data.provider.fullName }} <i class="external square alternate icon"></i></a>
+            </label>
+            <input type="text" name="API Token" placeholder="Enter an API key" [(ngModel)]="newApiKey.key" />
+          </div>
+        </div>
+      </form>
+    </div>
+    
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <div class="actions">
+    <button class="ui deny button" mat-dialog-close>
+      Cancel
+    </button>
+    <button class="ui positive primary right button" [disabled]="!newApiKey.resource_server || !newApiKey.key" [mat-dialog-close]="newApiKey">
+      Connect
+    </button>
+  </div>
+</mat-dialog-actions>

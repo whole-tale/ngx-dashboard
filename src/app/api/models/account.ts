@@ -10,6 +10,7 @@ export interface Account {
   logo?: string;
   tags?: Array<string>;
   targets?: Array<any>;
+  state?: string;
   type: string;
   url?: string;
 }

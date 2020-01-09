@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, NgZone, OnChanges, OnInit } from '@angular/core';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Instance } from '@api/models/instance';
 import { Tale } from '@api/models/tale';
@@ -12,6 +13,8 @@ import { WindowService } from '@framework/core/window.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { routeAnimation } from '~/app/shared';
+
+import { PublishTaleDialogComponent } from './modals/publish-tale-dialog/publish-tale-dialog.component';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -42,7 +45,8 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       private logger: LogService,
       private taleService: TaleService,
       private instanceService: InstanceService,
-      private userService: UserService
+      private userService: UserService,
+      private dialog: MatDialog
     ) {
         super();
     }
@@ -52,7 +56,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     }
 
     taleInstanceStateChanged(event: any): void {
-      //this.instance = event;
+      // this.instance = event;
       this.refresh();
     }
 
@@ -160,8 +164,16 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       });
     }
 
-    publishTale(): void {
-      alert("Insert publish modal here...");
+      
+    // Expected parameter format:
+    //    dataMap: [{"name":"Elevation per SASAP region and Hydrolic Unit (HUC8) boundary for Alaskan watersheds","dataId":"resource_map_doi:10.5063/F1Z60M87","repository":"DataONE","doi":"10.5063/F1Z60M87","size":10293583}]
+    openPublishTaleDialog(event: Event): void {
+      const config: MatDialogConfig = {
+        data: { tale: this.tale }
+      };
+      const dialogRef = this.dialog.open(PublishTaleDialogComponent, config);
+      
+      // Don't do anything on close
     }
 
     viewFullScreen(): void {

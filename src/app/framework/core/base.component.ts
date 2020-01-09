@@ -3,8 +3,8 @@ import { Subject } from 'rxjs';
 import { BaseDocument, UniqueId } from '~/app/framework/ngrx';
 
 @Component({
-  template: '',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  template: ''
+  // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BaseComponent implements OnDestroy {
   protected ngUnsubscribe: Subject<void>;

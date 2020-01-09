@@ -514,7 +514,7 @@ class TaleService extends __BaseService {
     let __body: any = null;
 
     if (params.repository != null) __params = __params.set('repository', params.repository.toString());
-    let req = new HttpRequest<any>('PUT', this.rootUrl + `/tale/${params.id}/manifest`, __body, {
+    let req = new HttpRequest<any>('PUT', this.rootUrl + `/tale/${params.id}/publish`, __body, {
       headers: __headers,
       params: __params,
       responseType: 'json'

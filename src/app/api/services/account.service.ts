@@ -61,7 +61,7 @@ class AccountService extends __BaseService {
    * - `provider`: the name of the new account provider
    * - `resource_server`: the resource_server of the new account provider
    * - `key`: the apikey or token of the new account provider
-   * - `type`: the type of this account provider
+   * - `key_type`: the type of this account provider
    */
   accountCreateApiKeyAccountResponse(params: AccountService.AccountCreateApiKeyAccountParams): __Observable<__StrictHttpResponse<null>> {
     let __params = this.newParams();
@@ -70,10 +70,10 @@ class AccountService extends __BaseService {
     let provider = params.provider.toString();
     if (params.resource_server != null) __params = __params.set('resource_server', params.resource_server.toString());
     if (params.key != null) __params = __params.set('key', params.key.toString());
-    if (params.type != null) {
-      __params = __params.set('type', params.type.toString());
+    if (params.key_type != null) {
+      __params = __params.set('key_type', params.key_type.toString());
     } else {
-      __params = __params.set('type', 'apikey');
+      __params = __params.set('key_type', 'apikey');
     }
     let req = new HttpRequest<any>('POST', this.rootUrl + `/account/${provider}/key`, __body, {
       headers: __headers,
@@ -95,7 +95,7 @@ class AccountService extends __BaseService {
    * - `provider`: the name of the new account provider
    * - `resource_server`: the resource_server of the new account provider
    * - `key`: the apikey or token of the new account provider
-   * - `type`: the type of this account provider
+   * - `key_type`: the type of this account provider
    */
   accountCreateApiKeyAccount(params: AccountService.AccountCreateApiKeyAccountParams): __Observable<null> {
     return this.accountCreateApiKeyAccountResponse(params).pipe(__map(_r => _r.body as null));
@@ -114,7 +114,7 @@ class AccountService extends __BaseService {
     let __body: any = null;
     let provider = params.provider.toString();
     if (params.resource_server != null) __params = __params.set('resource_server', params.resource_server.toString());
-    let req = new HttpRequest<any>('GET', this.rootUrl + `/account/${provider}/key`, __body, {
+    let req = new HttpRequest<any>('GET', this.rootUrl + `/account/${provider}/revoke`, __body, {
       headers: __headers,
       params: __params,
       responseType: 'json'
@@ -203,7 +203,7 @@ module AccountService {
     /**
      * The type of this account provider
      */
-    type?: string;
+    key_type?: string;
   }
 
   /**

@@ -5,7 +5,7 @@ import { routeAnimation } from '~/app/shared';
 @Component({
     templateUrl: './user-settings.component.html',
     styleUrls: ['./user-settings.component.scss'],
-    //changeDetection: ChangeDetectionStrategy.OnPush,
+    // changeDetection: ChangeDetectionStrategy.OnPush,
     animations: [routeAnimation]
 })
 export class UserSettingsComponent extends BaseComponent {

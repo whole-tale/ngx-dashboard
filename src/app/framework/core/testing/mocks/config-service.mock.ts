@@ -1,5 +1,7 @@
+import { Injectable } from '@angular/core';
 import { ConfigService } from '@ngx-config/core';
 
+@Injectable()
 export class MockConfigService extends ConfigService {
   constructor() {
     super(undefined);

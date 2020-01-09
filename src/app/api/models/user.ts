@@ -15,4 +15,5 @@ export interface User {
   name?: string;
   size?: number;
   updated?: string;
+  otherTokens: Array<any>;
 }

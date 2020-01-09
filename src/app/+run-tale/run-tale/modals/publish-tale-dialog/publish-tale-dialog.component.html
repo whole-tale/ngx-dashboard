@@ -1,18 +1,30 @@
 <h1 mat-dialog-title>Publish Tale</h1>
 
 <mat-dialog-content>
+  Insert info about what publishing is / does
+  
   <form class="ui form">
     <div class="field">
-      <pre>Coming Soon!</pre>
+      <select name="selectedRepository" [(ngModel)]="selectedRepository">
+        <option *ngFor="let repo of repositories; index as i; trackBy: trackByRepository" [value]="repo.repository">{{ repo.name }}</option>
+      </select>
     </div>
-    <!--<button class="ui button" type="submit">Submit</button>-->
   </form>
+  
+  <div class="ui progress {{ publishStatus }}" id="publish-progress" *ngIf="publishStatus !== 'init'">
+    <div class="bar">
+      <div class="progress"></div>
+    </div>
+    <div class="label">{{ lastMessage || 'Publishing Tale...' }}</div>
+  </div>
+  
+  Insert info about what is happening in the background
 </mat-dialog-content>
 
 <mat-dialog-actions>
-  <button class="ui black deny button" mat-dialog-close>Cancel</button>
-  <button class="ui positive right labeled icon button" [mat-dialog-close]="'true'">
-    Submit
+  <button class="ui black deny button" [disabled]="isPublishing" mat-dialog-close>Cancel</button>
+  <button class="ui positive right labeled icon button" [disabled]="isPublishing" (click)="submitPublish()">
+    Publish
     <i class="checkmark icon"></i>
   </button>
 </mat-dialog-actions>

@@ -1,5 +1,5 @@
 import { Component, Inject, NgZone, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Dataset } from '@api/models/dataset';
 import { Tale } from '@api/models/tale';
 import { DatasetService } from '@api/services/dataset.service';
@@ -48,7 +48,6 @@ export class SelectDataDialogComponent implements OnInit {
     private datasetService: DatasetService, 
     private folderService: FolderService, 
     private itemService: ItemService, 
-    public dialogRef: MatDialogRef<SelectDataDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { tale: Tale }
   ) {}
 

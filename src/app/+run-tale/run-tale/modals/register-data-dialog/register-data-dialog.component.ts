@@ -16,7 +16,7 @@ export class RegisterDataDialogComponent {
 
   showSearchResults = false;
   searchResultsLoading = false;
-  searchResults: any[] = [];
+  searchResults: Array<any> = [];
   selectedResult: any;
 
   // URL to the DataONE production server
