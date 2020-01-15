@@ -7,11 +7,9 @@ import { PublicTalesComponent } from '../public-tales/public-tales.component';
 
 @Component({
   templateUrl: './my-tales.component.html',
-  styleUrls: ['./my-tales.component.scss']
+  styleUrls: ['./my-tales.component.scss'],
+  selector: 'app-my-tales'
 })
 export class MyTalesComponent extends PublicTalesComponent {
-
-  get instanceCount(): number {
-    return Object.keys(this.instances).length;
-  }
+  
 }

@@ -19,7 +19,8 @@ declare var $: any;
 
 @Component({
   templateUrl: './public-tales.component.html',
-  styleUrls: ['./public-tales.component.scss']
+  styleUrls: ['./public-tales.component.scss'],
+  selector: 'app-public-tales'
 })
 export class PublicTalesComponent implements OnInit {
   tales$: Observable<Array<Tale>> = new Observable<Array<Tale>>();
@@ -27,6 +28,10 @@ export class PublicTalesComponent implements OnInit {
   publicTales: Array<Tale> = [];
 
   user: User;
+  
+  get instanceCount(): number {
+    return Object.keys(this.instances).length;
+  }
 
   instances: Map<string, Instance> = new Map<string, Instance> ();
   creators: Map<string, User> = new Map<string, User> ();
