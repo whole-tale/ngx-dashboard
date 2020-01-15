@@ -3,7 +3,7 @@
       <i class="play icon"></i>
       Run Tale
   </button>
-  <button *ngIf="instance && instance.status === 0" class="right floated" [ngClass]="{ 'tale-button': !isPrimary, 'tale-button-primary': isPrimary }" (click)="startTale()">
+  <button *ngIf="instance && (instance.status === 0 || instance.status === 3)" class="right floated" [ngClass]="{ 'tale-button': !isPrimary, 'tale-button-primary': isPrimary }" (click)="startTale()">
       <i id="loading-spinner" class="fas fa-spinner fa-pulse"></i>
       Please Wait...
   </button>
