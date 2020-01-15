@@ -22,8 +22,8 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
-  <button class="ui black deny button" [disabled]="isPublishing" mat-dialog-close>Cancel</button>
-  <button class="ui positive right labeled icon button" [disabled]="isPublishing" (click)="submitPublish()">
+  <button class="ui black deny button" [disabled]="publishStatus==='active'" mat-dialog-close>Cancel</button>
+  <button class="ui positive right labeled icon button" [disabled]="publishStatus==='active'" (click)="submitPublish()">
     Publish
     <i class="checkmark icon"></i>
   </button>
