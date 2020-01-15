@@ -27,7 +27,7 @@
             <label>API Token 
                 <a *ngIf="data.provider.docs_href" href="{{ data.provider.docs_href }}" style="float:right; font-weight:normal" target="_blank">Get from {{ data.provider.fullName }} <i class="external square alternate icon"></i></a>
             </label>
-            <input type="text" name="API Token" placeholder="Enter an API key" [(ngModel)]="newApiKey.key" />
+            <input type="text" name="API Token" placeholder="Enter an API key" [(ngModel)]="newApiKey.access_token" />
           </div>
         </div>
       </form>
@@ -41,7 +41,7 @@
     <button class="ui deny button" mat-dialog-close>
       Cancel
     </button>
-    <button class="ui positive primary right button" [disabled]="!newApiKey.resource_server || !newApiKey.key" [mat-dialog-close]="newApiKey">
+    <button class="ui positive primary right button" [disabled]="!newApiKey.resource_server || !newApiKey.access_token" [mat-dialog-close]="newApiKey">
       Connect
     </button>
   </div>

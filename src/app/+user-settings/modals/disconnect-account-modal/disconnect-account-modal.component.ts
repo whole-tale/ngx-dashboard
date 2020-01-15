@@ -1,4 +1,5 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, Inject, NgZone } from '@angular/core';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Account } from '@api/models/account';
 import { Repository } from '@api/models/repository';
 import { User } from '@api/models/user';
@@ -18,7 +19,8 @@ export class DisconnectAccountModalComponent extends BaseComponent {
   constructor(
     private readonly zone: NgZone,
     private readonly accountService: AccountService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    @Inject(MAT_DIALOG_DATA) public data: { provider: Account }
   ) {
       super();
   }
