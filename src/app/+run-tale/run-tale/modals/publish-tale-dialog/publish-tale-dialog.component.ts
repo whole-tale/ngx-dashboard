@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Account } from '@api/models/account';
 import { Job } from '@api/models/job';
 import { Repository } from '@api/models/repository';
+import { PublishInfo } from '@api/models/publish-info';
 import { Tale } from '@api/models/tale';
 import { JobService } from '@api/services/job.service';
 import { RepositoryService } from '@api/services/repository.service';
@@ -20,10 +21,15 @@ export class PublishTaleDialogComponent implements OnInit {
   repositories: Array<Repository> = [];
   selectedRepository: string;
   
+  get selectedRepositoryName() {
+     return this.repositories.find(r => r.repository === this.selectedRepository).name;
+  }
+  
   publishStatus = 'init';
   lastMessage: string;
   progressTotal: number;
   progressCurrent: number;
+  publishInfo: PublishInfo;
   
   interval: any;
   
@@ -75,7 +81,7 @@ export class PublishTaleDialogComponent implements OnInit {
           stopPolling();
         }
         
-        // TODO: Poll for job status, update progress
+        // Poll for job status, update progress
         this.interval = setInterval(() => {
           this.jobService.jobGetJob(job._id).subscribe((watched: Job) => {
             if (watched.progress) {
@@ -91,14 +97,23 @@ export class PublishTaleDialogComponent implements OnInit {
             // Wait for job status to be success or error
             if (watched.status === 3 ) {
               this.publishStatus = 'success';
-              this.lastMessage = 'Your Tale has been published successfully!';
+              //this.lastMessage = 'Your Tale has been published successfully!';
+              // TODO: Fetch Tale and display new publishInfo
+              this.taleService.taleGetTale(this.data.tale._id).subscribe((tale: Tale) => {
+                this.zone.run(() => {
+                  if (tale.publishInfo.length > 0) {
+                    this.publishInfo = tale.publishInfo[0];
+                  }
+                });
+              });
               
               if (this.interval) {
                 stopPolling();
               }
             } else if (watched.status === 4) {
               this.publishStatus = 'error';
-              this.lastMessage = 'Failed running job - see job logs for details';
+              // TODO: Fetch final error message
+              //this.lastMessage = 'Failed running job - see job logs for details';
               
               if (this.interval) {
                 stopPolling();

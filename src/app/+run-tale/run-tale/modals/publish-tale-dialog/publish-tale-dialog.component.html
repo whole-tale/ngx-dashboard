@@ -1,24 +1,57 @@
 <h1 mat-dialog-title>Publish Tale</h1>
 
 <mat-dialog-content>
-  Insert info about what publishing is / does
+  <!-- Help text introducing Publishing with a link to RTD -->
+  <p>
+    Publishing creates an immutable copy of your
+    Tale with a DOI.For more information on publishing
+    and citing your Tale, please consult the 
+    <a href="https://wholetale.readthedocs.io/en/stable/users_guide/publishing.html" target="_blank">
+      Publishing Guide
+    </a>.
+  </p>
   
+  <!-- Target repository selector -->
   <form class="ui form">
     <div class="field">
-      <select name="selectedRepository" [(ngModel)]="selectedRepository">
+      <select class="ui selection dropdown" name="selectedRepository" [(ngModel)]="selectedRepository">
         <option *ngFor="let repo of repositories; index as i; trackBy: trackByRepository" [value]="repo.repository">{{ repo.name }}</option>
       </select>
     </div>
   </form>
   
-  <div class="ui progress {{ publishStatus }}" id="publish-progress" *ngIf="publishStatus !== 'init'">
-    <div class="bar">
-      <div class="progress"></div>
-    </div>
-    <div class="label">{{ lastMessage || 'Publishing Tale...' }}</div>
-  </div>
+  <!-- Help text pointing to Setting page -->
+  <i>
+    Don't see what you're looking for?
+    Add repositories by connecting additional
+    accounts on the 
+    <a routerLink="/settings" routerLinkActive="active">
+      Settings
+    </a>
+    page.
+  </i>
   
-  Insert info about what is happening in the background
+  
+  <div class="ui message" *ngIf="publishStatus !== 'init'"
+      [ngClass]="{ 'negative':publishStatus==='error','blue':publishStatus==='active','positive':publishStatus==='success' }">
+    <div class="header">
+      <a class="ui label" [ngClass]="{ 'red': publishStatus==='error', 'blue': publishStatus==='active', 'green': publishStatus==='success' }">{{ publishStatus | uppercase }}</a>
+      <span *ngIf="publishStatus==='error'">An error was encountered while publishing your Tale.</span>
+      <span *ngIf="publishStatus==='active'">Your Tale is being published to {{ selectedRepositoryName }}</span>
+      <span *ngIf="publishStatus==='success'">{{ lastMessage }}</span>
+    </div>
+    
+    <div class="ui progress active" *ngIf="publishStatus === 'active'">
+      <div class="bar">
+        <div class="progress"></div>
+      </div>
+      <div class="label">{{ lastMessage || 'Publishing Tale...' }}</div>
+    </div>
+    
+    <p *ngIf="publishStatus==='error'">{{ lastMessage }}</p>
+    <p *ngIf="publishStatus==='success'">Identifier: <a [href]="{{ publishInfo.uri }}" target='_blank'>{{ publishInfo.pid }}</a></p>
+  </div>
+ 
 </mat-dialog-content>
 
 <mat-dialog-actions>
