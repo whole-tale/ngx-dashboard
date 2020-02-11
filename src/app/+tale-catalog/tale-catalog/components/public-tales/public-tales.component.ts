@@ -1,4 +1,4 @@
-import { Component, Input, NgZone, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, NgZone, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Instance } from '@api/models/instance';
 import { Tale } from '@api/models/tale';
@@ -38,6 +38,7 @@ export class PublicTalesComponent implements OnInit {
 
   constructor(
     protected zone: NgZone,
+    private ref: ChangeDetectorRef,
     private dialog: MatDialog,
     private logger: LogService,
     private taleService: TaleService,
@@ -94,16 +95,14 @@ export class PublicTalesComponent implements OnInit {
     // Fetch the list of public tales
     const listTalesParams = {};
     this.taleService.taleListTales(listTalesParams).subscribe((tales: Array<Tale>) => {
-      this.zone.run(() => {
-        this.tales = tales;
-      });
+      this.tales = tales;
+      this.ref.detectChanges();
 
       // For each tale, also fetch its creator
       this.tales.forEach(tale => {
         this.userService.userGetUser(tale.creatorId).subscribe((creator: User) => {
-          this.zone.run(() => {
-            this.creators[tale._id] = creator;
-          });
+          this.creators[tale._id] = creator;
+          this.ref.detectChanges();
         }, (err: any) => {
           this.logger.error(`Failed to GET /user/${tale.creatorId}:`, err);
         });

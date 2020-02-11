@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, NgZone, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { NotificationStreamService } from '@api/notification-stream.service';
 import { UserService } from '@api/services/user.service';
@@ -33,6 +33,7 @@ export class HeaderComponent extends BaseComponent implements OnInit {
 
   constructor(
     private readonly zone: NgZone,
+    private readonly ref: ChangeDetectorRef,
     private readonly store$: Store<State>,
     private readonly logger: LogService,
     private readonly config: ConfigService,
@@ -66,10 +67,9 @@ export class HeaderComponent extends BaseComponent implements OnInit {
     });
 
     this.users.userGetMe().subscribe((user: any) => {
-      this.zone.run(() => {
-        this.logger.debug('Logged in as:', user);
-        this.user = this.tokenService.user = user;
-      });
+      this.logger.debug('Logged in as:', user);
+      this.user = this.tokenService.user = user;
+      this.ref.detectChanges();
     });
   }
 

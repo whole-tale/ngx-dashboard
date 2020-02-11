@@ -48,4 +48,8 @@ export class ConnectApiKeyModalComponent extends BaseComponent {
         'access_token': ''
       };
   }
+  
+  trackByTarget(index: number, target: string): string {
+      return target;
+  }
 }
