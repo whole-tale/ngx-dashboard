@@ -17,8 +17,8 @@ export const routes = [
         component: PublicTalesComponent,
         data: {
           meta: {
-            title: 'PUBLIC.SECURE.PAGE_TITLE',
-            description: 'PUBLIC.SECURE.META_DESCRIPTION'
+            title: 'PUBLIC.CATALOG.PUBLIC.PAGE_TITLE',
+            description: 'PUBLIC.CATALOG.PUBLIC.META_DESCRIPTION'
           }
         },
       },
@@ -27,8 +27,8 @@ export const routes = [
         component: MyTalesComponent,
         data: {
           meta: {
-            title: 'PUBLIC.SECURE.PAGE_TITLE',
-            description: 'PUBLIC.SECURE.META_DESCRIPTION'
+            title: 'PUBLIC.CATALOG.MINE.PAGE_TITLE',
+            description: 'PUBLIC.CATALOG.MINE.META_DESCRIPTION'
           }
         },
       },

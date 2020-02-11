@@ -9,8 +9,8 @@ export const routes = [
     // canActivate: [AuthGuard],
     data: {
       meta: {
-        title: 'PUBLIC.ABOUT.ABOUT.PAGE_TITLE',
-        description: 'PUBLIC.ABOUT.ABOUT.META_DESCRIPTION'
+        title: 'DATA_CATALOG.PAGE_TITLE',
+        description: 'DATA_CATALOG.META_DESCRIPTION'
       }
     }
   }

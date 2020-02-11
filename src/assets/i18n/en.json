@@ -3,6 +3,56 @@
   "DEFAULT_TITLE": "WholeTale",
   "DEFAULT_META_DESCRIPTION": "Welcome to WholeTale",
   "PUBLIC": {
+    "RUN_TALE": {
+      "PAGE_TITLE": "Run Tale",
+      "META_DESCRIPTION": "Interact with a Tale or associated metadata"
+    },
+    "LOGIN": {
+      "PAGE_TITLE": "Log in",
+      "META_DESCRIPTION": "",
+      "USERNAME": "Username",
+      "PASSWORD": "Password",
+      "LOG_IN": "Log in",
+      "NOTE": "Trying to log in...",
+      "ERROR": "Login unsuccessful!"
+    },
+    "DASHBOARD": {
+      "MENU_TITLE": "Tale Dashboard",
+      "PAGE_TITLE": "Tale Dashboard",
+      "META_DESCRIPTION": "Welcome to WholeTale",
+      "CARD_TITLE": "Tale Dashboard",
+      "CARD_SUBTITLE": "Welcome to WholeTale"
+    },
+    "CATALOG": {
+      "PUBLIC": {
+        "PAGE_TITLE": "Public Tale Catalog",
+        "META_DESCRIPTION": "Browse public Tales"
+      },
+      "MINE": {
+        "PAGE_TITLE": "My Tale Catalog",
+        "META_DESCRIPTION": "Browse your created Tales"
+      }
+    },
+    "SETTINGS": {
+      "PAGE_TITLE": "User Settings",
+      "META_DESCRIPTION": "Change your account preferences"
+    },
+
+    "DATA_CATALOG": {
+      "MENU_TITLE": "Data Catalog",
+      "PAGE_TITLE": "Data Catalog",
+      "META_DESCRIPTION": "Browse the list of available datasets",
+      "CARD_TITLE": "Data Catalog",
+      "CARD_SUBTITLE": "Browse the list of available datasets"
+    },
+    "COMPUTE_ENVIRONMENTS": {
+      "MENU_TITLE": "Compute Environments",
+      "PAGE_TITLE": "Compute Environments",
+      "META_DESCRIPTION": "Browse the list of available compute environments",
+      "CARD_TITLE": "Compute Environments",
+      "CARD_SUBTITLE": "Browse the list of available compute environments"
+    },
+
     "SHARED": {
       "ACTION": {
         "TOOLTIP": "Actions",

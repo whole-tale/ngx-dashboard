@@ -8,8 +8,8 @@ export const routes = [
     component: RunTaleComponent,
     data: {
       meta: {
-        title: 'PUBLIC.SECURE.PAGE_TITLE',
-        description: 'PUBLIC.SECURE.META_DESCRIPTION'
+        title: 'PUBLIC.RUN_TALE.PAGE_TITLE',
+        description: 'PUBLIC.RUN_TALE.META_DESCRIPTION'
       }
     }
   }
