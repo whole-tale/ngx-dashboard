@@ -1,11 +1,14 @@
 import { ChangeDetectorRef, Component, Input, NgZone, OnInit } from '@angular/core';
 import { Image } from '@api/models/image';
+import { License } from '@api/models/license';
 import { Tale } from '@api/models/tale';
 import { User } from '@api/models/user';
 import { ImageService } from '@api/services/image.service';
+import { LicenseService } from '@api/services/license.service';
 import { TaleService } from '@api/services/tale.service';
 import { LogService } from '@framework/core/log.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
+import { NotificationService } from '@shared/error-handler/services/notification.service';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { Observable } from 'rxjs';
 
@@ -21,6 +24,8 @@ export class TaleMetadataComponent implements OnInit {
   @Input() tale: Tale;
   @Input() creator: User;
 
+  licenses: Observable<Array<License>>;
+
   environments: Observable<Array<Image>>;
   environment: Image;
   newAuthor: TaleAuthor;
@@ -33,6 +38,8 @@ export class TaleMetadataComponent implements OnInit {
               private zone: NgZone,
               private logger: LogService,
               private taleService: TaleService,
+              private licenseService: LicenseService,
+              private notificationService: NotificationService,
               private imageService: ImageService) {
     this.resetNewAuthor();
   }
@@ -40,13 +47,14 @@ export class TaleMetadataComponent implements OnInit {
   ngOnInit(): void {
     const params = {};
     this.environments = this.imageService.imageListImages(params);
-    $('.ui.dropdown').dropdown();
+    this.licenses = this.licenseService.licenseGetLicenses();
   }
 
   trackById(index: number, model: any): string {
-      return model._id || model.orcid || model.itemId;
+    return model._id || model.orcid || model.itemId;
   }
 
+  // TODO: Abstract to generic helper method
   copy(json: any): any {
     return JSON.parse(JSON.stringify(json));
   }
@@ -54,15 +62,16 @@ export class TaleMetadataComponent implements OnInit {
   editTale(): void {
     this._previousState = this.copy(this.tale);
     this.editing = true;
+    setTimeout(() => $('.ui.dropdown').dropdown(), 500);
   }
 
   saveTaleEdit(): void {
     const params = { id: this.tale._id , tale: this.tale };
-    this.taleService.taleUpdateTale(params)
-                   .subscribe(res => {
+    this.taleService.taleUpdateTale(params).subscribe(res => {
       this.logger.debug("Successfully saved tale state:", this.tale);
       this.zone.run(() => {
         this.editing = false;
+        this.notificationService.showSuccess("Tale saved successfully");
       });
     }, err => {
       this.logger.error("Failed updating tale:", err);

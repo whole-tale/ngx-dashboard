@@ -1,6 +1,6 @@
 <div class="ui stretched stackable grid" id="tale-metadata-container">
   <div class="row">
-    <div class="ui ten wide column">
+    <div class="ui" [ngClass]="{ 'sixteen wide column': editing, 'ten wide column': !editing }">
 
       <form class="ui form" *ngIf="editing">
         <div class="field">
@@ -11,6 +11,7 @@
           <label>Title</label>
           <input type="text" name="title" placeholder="Title is required." [(ngModel)]="tale.title" required>
         </div>
+        
         <div class="fields">
           <div class="field">
             <label>Authors</label>
@@ -62,8 +63,11 @@
         </div>
         <div class="field">
           <label>License</label>
-          <!-- TODO: dropdown -->
-          <input type="text" name="license" placeholder="License is required." [(ngModel)]="tale.licenseSPDY" required>
+          <select class="ui floating labeled icon selection dropdown" name="licenseSPDX" [(ngModel)]="tale.licenseSPDX" required>
+            <option class="item" [ngValue]="license.spdx" *ngFor="let license of (licenses | async); index as i; trackBy: trackBySpdx">
+              {{ license.name }}
+            </option>
+          </select>
         </div>
         <div class="field">
           <label>Compute Environment</label>
@@ -152,10 +156,11 @@
 
     </div>
 
-    <div class="ui six wide column">
+    <div class="ui six wide column" *ngIf="!editing">
       <img class="ui image img-responsive" [src]="tale.illustration | safe:'url'" *ngIf="tale.illustration">
     </div>
   </div>
+  
   <div class="row">
     <div class="ten wide column">
       <button class="ui primary button" *ngIf="!editing" (click)="editTale()">
