@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Account } from '@api/models/account';
 import { Repository } from '@api/models/repository';
@@ -113,13 +113,15 @@ export class ConfigureAccountsComponent extends BaseComponent implements OnInit 
     
     // TODO: For DataONE/OAuth, just redirect to their login
     window.location.href = provider.url;
+    
     return true;
   }
   
-  fetchDataOneJwt(user: User, provider: Account) {
+  fetchDataOneJwt(user: User, provider: Account): void {
     if (provider.type !== 'dataone') {
       // Only fetch JWT for DataONE provider(s)
       this.logger.error("Cannot fetch JWT for non-DataONE account providers.");
+      
       return;
     }
 
