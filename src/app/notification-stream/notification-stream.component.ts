@@ -1,4 +1,4 @@
-import { Component, NgZone } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { NotificationStreamService } from '@api/notification-stream.service';
 import { LogService } from '@framework/core/log.service';
 import { EventSourcePolyfill as EventSource } from 'ng-event-source';
@@ -74,7 +74,7 @@ export class NotificationStreamComponent {
   source: EventSource;
 
   constructor(
-    private readonly zone: NgZone,
+    private readonly ref: ChangeDetectorRef,
     private readonly logger: LogService,
     readonly notificationStream: NotificationStreamService
   ) {
@@ -83,9 +83,7 @@ export class NotificationStreamComponent {
 
     if (this.source) {
       this.source.onmessage = (event: GirderEvent) => {
-        this.zone.run(() => {
-          this.onMessage.call(this, event);
-        });
+        this.onMessage.call(this, event);
       };
     }
   }
@@ -108,29 +106,25 @@ export class NotificationStreamComponent {
     const existing = events.find(evt => eventData._id === evt._id);
     if (!existing) {
       // If we haven't seen one like this, then display it
-      this.zone.run(() => {
-        events.push(eventData);
-        this.notificationStream.openNotificationStream(true);
-        this.events.next(events);
-      });
+      events.push(eventData);
+      this.notificationStream.openNotificationStream(true);
+      this.events.next(events);
     } else if (existing && existing.updated < eventData.updated) {
       // Replace existing notification with newer updates
-      this.zone.run(() => {
-        const index = events.indexOf(existing);
-        events[index] = eventData;
-        this.events.next(events);
-      });
+      const index = events.indexOf(existing);
+      events[index] = eventData;
+      this.events.next(events);
     }
 
     // If task is active, update progress
     if (eventData.data.state === 'active') {
-      this.zone.run(() => {
-        $(`#event-progress-${eventData._id}`).progress({
-          total: eventData.data.total,
-          value: eventData.data.current
-        });
+      $(`#event-progress-${eventData._id}`).progress({
+        total: eventData.data.total,
+        value: eventData.data.current
       });
     }
+
+    this.ref.detectChanges();
   }
 
   trackById(index: number, event: EventData): string {
