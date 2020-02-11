@@ -1,6 +1,31 @@
 <h1 mat-dialog-title>Publish Tale</h1>
 
-<mat-dialog-content>
+
+<mat-dialog-content *ngIf="!repositories.length">
+  <p>
+    You have not yet authorized WholeTale to publish on your behalf to any repositories.
+    Add repositories by connecting additional account on the 
+    <a routerLink="settings" routerLinkActive="active" target="_blank">
+      Settings
+    </a> page.
+  </p>
+  
+  <p>For more information on how to publish and cite your Tale, please consult the
+    <a href="https://wholetale.readthedocs.io/en/stable/users_guide/publishing.html" target="_blank">
+      Publishing Guide
+    </a>.
+  </p>
+</mat-dialog-content>
+
+<mat-dialog-actions *ngIf="!repositories.length">
+  <button class="ui black deny button" mat-dialog-close>Close</button>
+  <button class="ui positive right labeled icon button" mat-dialog-close routerLink="settings" routerLinkActive="active">
+    Go to Settings
+    <i class="checkmark icon"></i>
+  </button>
+</mat-dialog-actions>
+
+<mat-dialog-content *ngIf="repositories.length">
   <!-- Help text introducing Publishing with a link to RTD -->
   <p>
     Publishing creates an immutable copy of your
@@ -49,12 +74,12 @@
     </div>
     
     <p *ngIf="publishStatus==='error'">{{ lastMessage }}</p>
-    <p *ngIf="publishStatus==='success'">Identifier: <a [href]="{{ publishInfo.uri }}" target='_blank'>{{ publishInfo.pid }}</a></p>
+    <p *ngIf="publishStatus==='success'">Identifier: <a [href]="publishInfo.uri" target='_blank'>{{ publishInfo.pid }}</a></p>
   </div>
  
 </mat-dialog-content>
 
-<mat-dialog-actions>
+<mat-dialog-actions *ngIf="repositories.length">
   <button class="ui black deny button" [disabled]="publishStatus==='active'" mat-dialog-close>Cancel</button>
   <button class="ui positive right labeled icon button" [disabled]="publishStatus==='active'" (click)="submitPublish()">
     Publish
