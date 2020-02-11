@@ -2,8 +2,8 @@ import { Component, Inject, NgZone, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Account } from '@api/models/account';
 import { Job } from '@api/models/job';
-import { Repository } from '@api/models/repository';
 import { PublishInfo } from '@api/models/publish-info';
+import { Repository } from '@api/models/repository';
 import { Tale } from '@api/models/tale';
 import { JobService } from '@api/services/job.service';
 import { RepositoryService } from '@api/services/repository.service';
@@ -21,8 +21,10 @@ export class PublishTaleDialogComponent implements OnInit {
   repositories: Array<Repository> = [];
   selectedRepository: string;
   
-  get selectedRepositoryName() {
-     return this.repositories.find(r => r.repository === this.selectedRepository).name;
+  get selectedRepositoryName(): string {
+     const repo = this.repositories.find(r => r.repository === this.selectedRepository);
+     
+     return repo ? repo.name : '';
   }
   
   publishStatus = 'init';
@@ -47,6 +49,10 @@ export class PublishTaleDialogComponent implements OnInit {
     this.repositoryService.repositoryListRepository().subscribe((repos: Array<Repository>) => {
       this.repositories = repos;
       this.logger.info("Fetched repositories:", repos);
+      
+      if (!repos.length) {
+        this.logger.warn("No repositories configured.. prompting to route to settings:", repos);
+      }
     });
   }
   
@@ -97,7 +103,7 @@ export class PublishTaleDialogComponent implements OnInit {
             // Wait for job status to be success or error
             if (watched.status === 3 ) {
               this.publishStatus = 'success';
-              //this.lastMessage = 'Your Tale has been published successfully!';
+              // this.lastMessage = 'Your Tale has been published successfully!';
               // TODO: Fetch Tale and display new publishInfo
               this.taleService.taleGetTale(this.data.tale._id).subscribe((tale: Tale) => {
                 this.zone.run(() => {
@@ -113,7 +119,7 @@ export class PublishTaleDialogComponent implements OnInit {
             } else if (watched.status === 4) {
               this.publishStatus = 'error';
               // TODO: Fetch final error message
-              //this.lastMessage = 'Failed running job - see job logs for details';
+              // this.lastMessage = 'Failed running job - see job logs for details';
               
               if (this.interval) {
                 stopPolling();
