@@ -18,7 +18,7 @@
               <i class="dropdown icon"></i>
               <div class="default text">Choose a repository...</div>
               <div class="menu">
-                <div class="item" *ngFor="let target of data.provider.targets">{{ target }}</div>
+                <div class="item" *ngFor="let target of data.provider.targets; index as i; trackBy: trackByTarget">{{ target }}</div>
               </div>
               
             </div>
