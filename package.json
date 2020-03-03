@@ -165,7 +165,15 @@
     },
     "testResultsProcessor": "jest-junit-reporter",
     "moduleNameMapper": {
-      "~(.*)$": "<rootDir>/src/$1"
+      "~(.*)$": "<rootDir>/src/$1",
+      "@api/(.*)": "<rootDir>/src/app/api/$1",
+      "@services/(.*)": "<rootDir>/src/app/services/$1",
+      "@framework/(.*)": "<rootDir>/src/app/framework/$1",
+      "@tales/(.*)": "<rootDir>/src/app/tales/$1",
+      "@files/(.*)": "<rootDir>/src/app/files/$1",
+      "@login/(.*)": "<rootDir>/src/app/login/$1",
+      "@shared/(.*)": "<rootDir>/src/app/shared/$1",
+      "@layout/(.*)": "<rootDir>/src/app/layout/$1"
     },
     "silent": true,
     "collectCoverageFrom": [
