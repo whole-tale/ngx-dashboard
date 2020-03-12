@@ -39,6 +39,9 @@ test-report.xml
 /typings
 yarn-error.log
 
+# husky
+**/*.rej
+
 # NPM (prefer Yarn lockfile instead)
 package-lock.json
 
