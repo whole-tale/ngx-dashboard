@@ -28,7 +28,7 @@ export class LogService {
     if (this.level >= LogLevel.Debug) {
       // console.debug does not work on {N} apps... use `log`
       this.logger.log(msg, o);
-      this.relay.log(msg, o);
+      // this.relay.log(msg, o);
     }
   }
 
@@ -36,7 +36,7 @@ export class LogService {
   error(err: any, o?: any): void {
     if (this.level >= LogLevel.Error) {
       this.logger.error(err, o);
-      this.relay.error(err, o);
+      // this.relay.error(err, o);
     }
   }
 
@@ -44,7 +44,7 @@ export class LogService {
   warn(warning: any, o?: any): void {
     if (this.level >= LogLevel.Warn) {
       this.logger.warn(warning, o);
-      this.relay.warn(warning, o);
+      // this.relay.warn(warning, o);
     }
   }
 
@@ -52,7 +52,7 @@ export class LogService {
   info(msg: any, o?: any): void {
     if (this.level >= LogLevel.Info) {
       this.logger.info(msg, o);
-      this.relay.info(msg, o);
+      // this.relay.info(msg, o);
     }
   }
 }

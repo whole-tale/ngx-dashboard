@@ -89,6 +89,11 @@ class NotificationStreamService implements OnDestroy {
   }
 
   onError(err: any) {
+    // No-op if no error message given
+    if ((!err.errorCode || err.errorCode === 200) && !err.errorMessage) {
+      return;
+    }
+
     console.error('Error received from EventSource:', err);
   }
 

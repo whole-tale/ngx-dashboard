@@ -32,7 +32,11 @@ export class GlobalErrorHandler implements ErrorHandler {
       // Client Error
       message = errorService.getClientMessage(error);
       stackTrace = errorService.getClientStack(error);
-      notifier.showError(message);
+
+      // Don't show EventStream reconnecting messages
+      if (message.startsWith('No activity within ')) {
+        notifier.showError(message);
+      }
     }
 
     // Always log errors
