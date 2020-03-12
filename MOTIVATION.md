@@ -1,5 +1,12 @@
 # Motivation behind the rewrite from EmberJS to Angular
 
+- [Main Differences](#differences)
+  - [Angular instead of EmberJS](#angular7)
+    - [Directives and Pipes instead of Helpers](#directives-and-pipes)
+    - [Modules, Components, and Routes instead of Controllers / Routes / Templates / Components](#modules-components-routes)
+  - [TypeScript instead of JavaScript](#typescript)
+  - [Yarn instead of NPM](#yarn)
+
 ## <a name="differences"> Main Differences
 
 ### <a name="angular7"> Angular instead of EmberJS
