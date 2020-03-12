@@ -1,6 +1,6 @@
-# wt-ng-dash
+# ngx-dashboard
 
-A prototype rewrite of the WholeTale Dashboard in Angular 7+
+A rewrite of the WholeTale Dashboard in Angular 7+
 
 This project was seeded from [ng-seed/universal](https://github.com/ng-seed/univseral)
 
@@ -9,12 +9,6 @@ For a short demonstration, see http://recordit.co/68UCeE5PU3
 ## Table of contents:
 
 - [Prerequisites](#prerequisites)
-- [Main Differences](#differences)
-  - [Angular instead of EmberJS](#angular7)
-    - [Directives and Pipes instead of Helpers](#directives-and-pipes)
-    - [Modules, Components, and Routes instead of Controllers / Routes / Templates / Components](#modules-components-routes)
-  - [TypeScript instead of JavaScript](#typescript)
-  - [Yarn instead of NPM](#yarn)
 - [Getting started](#getting-started)
   - [Installation](#installation)
   - [Setting up upstream repository](#setting-up-upstream-repository)
@@ -36,7 +30,7 @@ Optionally, Docker can be used to build and serve the application.
 
 ### <a name="installation"> Installation
 
-You can run **`wt-ng-dash`** by simply cloning the repo:
+You can run **`ngx-dashboard`** by simply cloning the repo:
 
 ```
 # clone the repo
@@ -109,7 +103,7 @@ Run the production image using the following command:
 docker run -it bodom0015/ng-dashboard:wt
 ```
 
-Optional: you can mount in `-v /path/to/src/wt-ng-dash/dist:/usr/share/nginx/html/`. Note that in this case you will need to provide your own build container mounting the same `/path/to/src/wt-ng-dash` that will produce the appropriate build output in `dist/`.
+Optional: you can mount in `-v /path/to/src/ngx-dashboard/dist:/usr/share/nginx/html/`. Note that in this case you will need to provide your own build container mounting the same `/path/to/src/ngx-dashboard` that will produce the appropriate build output in `dist/`.
 
 ### <a name="development-builds"> Development and builds (without Docker)
 
