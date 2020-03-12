@@ -1,0 +1,96 @@
+<div class="ui stackable grid container " id="tale-sharing-container" *ngIf="tale">
+   <div class="row">
+      <div class="sixteen wide column" id="main-columns">
+
+         <!-- Access Control -->
+         <h3 class="ui header" style="margin-top:1rem">Access Control</h3>
+         <div class="ui form">
+            <div class="grouped fields">
+               <div class="field">
+                  <div id="privateRadio" class="ui radio checkbox">
+                     <input type="radio" name="taleAccess" tabindex="0" (change)="handleChange($event, 'private')">
+                     <label><i class="fas fa-lock"></i> <b>PRIVATE</b> — Access is required to view this Tale</label>
+                  </div>
+               </div>
+               <div class="field">
+                  <div id="publicRadio" class="ui radio checkbox">
+                     <input type="radio" name="taleAccess" tabindex="0" (change)="handleChange($event, 'public')">
+                     <label><i class="fas fa-globe"></i> <b>PUBLIC</b> — Anyone can view/copy this Tale</label>
+                  </div>
+               </div>
+            </div>
+         </div>
+
+         <!-- Tale Owner -->
+         <h3 class="ui header" style="margin-top:3rem">Tale Owner</h3>
+         <div class="ui large relaxed list" *ngIf="creator"> <!--   -->
+            <div class="item" id="tale-owner">
+               <img class="ui avatar image" src="{{ creator.gravatar_baseUrl }}">
+               <div class="content">
+                  <div class="header" *ngIf="creator.firstName">{{ creator.firstName }} {{ creator.lastName }}</div>
+                  <div class="header" *ngIf="creator.name">{{ creator.name }}</div>
+                  {{ creator.description }}
+               </div>
+            </div>
+         </div>
+
+         <!-- Invite New Collaborator -->
+         <h3 class="ui header" style="margin-top:3rem">Collaborators</h3>
+         <p>Invite new collaborator:</p>
+
+         <div class="ui action input">
+            <div class="ui category search" id="loginSearch">
+              <div class="ui left icon input">
+                <i class="search icon"></i>
+                <input id="loginInput" class="prompt" type="text" name="login" placeholder="Search users...">
+              </div>
+              <div class="results"></div>
+            </div>
+
+            <div id="new-collab-access-dropdown" class="ui compact selection dropdown access-dropdown">
+              <input type="hidden" name="access" [(ngModel)]="newCollabAccess">
+              <i class="dropdown icon"></i>
+              <div class="text">Can View</div>
+              <div class="menu">
+                <div class="item" data-value="0">Can View</div>
+                <div class="item" data-value="1">Can Edit</div>
+              </div>
+           </div>
+           <button class="ui button primary" [disabled]="!newCollabUser" (click)="addCollaborator(newCollabUser)">Add</button>
+         </div>
+
+         <!-- Collaborator List -->
+         <div id="collab-list" class="ui large middle aligned divided relaxed list" style="margin-top:4rem">
+            <div class="item" *ngFor="let collaborator of getDisplayedCollaborators(collaborators); index as i; trackBy: trackById">
+               <div *ngIf="collaborator">
+                  <div class="right floated content">
+                    <span *ngIf="collaborator.showAlert" class="muted text">
+                      <i class="fas fa-envelope"></i>
+                      Invitation sent...
+                    </span>
+
+                    <div id="{{ collaborator.id }}-access-dropdown" class="ui compact selection dropdown access-dropdown">
+                       <input type="hidden" name="access">
+                       <i class="dropdown icon"></i>
+                       <div class="text">Can View</div>
+                       <div class="menu">
+                         <div class="item" data-value="0">Can View</div>
+                         <div class="item" data-value="1">Can Edit</div>
+                       </div>
+                    </div>
+
+                    <button class="ui basic borderless button" [disabled]="tale.creatorId === collaborator.id" (click)="removeCollaborator(collaborator.id)">
+                        <i class="fas fa-fw fa-times"></i>
+                    </button>
+                  </div>
+                  <img class="ui avatar image" src="{{ collaborator.gravatar_baseUrl }}">
+                  <div class="content tale-collaborator">
+                     <div class="header" *ngIf="collaborator.name">{{ collaborator.name }}</div>
+                     {{ collaborator.login }}
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

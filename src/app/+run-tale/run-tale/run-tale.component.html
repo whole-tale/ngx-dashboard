@@ -19,7 +19,7 @@
                                         <img [src]="tale.illustration" *ngIf="tale.illustration">
                                         <img [src]="tale.icon" class="env" *ngIf="tale.icon">
                                         <p>{{ tale.title }}</p>
-                                        
+
                                         <p class="qualifier">
                                             <span *ngFor="let author of tale.authors; index as i; trackBy: trackByAuthorOrcid">
                                                 <span *ngIf="i > 0">, </span> <span [title]="author.orcid">{{ author.firstName }} {{ author.lastName }}</span>
@@ -61,6 +61,9 @@
                         <a class="item" [ngClass]="{ 'active': isTabActive('metadata') }" (click)="switchTab('metadata')">
                           Metadata
                         </a>
+                        <a class="item" [ngClass]="{ 'active': isTabActive('sharing') }" (click)="switchTab('sharing')">
+                          Share <span class="counter">{{ collaborators.users.length + collaborators.groups.length }}</span>
+                        </a>
                     </div>
                     <div class="wt-panel-body" style="padding-bottom:40px" [ngSwitch]="currentTab">
                         <div *ngSwitchCase="'interact'">
@@ -73,6 +76,10 @@
 
                         <div *ngSwitchCase="'metadata'">
                           <app-tale-metadata [tale]="tale" [creator]="creator"></app-tale-metadata>
+                        </div>
+
+                        <div *ngSwitchCase="'sharing'">
+                          <app-tale-sharing [tale]="tale" [creator]="creator" [(collaborators)]="collaborators"></app-tale-sharing>
                         </div>
 
                         <div *ngSwitchDefault>

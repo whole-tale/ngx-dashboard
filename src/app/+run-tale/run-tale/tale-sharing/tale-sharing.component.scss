@@ -1,0 +1,44 @@
+.ui.radio.checkbox .box,
+.ui.radio.checkbox label {
+  padding-left: 1.85714em;
+}
+
+.muted.text {
+  color: #999;
+}
+
+.basic.borderless.button {
+  box-shadow: none !important;
+}
+
+.ui.radio.checkbox label .fas {
+  padding-right: 8px;
+}
+
+h3.ui.header {
+  font-size: 1.28571429rem;
+}
+
+.ui.list .list > .item > .image + .content,
+.ui.list .list > .item > .icon + .content,
+.ui.list > .item > .image + .content,
+.ui.list > .item > .icon + .content {
+  display: table-cell;
+  padding: 0em 0em 0em 0.7em;
+  vertical-align: top;
+}
+
+#tale-owner {
+  display: inline;
+}
+
+.tale-collaborator {
+  display: inline-block;
+  padding: 0em 0em 0em 0.5em;
+}
+
+.ui.icon.input > input {
+  width: 50vw;
+  border-radius: 0;
+  height: 41.25px;
+}

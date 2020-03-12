@@ -176,7 +176,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
           parentType: UploadType.Folder,
           name: upload.name,
           size: upload.size,
-          chunk: contents
+          //chunk: contents
         };
 
         this.logger.debug(`Starting upload for ${params.name}...`);

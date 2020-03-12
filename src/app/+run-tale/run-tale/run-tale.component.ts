@@ -36,6 +36,8 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     creator: User;
     currentTab = 'metadata';
 
+    collaborators: { users: Array<User>, groups: Array<User> } = { users: [], groups: [] };
+
     constructor(
       private ref: ChangeDetectorRef,
       private zone: NgZone,
@@ -81,6 +83,15 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       return this.currentTab === tab;
     }
 
+    refreshCollaborators() {
+      this.taleService.taleGetTaleAccess(this.taleId).subscribe(resp => {
+        this.zone.run(() => {
+          this.collaborators = resp;
+          console.log('Response received:', resp);
+        });
+      });
+    }
+
     refresh(): void {
       if (!this.taleId) {
         // TODO: redirect to catalog view?
@@ -88,6 +99,9 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
         return;
       }
+
+      this.refreshCollaborators();
+
       const params = { taleId: this.taleId };
       this.instanceService.instanceListInstances(params).subscribe((instances: Array<Instance>) => {
         const running = instances.filter(i => i.status !== 3);
@@ -104,7 +118,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
           return;
         }
-        
+
         this.tale = tale;
         this.logger.info("Fetched tale:", this.tale);
 
@@ -164,7 +178,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       });
     }
 
-      
+
     // Expected parameter format:
     //    dataMap: [{"name":"Elevation per SASAP region and Hydrolic Unit (HUC8) boundary for Alaskan watersheds","dataId":"resource_map_doi:10.5063/F1Z60M87","repository":"DataONE","doi":"10.5063/F1Z60M87","size":10293583}]
     openPublishTaleDialog(event: Event): void {
@@ -172,7 +186,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         data: { tale: this.tale }
       };
       const dialogRef = this.dialog.open(PublishTaleDialogComponent, config);
-      
+
       // Don't do anything on close
     }
 
