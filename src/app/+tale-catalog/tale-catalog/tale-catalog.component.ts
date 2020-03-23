@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, NgZone, Output} from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Tale } from '@api/models/tale';
 import { TaleService } from '@api/services/tale.service';
@@ -8,6 +8,9 @@ import { LogService } from '@framework/core/log.service';
 import { routeAnimation } from '~/app/shared';
 
 import { CreateTaleModalComponent } from './modals/create-tale-modal/create-tale-modal.component';
+
+// import * as $ from 'jquery';
+declare var $: any;
 
 @Component({
     templateUrl: './tale-catalog.component.html',
@@ -32,6 +35,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
     }
 
     ngAfterViewInit(): void {
+      $('#createTaleDropdown').dropdown('hide');
 
       // Sample parameters:
       //    environment=RStudio
@@ -67,17 +71,22 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
               });
             });
           });
-          
+
         }
       }, 1000);
     }
 
-    openCreateTaleModal(): void {
-      const dialogRef = this.dialog.open(CreateTaleModalComponent);
+    openCreateTaleModal(showGit = false): void {
+      const config: MatDialogConfig = {
+        data: { showGit }
+      };
+      const dialogRef = this.dialog.open(CreateTaleModalComponent, config);
       dialogRef.afterClosed().subscribe(tale => {
         if (!tale) { return; }
 
         // TODO: Validation
+
+        // TODO: Wire gitRepo up to API
 
         this.taleService.taleCreateTale(tale).subscribe((response: Tale) => {
           this.logger.debug("Successfully created Tale:", response);

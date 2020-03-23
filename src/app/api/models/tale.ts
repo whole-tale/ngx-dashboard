@@ -14,6 +14,11 @@ export interface Tale {
   iframe?: boolean;
 
   /**
+   * FIXME: Git repo associated with this Tale
+   */
+  gitRepo?: string;
+
+  /**
    * internal unique identifier
    */
   _id?: string;

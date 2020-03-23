@@ -15,14 +15,18 @@ export class CreateTaleModalComponent implements OnInit {
   newTale: Tale;
   datasetCitation: any;
 
+  showGit = false;
+
   environments: Array<Image> = [];
 
   constructor(private zone: NgZone, public dialogRef: MatDialogRef<CreateTaleModalComponent>, @Inject(MAT_DIALOG_DATA) public data:any, private imageService: ImageService) {
     this.newTale = {
       title: (data && data.params) ? data.params.name : '',
       imageId: '',
-      dataSet: []
+      dataSet: [],
+      gitRepo: ''
     };
+    this.showGit = data.showGit;
   }
 
   ngOnInit(): void {

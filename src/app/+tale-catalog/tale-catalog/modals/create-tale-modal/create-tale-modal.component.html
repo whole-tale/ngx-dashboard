@@ -2,9 +2,14 @@
 
 <mat-dialog-content>
   <form class="ui form segment">
+    <div class="field" *ngIf="showGit">
+      <label>Git repository URL</label>
+    <input matInput type="text" name="repo" placeholder="Enter a repository URL" [(ngModel)]="newTale.gitRepo" required />
+    </div>
+
     <div class="field">
       <label>Title</label>
-      <input matInput type="text" name="tale-name" placeholder="Enter a Tale Name" [(ngModel)]="newTale.title" required />
+      <input matInput type="text" name="title" placeholder="Enter a Tale Name" [(ngModel)]="newTale.title" required />
     </div>
 
     <div class="field">
