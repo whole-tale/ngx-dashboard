@@ -104,7 +104,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
           return;
         }
-        
+
         this.tale = tale;
         this.logger.info("Fetched tale:", this.tale);
 
@@ -138,6 +138,18 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       this.detectCurrentTab();
     }
 
+    performRecordRun() {
+      console.log('Performing recorded run');
+    }
+
+    saveTaleVersion() {
+      console.log('Saving Tale version');
+    }
+
+    openConnectGitRepoDialog() {
+      console.log('Connecting Git repo');
+    }
+
     rebuildTale(): void {
       const params = { id: this.tale._id };
       this.taleService.taleBuildImage(params).subscribe(res => {
@@ -164,7 +176,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       });
     }
 
-      
+
     // Expected parameter format:
     //    dataMap: [{"name":"Elevation per SASAP region and Hydrolic Unit (HUC8) boundary for Alaskan watersheds","dataId":"resource_map_doi:10.5063/F1Z60M87","repository":"DataONE","doi":"10.5063/F1Z60M87","size":10293583}]
     openPublishTaleDialog(event: Event): void {
@@ -172,7 +184,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         data: { tale: this.tale }
       };
       const dialogRef = this.dialog.open(PublishTaleDialogComponent, config);
-      
+
       // Don't do anything on close
     }
 
