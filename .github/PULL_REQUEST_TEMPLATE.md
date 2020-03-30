@@ -1,38 +1,16 @@
-** PR Checklist
-Please check if your PR fulfills the following requirements:
+## Problem
+<!-- outline the problem or scenario that this PR aims to fix or simplify -->
+<!-- link to any related issues that should be closed as a result of this PR -->
+<!-- NOTE: You can include "Fixes #00" for the related issues to automatically close them when the PR is merged->
+  
+## Approach
+<!-- describe how the changes introduced by this PR will solve or address the above problem -->
+  
+## How to Test
+<!-- include step-by-step test case for exercising the functionality affected by the changes in this PR -->
+  
+Prerequisites: <!-- e.g. Tale created/launched, at least one file/folder, etc -->
 
-- [ ] The commit message follows our guidelines: https://github.com/ng-seed/universal/blob/master/CONTRIBUTING.md#commit
-- [ ] Tests for the changes have been added (for bug fixes / features)
-- [ ] Docs have been added / updated (for bug fixes / features)
-
-** PR Type
-What kind of change does this PR introduce?
-
-<!-- Please check the one that applies to this PR using "x". -->
-```
-[ ] Bugfix
-[ ] Feature
-[ ] Code style update (formatting, local variables)
-[ ] Refactoring (no functional changes, no api changes)
-[ ] Build related changes
-[ ] CI related changes
-[ ] Documentation content changes
-[ ] Other... Please describe:
-```
-
-** What is the current behavior?
-<!-- Please describe the current behavior that you are modifying, or link to a relevant issue. -->
-
-Issue Number: N/A
-
-** What is the new behavior?
-
-** Does this PR introduce a breaking change?
-```
-[ ] Yes
-[ ] No
-```
-
-<!-- If this PR contains a breaking change, please describe the impact and migration path for existing applications below. -->
-
-** Other information
+1. Checkout this branch locally, rebuild the dashboard
+2. Login to the WholeTale Dashboard
+3. ...
