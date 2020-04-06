@@ -598,8 +598,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       const tale = this.tale;
       tale.dataSet = [];
       datasets.forEach(ds => {
-        // TODO: leading slash?
-        tale.dataSet.push({ itemId: ds._id, mountPath: ds.name })
+        tale.dataSet.push({ itemId: ds._id, mountPath: ds.name, _modelType: ds._modelType })
       });
 
       this.taleService.taleUpdateTale({ id: tale._id, tale }).subscribe(response => {

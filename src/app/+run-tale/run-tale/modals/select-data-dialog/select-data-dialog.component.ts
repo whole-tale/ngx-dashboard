@@ -55,7 +55,7 @@ export class SelectDataDialogComponent implements OnInit {
     this.allDatasets = this.datasetService.datasetListDatasets({ myData: false });
     this.datasets = this.myDatasets = this.datasetService.datasetListDatasets({ myData: true });
     this.datasets.pipe(enterZone(this.zone)).subscribe(datasets => {
-      this.data.tale.dataSet.forEach((ds: { itemId: string, mountPath: string }) => {
+      this.data.tale.dataSet.forEach((ds: { itemId: string, mountPath: string, _modelType: string }) => {
         // Lookup the Dataset by id and push it to our selection
         const dataset = datasets.find((data: Dataset) => data._id === ds.itemId);
         if (dataset) {
