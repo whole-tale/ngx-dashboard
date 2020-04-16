@@ -21,6 +21,7 @@ import { RunTaleComponent } from './run-tale/run-tale.component';
 import { TaleFilesComponent } from './run-tale/tale-files/tale-files.component';
 import { TaleInteractComponent } from './run-tale/tale-interact/tale-interact.component';
 import { TaleMetadataComponent } from './run-tale/tale-metadata/tale-metadata.component';
+import { TaleVersionsPanelComponent } from './run-tale/tale-versions-panel/tale-versions-panel.component';
 
 
 @NgModule({
@@ -31,10 +32,11 @@ import { TaleMetadataComponent } from './run-tale/tale-metadata/tale-metadata.co
     TaleFilesComponent,
     TaleInteractComponent,
     TaleMetadataComponent,
+    TaleVersionsPanelComponent,
     PublishTaleDialogComponent,
     SelectDataDialogComponent,
     RegisterDataDialogComponent,
-    TaleWorkspacesDialogComponent
+    TaleWorkspacesDialogComponent,
   ],
   entryComponents: [PublishTaleDialogComponent, SelectDataDialogComponent, RegisterDataDialogComponent, TaleWorkspacesDialogComponent]
 })

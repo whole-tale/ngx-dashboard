@@ -20,3 +20,21 @@
   display: inline-block;
   margin-right: 10px;
 }
+
+app-tale-versions-panel {
+  //position: absolute;
+  right: 0;
+  height: 100%;
+  height: fill-available;
+  height: -moz-fill-available;
+  height: -webkit-fill-available;
+  width: 30vw;
+}
+
+.lighter {
+  color: #999;
+}
+
+.item i {
+  padding-right: 0.5em;
+}

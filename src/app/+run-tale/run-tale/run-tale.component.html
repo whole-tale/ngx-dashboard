@@ -19,7 +19,7 @@
                                         <img [src]="tale.illustration" *ngIf="tale.illustration">
                                         <img [src]="tale.icon" class="env" *ngIf="tale.icon">
                                         <p>{{ tale.title }}</p>
-                                        
+
                                         <p class="qualifier">
                                             <span *ngFor="let author of tale.authors; index as i; trackBy: trackByAuthorOrcid">
                                                 <span *ngIf="i > 0">, </span> <span [title]="author.orcid">{{ author.firstName }} {{ author.lastName }}</span>
@@ -34,7 +34,7 @@
                                     <a routerLink="/" routerLinkActive="active" class="ui button" style="margin-right: 10px">
                                       Close
                                     </a>
-                                    <div class="ui floating dropdown theme" tabindex="0">
+                                    <div id="tale-actions-dropdown" class="ui floating dropdown theme" tabindex="0">
                                         <mat-icon fontSet="fa" fontIcon="fa-ellipsis-v"></mat-icon>
 
                                         <div class="menu transition hidden" tabindex="-1">
@@ -61,22 +61,36 @@
                         <a class="item" [ngClass]="{ 'active': isTabActive('metadata') }" (click)="switchTab('metadata')">
                           Metadata
                         </a>
+
+                        <a class="item right floated" (click)="showVersionsPanel = !showVersionsPanel">
+                          <i class="fas fa-history lighter"></i>
+                        </a>
                     </div>
+
                     <div class="wt-panel-body" style="padding-bottom:40px" [ngSwitch]="currentTab">
-                        <div *ngSwitchCase="'interact'">
-                          <app-tale-interact [tale]="tale" [instance]="instance"></app-tale-interact>
-                        </div>
+                        <div class="ui grid">
+                            <div class="row">
+                                <div [ngClass]="{ 'sixteen wide column': !showVersionsPanel, 'twelve wide column': showVersionsPanel }">
+                                    <div *ngSwitchCase="'interact'">
+                                        <app-tale-interact [tale]="tale" [instance]="instance"></app-tale-interact>
+                                    </div>
 
-                        <div *ngSwitchCase="'files'">
-                          <app-tale-files [tale]="tale" [taleId]="taleId"></app-tale-files>
-                        </div>
+                                    <div *ngSwitchCase="'files'">
+                                        <app-tale-files [tale]="tale" [taleId]="taleId"></app-tale-files>
+                                    </div>
 
-                        <div *ngSwitchCase="'metadata'">
-                          <app-tale-metadata [tale]="tale" [creator]="creator"></app-tale-metadata>
-                        </div>
+                                    <div *ngSwitchCase="'metadata'">
+                                        <app-tale-metadata [tale]="tale" [creator]="creator"></app-tale-metadata>
+                                    </div>
 
-                        <div *ngSwitchDefault>
-                            Select a tab to continue
+                                    <div *ngSwitchDefault>
+                                        Select a tab to continue
+                                    </div>
+                                </div>
+                                <div class="four wide right floated column" *ngIf="showVersionsPanel">
+                                    <app-tale-versions-panel [tale]="tale"></app-tale-versions-panel>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

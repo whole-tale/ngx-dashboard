@@ -1,3 +1,4 @@
+import { trigger, transition, animate, state, style } from '@angular/animations';
 import { ChangeDetectorRef, Component, NgZone, OnChanges, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -27,7 +28,15 @@ enum TaleExportFormat {
 @Component({
     templateUrl: './run-tale.component.html',
     styleUrls: ['./run-tale.component.scss'],
-    animations: [routeAnimation]
+    animations: [routeAnimation,
+      trigger('openClose', [
+        state('closed', style({ width: '0px' })),
+        state('open', style({ width: '*' })),
+        transition('* <=> *', [
+          animate('0.2s')
+        ])
+      ])
+  ]
 })
 export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges {
     taleId: string;
@@ -35,6 +44,9 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     instance: Instance;
     creator: User;
     currentTab = 'metadata';
+
+    showVersionsPanel = false;
+    versionsPanelIsShown = false;
 
     constructor(
       private ref: ChangeDetectorRef,
@@ -49,6 +61,10 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       private dialog: MatDialog
     ) {
         super();
+    }
+
+    onAnimationEvent(event: Event) {
+      this.versionsPanelIsShown = this.showVersionsPanel;
     }
 
     trackByAuthorOrcid(index: number, author: TaleAuthor): string {
@@ -104,7 +120,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
           return;
         }
-        
+
         this.tale = tale;
         this.logger.info("Fetched tale:", this.tale);
 
@@ -164,7 +180,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       });
     }
 
-      
+
     // Expected parameter format:
     //    dataMap: [{"name":"Elevation per SASAP region and Hydrolic Unit (HUC8) boundary for Alaskan watersheds","dataId":"resource_map_doi:10.5063/F1Z60M87","repository":"DataONE","doi":"10.5063/F1Z60M87","size":10293583}]
     openPublishTaleDialog(event: Event): void {
@@ -172,7 +188,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         data: { tale: this.tale }
       };
       const dialogRef = this.dialog.open(PublishTaleDialogComponent, config);
-      
+
       // Don't do anything on close
     }
 
