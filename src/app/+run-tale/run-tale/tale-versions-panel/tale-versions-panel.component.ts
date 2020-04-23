@@ -55,4 +55,38 @@ export class TaleVersionsPanelComponent implements OnInit {
   trackById(index: number, model: any): string {
     return model._id || model.orcid || model.itemId;
   }
+
+  /** Global panel functions */
+  saveNewVersion() {
+
+  }
+
+  editRunConfigurations() {
+
+  }
+
+  performRecordedRun() {
+
+  }
+
+  /** Per-version dropdown options */
+  viewVersionInfo(version: any) {
+
+  }
+
+  restoreVersion(version: any) {
+
+  }
+
+  compareVersion(version: any) {
+
+  }
+
+  renameVersion(version: any) {
+
+  }
+
+  deleteVersion(version: any) {
+
+  }
 }
