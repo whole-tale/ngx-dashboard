@@ -11,7 +11,7 @@
           <label>Title</label>
           <input type="text" name="title" placeholder="Title is required." [(ngModel)]="tale.title" required>
         </div>
-        
+
         <div class="fields">
           <div class="field">
             <label>Authors</label>
@@ -95,7 +95,7 @@
 
       <div class="ui list" *ngIf="!editing">
         <div class="item">
-          <b>Category:</b> 
+          <b>Category:</b>
           <span class="category">{{ tale.category }}</span>
         </div>
         <div class="item">
@@ -103,7 +103,7 @@
           {{ tale.title }}
         </div>
         <div class="item">
-          <b>Authors:</b> 
+          <b>Authors:</b>
           <span *ngFor="let author of tale.authors; index as i; trackBy: trackById">
               <span *ngIf="i > 0">, </span> <span [title]="author.orcid">{{ author.firstName }} {{ author.lastName }}</span>
           </span>
@@ -138,7 +138,7 @@
             </div>
             <div class="item">
               <b>Environment:</b>
-              
+
               <img *ngIf="tale.icon" class="ui image" [src]="tale.icon | safe:'url'" style="height:1.5em; margin:0 .4em; display: inline-block">
               <span *ngIf="(tale | taleImage | async) as environment">{{ environment.name }}</span>
             </div>
@@ -160,8 +160,8 @@
       <img class="ui image img-responsive" [src]="tale.illustration | safe:'url'" *ngIf="tale.illustration">
     </div>
   </div>
-  
-  <div class="row">
+
+  <div class="row" *ngIf="tale._accessLevel > 0">
     <div class="ten wide column">
       <button class="ui primary button" *ngIf="!editing" (click)="editTale()">
         Edit
