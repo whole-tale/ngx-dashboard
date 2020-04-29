@@ -16,8 +16,9 @@ export class ServerErrorInterceptor implements HttpInterceptor {
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401) {
           // refresh token plz
+          const lastRoute = encodeURIComponent(window.origin);
           this.auth.invalidate().then(resp => {
-            this.router.navigate(['login']);
+            this.router.navigate(['login', { queryParams: { rd: lastRoute } }]);
           });
         } else {
           return throwError(error);

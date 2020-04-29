@@ -1,7 +1,9 @@
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { ApiConfiguration } from '@api/api-configuration';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError, retry } from 'rxjs/operators';
 
 import { TokenService } from './token.service';
 
@@ -9,12 +11,23 @@ import { TokenService } from './token.service';
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
-  constructor(public tokenService: TokenService, private readonly config: ApiConfiguration) {}
+  constructor(public tokenService: TokenService, private readonly config: ApiConfiguration, private readonly router: Router) {}
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Ignore if we don't have a token
     const token = this.tokenService.getToken();
     if (!token) {
-      return next.handle(request);
+      return next.handle(request).pipe(
+        retry(1),
+        catchError((error: HttpErrorResponse) => {
+          if (error.status === 401) {
+            // refresh token plz
+            const lastRoute = encodeURIComponent(window.origin);
+            this.router.navigate(['login', { queryParams: { rd: lastRoute } }]);
+          } else {
+            return throwError(error);
+          }
+        })
+      );
     }
 
     // Ignore if this request isn't going to girder
@@ -36,6 +49,18 @@ export class TokenInterceptor implements HttpInterceptor {
       }
     });
 
-    return next.handle(authRequest);
+    // return next.handle(authRequest);
+    return next.handle(authRequest).pipe(
+      retry(1),
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 401) {
+          // refresh token plz
+          const lastRoute = encodeURIComponent(window.origin);
+          this.router.navigate(['login', { queryParams: { rd: lastRoute } }]);
+        } else {
+          return throwError(error);
+        }
+      })
+    );
   }
 }
