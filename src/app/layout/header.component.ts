@@ -76,6 +76,7 @@ export class HeaderComponent extends BaseComponent implements OnInit {
   async logout(): Promise<boolean> {
     this.isAuthenticated = false;
     this.cookies.deleteAll();
+    this.tokenService.clearToken();
 
     return this.auth.invalidate();
   }

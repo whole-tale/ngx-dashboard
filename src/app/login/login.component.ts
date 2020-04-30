@@ -57,8 +57,30 @@ export class LoginComponent extends BaseComponent implements OnInit {
       this.users.userGetMe().subscribe(
         (user: any) => {
           this.tokenService.user = user;
+          const url = this.tokenService.getReturnRoute();
+          const segments = url.split('?');
+
+          // Create our first param (path segments)
+          const pathSegments = segments[0].split('/');
+
+          // Now parse querystring, if we have one
+          const queryParams = {};
+          if (segments.length > 1) {
+            segments[1].split('&').forEach((param: string) => {
+              const kvSegments = param.split('=');
+              const key = kvSegments[0];
+              if (kvSegments.length > 1) {
+                const value = kvSegments[1];
+                queryParams[key] = value;
+              } else {
+                queryParams[key] = true;
+              }
+            });
+          }
+
           this.logger.debug('Logging in as:', user);
           this.login();
+          this.router.navigate(pathSegments, { queryParams });
         },
         err => {
           this.logger.error('Error fetching user:', err);
@@ -75,8 +97,10 @@ export class LoginComponent extends BaseComponent implements OnInit {
   }
 
   loginWithGlobus(): void {
+    const route = this.tokenService.getReturnRoute();
+
     // FIXME: is it ok to use window.location.origin here?
-    const params = { redirect: `${this.window.location.origin}/login?token={girderToken}`, list: false };
+    const params = { redirect: `${this.window.location.origin}/login?token={girderToken}&rd=${route}`, list: false };
     this.oauth.oauthListProviders(params).subscribe(
       (providers: any) => {
         this.window.location.href = providers.Globus;
