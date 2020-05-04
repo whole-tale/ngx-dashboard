@@ -95,7 +95,7 @@ export class ConfigureAccountsComponent extends BaseComponent implements OnInit 
   }
   
   refreshProviders(): void {
-    const redirect = 'https://next.local.wholetale.org/settings';
+    const redirect = `${window.origin}/settings`;
     const params = { redirect };
     this.accountService.accountListAccounts(params).subscribe((accts: Array<Account>) => {
       this.providers = accts;
