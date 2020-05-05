@@ -21,7 +21,14 @@ export class CreateTaleModalComponent implements OnInit {
     this.newTale = {
       title: (data && data.params) ? data.params.name : '',
       imageId: '',
-      dataSet: []
+      authors: [],
+      license: 'CC-BY-4.0',
+      category: 'science',
+      publishInfo: [],
+      dataSet: [],
+      public: false,
+      copyOfTale: null,
+      description: '### Provide a description for your Tale'
     };
   }
 
