@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, NgZone, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, NgZone, OnChanges, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Instance } from '@api/models/instance';
 import { Tale } from '@api/models/tale';
@@ -22,13 +22,15 @@ declare var $: any;
   styleUrls: ['./public-tales.component.scss'],
   selector: 'app-public-tales'
 })
-export class PublicTalesComponent implements OnInit {
+export class PublicTalesComponent implements OnChanges, OnInit {
   tales$: Observable<Array<Tale>> = new Observable<Array<Tale>>();
   tales: Array<Tale> = [];
   publicTales: Array<Tale> = [];
 
+  searchQuery = '';
+
   user: User;
-  
+
   get instanceCount(): number {
     return Object.keys(this.instances).length;
   }
@@ -52,6 +54,10 @@ export class PublicTalesComponent implements OnInit {
     this.userService.userGetMe().subscribe(user => {
       this.user = user;
     });
+    this.refresh();
+  }
+
+  ngOnChanges(): void {
     this.refresh();
   }
 
@@ -95,6 +101,7 @@ export class PublicTalesComponent implements OnInit {
     // Fetch the list of public tales
     const listTalesParams = {};
     this.taleService.taleListTales(listTalesParams).subscribe((tales: Array<Tale>) => {
+      // Filter based on search query
       this.tales = tales;
       this.ref.detectChanges();
 
@@ -116,7 +123,7 @@ export class PublicTalesComponent implements OnInit {
     const dialogRef = this.dialog.open(DeleteTaleModalComponent);
     dialogRef.afterClosed().subscribe(result => {
       if (!result) { return; }
-      
+
       const id = tale._id;
       this.taleService.taleDeleteTale({ id }).subscribe(response => {
         this.logger.debug("Successfully deleted Tale:", response);
