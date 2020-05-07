@@ -34,17 +34,29 @@
                                     <a routerLink="/" routerLinkActive="active" class="ui button" style="margin-right: 10px">
                                       Close
                                     </a>
+
+
                                     <div class="ui floating dropdown theme" tabindex="0">
                                         <mat-icon fontSet="fa" fontIcon="fa-ellipsis-v"></mat-icon>
 
                                         <div class="menu transition hidden" tabindex="-1">
-                                            <div class="item" (click)="rebuildTale()">Rebuild Tale</div>
-                                            <div class="item" (click)="restartTale()">Restart Tale</div>
-                                            <div class="item" (click)="copyTale()">Duplicate Tale</div>
-                                            <div class="item" (click)="openPublishTaleDialog($event)">Publish Tale</div>
-                                            <div class="item" (click)="viewFullScreen()">View Fullscreen</div>
-                                            <div class="item" (click)="gotoDocs()">View Documentation</div>
-                                            <div class="item" (click)="exportTale()">Export Tale</div>
+                                            <div class="item" (click)="rebuildTale()"><i class="fas fa-redo-alt"></i> Rebuild Tale</div>
+                                            <div class="item" (click)="restartTale()"><i class="fas fa-sync-alt"></i> Restart Tale</div>
+
+                                            <div class="divider"></div>
+                                            <div class="item" (click)="saveTaleVersion()"><i class="fas fa-save"></i> Save Tale Version</div>
+                                            <div class="item" (click)="performRecordedRun()"><i class="fas fa-check-circle"></i> Recorded Run</div>
+                                            <div class="divider"></div>
+
+                                            <div class="item" (click)="copyTale()"><i class="fas fa-clone"></i> Duplicate Tale</div>
+                                            <div class="item" (click)="openPublishTaleDialog($event)"><i class="fas fa-newspaper"></i> Publish Tale</div>
+                                            <div class="item" (click)="exportTale()"><i class="fas fa-file-archive"></i> Export Tale</div>
+                                            <div class="divider"></div>
+                                            <div class="item" (click)="openConnectGitRepoDialog()"><i class="fab fa-git"></i> Connect to Git Repository...</div>
+                                            <div class="divider"></div>
+
+                                            <div class="item" (click)="viewFullScreen()"><i class="fas fa-expand"></i> View Fullscreen</div>
+                                            <div class="item" (click)="gotoDocs()"><i class="info circle icon"></i> Read the docs</div>
                                         </div>
                                     </div>
                                 </div>
