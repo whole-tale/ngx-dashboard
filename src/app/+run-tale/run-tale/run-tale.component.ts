@@ -154,6 +154,18 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       this.detectCurrentTab();
     }
 
+    performRecordedRun() {
+      console.log('Performing recorded run');
+    }
+
+    saveTaleVersion() {
+      console.log('Saving Tale version');
+    }
+
+    openConnectGitRepoDialog() {
+      console.log('Connecting Git repo');
+    }
+
     rebuildTale(): void {
       const params = { id: this.tale._id };
       this.taleService.taleBuildImage(params).subscribe(res => {
