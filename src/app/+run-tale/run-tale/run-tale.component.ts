@@ -138,7 +138,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       this.detectCurrentTab();
     }
 
-    performRecordRun() {
+    performRecordedRun() {
       console.log('Performing recorded run');
     }
 
