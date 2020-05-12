@@ -60,6 +60,10 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       this.refresh();
     }
 
+    goBack(): void {
+      window.history.back();
+    }
+
     detectCurrentTab(): void {
       this.route.queryParams.subscribe(params => {
         const tab = params.tab;

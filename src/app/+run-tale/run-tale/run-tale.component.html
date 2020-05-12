@@ -4,7 +4,7 @@
             <div class="sixteen wide column">
 
                 <div class="ui breadcrumb">
-                    <a routerLink="/" routerLinkActive="active" class="section">
+                    <a (click)="goBack()" class="section">
                       <i class="left angle icon"></i>
                       Return to Dashboard
                     </a>
@@ -19,7 +19,7 @@
                                         <img [src]="tale.illustration" *ngIf="tale.illustration">
                                         <img [src]="tale.icon" class="env" *ngIf="tale.icon">
                                         <p>{{ tale.title }}</p>
-                                        
+
                                         <p class="qualifier">
                                             <span *ngFor="let author of tale.authors; index as i; trackBy: trackByAuthorOrcid">
                                                 <span *ngIf="i > 0">, </span> <span [title]="author.orcid">{{ author.firstName }} {{ author.lastName }}</span>
