@@ -208,6 +208,6 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     exportTale(format: TaleExportFormat = TaleExportFormat.BagIt): void {
       const token = this.tokenService.getToken();
       const url = `${this.config.rootUrl}/tale/${this.tale._id}/export?token=${token}&taleFormat=${format}`;
-      window.open(url, '_blank');
+      this.windowService.open(url, '_blank');
     }
 }
