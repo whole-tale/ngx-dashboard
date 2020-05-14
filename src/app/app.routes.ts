@@ -1,3 +1,4 @@
+import { AuthGuard as CustomAuthGuard } from '@api/auth-guard';
 import { AuthGuard } from '@ngx-auth/core';
 import { MetaGuard } from '@ngx-meta/core';
 import { ChangeLanguageComponent } from '~/app/framework/i18n';
@@ -41,7 +42,7 @@ export const routes = [
         loadChildren: './+user-settings/user-settings.module#UserSettingsModule'
       }
     ],
-    canActivateChild: [MetaGuard, AuthGuard],
+    canActivateChild: [MetaGuard, CustomAuthGuard /*, AuthGuard */],
     data: {
       i18n: {
         isRoot: true

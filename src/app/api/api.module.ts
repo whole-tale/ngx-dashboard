@@ -35,6 +35,8 @@ import { TokenInterceptor } from './token.interceptor';
 import { TokenService as JwtTokenService } from './token.service';
 import { NotificationStreamService } from './notification-stream.service';
 
+import { AuthGuard } from './auth-guard';
+
 /**
  * Provider for all Api services, plus ApiConfiguration
  */
@@ -46,6 +48,7 @@ import { NotificationStreamService } from './notification-stream.service';
     ApiConfiguration,
     ApiKeyService,
     AssetstoreService,
+    AuthGuard,
     CollectionService,
     DatasetService,
     DmService,
