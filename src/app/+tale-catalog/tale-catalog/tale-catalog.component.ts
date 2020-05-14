@@ -50,14 +50,17 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
               data: { params: queryParams }
             });
             dialogRef.afterClosed().subscribe(tale => {
+              // Short-circuit for 'Cancel' case
+              if (!tale) { return; }
+
               // TODO: "Analyze in WT" case
               const params = {
                 url: queryParams.uri ? queryParams.uri : '', // Pull from querystring
                 imageId: tale.imageId, // Pull from user input
                 asTale: queryParams.asTale, // TODO: Pull from querystring
                 spawn: true, // ??
-                taleKwargs: tale.title ? `{ "title": "${tale.title}" }` : '{}', // ??
-                lookupKwargs: '{}', // ??
+                taleKwargs: tale.title ? { title: tale.title } : {}, // ??
+                lookupKwargs: {}, // ??
               };
               this.taleService.taleCreateTaleFromDataset(params).subscribe(resp => {
                 this.logger.debug("Successfully submitted 'Analyze in WT' Job:", resp);
