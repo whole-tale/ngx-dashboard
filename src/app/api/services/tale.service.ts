@@ -442,7 +442,7 @@ class TaleService extends __BaseService {
     let req = new HttpRequest<any>('GET', this.rootUrl + `/tale/${params.id}/export`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'arraybuffer'
     });
 
     return this.http.request<any>(req).pipe(

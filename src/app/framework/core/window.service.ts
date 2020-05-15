@@ -3,6 +3,7 @@ import { Window } from './models/window';
 export class WindowService implements Window {
   navigator: any = {};
   location: any = {};
+  URL: any = {};
 
   open(url: string, target?: string) {
     return;

@@ -206,8 +206,13 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     }
 
     exportTale(format: TaleExportFormat = TaleExportFormat.BagIt): void {
-      const token = this.tokenService.getToken();
-      const url = `${this.config.rootUrl}/tale/${this.tale._id}/export?token=${token}&taleFormat=${format}`;
-      this.windowService.open(url, '_blank');
+      this.taleService.taleExportTale({ id: this.tale._id, taleFormat: format }). subscribe(res => {
+        const blob = new Blob([res], {
+          type: 'application/zip'
+        });
+        const url = this.windowService.URL.createObjectURL(blob);
+        this.windowService.open(url);
+        this.windowService.URL.revokeObjectURL(url);
+      });
     }
 }
