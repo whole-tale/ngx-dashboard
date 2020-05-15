@@ -25,16 +25,34 @@
     </div>
     <div class="field" *ngIf="datasetCitation">
         <label>Input Data</label>
-        {{ datasetCitation.doi }}
+        <small>Data Source: {{ datasetCitation.doi }}</small>
         <!-- <input type="hidden" name="dataSet" [(ngModel)]="newTale.dataSet" /> -->
     </div>
+
+    <div class="field">
+        <div class="ui radio checkbox">
+            <input id="readOnlyRadio" type="radio" name="access" checked="" (change)="enableReadOnly($event)" tabindex="0" class="hidden">
+            <label>
+                <b>READ ONLY</b>
+                <i style="margin-left:5px;">recommended</i> — Treat as source dataset for analysis
+                <a href="" style="margin-left: .75rem;font-style:italic">Why would I do this?</a>
+            </label>
+        </div>
+    </div>
+    <div class="field" >
+        <div class="ui radio checkbox">
+            <input id="readWriteRadio" type="radio" name="access" (change)="enableReadWrite($event)" tabindex="0" class="hidden">
+            <label><b>READ/WRITE</b> — Enable data editing</label>
+        </div>
+    </div>
+
     <!--<button class="ui button" type="submit">Submit</button>-->
   </form>
 </mat-dialog-content>
 
 <mat-dialog-actions>
   <button class="ui black deny button" mat-dialog-close>Cancel</button>
-  <button class="ui positive right labeled icon button" [mat-dialog-close]="newTale">
+  <button class="ui positive right labeled icon button" [mat-dialog-close]="result()">
     Create New Tale
     <i class="play icon"></i>
   </button>
