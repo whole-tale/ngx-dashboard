@@ -34,7 +34,7 @@
 
 <mat-dialog-actions>
   <button class="ui black deny button" mat-dialog-close>Cancel</button>
-  <button class="ui positive right labeled icon button" [mat-dialog-close]="newTale">
+  <button class="ui positive right labeled icon button" [disabled]="!newTale.title || !newTale.imageId" [mat-dialog-close]="newTale">
     Create New Tale
     <i class="play icon"></i>
   </button>
