@@ -49,7 +49,10 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
               width: '600px',
               data: { params: queryParams }
             });
-            dialogRef.afterClosed().subscribe((tale: Tale, asTale?: boolean) => {
+            dialogRef.afterClosed().subscribe((result: {tale: Tale, asTale: boolean}) => {
+              const tale = result.tale;
+              const asTale = result.asTale;
+
               // Short-circuit for 'Cancel' case
               if (!tale) { return; }
 
@@ -57,7 +60,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
               const params = {
                 url: queryParams.uri ? queryParams.uri : '', // Pull from querystring
                 imageId: tale.imageId, // Pull from user input
-                asTale: asTale ? true : false, // Pull from user input
+                asTale: asTale ? asTale : false, // Pull from user input
                 spawn: true, // ??
                 taleKwargs: tale.title ? { title: tale.title } : {}, // ??
                 lookupKwargs: {}, // ??

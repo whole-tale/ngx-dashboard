@@ -34,11 +34,8 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
     $('.ui.checkbox').checkbox();
   }
 
-  result(): { tale: Tale, asTale?: boolean } {
-    if (this.datasetCitation) {
-      return { tale: this.newTale, asTale: this.asTale};
-    }
-    return { tale: this.newTale };
+  result(): { tale: Tale, asTale: boolean } {
+    return { tale: this.newTale, asTale: this.asTale };
   }
 
   parseParameters(): void {
@@ -55,7 +52,9 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
 
       // Set read/write radio buttons using asTale value
       if (this.data.params.asTale) {
-        $('#readWriteRadio').click();
+        setTimeout(() => {
+          $('#readWriteRadio').click();
+        }, 350);
       }
     }
 
@@ -83,6 +82,7 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
   }
 
   enableReadOnly(evt: any): void {
+    console.log("Enabling read only on this Tale...");
     const target = evt.target;
     if (target.checked) {
       this.asTale = false;

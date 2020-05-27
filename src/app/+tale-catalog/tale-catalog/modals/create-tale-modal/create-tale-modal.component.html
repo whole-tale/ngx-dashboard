@@ -29,7 +29,7 @@
         <!-- <input type="hidden" name="dataSet" [(ngModel)]="newTale.dataSet" /> -->
     </div>
 
-    <div class="field">
+    <div class="field" *ngIf="datasetCitation">
         <div class="ui radio checkbox">
             <input id="readOnlyRadio" type="radio" name="access" checked="" (change)="enableReadOnly($event)" tabindex="0" class="hidden">
             <label>
@@ -39,7 +39,7 @@
             </label>
         </div>
     </div>
-    <div class="field" >
+    <div class="field"  *ngIf="datasetCitation">
         <div class="ui radio checkbox">
             <input id="readWriteRadio" type="radio" name="access" (change)="enableReadWrite($event)" tabindex="0" class="hidden">
             <label><b>READ/WRITE</b> — Enable data editing</label>
