@@ -79,7 +79,9 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
 
     openCreateTaleModal(): void {
       const dialogRef = this.dialog.open(CreateTaleModalComponent);
-      dialogRef.afterClosed().subscribe(tale => {
+      dialogRef.afterClosed().subscribe((result: {tale: Tale, asTale: boolean}) => {
+        const tale = result.tale;
+
         if (!tale) { return; }
 
         // TODO: Validation
