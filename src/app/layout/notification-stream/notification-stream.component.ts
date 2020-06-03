@@ -83,10 +83,10 @@ export class NotificationStreamComponent {
       return;
     }
 
-    // Grab last (latest) jobId
-    const latestJobId = event.data.resource.jobs[event.data.resource.jobs.length - 1];
+    // Grab first (build) jobId
+    const jobId = event.data.resource.jobs[0];
     const config: MatDialogConfig = {
-      data: { latestJobId }
+      data: { jobId }
     };
 
     const dialogRef = this.dialog.open(ViewLogsDialogComponent, config);

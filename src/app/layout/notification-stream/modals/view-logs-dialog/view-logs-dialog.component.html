@@ -1,7 +1,13 @@
 <h1 mat-dialog-title>View Logs</h1>
 
 <mat-dialog-content>
-  <pre>{{ logs.value }}</pre>
+  <div id="log-viewer-content">
+    <pre *ngIf="logs.value">{{ logs.value }}</pre>
+    <div *ngIf="!logs.value" id="log-viewer-spinner">
+        <h3>Fetching logs, please wait...</h3>
+        <i class="fas fa-pulse fa-spinner fa-5x"></i>
+    </div>
+  </div>
 </mat-dialog-content>
 
 <mat-dialog-actions>
