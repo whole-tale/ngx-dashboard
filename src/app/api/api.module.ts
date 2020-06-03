@@ -33,7 +33,6 @@ import { WorkspaceService } from './services/workspace.service';
 
 import { TokenInterceptor } from './token.interceptor';
 import { TokenService as JwtTokenService } from './token.service';
-import { NotificationStreamService } from './notification-stream.service';
 
 import { AuthGuard } from './auth-guard';
 
@@ -75,7 +74,6 @@ import { AuthGuard } from './auth-guard';
     WorkerService,
     WorkspaceService,
     JwtTokenService,
-    NotificationStreamService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,

@@ -8,7 +8,7 @@
   </div>
 
   <table class="ui small striped compact single line table nomargin">
-    <tr ngClass="{ 'active': event.data.state === 'active') }" title="Last update: {{ event.updated }}" 
+    <tr ngClass="{ 'active': event.data.state === 'active') }" title="Last update: {{ event.updated }}"
         *ngFor="let event of notificationStream.events; index as i; trackBy: trackById">
       <td width="20%"><label class="ui label">{{ event.data.title || event.type }}</label></td>
 
@@ -36,7 +36,8 @@
         </span>
       </td>
       <td width="10%">
-          <button (click)="openLogViewerModal(event)" class="ui tiny primary basic right floated button">
+          <button (click)="openLogViewerModal(event)" [disabled]="!event.data.resource.jobs || !event.data.resource.jobs.length"
+                class="ui tiny primary basic right floated button">
             View Logs
           </button>
 
@@ -104,13 +105,13 @@
                     </div>--}}
                 </td>
               </tr>
-              
+
             {{/if}}
           {{/unless}}
         {{/each}}
       </table>
     {{/if}}
-    
+
     <div class="ui grid nomargin" id="notification-stream-button-bar">
       {{!--<div class="eight wide column">
         <button class="ui basic primary fluid button" id="view-past-events-button" {{action 'viewPastEvents'}}>Past Tasks</button>
@@ -120,7 +121,7 @@
       </div>
     </div>
   </div>
-    
+
   <div id="log-viewer-modal" class="ui modal">
     <div class="ui icon header">
       <i class="fas icon
