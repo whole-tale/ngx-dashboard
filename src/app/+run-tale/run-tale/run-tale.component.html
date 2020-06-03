@@ -18,8 +18,8 @@
                                     <div class="title-info">
                                         <img [src]="tale.illustration" *ngIf="tale.illustration">
                                         <img [src]="tale.icon" class="env" *ngIf="tale.icon">
-                                        <p>{{ tale.title }}</p>
-                                        
+                                        <p>{{ tale.title | truncate:100 }}</p>
+
                                         <p class="qualifier">
                                             <span *ngFor="let author of tale.authors; index as i; trackBy: trackByAuthorOrcid">
                                                 <span *ngIf="i > 0">, </span> <span [title]="author.orcid">{{ author.firstName }} {{ author.lastName }}</span>
