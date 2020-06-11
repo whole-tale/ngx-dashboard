@@ -74,7 +74,7 @@
                           Metadata
                         </a>
 
-                        <a *ngIf="instance" id="popout-link" class="right floated item" [href]="instance.url" target="_blank">
+                        <a *ngIf="instance && instance.status === 1" id="popout-link" class="right floated item" [href]="instance.url" target="_blank">
                             <i class="fas fa-fw fa-external-link-alt"></i>
                         </a>
                     </div>
