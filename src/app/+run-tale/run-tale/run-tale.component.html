@@ -19,7 +19,7 @@
                                         <img [src]="tale.illustration" *ngIf="tale.illustration">
                                         <img [src]="tale.icon" class="env" *ngIf="tale.icon">
                                         <p>{{ tale.title }}</p>
-                                        
+
                                         <p class="qualifier">
                                             <span *ngFor="let author of tale.authors; index as i; trackBy: trackByAuthorOrcid">
                                                 <span *ngIf="i > 0">, </span> <span [title]="author.orcid">{{ author.firstName }} {{ author.lastName }}</span>
@@ -72,6 +72,10 @@
                         </a>
                         <a class="item" [ngClass]="{ 'active': isTabActive('metadata') }" (click)="switchTab('metadata')">
                           Metadata
+                        </a>
+
+                        <a *ngIf="instance" id="popout-link" class="right floated item" [href]="instance.url" target="_blank">
+                            <i class="fas fa-fw fa-external-link-alt"></i>
                         </a>
                     </div>
                     <div class="wt-panel-body" style="padding-bottom:40px" [ngSwitch]="currentTab">
