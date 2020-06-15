@@ -59,9 +59,13 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         return author.orcid;
     }
 
-    taleInstanceStateChanged(event: any): void {
-      // this.instance = event;
-      this.refresh();
+    taleInstanceStateChanged(event: {tale: Tale, instance: Instance}): void {
+      if (!event.tale) {
+        return;
+      } else if (event.tale._id === this.tale._id) {
+        this.instance = event.instance;
+      }
+      this.ref.detectChanges();
     }
 
     detectCurrentTab(): void {
