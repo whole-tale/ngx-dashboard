@@ -56,7 +56,9 @@
                 {{ tale.categories }}
               </div>
               <div class="t-title">
-                <h3>{{ tale.title }}</h3>
+                <h3 [title]="tale.title">
+                    <a class="ui link" style="text-decoration:none;" [routerLink]="'/run/' + tale._id" [queryParams]="{ tab: 'interact'}" routerLinkActive="active">{{ tale.title | truncate:truncateLength }}</a>
+                </h3>
               </div>
               <div>
                   by
@@ -130,7 +132,9 @@
                 {{ tale.categories }}
             </div>
             <div class="t-title">
-              <h3>{{ tale.title }}</h3>
+                <h3 [title]="tale.title">
+                    <a class="ui link" style="text-decoration:none;" [routerLink]="'/run/' + tale._id" [queryParams]="{ tab: 'metadata'}" routerLinkActive="active">{{ tale.title | truncate:truncateLength }}</a>
+                </h3>
             </div>
             <div>
                 by
