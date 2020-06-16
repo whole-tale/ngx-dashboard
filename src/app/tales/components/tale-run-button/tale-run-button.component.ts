@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, NgZone, Output } from '@angular/core';
 import { MatDialog } from '@angular/material';
+import { Router } from '@angular/router';
 import { Instance } from '@api/models/instance';
 import { Tale } from '@api/models/tale';
 import { InstanceService } from '@api/services/instance.service';
@@ -28,6 +29,7 @@ export class TaleRunButtonComponent {
     private readonly zone: NgZone,
     private readonly dialog: MatDialog,
     private readonly logger: LogService,
+    private readonly router: Router,
     private readonly taleService: TaleService,
     private readonly instanceService: InstanceService
   ) {}
@@ -52,6 +54,7 @@ export class TaleRunButtonComponent {
           this.instance = instance;
           this.taleInstanceStateChanged.emit(this.tale);
           // this.refilter();
+          this.router.navigate(['run', this.tale._id], { queryParams: { tab: 'interact' } });
 
           // Poll / wait for launch
           // TODO: Fix edge cases (refresh, etc)
