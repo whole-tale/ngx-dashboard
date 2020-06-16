@@ -84,9 +84,9 @@ export class NotificationStreamComponent {
     }
 
     // Grab first (build) jobId
-    const jobId = event.data.resource.jobs[0];
+    const jobIds = event.data.resource.jobs;
     const config: MatDialogConfig = {
-      data: { jobId }
+      data: { jobIds }
     };
 
     const dialogRef = this.dialog.open(ViewLogsDialogComponent, config);
