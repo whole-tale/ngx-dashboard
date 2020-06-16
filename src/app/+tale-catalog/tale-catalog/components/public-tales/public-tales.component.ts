@@ -27,6 +27,8 @@ export class PublicTalesComponent implements OnChanges, OnInit {
   tales: Array<Tale> = [];
   publicTales: Array<Tale> = [];
 
+  protected truncateLength = 100;
+
   searchQuery = '';
 
   user: User;

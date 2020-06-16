@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { MatDialog } from '@angular/material';
+import { Router } from '@angular/router';
 import { Instance } from '@api/models/instance';
 import { Tale } from '@api/models/tale';
 import { InstanceService } from '@api/services/instance.service';
@@ -28,6 +29,7 @@ export class TaleRunButtonComponent implements OnChanges {
     private readonly ref: ChangeDetectorRef,
     private readonly dialog: MatDialog,
     private readonly logger: LogService,
+    private readonly router: Router,
     private readonly taleService: TaleService,
     private readonly instanceService: InstanceService
   ) {}
