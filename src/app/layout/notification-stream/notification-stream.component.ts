@@ -26,7 +26,7 @@ export class NotificationStreamComponent {
     private readonly ref: ChangeDetectorRef,
     private readonly logger: LogService,
     private readonly dialog: MatDialog,
-    private readonly notificationStream: NotificationStreamService
+    public readonly notificationStream: NotificationStreamService
   ) {
     this.events = new BehaviorSubject<Array<EventData>>(this.notificationStream.events);
     this.source = this.notificationStream.source;
