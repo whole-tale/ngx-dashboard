@@ -7,7 +7,7 @@ import { InstanceService } from '@api/services/instance.service';
 import { TaleService } from '@api/services/tale.service';
 import { LogService } from '@framework/core/log.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
-import { ErrorModalComponent } from '@shared/error-modal/error-modal.component';
+import { ErrorModalComponent } from '@shared/error-handler/error-modal/error-modal.component';
 import { CopyOnLaunchModalComponent } from '@tales/components/modals/copy-on-launch-modal/copy-on-launch-modal.component';
 
 @Component({
@@ -80,6 +80,7 @@ export class TaleRunButtonComponent {
                 },
                 err => {
                   this.logger.error('Error polling for instance status:', err);
+                  this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
 
                   // Stop the polling if an error is hit
                   stopPolling();
@@ -91,6 +92,7 @@ export class TaleRunButtonComponent {
       },
       (err: any) => {
         this.logger.error('Failed to create instance:', err);
+        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
       }
     );
   }
