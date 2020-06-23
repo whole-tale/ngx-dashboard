@@ -12,6 +12,10 @@
   }
 }
 
+.ui.breadcrumb a {
+  color: #333;
+}
+
 .panel-container {
   width: 100%;
 }
@@ -19,4 +23,200 @@
 .tale-run-button {
   display: inline-block;
   margin-right: 10px;
+}
+
+.wt-panel {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  -webkit-border-radius: 1rem;
+  -moz-border-radius: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.075);
+  padding: 0;
+  height: 100%;
+}
+
+.wt-panel .wt-panel-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 0.8rem 1.6rem;
+  letter-spacing: 0.02rem;
+  background: #fff;
+  -webkit-border-top-left-radius: 1rem;
+  -moz-border-top-left-radius: 1rem;
+  border-top-left-radius: 1rem;
+  -webkit-border-top-right-radius: 1rem;
+  -moz-border-top-right-radius: 1rem;
+  border-top-right-radius: 1rem;
+}
+
+.wt-panel .title-info img.env {
+  width: 2.5rem;
+  position: absolute;
+  top: -0.5rem;
+  left: -0.5rem;
+  background: white;
+  border-radius: 20px;
+}
+
+.wt-panel .wt-panel-header img {
+  height: 2.25rem;
+  margin: 0 0.75rem 0 0;
+  float: left;
+}
+.wt-panel .tale-info {
+  padding: 1em 0 0;
+}
+
+.wt-panel .title-info,
+.wt-panel .action-info {
+  position: relative;
+  padding-left: 4rem;
+}
+
+.wt-panel .title-info .label {
+  font-size: 0.65rem;
+}
+
+.wt-green {
+  background-color: #8bc44a !important;
+  border-color: #8bc44a !important;
+  color: #fff !important;
+}
+
+.wt-panel .title-info .title-tags {
+  margin-top: -0.3rem;
+}
+
+.wt-panel .title-info .title {
+  font-size: 1.2em;
+  line-height: 1.2;
+  font-weight: 600;
+  margin: 0;
+  max-width: 75%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.wt-panel .title-info .author {
+  font-size: 1em;
+  line-height: 1.2;
+  font-weight: 400;
+  font-style: italic;
+  margin: 0 0 0 6px;
+  max-width: 25%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.wt-panel.bg-grey {
+  background: #f9fafb;
+}
+.wt-panel:nth-child(2) {
+  margin-top: 1rem;
+}
+
+.wt-panel .wt-panel-body {
+  padding: 1.5rem 2rem 3rem;
+}
+.wt-panel .wt-panel-body.bg-grey,
+.wt-panel .wt-panel-header.bg-grey {
+  background-color: #f9fafb;
+}
+
+.wt-panel-body .ui.input {
+  width: 100%;
+}
+
+.wt-panel .wt-panel-header.tabs {
+  border: none;
+  padding: 0;
+  letter-spacing: 0;
+}
+
+.wt-panel .wt-panel-header.tabs .ui.menu {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  border: none;
+  -webkit-border-top-left-radius: 1rem;
+  -moz-border-top-left-radius: 1rem;
+  border-top-left-radius: 1rem;
+  -webkit-border-top-right-radius: 1rem;
+  -moz-border-top-right-radius: 1rem;
+  border-top-right-radius: 1rem;
+}
+.wt-panel .wt-panel-header.tabs .ui.menu > .item:first-child {
+  -webkit-border-top-left-radius: 1rem;
+  -moz-border-top-left-radius: 1rem;
+  border-top-left-radius: 1rem;
+}
+.wt-panel .wt-panel-header.tabs .ui.menu > .item:last-child {
+  -webkit-border-top-right-radius: 1rem;
+  -moz-border-top-right-radius: 1rem;
+  border-top-right-radius: 1rem;
+}
+.wt-panel .wt-panel-header.tabs .ui.menu > .item {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  font-size: 1.2rem;
+}
+.wt-panel .wt-panel-header.tabs .ui.menu > .item.active {
+  border-bottom: transparent;
+  font-weight: 600;
+}
+
+.wt-panel .tale-info {
+  padding: 1em 0 0;
+}
+.wt-panel .title-info,
+.wt-panel .action-info {
+  position: relative;
+  padding-left: 4rem;
+}
+.wt-panel .title-info img {
+  width: 3rem;
+  margin-right: 0.5rem;
+  position: absolute;
+  top: -0.25rem;
+  left: 0rem;
+}
+.wt-panel .action-info img {
+  width: 3rem;
+  height: auto;
+  margin-right: 0.5rem;
+  position: absolute;
+  top: -0.25rem;
+  left: 0rem;
+}
+.wt-panel .title-info img.env {
+  width: 2.5rem;
+  position: absolute;
+  top: -0.75rem;
+  left: -0.5rem;
+}
+.wt-panel .title-info p {
+  font-size: 1.2rem;
+  line-height: 1.2;
+  font-weight: 600;
+  margin: 0 1.5rem 0.2rem 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wt-panel .action-info p {
+  font-size: 1.2rem;
+  line-height: 1.2;
+  font-weight: 600;
+  margin: 0 1.5rem 0.2rem 0;
+}
+.wt-panel .title-info p.qualifier,
+.wt-panel .action-info p.qualifier {
+  font-size: 1rem;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.wt-panel .actions {
 }
