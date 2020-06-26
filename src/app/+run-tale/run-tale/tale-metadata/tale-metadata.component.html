@@ -133,7 +133,9 @@
               <b>Involatile Data:</b>
               <span *ngIf="!tale.dataSet.length">No citable data</span>
               <ul *ngIf="tale.dataSet.length">
-                <li *ngFor="let dataset of tale.dataSet; index as i; trackBy: trackById"><a [href]="dataset.doi">{{ dataset.mountPath }}</a></li>
+                <li *ngFor="let dataset of tale.dataSet; index as i; trackBy: trackById">
+                    <a [href]="apiRoot + '/item/' + dataset.itemId + '/download?contentDisposition=attachment'" target="_blank">{{ dataset.mountPath }}</a>
+                </li>
               </ul>
             </div>
             <div class="item">
