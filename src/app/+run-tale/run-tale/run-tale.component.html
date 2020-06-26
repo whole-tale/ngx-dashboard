@@ -78,6 +78,10 @@
                         <a class="item" [ngClass]="{ 'active': isTabActive('metadata') }" (click)="switchTab('metadata')">
                           Metadata
                         </a>
+
+                        <a *ngIf="instance && instance.status === 1" id="popout-link" class="right floated item" [href]="instance.url" target="_blank">
+                            <i class="fas fa-fw fa-external-link-alt"></i>
+                        </a>
                     </div>
                     <div class="wt-panel-body" style="padding-bottom:40px" [ngSwitch]="currentTab">
                         <div *ngSwitchCase="'interact'">
