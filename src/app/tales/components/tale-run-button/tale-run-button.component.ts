@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, NgZone, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 import { Instance } from '@api/models/instance';
@@ -15,7 +15,7 @@ import { CopyOnLaunchModalComponent } from '@tales/components/modals/copy-on-lau
   templateUrl: './tale-run-button.component.html',
   styleUrls: ['./tale-run-button.component.scss']
 })
-export class TaleRunButtonComponent {
+export class TaleRunButtonComponent implements OnChanges {
   @Input() instance: Instance;
   @Input() tale: Tale;
 
@@ -23,16 +23,69 @@ export class TaleRunButtonComponent {
 
   interval: any;
 
-  @Output() readonly taleInstanceStateChanged = new EventEmitter<Tale>();
+  @Output() readonly taleInstanceStateChanged = new EventEmitter<{ tale: Tale; instance: Instance }>();
 
   constructor(
-    private readonly zone: NgZone,
+    private readonly ref: ChangeDetectorRef,
     private readonly dialog: MatDialog,
     private readonly logger: LogService,
     private readonly router: Router,
     private readonly taleService: TaleService,
     private readonly instanceService: InstanceService
   ) {}
+
+  ngOnChanges(): void {
+    if (this.instance && (this.instance.status === 0 || this.instance.status === 3)) {
+      this.autoRefresh();
+    }
+  }
+
+  autoRefresh(): void {
+    const stopPolling = () => {
+      clearInterval(this.interval);
+      this.interval = undefined;
+      this.taleInstanceStateChanged.emit(this);
+      this.ref.detectChanges();
+    };
+
+    // this.zone.runOutsideAngular(() => {
+    if (this.interval) {
+      stopPolling();
+    }
+
+    this.interval = setInterval(() => {
+      if (!this.instance || !this.instance._id) {
+        stopPolling();
+        return;
+      }
+
+      this.instanceService.instanceGetInstance(this.instance._id).subscribe(
+        (watched: Instance) => {
+          this.logger.debug('Polling for instance status:', watched._id);
+          // this.refilter();
+
+          this.instance = watched;
+
+          // Once instance is running, stop the polling
+          if (watched.status === 1) {
+            this.instance = watched;
+            stopPolling();
+          }
+        },
+        err => {
+          if (err.error.message.startsWith('Invalid instance id')) {
+            this.instance = undefined;
+          } else {
+            this.logger.error('Error polling for instance status:', err);
+          }
+
+          // Stop the polling if an error is hit
+          stopPolling();
+        }
+      );
+    }, 2000);
+    // });
+  }
 
   startTale(): void {
     if (this.tale._accessLevel < 2) {
@@ -41,53 +94,19 @@ export class TaleRunButtonComponent {
       return;
     }
 
-    const stopPolling = () => {
-      clearInterval(this.interval);
-      this.interval = undefined;
-    };
-
     const params = { taleId: this.tale._id };
     this.instanceService.instanceCreateInstance(params).subscribe(
       (instance: Instance) => {
-        this.zone.run(() => {
-          this.logger.debug('Starting tale:', this.tale._id);
-          this.instance = instance;
-          this.taleInstanceStateChanged.emit(this.tale);
-          // this.refilter();
-          this.router.navigate(['run', this.tale._id], { queryParams: { tab: 'interact' } });
+        // this.zone.run(() => {
+        this.logger.debug('Starting tale:', this.tale._id);
+        this.instance = instance;
+        this.taleInstanceStateChanged.emit(this);
+        this.ref.detectChanges();
 
-          // Poll / wait for launch
-          // TODO: Fix edge cases (refresh, etc)
-          this.zone.runOutsideAngular(() => {
-            if (this.interval) {
-              stopPolling();
-            }
-
-            this.interval = setInterval(() => {
-              this.instanceService.instanceGetInstance(instance._id).subscribe(
-                (watched: Instance) => {
-                  this.logger.debug('Polling for instance status:', watched._id);
-                  // this.refilter();
-                  this.taleInstanceStateChanged.emit(this.tale);
-
-                  // Once instance is running, stop the polling
-                  if (watched.status === 1) {
-                    this.zone.run(() => {
-                      this.instance = watched;
-                      stopPolling();
-                    });
-                  }
-                },
-                err => {
-                  this.logger.error('Error polling for instance status:', err);
-
-                  // Stop the polling if an error is hit
-                  stopPolling();
-                }
-              );
-            }, 2000);
-          });
-        });
+        // Poll / wait for launch
+        // TODO: Fix edge cases (refresh, etc)
+        this.autoRefresh();
+        // });
       },
       (err: any) => {
         this.logger.error('Failed to create instance:', err);
@@ -104,19 +123,27 @@ export class TaleRunButtonComponent {
     }
 
     this.logger.debug('Stopping tale:', this.tale._id);
+
+    // Show a fake "Deleting" message for a few seconds
+    this.instance.status = 3;
+    this.taleInstanceStateChanged.emit(this);
+    this.ref.detectChanges();
+
     this.instanceService
       .instanceDeleteInstance(instance._id)
-      .pipe(enterZone(this.zone))
+      // .pipe(enterZone(this.zone))
       .subscribe(
         (deleted: Instance) => {
           this.logger.debug('Instance deleted:', deleted);
           // this.zone.run(() => {
-          this.instance = undefined;
-          this.taleInstanceStateChanged.emit(this.tale);
+
+          // Clear the fake "Deleting" message
+          this.autoRefresh();
           // });
         },
         err => {
           this.logger.error('Failed to delete instance:', err);
+          this.autoRefresh();
         }
       );
   }

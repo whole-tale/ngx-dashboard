@@ -63,7 +63,7 @@ export class PublicTalesComponent implements OnChanges, OnInit {
     this.refresh();
   }
 
-  taleInstanceStateChanged(event: any): void {
+  taleInstanceStateChanged(updated: {tale: Tale, instance: Instance}): void {
     this.refresh();
   }
 
@@ -94,7 +94,8 @@ export class PublicTalesComponent implements OnChanges, OnInit {
     this.instanceService.instanceListInstances(listInstancesParams).subscribe((instances: Array<Instance>) => {
       this.zone.run(() => {
         // Convert array to map of taleId -> instance
-        this.instances = Object.assign({}, ...instances.map(i => ({[i.taleId]: i})));
+        // Filter deleting instances
+        this.instances = Object.assign({}, ...instances.filter(i => i.status !== 3).map(i => ({[i.taleId]: i})));
       });
     }, (err: any) => {
       this.logger.error("Failed to GET /instance:", err);
