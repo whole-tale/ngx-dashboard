@@ -162,7 +162,7 @@ export class TaleRunButtonComponent implements OnChanges {
           // this.refresh();
           // this.startTale(taleCopy);
           // Update the display with the newly-created Tale copy
-          this.taleInstanceStateChanged.emit(taleCopy);
+          this.taleInstanceStateChanged.emit({ tale: taleCopy, instance: null });
 
           // Navigate the UI to the new Tale copy
           this.router.navigate(['run', taleCopy._id]);
