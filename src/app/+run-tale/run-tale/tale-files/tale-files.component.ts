@@ -181,13 +181,19 @@ export class TaleFilesComponent implements OnInit, OnChanges {
           chunk: contents
         };
 
-        this.logger.debug(`Starting upload for ${params.name}...`);
+        this.logger.info(`Starting upload for ${params.name}...`);
         this.fileService.fileInitUpload(params).subscribe((initResp: any) => {
-          this.logger.debug(`Uploading chunks for ${params.name}:`, initResp);
+          this.logger.info(`Uploading chunks for ${params.name}:`, initResp);
           const offset = 0;
-          const currentUploads = this.files.value;
-          currentUploads.push(initResp);
-          this.files.next(currentUploads);
+
+          // TODO: Check file size and upload additional chunks?
+
+          const itemId = initResp.itemId;
+          this.itemService.itemGetItem(itemId).subscribe(item => {
+            const currentItems = this.files.value;
+            currentItems.push(item);
+            this.files.next(currentItems);
+          });
 
           // Create a URL to the file blob and start the upload
           /*const chunkParams = { uploadId: initResp._id, offset, chunk: contents };

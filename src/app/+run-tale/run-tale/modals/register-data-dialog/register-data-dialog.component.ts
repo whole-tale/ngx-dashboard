@@ -3,9 +3,6 @@ import { Tale } from '@api/models/tale';
 import { RepositoryService } from '@api/services/repository.service';
 import { LogService }  from '@framework/core/log.service';
 
-// import * as $ from 'jquery';
-declare var $: any;
-
 @Component({
   templateUrl: './register-data-dialog.component.html',
   styleUrls: ['./register-data-dialog.component.scss']
