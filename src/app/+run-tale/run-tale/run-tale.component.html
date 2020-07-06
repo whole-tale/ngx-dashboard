@@ -1,10 +1,10 @@
 <div fxFlex fxLayout="row" fxLayoutAlign="space-between stretch" [@routeAnimation]>
     <div class="ui stretched stackable grid panel-container">
-        <div class="row" style="padding-top:20px">
+        <div class="row">
             <div class="sixteen wide column">
 
                 <div class="ui breadcrumb">
-                    <a routerLink="/" routerLinkActive="active" class="section">
+                    <a routerLink="/" class="section">
                       <i class="left angle icon"></i>
                       Return to Dashboard
                     </a>
@@ -16,23 +16,28 @@
                             <div class="ui stackable grid">
                                 <div class="ten wide column">
                                     <div class="title-info">
-                                        <img [src]="tale.illustration" *ngIf="tale.illustration">
+                                        <div class="img-holder">
+                                            <img [src]="tale.illustration" *ngIf="tale.illustration">
+                                        </div>
                                         <img [src]="tale.icon" class="env" *ngIf="tale.icon">
-                                        <p>{{ tale.title | truncate:100 }}</p>
-
-                                        <p class="qualifier">
+                                        <div class="title">{{ tale.title | truncate:100 }}</div>
+                                        <div class="author">
                                             <span *ngFor="let author of tale.authors; index as i; trackBy: trackByAuthorOrcid">
                                                 <span *ngIf="i > 0">, </span> <span [title]="author.orcid">{{ author.firstName }} {{ author.lastName }}</span>
                                             </span>
                                             <span *ngIf="!tale.authors.length && creator">{{ creator.firstName }} {{ creator.lastName }}</span>
                                             <span *ngIf="!tale.authors.length && !creator">???</span>
-                                        </p>
+                                        </div>
+                                        <div class="title-tags">
+                                            <span class="ui horizontal label wt-green" *ngIf="tale.copyOfTale">COPY</span>
+                                            <span class="ui horizontal label wt-green">{{ tale.public ? 'PUBLIC' : 'PRIVATE'}}</span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="six wide column" style="text-align: right">
                                     <app-tale-run-button class="tale-run-button" [tale]="tale" [instance]="instance" isPrimary="true" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></app-tale-run-button>
                                     <a routerLink="/" routerLinkActive="active" class="ui button" style="margin-right: 10px">
-                                      Close
+                                        Close
                                     </a>
 
 
