@@ -167,9 +167,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       const url = URL.createObjectURL(upload);
 
       // Upload to the current folder, if possible
-      const parentId = this.currentFolderId ? this.currentFolderId :
-        // Otherwise upload to "workspace" if we're on the Workspaces nav and have no currentFolderId, else upload to "Home" folder
-        this.currentNav === 'tale_workspaces' ? this.tale.workspaceId : this.homeRoot._id;
+      const parentId = this.getParentId();
 
       // FIXME: This may cause a crash with extremely large files
       fetch(url).then(resp => resp.arrayBuffer()).then(contents => {
@@ -456,6 +454,15 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     return folder.name;
   }
 
+  getParentId(): string {
+
+    // Upload to the current folder, if possible
+    const parentId = this.currentFolderId ? this.currentFolderId :
+      // Otherwise upload to "workspace" if we're on the Workspaces nav and have no currentFolderId, else upload to "Home" folder
+      this.currentNav === 'tale_workspace' ? this.tale.workspaceId : this.homeRoot._id;
+      return parentId;
+  }
+
   addFolder(folder: { name: string }): void {
     // Datasets are immutable - prevent modifying them directly
     if (this.currentNav === 'external_data') {
@@ -465,9 +472,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     const now = new Date();
 
     // Upload to the current folder, if possible
-    const parentId = this.currentFolderId ? this.currentFolderId :
-      // Otherwise upload to "workspace" if we're on the Workspaces nav and have no currentFolderId, else upload to "Home" folder
-      this.currentNav === 'tale_workspaces' ? this.tale.workspaceId : this.homeRoot._id;
+    const parentId = this.getParentId();
 
     const params = {
       parentType: ParentType.Folder,
