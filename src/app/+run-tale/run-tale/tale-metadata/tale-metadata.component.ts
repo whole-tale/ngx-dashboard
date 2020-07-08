@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, Input, NgZone, OnInit } from '@angular/core';
+import { ApiConfiguration } from '@api/api-configuration';
 import { Image } from '@api/models/image';
 import { License } from '@api/models/license';
 import { Tale } from '@api/models/tale';
@@ -30,17 +31,21 @@ export class TaleMetadataComponent implements OnInit {
   environment: Image;
   newAuthor: TaleAuthor;
 
+  apiRoot: string;
+
   // Edit mode
   _previousState: Tale;
   editing = false;
 
   constructor(private ref: ChangeDetectorRef,
               private zone: NgZone,
+              private config: ApiConfiguration,
               private logger: LogService,
               private taleService: TaleService,
               private licenseService: LicenseService,
               private notificationService: NotificationService,
               private imageService: ImageService) {
+    this.apiRoot = this.config.rootUrl;
     this.resetNewAuthor();
   }
 
