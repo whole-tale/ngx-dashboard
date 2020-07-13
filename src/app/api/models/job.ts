@@ -17,4 +17,5 @@ export interface Job {
   updated?: string;
   progress?: any;
   status: number;
+  log?: Array<string>;
 }
