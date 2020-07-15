@@ -157,11 +157,15 @@ export class TaleRunButtonComponent implements OnChanges {
       }
 
       this.taleService.taleCopyTale(this.tale._id).subscribe(
-        taleCopy => {
+        (taleCopy: Tale) => {
           this.logger.debug('Successfully copied Tale... now launching!', taleCopy);
           // this.refresh();
           // this.startTale(taleCopy);
-          this.taleInstanceStateChanged.emit(taleCopy);
+          // Update the display with the newly-created Tale copy
+          this.taleInstanceStateChanged.emit({ tale: taleCopy, instance: null });
+
+          // Navigate the UI to the new Tale copy
+          this.router.navigate(['run', taleCopy._id]);
         },
         err => {
           this.logger.error('Failed to copy Tale:', err);

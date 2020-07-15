@@ -1,68 +1,17 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { NotificationStreamService } from '@api/notification-stream.service';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { EventData } from '@api/events/event-data';
+import { GirderEvent } from '@api/events/girder-event';
+import { Job } from '@api/models/job';
 import { LogService } from '@framework/core/log.service';
 import { EventSourcePolyfill as EventSource } from 'ng-event-source';
 import { BehaviorSubject } from 'rxjs';
 
+import { ViewLogsDialogComponent } from './modals/view-logs-dialog/view-logs-dialog.component';
+import { NotificationStreamService } from './notification-stream.service';
+
 // import * as $ from 'jquery';
 declare var $: any;
-
-// NOTE: "Event" is already a built-in type name
-interface GirderEvent {
-  // Error details
-  errorCode: number;
-  errorMessage: string;
-
-  target: {}; // The EventSource that received this message
-  data: string; // JSON.stringified EventData (see below)
-  type: string; // Girder message type (e.g. "message")
-}
-
-interface EventData {
-  // ID of this message
-  _id: string;
-
-  // Current time on the Girder server
-  _girderTime: number;
-
-  // Type of the message (we are only interested in type=="wt_progress")
-  type: string;
-
-  // Who is this message for?
-  userId: string;
-
-  // Timing attributes for this message
-  startTime: number;
-  expires: Date;
-  time: Date;
-  updated: Date;
-  updatedTime: number;
-
-  // Data payload for the message
-  data: {
-    // Message payload
-    state: string; // status of the overall operation
-    title: string; // unused - effectively a friendly job name= (e.g. "Creating instance")
-
-    // Progress indication
-    current: number; // Current step number
-    total: number; // Total step number
-    message: string; // Step progress message
-
-    // Time indication
-    estimateTime: boolean; // True if a time estimate is provided
-
-    // Our custom resource, which includes associated IDs relevant to this message
-    resourceName: string;
-    resource: {
-      instance_id?: string; // ID of the Instance for which this message is relevant
-      jobs?: Array<string>; // Job IDs associated with this progress update
-      tale_id?: string; // ID of the Tale for which this message is relevant
-      tale_title?: string; // Title of the Tale
-      type?: string; // WT job name (e.g. "wt_create_instance")
-    };
-  };
-}
 
 @Component({
   selector: 'app-notification-stream',
@@ -76,7 +25,8 @@ export class NotificationStreamComponent {
   constructor(
     private readonly ref: ChangeDetectorRef,
     private readonly logger: LogService,
-    readonly notificationStream: NotificationStreamService
+    private readonly dialog: MatDialog,
+    public readonly notificationStream: NotificationStreamService
   ) {
     this.events = new BehaviorSubject<Array<EventData>>(this.notificationStream.events);
     this.source = this.notificationStream.source;
@@ -125,6 +75,22 @@ export class NotificationStreamComponent {
     }
 
     this.ref.detectChanges();
+  }
+
+  openLogViewerModal(event: EventData): void {
+    if (!event || !event.data || !event.data.resource || !event.data.resource.jobs || !event.data.resource.jobs.length) {
+      this.logger.error('Failed to view logs - no jobId provided by event.');
+      return;
+    }
+
+    // Grab first (build) jobId
+    const jobIds = event.data.resource.jobs;
+    const config: MatDialogConfig = {
+      data: { jobIds }
+    };
+
+    const dialogRef = this.dialog.open(ViewLogsDialogComponent, config);
+    // Do nothing on close
   }
 
   trackById(index: number, event: EventData): string {
