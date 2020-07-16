@@ -51,6 +51,7 @@ enum ContentDisposition {
 interface Selectable {
   _modelType: string;
   _id: string;
+  name: string;
 }
 
 @Component({
@@ -621,16 +622,16 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       data: { tale: this.tale }
     };
     const dialogRef = this.dialog.open(SelectDataDialogComponent, config);
-    dialogRef.afterClosed().subscribe((datasets: Array<Dataset>) => {
+    dialogRef.afterClosed().subscribe((datasets: Array<Selectable>) => {
       if (!datasets) { return; }
 
-      const tale = this.tale;
-      tale.dataSet = [];
-      datasets.forEach(ds => {
-        tale.dataSet.push({ itemId: ds._id, mountPath: ds.name, _modelType: ds._modelType })
+      const tale = this.tale
+      const id = tale._id;
+      tale.dataSet = datasets.map(ds => {
+        return { itemId: ds._id, mountPath: ds.name, _modelType: ds._modelType };
       });
 
-      this.taleService.taleUpdateTale({ id: tale._id, tale }).subscribe(response => {
+      this.taleService.taleUpdateTale({ id, tale }).subscribe(response => {
         this.logger.debug("Successfully updated Tale datasets:", response);
         this.load();
       }, err => {
