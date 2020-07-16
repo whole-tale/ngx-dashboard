@@ -75,30 +75,18 @@ export class SelectDataDialogComponent implements OnInit {
 
   addSelectedDatasets(): void {
     const added = this.addedDatasets.value;
-    this.datasetsToAdd.forEach((d: Selectable) => {
-      const existing = added.find(ds => ds._id === d._id);
-      if (existing) {
-        this.logger.warn(`${d._modelType} already added.. skipping: ${d._id}`);
-      } else {
-        added.push(d);
-      }
-    });
-    this.addedDatasets.next(added);
+    // Filter anything already added
+    const filtered = this.datasetsToAdd.filter(dataToAdd => !added.find(prevAddedData => dataToAdd._id === prevAddedData._id));
+    this.addedDatasets.next(added.concat(filtered));
     this.datasetsToAdd = [];
   }
 
   removeSelectedDatasets(): void {
     const added = this.addedDatasets.value;
-    this.datasetsToRemove.forEach((d: Selectable) => {
-      const existing = added.find(ds => ds._id === d._id);
-      if (!existing) {
-        this.logger.warn(`${d._modelType} is not present.. skipping: ${d._id}`);
-      } else {
-        const index = added.indexOf(d);
-        added.splice(index, 1);
-      }
-    });
-    this.addedDatasets.next(added);
+    // Filter anything that needs to be removed
+    const filtered = added.filter(ds => !this.datasetsToRemove.find(data => ds._id === data._id));
+    this.addedDatasets.next(filtered);
+    this.datasetsToRemove = [];
   }
 
   navigateIntoDataset(ds: Dataset): void {
