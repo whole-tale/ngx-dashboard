@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, NgZone, OnInit, Output } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { EventData } from '@api/events/event-data';
 import { UserService } from '@api/services/user.service';
 import { TokenService } from '@api/token.service';
 import { BaseComponent } from '@framework/core';
@@ -32,6 +33,10 @@ export class HeaderComponent extends BaseComponent implements OnInit {
   currentRoute = '';
   user: any;
 
+  // events: Array<EventData>;
+
+  @Output() toggledNotificationStream: EventEmitter<Boolean> = new EventEmitter<Boolean>();
+
   constructor(
     private readonly zone: NgZone,
     private readonly ref: ChangeDetectorRef,
@@ -43,7 +48,7 @@ export class HeaderComponent extends BaseComponent implements OnInit {
     private readonly cookies: CookieService,
     private readonly users: UserService,
     private readonly tokenService: TokenService,
-    readonly notificationStream: NotificationStreamService
+    private readonly notificationStream: NotificationStreamService
   ) {
     super();
 
@@ -84,5 +89,17 @@ export class HeaderComponent extends BaseComponent implements OnInit {
 
   toggleNotificationStream(): void {
     this.notificationStream.openNotificationStream(!this.notificationStream.showNotificationStream);
+    // this.toggledNotificationStream.emit();
+  }
+
+  get events(): Array<EventData> {
+    return this.notificationStream.events;
+  }
+
+  get eventCount(): Number {
+    if (!this.events) {
+      return 0;
+    }
+    return this.events.length;
   }
 }

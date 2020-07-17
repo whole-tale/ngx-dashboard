@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { EventData } from '@api/events/event-data';
 import { GirderEvent } from '@api/events/girder-event';
@@ -19,23 +19,44 @@ declare var $: any;
   styleUrls: ['./notification-stream.component.scss']
 })
 export class NotificationStreamComponent {
-  events: BehaviorSubject<Array<EventData>>;
-  source: EventSource;
-
   constructor(
     private readonly ref: ChangeDetectorRef,
+    private readonly zone: NgZone,
     private readonly logger: LogService,
     private readonly dialog: MatDialog,
-    public readonly notificationStream: NotificationStreamService
+    private readonly notificationStream: NotificationStreamService
   ) {
-    this.events = new BehaviorSubject<Array<EventData>>(this.notificationStream.events);
-    this.source = this.notificationStream.source;
-
     if (this.source) {
       this.source.onmessage = (event: GirderEvent) => {
         this.onMessage.call(this, event);
       };
     }
+  }
+
+  get source(): EventSource {
+    return this.notificationStream.source;
+  }
+
+  get events(): Array<EventData> {
+    return this.notificationStream.events;
+  }
+
+  get eventCount(): Number {
+    if (!this.events) {
+      return 0;
+    }
+    return this.events.length;
+  }
+
+  get showNotificationStream(): Boolean {
+    return this.notificationStream.showNotificationStream;
+  }
+
+  ackAll() {
+    this.zone.run(() => {
+      this.notificationStream.ackAll();
+      this.ref.detectChanges();
+    });
   }
 
   onMessage(event: GirderEvent): void {
@@ -51,26 +72,29 @@ export class NotificationStreamComponent {
 
     this.logger.warn('Message received:', eventData);
 
-    // Check for existing notifications matching this one
-    const events = this.events.value;
-    const existing = events.find(evt => eventData._id === evt._id);
-    if (!existing) {
-      // If we haven't seen one like this, then display it
-      events.push(eventData);
-      this.notificationStream.openNotificationStream(true);
-      this.events.next(events);
-    } else if (existing && existing.updated < eventData.updated) {
-      // Replace existing notification with newer updates
-      const index = events.indexOf(existing);
-      events[index] = eventData;
-      this.events.next(events);
-    }
+    this.zone.run(() => {
+      // Check for existing notifications matching this one
+      const existing = this.events.find(evt => eventData._id === evt._id);
+      if (!existing) {
+        // If we haven't seen one like this, then display it
+        this.notificationStream.events.push(eventData);
+        this.notificationStream.openNotificationStream(true);
+        // this.events.next(events);
+      } else if (existing && existing.updated < eventData.updated) {
+        // Replace existing notification with newer updates
+        const index = this.events.indexOf(existing);
+        this.events[index] = eventData;
+        // this.events.next(events);
+      }
+    });
 
     // If task is active, update progress
     if (eventData.data.state === 'active') {
-      $(`#event-progress-${eventData._id}`).progress({
-        total: eventData.data.total,
-        value: eventData.data.current
+      this.zone.runOutsideAngular(() => {
+        $(`#event-progress-${eventData._id}`).progress({
+          total: eventData.data.total,
+          value: eventData.data.current
+        });
       });
     }
 
