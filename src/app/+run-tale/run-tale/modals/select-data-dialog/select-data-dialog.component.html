@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>Select from WT External Data Catalog</h1>
 
 <mat-dialog-content>
-  <div class="ui grid" style="max-height: 60vh; max-width: 60vw;">
+  <div class="ui grid">
     <div class="row">
       <div class="four wide column">
         <div class="ui vertical menu fluid dta">
@@ -18,10 +18,10 @@
 
       <div class="six wide column" style="padding: 20px 20px 40px 0;">
         <button class="ui basic primary left floated small button" (click)="addSelectedDatasets()">Add Selected <i class="fas fa-chevron-right fa-fw"></i></button>
-        <table class="ui compact striped table" style="max-height: 55vh;">
+        <table class="ui compact striped table">
           <!-- If dataset is selected, show the name of the dataset as the header -->
           <thead *ngIf="selectedDataset">
-            <th colspan="5" class="ui sub header collapsing noselect clickable blue" style="text-transform: none" (click)="navigateUp()">
+            <th colspan="5" class="ui sub header collapsing noselect clickable blue" (click)="navigateUp()">
               <span class="long alternate blue">
                 <i class="horizontally flipped level up icon"></i>
                 <span *ngIf="currentRoot && currentRoot._id === selectedDataset._id">{{ selectedDataset.name | truncate:40 }}</span>
@@ -43,6 +43,9 @@
 
           <!-- If no dataset is selected, browse datasets -->
           <tbody *ngIf="!selectedDataset">
+            <tr>
+                <td class="ui sub header collapsing noselect" colspan="2">DATA CATALOG</td>
+            </tr>
             <tr  *ngFor="let dataset of (datasets | async); index as i; trackBy:trackById"
                 [ngClass]="{ 'clickable': dataset._modelType === 'folder', 'active': isSelected(dataset, datasetsToAdd) }" (click)="toggledCheckbox($event, dataset, datasetsToAdd)" (dblclick)="navigateIntoDataset(dataset)">
               <td><i class="fas fa-fw" [ngClass]="{ 'fa-folder': dataset._modelType === 'folder', 'fa-file': dataset._modelType === 'item' }"></i></td>
@@ -58,10 +61,13 @@
       <div class="six wide column" style="padding: 20px 20px 40px 0;">
 
         <button class="ui basic primary right floated small button" (click)="removeSelectedDatasets()"><i class="fas fa-chevron-left fa-fw"></i> Remove Selected</button>
-        <table class="ui compact striped table" style="max-height: 55vh;">
+        <table class="ui compact striped table">
 
           <!-- If no dataset is selected, browse datasets -->
           <tbody>
+            <tr>
+                <td class="ui sub header collapsing noselect" colspan="2">SELECTED DATA</td>
+            </tr>
             <tr *ngFor="let dataset of (addedDatasets | async); index as i; trackBy:trackById"
                 [ngClass]="{ 'clickable': dataset._modelType === 'folder', 'active': isSelected(dataset, datasetsToRemove) }" (click)="toggledCheckbox($event, dataset, datasetsToRemove)">
               <td><i class="fas fa-fw" [ngClass]="{ 'fa-folder': dataset._modelType === 'folder', 'fa-file': dataset._modelType === 'item'}"></i></td>
