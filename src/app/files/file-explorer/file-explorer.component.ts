@@ -76,6 +76,7 @@ export class FileExplorerComponent implements OnInit {
 
   @Input() preventNavigation = false;
   @Input() readOnly = false;
+  @Input() readOnlyDropdown = false;
   @Input() allowRoot = false;
   @Input() showButtons = true;
   @Input() showContextMenu = true;

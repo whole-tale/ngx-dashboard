@@ -21,6 +21,7 @@
         [placeholderMessage]="placeholderMessage"
         [preventNavigation]="isNavActive('external_data')"
         [readOnly]="tale._accessLevel < 1"
+        [readOnlyDropdown]="tale._accessLevel < 1 || isNavActive('external_data')"
         (openSelectDataModal)="openSelectDataModal($event)"
         (openTaleWorkspacesModal)="openTaleWorkspacesModal($event)"
         (openRegisterDataModal)="openRegisterDataModal($event)"

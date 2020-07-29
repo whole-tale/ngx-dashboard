@@ -62,11 +62,11 @@
             <!--<div class="text">More</div>-->
             <i class="dropdown icon"></i>
             <div class="left menu" [ngStyle]="{ 'display': !showMore[ele._id] ? 'none' : 'block' }">
-              <div *ngIf="!readOnly" class="item" (click)="renameElement(ele)"><i class="fas fa-edit"></i> Rename</div>
-              <div *ngIf="!readOnly" class="item" (click)="removeElement(ele)"><i class="fas fa-trash"></i> Remove</div>
+              <div *ngIf="!readOnlyDropdown" class="item" (click)="renameElement(ele)"><i class="fas fa-edit"></i> Rename</div>
+              <div *ngIf="!readOnlyDropdown" class="item" (click)="removeElement(ele)"><i class="fas fa-trash"></i> Remove</div>
               <div class="item" (click)="downloadElement(ele)"><i class="fas fa-download"></i> Download</div>
-              <div *ngIf="!readOnly" class="item" (click)="moveElement(ele)"><i class="fas fa-exchange-alt"></i> Move To...</div>
-              <div *ngIf="!readOnly" class="item" (click)="copyElement(ele)"><i class="fas fa-clone"></i> Copy To...</div>
+              <div *ngIf="!readOnlyDropdown" class="item" (click)="moveElement(ele)"><i class="fas fa-exchange-alt"></i> Move To...</div>
+              <div *ngIf="!readOnlyDropdown" class="item" (click)="copyElement(ele)"><i class="fas fa-clone"></i> Copy To...</div>
             </div>
           </div>
         </td>
