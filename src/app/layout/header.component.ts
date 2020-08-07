@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { NotificationStreamService } from '@api/notification-stream.service';
 import { UserService } from '@api/services/user.service';
 import { TokenService } from '@api/token.service';
 import { BaseComponent } from '@framework/core';
@@ -11,6 +10,8 @@ import { ConfigService } from '@ngx-config/core';
 import { CookieService } from 'ngx-cookie-service';
 import { Observable } from 'rxjs';
 import { Language, LanguageSelectors, State } from '~/app/store';
+
+import { NotificationStreamService } from './notification-stream/notification-stream.service';
 
 // import * as $ from 'jquery';
 declare var $: any;

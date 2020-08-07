@@ -1,8 +1,8 @@
 /* tslint:disable */
 import { Injectable, OnDestroy } from '@angular/core';
-import { ApiConfiguration } from './api-configuration';
+import { ApiConfiguration } from '@api/api-configuration';
 
-import { TokenService } from './token.service';
+import { TokenService } from '@api/token.service';
 import { EventSourcePolyfill as EventSource } from 'ng-event-source';
 import { bypassSanitizationTrustResourceUrl } from '@angular/core/src/sanitization/bypass';
 
