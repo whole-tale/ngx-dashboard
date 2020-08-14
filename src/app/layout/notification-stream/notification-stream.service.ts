@@ -23,9 +23,20 @@ class NotificationStreamService implements OnDestroy {
   showNotificationStream = false;
 
   ackAll() {
-    this.setSince(new Date().getTime() / 1000);
-    this.reconnect(true);
+    const newSince = new Date().getTime() / 1000;
+    this.setSince(newSince);
+    //this.reconnect(true);
+    //this.connect();
     this.openNotificationStream(false);
+    this.events = [];
+  }
+
+  ackOne(evt: Event) {
+    // TODO: How to prevent event from redispaying on page load?
+
+    // Remove event from the list to hide it temporarily
+    const index = this.events.indexOf(evt);
+    this.events.splice(index, 1);
   }
 
   openNotificationStream(open: boolean = true) {
@@ -68,13 +79,19 @@ class NotificationStreamService implements OnDestroy {
 
   ngOnDestroy() {
     clearInterval(this.interval);
+    this.disconnect();
   }
 
   disconnect() {
-    this.source.close();
+    if (this.source) {
+      this.source.close();
+    }
   }
 
   connect() {
+    // Disconnect, if necessary
+    this.disconnect();
+
     // Connect to SSE using the given parameters
     this.source = new EventSource(this.url, { headers: { 'Girder-Token': this.token } });
 
