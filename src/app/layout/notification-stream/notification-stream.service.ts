@@ -1,6 +1,7 @@
 /* tslint:disable */
 import { Injectable, OnDestroy } from '@angular/core';
 import { ApiConfiguration } from '@api/api-configuration';
+import { LogService } from '@framework/core/log.service';
 
 import { TokenService } from '@api/token.service';
 import { EventSourcePolyfill as EventSource } from 'ng-event-source';
@@ -11,7 +12,7 @@ import { bypassSanitizationTrustResourceUrl } from '@angular/core/src/sanitizati
 })
 class NotificationStreamService implements OnDestroy {
   static readonly Path = '/notification/stream';
-  static readonly TimeoutMs = 360000;
+  static readonly TimeoutMs = 30;
   static readonly IntervalDelayMs = 30000;
 
   interval: any;
@@ -61,7 +62,7 @@ class NotificationStreamService implements OnDestroy {
     return url;
   }
 
-  constructor(private config: ApiConfiguration, private tokenService: TokenService) {
+  constructor(private config: ApiConfiguration, private tokenService: TokenService, private logger: LogService) {
     this.connect();
   }
 
@@ -81,19 +82,27 @@ class NotificationStreamService implements OnDestroy {
     this.source.onopen = this.onOpen.bind(this);
   }
 
-  reconnect(silent: boolean = false) {
-    silent || console.log('Reconnecting now...');
+  reconnect(silent: boolean = true) {
+    silent || this.logger.debug('Reconnecting now...');
     this.disconnect();
     this.connect();
-    silent || console.log('Reconnected.');
+    silent || this.logger.debug('Reconnected.');
   }
 
   onError(err: any) {
-    console.error('Error received from EventSource:', err);
+    if (!err || err.errorMessage === '') {
+      return;
+    }
+
+    if (err.errorMessage || err.message) {
+      this.logger.warn('Error received from EventSource:', err.errorMessage || err.message);
+    } else {
+      this.logger.error('Unknown error received from EventSource:', err);
+    }
   }
 
   onOpen(ack: any) {
-    console.log('Connection established:', ack);
+    this.logger.debug('Connection established:', ack);
 
     // Reconnect every ~30s to keep the connection open
     // XXX: This may be due to Girder not sending keep-alive bytes
