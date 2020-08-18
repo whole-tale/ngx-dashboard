@@ -1,15 +1,15 @@
-<div id="notificationStream" [hidden]="!notificationStream.showNotificationStream">
+<div id="notificationStream" [hidden]="!showNotificationStream">
   <h3 id="event-stream-header" class="ui header">Current Tasks</h3>
 
   <!-- Placeholder message -->
-  <div id="event-notification-placeholder" *ngIf="!notificationStream.events && !notificationStream.events.length" class="placeholder message">
+  <div id="event-notification-placeholder" *ngIf="!eventCount" class="placeholder message">
     <i class="huge check circle icon"></i>
     <p>No new events</p>
   </div>
 
   <table class="ui small striped compact single line table nomargin">
     <tr ngClass="{ 'active': event.data.state === 'active') }" title="Last update: {{ event.updated }}"
-        *ngFor="let event of notificationStream.events; index as i; trackBy: trackById">
+        *ngFor="let event of events; index as i; trackBy: trackById">
       <td width="20%"><label class="ui label">{{ event.data.title || event.type }}</label></td>
 
       <!-- TODO: Truncate name -->
@@ -51,7 +51,7 @@
     </tr>
   </table>
 
-  <button class="ui button" (click)="notificationStream.ackAll()">Acknowledge all</button>
+  <button class="ui button" (click)="ackAll()">Acknowledge all</button>
 </div>
 
 
