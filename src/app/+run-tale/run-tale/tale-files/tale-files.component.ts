@@ -209,6 +209,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
           });*/
         });
       });
+
+      this.uploadQueue.delete(upload);
     });
   }
 
