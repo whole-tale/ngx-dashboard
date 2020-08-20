@@ -32,7 +32,7 @@
   </button>
 </mat-toolbar>
 
-<input #file multiple type="file" style="display: none" (change)="onUploadsAdded()" />
+<input #file multiple type="file" style="display: none" (change)="onUploadsAdded($event)" />
 
 <div class="container" fxFlex fxLayout="row" fxLayoutAlign="space-between stretch">
   <!-- Show placeholder if there are no fileElements to display -->
