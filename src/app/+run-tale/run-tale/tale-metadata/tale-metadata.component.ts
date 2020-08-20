@@ -60,7 +60,7 @@ export class TaleMetadataComponent implements OnInit {
       $('#environmentDropdown:parent').dropdown().css('width', '100%');
       $('#licenseDropdown:parent').dropdown().css('width', '100%');
       this.saveState();
-    }, 500);
+    }, 800);
   }
 
   canDeactivate(): boolean {
