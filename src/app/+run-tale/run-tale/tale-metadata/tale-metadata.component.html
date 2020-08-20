@@ -17,7 +17,7 @@
           <div class="thirteen wide column" style="padding-left:0;">
             <h4 style="text-align: center">Created by <span style="color:#67c096">{{creator.firstName}} {{creator.lastName}}</span></h4>
 
-            <form #taleAuthorsSubForm="ngForm" class="ui form" *ngIf="tale.authors.length">
+            <form id="taleAuthorsSubForm" #taleAuthorsSubForm="ngForm" class="ui form" *ngIf="tale.authors.length">
               <table class="ui table striped condensed">
                 <tr>
                   <th>First Name</th>
@@ -136,7 +136,7 @@
         <div class="inline fields ui grid">
           <label class="two wide column right aligned"></label>
           <div class="field two wide right aligned column">
-            <button class="ui blue submit button" [disabled]="!taleMetadataForm.valid" (click)="updateTale()">Save</button>
+            <button class="ui blue submit button" [disabled]="!taleMetadataForm.valid || validateAuthors().length > 0" (click)="updateTale()">Save</button>
           </div>
 
           <div class="field toggle ui checkbox four wide column">
