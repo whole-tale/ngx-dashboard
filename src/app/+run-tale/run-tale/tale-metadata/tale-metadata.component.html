@@ -1,8 +1,145 @@
 <div class="ui stretched stackable grid" id="tale-metadata-container">
   <div class="row">
-    <div class="ui" [ngClass]="{ 'sixteen wide column': editing, 'ten wide column': !editing }">
+    <div class="sixteen wide column">
 
-      <form class="ui form" *ngIf="editing">
+      <!-- Edit Mode (read/write) -->
+      <div id="taleMetadataForm" class="ui form" *ngIf="editing">
+
+              <div class="inline fields ui grid">
+                <label class="two wide column right aligned">Title</label>
+                <div class="field thirteen wide column">
+                  <input placeholder="Enter a title..." type="text" [(ngModel)]="tale.title">
+                </div>
+              </div>
+
+              <div class="inline fields ui grid">
+                <label class="two wide column right aligned">Authors</label>
+                <div class="thirteen wide column">
+                  <h4 style="text-align: center">Created by <span style="color:#67c096">{{creator.firstName}} {{creator.lastName}}</span></h4>
+
+                  <form class="ui form" *ngIf="tale.authors.length">
+                    <table class="ui table striped condensed">
+                      <tr>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>ORCID</th>
+                        <th></th>
+                      </tr>
+                      <tr *ngFor="let author of tale.authors">
+                        <td><input type="text" name="firstName" placeholder="Enter first name" [(ngModel)]="author.firstName" required></td>
+                        <td><input type="text" name="lastName" placeholder="Enter last name" [(ngModel)]="author.lastName" required></td>
+                        <td><input type="text" name="orcid" placeholder="Enter ORCID" [(ngModel)]="author.orcid" required></td>
+                        <td><button class="ui tiny negative button" (click)="removeAuthor(author)"><i class="fas fa-trash"></i></button></td>
+                      </tr>
+                    </table>
+                  </form>
+                  <a style="cursor:pointer;" (click)="addNewAuthor()"><i class="fas fa-plus add-author-icon"></i> Add an author</a>
+                </div>
+              </div>
+
+              <div class="inline fields ui grid">
+                <label class="two wide column right aligned">Category</label>
+                <div class="field thirteen wide column">
+                  <input placeholder="Choose a category..." type="text" [(ngModel)]="tale.category">
+                </div>
+              </div>
+
+              <div class="inline fields ui grid">
+                <label class="two wide column right aligned">Environment</label>
+                <div class="field thirteen wide column">
+                    <select id="environmentDropdown" class="ui labeled icon fluid dropdown" name="imageId" [(ngModel)]="tale.imageId" required>
+                        <option class="item" [ngValue]="env._id" *ngFor="let env of (environments | async); index as i; trackBy: trackById">
+                        <img class="ui avatar image" [src]="env.icon | safe:'url'" />
+                        {{ env.name }}
+                        </option>
+                    </select>
+                </div>
+              </div>
+
+              <div class="inline fields ui grid">
+                <label class="two wide column right aligned">Datasets used</label>
+                <span *ngIf="!tale.dataSetCitation">No citable data</span>
+                <ul *ngIf="tale.dataSetCitation" style="max-width:60vw">
+                    <li *ngFor="let citation of tale.dataSetCitation">
+                        <a routerLink="/run/{{ tale._id }}" [queryParams]="{ tab: 'files' }" routerLinkActive="active" queryParamsHandling="merge">
+                            {{ citation }}
+                        </a>
+                    </li>
+                </ul>
+              </div>
+
+              <div class="inline fields ui grid">
+                <label class="two wide column right aligned">License</label>
+                <div class="field thirteen wide column">
+                    <select id="licenseDropdown" class="ui labeled icon fluid dropdown" name="licenseSPDX" [(ngModel)]="tale.licenseSPDX" required>
+                        <option class="item" [ngValue]="license.spdx" *ngFor="let license of (licenses | async); index as i; trackBy: trackBySpdx">
+                        {{ license.name }}
+                        </option>
+                    </select>
+                </div>
+              </div>
+
+              <div class="inline fields ui grid">
+                <label class="two wide column right aligned">Date created</label>
+                <div class="field thirteen wide column">
+                  <span>{{ tale.created | date:'full' }}</span>
+                </div>
+              </div>
+
+              <div class="inline fields ui grid">
+                <label class="two wide column right aligned">Last updated</label>
+                <div class="field thirteen wide column">
+                  <span>{{ tale.updated | date:'full' }}</span>
+                </div>
+              </div>
+
+              <div class="inline fields ui grid">
+                <label class="two wide column right aligned">Description</label>
+                <div class="thirteen wide column">
+                  <div class="ui top attached tabular menu">
+                    <a class="item" [ngClass]="{ 'active': !previewMarkdown }" (click)="previewMarkdown=false">
+                      <i class="icon code"></i>
+                      Edit
+                    </a>
+                    <a class="item" [ngClass]="{ 'active': previewMarkdown }" (click)="previewMarkdown=true">
+                      <i class="icon unhide"></i>
+                      Preview
+                    </a>
+                  </div>
+                  <div class="ui bottom attached tab segment" [ngClass]="{ 'active': !previewMarkdown }">
+                    <textarea rows="5" type="text" name="description" placeholder="Description is required." [(ngModel)]="tale.description" required></textarea>
+                  </div>
+                  <div class="ui bottom attached tab segment" [ngClass]="{ 'active': previewMarkdown }">
+                    <markdown ngPreserveWhitespaces [data]="tale.description"></markdown>
+                  </div>
+                </div>
+              </div>
+              <div class="inline fields ui grid">
+                <label class="two wide column right aligned">Illustration</label>
+                <div class="ui action field thirteen wide column">
+                  <input placeholder="http://" type="text" [(ngModel)]="tale.illustration">
+                  <div class="or"></div>
+                  <button class="ui blue button" (click)="generateIcon()">Generate Illustration</button>
+                </div>
+              </div>
+              <div class="inline fields ui grid">
+                <label class="two wide column right aligned">Published location</label>
+                <div class="field thirteen wide column">
+                  <span *ngIf="!tale.publishInfo || !tale.publishInfo.length">This Tale has not been published</span>
+                  <span *ngIf="tale.publishInfo && tale.publishInfo.length">{{ tale.publishInfo[0].uri }}</span>
+                </div>
+              </div>
+
+              <div class="inline fields ui grid">
+                <label class="two wide column right aligned"></label>
+                <div class="field two wide right aligned column">
+                  <button class="ui blue submit button" (click)="updateTale()">Save</button>
+                </div>
+              </div>
+
+
+            </div>
+      <!-- <form class="ui form" *ngIf="editing">
         <div class="field">
           <label>Category</label>
           <input type="text" name="category" placeholder="Category is required." [(ngModel)]="tale.category" required>
@@ -10,6 +147,11 @@
         <div class="field">
           <label>Title</label>
           <input type="text" name="title" placeholder="Title is required." [(ngModel)]="tale.title" required>
+        </div>
+
+        <div class="item" *ngIf="creator" style="margin-bottom:7px;">
+          <b>Created By:</b>
+          {{ creator.firstName }} {{ creator.lastName }}
         </div>
 
         <div class="fields">
@@ -71,7 +213,7 @@
         </div>
         <div class="field">
           <label>Compute Environment</label>
-         <!-- <div class="ui floating labeled icon dropdown button">
+         <\!-- <div class="ui floating labeled icon dropdown button">
             <i class="add user icon"></i>
             <span class="text">Add User</span>
             <div class="menu">
@@ -83,7 +225,7 @@
                 {{ environment.name }}
               </div>
             </div>
-          </div> -->
+          </div> --\>
           <select class="ui floating labeled icon selection dropdown" name="imageId" [(ngModel)]="tale.imageId" required>
             <option class="item" [ngValue]="env._id" *ngFor="let env of (environments | async); index as i; trackBy: trackById">
               <img class="ui avatar image" [src]="env.icon | safe:'url'" />
@@ -91,8 +233,9 @@
             </option>
           </select>
         </div>
-      </form>
+      </form> -->
 
+      <!-- View Mode (read-only) -->
       <div class="ui list" *ngIf="!editing">
         <div class="item">
           <b>Category:</b>
@@ -101,6 +244,10 @@
         <div class="item">
           <b>Title:</b>
           {{ tale.title }}
+        </div>
+        <div class="item" *ngIf="creator">
+          <b>Created By:</b>
+          {{ creator.firstName }} {{ creator.lastName }}
         </div>
         <div class="item">
           <b>Authors:</b>
@@ -116,11 +263,12 @@
         </div>
         <div class="item">
           <b>License:</b>
-          {{ tale.licenseSPDY }}
+          {{ tale.licenseSPDX }}
         </div>
-        <div class="item" *ngIf="tale.publishInfo.length">
-          <b>Published location:</b>
-          {{ tale.publishInfo[0].uri }}
+        <div class="item">
+            <b>Published Location:</b>
+            <span *ngIf="tale.publishInfo && tale.publishInfo.length">{{ tale.publishInfo[0] }}</span>
+            <span *ngIf="!tale.publishInfo || !tale.publishInfo.length">This Tale has not been published</span>
         </div>
         <div class="item spaced">
           <b>Tale Specifics</b>
@@ -163,7 +311,7 @@
     </div>
   </div>
 
-  <div class="row" *ngIf="tale._accessLevel > 0">
+<!--div class="row" *ngIf="tale._accessLevel > 0">
     <div class="ten wide column">
       <button class="ui primary button" *ngIf="!editing" (click)="editTale()">
         Edit
@@ -175,5 +323,5 @@
         Save
       </button>
     </div>
-  </div>
+  </div-->
 </div>

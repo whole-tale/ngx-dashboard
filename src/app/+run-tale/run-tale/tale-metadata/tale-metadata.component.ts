@@ -10,11 +10,17 @@ import { TaleService } from '@api/services/tale.service';
 import { LogService } from '@framework/core/log.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { NotificationService } from '@shared/error-handler/services/notification.service';
+import { ErrorService } from '@shared/error-handler/services/error.service';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { Observable } from 'rxjs';
 
 // import * as $ from 'jquery';
 declare var $: any;
+
+interface TaleAuthorValidationError {
+  index: number;
+  message: string;
+}
 
 @Component({
   selector: 'app-tale-metadata',
@@ -44,6 +50,7 @@ export class TaleMetadataComponent implements OnInit {
               private taleService: TaleService,
               private licenseService: LicenseService,
               private notificationService: NotificationService,
+              private errorHandler: ErrorService,
               private imageService: ImageService) {
     this.apiRoot = this.config.rootUrl;
     this.resetNewAuthor();
@@ -53,6 +60,17 @@ export class TaleMetadataComponent implements OnInit {
     const params = {};
     this.environments = this.imageService.imageListImages(params);
     this.licenses = this.licenseService.licenseGetLicenses();
+  }
+
+  ngOnChanges(): void {
+    this.editing = this.tale._accessLevel > 1;
+    this.ref.detectChanges();
+    if (this.editing) {
+      setTimeout(() => {
+        $('#environmentDropdown:parent').dropdown().css('width', '100%');
+        $('#licenseDropdown:parent').dropdown().css('width', '100%');
+      }, 500);
+    }
   }
 
   trackById(index: number, model: any): string {
@@ -67,19 +85,54 @@ export class TaleMetadataComponent implements OnInit {
   editTale(): void {
     this._previousState = this.copy(this.tale);
     this.editing = true;
-    setTimeout(() => $('.ui.dropdown').dropdown(), 500);
+    setTimeout(() => {
+      $('#environmentDropdown:parent').dropdown().css('width', '100%');
+      $('#licenseDropdown:parent').dropdown().css('width', '100%');
+    }, 500);
   }
 
-  saveTaleEdit(): void {
+  updateTale(): Promise<any> {
+    const errors = this.validateAuthors();
+    if (errors && errors.length > 0) {
+      this.notificationService.showError('Failed to save: ' + errors[0].message);
+      return new Promise(() => {});
+    }
+
     const params = { id: this.tale._id , tale: this.tale };
-    this.taleService.taleUpdateTale(params).subscribe(res => {
+    const promise = this.taleService.taleUpdateTale(params).toPromise()
+    promise.then(res => {
       this.logger.debug("Successfully saved tale state:", this.tale);
       this.zone.run(() => {
-        this.editing = false;
         this.notificationService.showSuccess("Tale saved successfully");
       });
     }, err => {
       this.logger.error("Failed updating tale:", err);
+    });
+    return promise;
+  }
+
+  validateAuthors(): Array<TaleAuthorValidationError> {
+    if (!this.tale.authors || !this.tale.authors.length) {
+      return [];
+    }
+
+    const errors: Array<TaleAuthorValidationError> = [];
+    this.tale.authors.forEach((author: TaleAuthor, index: number) => {
+      if (!author.firstName) { errors.push({ index, message: 'Author\'s first name cannot be left blank.' }); }
+      if (!author.lastName) { errors.push({ index, message: 'Author\'s last name cannot be left blank.' }); }
+      if (!author.orcid) { errors.push({ index, message: 'Author\'s ORCID cannot be left blank.' }); }
+
+      // TODO: Validate ORCID value (URL prefix, regex, etc)
+      // NOTE: This only really matters during publishing
+    });
+
+    return errors;
+  }
+
+  saveTaleEdit(): void {
+    const params = { id: this.tale._id , tale: this.tale };
+    this.updateTale().then(res => {
+      this.editing = false;
     });
   }
 
@@ -90,6 +143,11 @@ export class TaleMetadataComponent implements OnInit {
 
   addAuthor(author: TaleAuthor): void {
     this.tale.authors.push(author);
+    this.resetNewAuthor();
+  }
+
+  addNewAuthor(): void {
+    this.tale.authors.push({ firstName: '', lastName: '', orcid: '' });
     this.resetNewAuthor();
   }
 
