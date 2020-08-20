@@ -3,7 +3,7 @@
     <div class="sixteen wide column">
 
       <!-- Edit Mode (read/write for) -->
-      <div id="taleMetadataForm" class="ui form" *ngIf="editing">
+      <div id="taleMetadataForm" class="ui form" *ngIf="tale._accessLevel > 1">
 
         <div class="inline fields ui grid">
           <label class="two wide column right aligned">Title</label>
@@ -25,10 +25,10 @@
                   <th>ORCID</th>
                   <th></th>
                 </tr>
-                <tr *ngFor="let author of tale.authors">
-                  <td><input type="text" name="firstName" placeholder="Enter first name" [(ngModel)]="author.firstName" required></td>
-                  <td><input type="text" name="lastName" placeholder="Enter last name" [(ngModel)]="author.lastName" required></td>
-                  <td><input type="text" name="orcid" placeholder="Enter ORCID" [(ngModel)]="author.orcid" required></td>
+                <tr *ngFor="let author of tale.authors; index as i; trackBy: trackByAuthorHash">
+                  <td><input type="text" name="firstName_{{i}}" placeholder="Enter first name" [(ngModel)]="author.firstName" required></td>
+                  <td><input type="text" name="lastName_{{i}}" placeholder="Enter last name" [(ngModel)]="author.lastName" required></td>
+                  <td><input type="text" name="orcid_{{i}}" placeholder="Enter ORCID" [(ngModel)]="author.orcid" required></td>
                   <td><button class="ui tiny negative button" (click)="removeAuthor(author)"><i class="fas fa-trash"></i></button></td>
                 </tr>
               </table>
@@ -138,11 +138,18 @@
           <div class="field two wide right aligned column">
             <button class="ui blue submit button" (click)="updateTale()">Save</button>
           </div>
+
+          <div class="field toggle ui checkbox four wide column">
+            <input type="checkbox" name="public"
+                [checked]="tale.public"
+                (change)="tale.public=!tale.public">
+            <label>Public?</label>
+          </div>
         </div>
       </div>
 
       <!-- View Mode (read-only) -->
-      <div class="ui grid" *ngIf="!editing">
+      <div class="ui grid" *ngIf="tale._accessLevel <= 1">
         <div class="ten wide column">
           <div class="ui list">
             <div class="item">
