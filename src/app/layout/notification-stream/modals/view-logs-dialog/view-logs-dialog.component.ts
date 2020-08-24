@@ -29,21 +29,37 @@ export class ViewLogsDialogComponent implements OnInit, OnDestroy {
       this.jobService.jobGetJob(jobId).subscribe((job: Job) => {
         // Save this job and resort by created timestamp
         this.jobs.push(job);
-        this.jobs.sort((a: Job, b: Job) => {
-          if (a.created > b.created) { return 1; }
-          if (a.created < b.created) { return -1; }
-          return 0;
-        });
 
         // Concatenate all logs together for display
-        let logs = '';
-        this.jobs.forEach((job: Job) => {
-          logs += job.log.join('') + '\n\n\n\n\n';
-        });
-        this.logs.next(logs);
-        this.ref.detectChanges();
+        this.mergeLogs();
       });
     });
+    const count = this.data.jobIds.length;
+    const latestJob = this.data.jobIds[count - 1];
+    this.autoFetch(latestJob);
+  }
+
+  mergeLogs() {
+    let logs = '';
+
+    // Sort jobs by date/time
+    this.jobs.sort((a: Job, b: Job) => {
+      if (a.created > b.created) {
+        return 1;
+      }
+      if (a.created < b.created) {
+        return -1;
+      }
+      return 0;
+    });
+
+    // Concatenate all logs together for display
+    this.jobs.forEach((job: Job) => {
+      logs += job.log.join('') + '\n\n\n\n\n';
+    });
+
+    this.logs.next(logs);
+    this.ref.detectChanges();
   }
 
   stopPolling(interval: any) {
@@ -57,9 +73,18 @@ export class ViewLogsDialogComponent implements OnInit, OnDestroy {
   autoFetch(jobId: string, intervalMs: number = this.refreshInterval): void {
     const interval: any = setInterval(() => {
       this.jobService.jobGetJob(jobId).subscribe((job: Job) => {
+        // If job is done, stop polling
         if (job.status === 3) {
           this.stopPolling(interval);
         }
+
+        // Overwrite existing log data for this job
+        const existing = this.jobs.find(j => jobId === j._id);
+        const index = this.jobs.indexOf(existing);
+        this.jobs[index] = job;
+
+        // Concatenate all logs together for display
+        this.mergeLogs();
       });
     }, intervalMs);
 
