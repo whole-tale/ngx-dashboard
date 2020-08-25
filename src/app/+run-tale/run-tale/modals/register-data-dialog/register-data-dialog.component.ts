@@ -26,15 +26,20 @@ export class RegisterDataDialogComponent {
 
   searchDatasetUrl(): void {
     if (!this.registrationUrl) { return; }
-    
+
     this.searchResults = [];
     this.showSearchResults = true;
     this.searchResultsLoading = true;
 
     const dataId = [this.registrationUrl];
     const params = { dataId: JSON.stringify(dataId), baseUrl: this.repositoryBaseUrl }
-    this.repositoryService.repositoryLookupData(params).subscribe(data => {
-      this.searchResults = data;
+    this.repositoryService.repositoryLookupData(params).subscribe((values: Array<any>) => {
+      this.searchResults = values;
+      if (values.length > 0) {
+        setTimeout(() => {
+          this.selectedResult = values[0];
+        }, 300);
+      }
       this.searchResultsLoading = false;
     }, err => {
       this.logger.error(`Failed to search for dataId=${this.registrationUrl}:`, err);

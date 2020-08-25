@@ -76,6 +76,7 @@ export class FileExplorerComponent implements OnInit {
 
   @Input() preventNavigation = false;
   @Input() readOnly = false;
+  @Input() readOnlyDropdown = false;
   @Input() allowRoot = false;
   @Input() showButtons = true;
   @Input() showContextMenu = true;
@@ -141,8 +142,10 @@ export class FileExplorerComponent implements OnInit {
     this.file.nativeElement.click();
   }
 
-  onUploadsAdded(): void {
+  onUploadsAdded($event: any): void {
+    const target = $event.target || $event.srcElement;
     this.fileUploadsAdded.emit(this.file.nativeElement.files);
+    target.value = '';
   }
 
   removeElement(element: FileElement): void {

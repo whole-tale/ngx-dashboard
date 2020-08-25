@@ -51,6 +51,7 @@ enum ContentDisposition {
 interface Selectable {
   _modelType: string;
   _id: string;
+  name: string;
 }
 
 @Component({
@@ -69,7 +70,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   homeRoot: FileElement;
   dataRoot: FileElement;
   wsRoot: FileElement;
-  
+
   folders: BehaviorSubject<Array<FileElement>> = new BehaviorSubject<Array<FileElement>>([]);
   files: BehaviorSubject<Array<FileElement>> = new BehaviorSubject<Array<FileElement>>([]);
   currentFolderId: string;
@@ -112,7 +113,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       const homeFind = this.folderService.folderFind(homeRootParams);
       const dataFind = this.resourceService.resourceLookup(dataRootParams);
       const wsFind = this.resourceService.resourceLookup(wsRootParams);
-      
+
       // Fetch all root folders before loading
       forkJoin(homeFind, dataFind, wsFind).pipe(enterZone(this.zone)).subscribe((value: Array<any>) => {
         if (value.length < 2) {
@@ -167,11 +168,11 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       const url = URL.createObjectURL(upload);
 
       // Upload to the current folder, if possible
-      const parentId = this.currentFolderId ? this.currentFolderId : 
-        // Otherwise upload to "workspace" if we're on the Workspaces nav and have no currentFolderId, else upload to "Home" folder
-        this.currentNav === 'tale_workspaces' ? this.tale.workspaceId : this.homeRoot._id; 
+      const parentId = this.getParentId();
+
+      // FIXME: This may cause a crash with extremely large files
       fetch(url).then(resp => resp.arrayBuffer()).then(contents => {
-        const params = { 
+        const params = {
           parentId,
           parentType: UploadType.Folder,
           name: upload.name,
@@ -179,16 +180,22 @@ export class TaleFilesComponent implements OnInit, OnChanges {
           chunk: contents
         };
 
-        this.logger.debug(`Starting upload for ${params.name}...`);
+        this.logger.info(`Starting upload for ${params.name}...`);
         this.fileService.fileInitUpload(params).subscribe((initResp: any) => {
-          this.logger.debug(`Uploading chunks for ${params.name}:`, initResp);
+          this.logger.info(`Uploading chunks for ${params.name}:`, initResp);
           const offset = 0;
-          const currentUploads = this.files.value;
-          currentUploads.push(initResp);
-          this.files.next(currentUploads);
+
+          // TODO: Check file size and upload additional chunks?
+
+          const itemId = initResp.itemId;
+          this.itemService.itemGetItem(itemId).subscribe(item => {
+            const currentItems = this.files.value;
+            currentItems.push(item);
+            this.files.next(currentItems);
+          });
 
           // Create a URL to the file blob and start the upload
-          const chunkParams = { uploadId: initResp._id, offset, chunk: contents };
+          /*const chunkParams = { uploadId: initResp._id, offset, chunk: contents };
           this.fileService.fileReadChunk(chunkParams).subscribe((chunkResp: any) => {
             this.logger.debug(`Uploading chunk ${offset} of ${params.name}:`, chunkResp);
             if (chunkResp.size === upload.size) {
@@ -199,9 +206,11 @@ export class TaleFilesComponent implements OnInit, OnChanges {
             const index = files.indexOf(existing);
             files[index] = chunkResp;
             this.files.next(files);
-          });
+          });*/
         });
       });
+
+      this.uploadQueue.delete(upload);
     });
   }
 
@@ -224,7 +233,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     }
     switch (this.currentNav) {
       case 'home':
-        if (!this.homeRoot) { 
+        if (!this.homeRoot) {
           this.logger.warn("Warning: Home root not detected. Delaying loading until it has been found:", this.homeRoot);
 
           return;
@@ -245,37 +254,50 @@ export class TaleFilesComponent implements OnInit, OnChanges {
                         });
         break;
       case 'external_data':
-        if (!this.dataRoot) { 
+        if (!this.dataRoot) {
           this.logger.warn("Warning: Data root not detected. Delaying loading until it has been found:", this.dataRoot);
 
           return;
         }
+
         // Fetch registered datasets
-        const params = { myData: false };
-        this.datasetService.datasetListDatasets(params)
-                           .pipe(enterZone(this.zone))
-                           .subscribe((value: Array<FileElement>) => {
-          const matches: Array<FileElement> = [];
-          // Map registered Datasets to the dataSet mounts on this Tale
-          this.tale.dataSet.forEach(mount => {
-            const match = value.find(ds => mount.itemId === ds._id);
-            if (match) {
-              matches.push(match);
-            }
-          });
+        const promises: Array<Promise<any>> = [];
+
+        const folderMatches: Array<FileElement> = [];
+        const itemMatches: Array<FileElement> = [];
+
+        // Map registered Datasets to the dataSet mounts on this Tale
+        this.tale.dataSet.forEach(mount => {
+          let promise;
+          if (mount._modelType === 'folder') {
+            promise = this.folderService.folderGetFolder(mount.itemId).toPromise().then((folder) => {
+              folderMatches.push(folder);
+            });
+            promises.push(promise);
+          } else if (mount._modelType === 'item') {
+            promise = this.itemService.itemGetItem(mount.itemId).toPromise().then((item) => {
+              itemMatches.push(item);
+            });
+            promises.push(promise);
+          } else {
+            console.log('Unrecognized modelType: ' + mount._modelType);
+          }
+        });
+
+        Promise.all(promises).then(() => {
           this.zone.run(() => {
-            this.folders.next(matches);
-            this.files.next([]);
+            this.folders.next(folderMatches);
+            this.files.next(itemMatches);
           });
         });
-        
+
         this.currentRoot = undefined;
         this.currentFolderId = undefined;
         this.canNavigateUp = false;
         this.currentPath = '';
         break;
       case 'tale_workspace':
-        if (!this.tale || !this.tale.workspaceId) { 
+        if (!this.tale || !this.tale.workspaceId) {
           this.logger.warn("Warning: Tale or Tale workspace root not detected. Delaying loading until it has been found:", this.tale);
 
           return;
@@ -338,7 +360,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     this.resourceService.resourcePath(params)
                         .pipe(enterZone(this.zone))
                         .subscribe((resp: string) => {
-      let pathSuffix: string;                    
+      let pathSuffix: string;
       switch (this.currentNav) {
         case 'external_data':
           if (resp.indexOf(DATA_ROOT_PATH) !== -1) {
@@ -435,15 +457,25 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     return folder.name;
   }
 
-  addFolder(folder: { name: string }): void {
-    const now = new Date();
-    let parentId;
+  getParentId(): string {
 
+    // Upload to the current folder, if possible
+    const parentId = this.currentFolderId ? this.currentFolderId :
+      // Otherwise upload to "workspace" if we're on the Workspaces nav and have no currentFolderId, else upload to "Home" folder
+      this.currentNav === 'tale_workspace' ? this.tale.workspaceId : this.homeRoot._id;
+      return parentId;
+  }
+
+  addFolder(folder: { name: string }): void {
     // Datasets are immutable - prevent modifying them directly
-    if (this.currentNav !== 'external_data') {
-      // If we have a folderId, use that.. otherwise we can assume the root based on currentNav
-      parentId = this.currentRoot ? this.currentFolderId : this.tale.workspaceId;
+    if (this.currentNav === 'external_data') {
+      return;
     }
+
+    const now = new Date();
+
+    // Upload to the current folder, if possible
+    const parentId = this.getParentId();
 
     const params = {
       parentType: ParentType.Folder,
@@ -463,7 +495,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
   removeElement(element: FileElement): void {
     if (element._modelType === 'folder') {
-      // Element is a folder, delete it 
+      // Element is a folder, delete it
       this.folderService.folderDeleteFolder({ id: element._id })
                         .pipe(enterZone(this.zone))
                         .subscribe(resp => {
@@ -492,7 +524,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     const dest = event.moveTo;
     const params = { id: src._id, parentId: dest._id };
     if (src._modelType === 'folder') {
-      // Element is a folder, move it 
+      // Element is a folder, move it
       this.folderService.folderUpdateFolder(params)
                         .pipe(enterZone(this.zone))
                         .subscribe(resp => {
@@ -511,7 +543,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   renameElement(element: FileElement): void {
     const params = { id: element._id, name: element.name };
     if (element._modelType === 'folder') {
-      // Element is a folder, move it 
+      // Element is a folder, move it
       this.folderService.folderUpdateFolder(params)
                         .pipe(enterZone(this.zone))
                         .subscribe(resp => {
@@ -571,8 +603,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       window.open(url, "_blank");
     }
   }
-  
-  
+
+
   // Expected parameter format:
   //    dataMap: [{"name":"Elevation per SASAP region and Hydrolic Unit (HUC8) boundary for Alaskan watersheds","dataId":"resource_map_doi:10.5063/F1Z60M87","repository":"DataONE","doi":"10.5063/F1Z60M87","size":10293583}]
   openRegisterDataModal(event: Event): void {
@@ -586,22 +618,22 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       });
     });
   }
-  
+
   openSelectDataModal(event: Event): void {
     const config: MatDialogConfig = {
       data: { tale: this.tale }
     };
     const dialogRef = this.dialog.open(SelectDataDialogComponent, config);
-    dialogRef.afterClosed().subscribe((datasets: Array<Dataset>) => {
+    dialogRef.afterClosed().subscribe((datasets: Array<Selectable>) => {
       if (!datasets) { return; }
 
-      const tale = this.tale;
-      tale.dataSet = [];
-      datasets.forEach(ds => {
-        tale.dataSet.push({ itemId: ds._id, mountPath: ds.name, _modelType: ds._modelType })
+      const tale = this.tale
+      const id = tale._id;
+      tale.dataSet = datasets.map(ds => {
+        return { itemId: ds._id, mountPath: ds.name, _modelType: ds._modelType };
       });
 
-      this.taleService.taleUpdateTale({ id: tale._id, tale }).subscribe(response => {
+      this.taleService.taleUpdateTale({ id, tale }).subscribe(response => {
         this.logger.debug("Successfully updated Tale datasets:", response);
         this.load();
       }, err => {
@@ -609,7 +641,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       });
     });
   }
-  
+
   openTaleWorkspacesModal(event: Event): void {
     const config: MatDialogConfig = {
       data: { tale: this.tale }
@@ -629,7 +661,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       });
 
       // Build up request parameters
-      const params = { 
+      const params = {
         resources: JSON.stringify(resources),
         parentType: ParentType.Folder,
         parentId: this.tale.workspaceId
@@ -659,11 +691,11 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   }
 
   navigate(): void {
-    this.router.navigate(['run', this.taleId ], { 
-      queryParamsHandling: "merge", 
-      queryParams: { 
+    this.router.navigate(['run', this.taleId ], {
+      queryParamsHandling: "merge",
+      queryParams: {
         tab: 'files',
-        nav: this.currentNav, 
+        nav: this.currentNav,
         parentid: this.currentFolderId ? this.currentFolderId : undefined,
       }
     });
