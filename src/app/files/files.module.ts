@@ -11,15 +11,17 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { SharedModule } from '@framework/core';
 import { MaterialModule } from '@framework/material';
+import { TalesModule } from '@tales/tales.module';
 
 import { FileExplorerComponent } from './file-explorer/file-explorer.component';
+import { MoveToDialogComponent } from './file-explorer/modals/move-to-dialog/move-to-dialog.component';
 import { NewFolderDialogComponent } from './file-explorer/modals/new-folder-dialog/new-folder-dialog.component';
 import { RenameDialogComponent } from './file-explorer/modals/rename-dialog/rename-dialog.component';
 import { FilesService } from './files.service';
 import { FileSizePipe } from './filesize.pipe';
 
 @NgModule({
-  declarations: [FileExplorerComponent, NewFolderDialogComponent, RenameDialogComponent, FileSizePipe],
+  declarations: [FileExplorerComponent, NewFolderDialogComponent, RenameDialogComponent, FileSizePipe, MoveToDialogComponent],
   exports: [FileExplorerComponent, FileSizePipe],
   providers: [FilesService, DecimalPipe],
   imports: [
@@ -34,8 +36,9 @@ import { FileSizePipe } from './filesize.pipe';
     MatMenuModule,
     MatInputModule,
     MatButtonModule,
-    FormsModule
+    FormsModule,
+    TalesModule
   ],
-  entryComponents: [NewFolderDialogComponent, RenameDialogComponent]
+  entryComponents: [NewFolderDialogComponent, RenameDialogComponent, MoveToDialogComponent]
 })
 export class FilesModule {}

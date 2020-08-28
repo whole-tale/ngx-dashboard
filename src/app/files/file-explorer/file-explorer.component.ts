@@ -4,6 +4,7 @@ import { Tale } from '@api/models/tale';
 import { FileElement } from '@files/models/file-element';
 import { LogService } from '@framework/core/log.service';
 
+import { MoveToDialogComponent } from './modals/move-to-dialog/move-to-dialog.component';
 import { NewFolderDialogComponent } from './modals/new-folder-dialog/new-folder-dialog.component';
 import { RenameDialogComponent } from './modals/rename-dialog/rename-dialog.component';
 
@@ -106,7 +107,7 @@ export class FileExplorerComponent implements OnInit {
   @Output() readonly elementRenamed = new EventEmitter<FileElement>();
   @Output() readonly elementCopied = new EventEmitter<FileElement>();
   @Output() readonly elementDownloaded = new EventEmitter<FileElement>();
-  @Output() readonly elementMoved = new EventEmitter<{ element: FileElement; moveTo: FileElement }>();
+  @Output() readonly elementMoved = new EventEmitter<{ element: FileElement; moveTo?: FileElement }>();
   @Output() readonly navigatedDown = new EventEmitter<FileElement>();
   @Output() readonly navigatedUp = new EventEmitter();
 
@@ -183,12 +184,21 @@ export class FileExplorerComponent implements OnInit {
     this.navigatedUp.emit();
   }
 
-  moveElement(element: FileElement, moveTo: FileElement): void {
+  moveElement(element: FileElement): void {
     // Don't navigate if selecting a dropdown option
     event.stopPropagation();
 
-    // TODO: Prompt user to select target folder?
-    this.elementMoved.emit({ element, moveTo });
+    this.elementMoved.emit({ element });
+  }
+
+  openMoveToDialog(element: FileElement): void {
+    const dialogRef = this.dialog.open(MoveToDialogComponent, { data: { elementToMove: element } });
+    dialogRef.afterClosed().subscribe((moveTo: FileElement) => {
+      if (moveTo) {
+        this.logger.info(`Moving ${element._modelType}Id=${element._id} to new parent:`, moveTo);
+        this.elementMoved.emit({ element, moveTo });
+      }
+    });
   }
 
   openNewFolderDialog(): void {
