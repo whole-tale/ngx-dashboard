@@ -12,7 +12,6 @@ export class RegisterDataDialogComponent {
 
   registrationError = '';
   registrationUrl = '';
-  registrationFolderName = '';
 
   showSearchResults = false;
   searchResultsLoading = false;
@@ -45,12 +44,6 @@ export class RegisterDataDialogComponent {
       this.logger.error(`Failed to search for dataId=${this.registrationUrl}:`, err);
       this.searchResultsLoading = false;
     });
-  }
-
-  onSelectedResultChanged(result: any): void {
-    if (event) {
-      this.registrationFolderName = result.name;
-    }
   }
 
   trackByDataId(index: number, dataset: any): string {
