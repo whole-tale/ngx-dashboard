@@ -122,9 +122,17 @@ export class TaleMetadataComponent implements OnInit {
   }
 
   revertState(): void {
-    this.zone.run(() => {
-      this.tale = this.copy(this._previousState);
-    });
+    const prev = this.copy(this._previousState);
+
+    // Restore editable fields from previous state
+    this.tale.title = prev.title;
+    this.tale.authors = prev.authors;
+    this.tale.category = prev.category;
+    this.tale.imageId = prev.imageId;
+    this.tale.description = prev.description;
+    this.tale.license = prev.license;
+    this.tale.illustration = prev.illustration;
+    this.tale.public = prev.public;
   }
 
   copy(obj: any): Tale {
