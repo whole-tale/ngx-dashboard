@@ -20,3 +20,16 @@
   -webkit-border-radius: 0;
   border-radius: 0;
 }
+
+.circle.gravatar {
+  border-radius: 100px;
+  height: 42px;
+}
+
+.nomargin {
+  margin: 0 !important;
+}
+
+#avatar-item {
+  opacity: 1;
+}
