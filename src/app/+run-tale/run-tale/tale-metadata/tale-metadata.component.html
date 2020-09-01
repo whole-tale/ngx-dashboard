@@ -3,7 +3,7 @@
     <div class="sixteen wide column">
 
       <!-- Edit Mode (read/write for) -->
-      <form id="taleMetadataForm" #taleMetadataForm="ngForm" class="ui form" *ngIf="tale._accessLevel > 1">
+      <form id="taleMetadataForm" #taleMetadataForm="ngForm" class="ui form" *ngIf="editing">
 
         <div class="inline fields ui grid">
           <label class="two wide column right aligned">Title</label>
@@ -128,15 +128,19 @@
         <div class="inline fields ui grid">
           <label class="two wide column right aligned">Published location</label>
           <div class="field thirteen wide column">
-            <span *ngIf="!tale.publishInfo || !tale.publishInfo.length">This Tale has not been published</span>
-            <span *ngIf="tale.publishInfo && tale.publishInfo.length">{{ tale.publishInfo[0].uri }}</span>
+            <span *ngIf="!latestPublish">This Tale has not been published</span>
+            <span *ngIf="latestPublish"><a [href]="latestPublish.uri">{{ latestPublish.pid }}</a></span>
           </div>
         </div>
 
         <div class="inline fields ui grid">
           <label class="two wide column right aligned"></label>
           <div class="field two wide right aligned column">
-            <button class="ui blue submit button" [disabled]="!taleMetadataForm.valid || validateAuthors().length > 0" (click)="updateTale()">Save</button>
+            <button class="ui blue submit button" [disabled]="!taleMetadataForm.valid || validateAuthors().length > 0" (click)="saveEdit()">Save</button>
+          </div>
+
+          <div class="field two wide right aligned column">
+            <button class="ui button" (click)="cancelEdit()">Cancel</button>
           </div>
 
           <div class="field toggle ui checkbox four wide column">
@@ -159,7 +163,7 @@
       </form>
 
       <!-- View Mode (read-only) -->
-      <div class="ui grid" *ngIf="tale._accessLevel <= 1">
+      <div id="readOnlyMetadata" class="ui grid" *ngIf="!editing">
         <div class="ten wide column">
           <div class="ui list">
             <div class="item">
@@ -168,11 +172,11 @@
             </div>
             <div class="item">
               <b>Title:</b>
-              {{ tale.title }}
+              <span>{{ tale.title }}</span>
             </div>
             <div class="item" *ngIf="creator">
               <b>Created By:</b>
-              {{ creator.firstName }} {{ creator.lastName }}
+              <span>{{ creator.firstName }} {{ creator.lastName }}</span>
             </div>
             <div class="item">
               <b>Authors:</b>
@@ -188,19 +192,19 @@
             </div>
             <div class="item">
               <b>License:</b>
-              {{ tale.licenseSPDX }}
+              <span>{{ tale.licenseSPDX }}</span>
             </div>
             <div class="item">
                 <b>Published Location:</b>
-                <span *ngIf="tale.publishInfo && tale.publishInfo.length">{{ tale.publishInfo[0] }}</span>
-                <span *ngIf="!tale.publishInfo || !tale.publishInfo.length">This Tale has not been published</span>
+                <span *ngIf="latestPublish"><a [href]="latestPublish.uri">{{ latestPublish.pid }}</a></span>
+                <span *ngIf="!latestPublish">This Tale has not been published</span>
             </div>
             <div class="item spaced">
               <b>Tale Specifics</b>
               <div class="list">
                 <div class="item">
                   <b>Tale ID</b>
-                  {{ tale._id }}
+                  <span>{{ tale._id }}</span>
                 </div>
                 <div class="item">
                   <b>Involatile Data:</b>
@@ -219,13 +223,28 @@
                 </div>
                 <div class="item">
                   <b>Tale Created:</b>
-                  {{ tale.created | date }}
+                  <span>{{ tale.created | date }}</span>
                 </div>
                 <div class="item">
                   <b>Tale Updated:</b>
-                  {{ tale.updated | date }}
+                  <span>{{ tale.updated | date }}</span>
+                </div>
+                <div class="item" *ngIf="tale.relatedIdentifiers && tale.relatedIdentifiers.length">
+                  <b>Related Identifiers:</b>
+                  <ul>
+                    <li *ngFor="let ident of tale.relatedIdentifiers; index as i; trackBy: trackById">
+                        {{ ident.relation }} <a [href]="transformIdentifier(ident.identifier)" target="_blank">{{ ident.identifier }}</a>
+                    </li>
+                  </ul>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <div class="inline fields ui grid" *ngIf="canEdit">
+            <label class="two wide column right aligned"></label>
+            <div class="field two wide right aligned column">
+              <button class="ui blue button" (click)="startEdit()">Edit</button>
             </div>
           </div>
         </div>
