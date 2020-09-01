@@ -130,6 +130,9 @@ export class PublicTalesComponent implements OnChanges, OnInit {
       const id = tale._id;
       this.taleService.taleDeleteTale({ id }).subscribe(response => {
         this.logger.debug("Successfully deleted Tale:", response);
+
+        // Explicitly force Tale list binding to refresh
+        this.tales$ = this.taleService.taleListTales({});
         this.refresh();
       }, err => {
           this.logger.error("Failed to delete Tale:", err);
