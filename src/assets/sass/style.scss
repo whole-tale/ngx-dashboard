@@ -28,6 +28,10 @@ body {
   cursor: not-allowed;
 }
 
+.mat-dialog-container {
+  overflow: unset !important;
+}
+
 a:hover {
   text-decoration: none !important;
 }

@@ -1,19 +1,16 @@
-<h1 mat-dialog-title>Disconnect {{ data.provider.fullName }} Account</h1>
+<h1 mat-dialog-title>
+    <img class="ui avatar image" src="data:image/png;base64,{{ data.provider.logo }}">
+    Disconnect {{ data.provider.fullName }} Account
+    <button class="ui tiny close right floated button" mat-dialog-close>
+        <i class="close icon"></i>
+    </button>
+</h1>
 
-<mat-dialog-content>
-  <div id="revoke-apikey-modal" class="ui modal revoke-apikey">
-    <i class="close icon"></i>
-    <div class="header">
-      <img class="ui avatar image" src="data:image/png;base64,{{ data.provider.logo }}"> Revoke {{ data.provider.fullName }} Account
-    </div>
-    <div class="content">
-      Are you sure you want to disconnect this external account?
-      
-      You can choose to reconnect your account in the future.
-    </div>
-  </div>
+<mat-dialog-content style="overflow:visible;">
+    <p>Are you sure you want to disconnect this {{ data.provider.fullName }} external account?</p>
+    <p>You can choose to reconnect your account in the future.</p>
 </mat-dialog-content>
-  
+
 <mat-dialog-actions>
   <div class="actions">
     <button class="ui deny button" mat-dialog-close>
@@ -24,3 +21,4 @@
     </button>
   </div>
 </mat-dialog-actions>
+

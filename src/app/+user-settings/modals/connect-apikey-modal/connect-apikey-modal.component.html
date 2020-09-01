@@ -1,15 +1,13 @@
-<h1 mat-dialog-title>Connect {{ data.provider.fullName }} Account</h1>
+<h1 mat-dialog-title>
+    <img class="ui avatar image" src="data:image/png;base64,{{ data.provider.logo }}">
+    Connect {{ data.provider.fullName }} Account
+    <button class="ui tiny close right floated button" mat-dialog-close>
+        <i class="close icon"></i>
+    </button>
+</h1>
 
-<mat-dialog-content>
-  <div id="connect-apikey-modal" class="ui modal apikey">
-    <i class="close icon"></i>
-    <div class="header">
-      <!-- TODO: Helper to handle article appropriately? (e.g. "a/an ORCID Account") -->
-      <img class="ui avatar image" src="data:image/png;base64,{{ data.provider.logo }}"> Connect {{ data.provider.fullName }} Account
-    </div>
-    <div class="content">
-  
-      <form class="ui form">
+<mat-dialog-content style="overflow:visible;">
+      <form class="ui form" style="min-width:60vw;">
         <div class="two fields">
           <div class="field">
             <label>{{ data.provider.fullName }} Repository</label>
@@ -18,22 +16,19 @@
               <i class="dropdown icon"></i>
               <div class="default text">Choose a repository...</div>
               <div class="menu">
-                <div class="item" *ngFor="let target of data.provider.targets; index as i; trackBy: trackByTarget">{{ target }}</div>
+                <div class="item" *ngFor="let target of providerTargets; index as i; trackBy: trackByTarget">{{ target }}</div>
               </div>
-              
+
             </div>
           </div>
           <div class="field">
-            <label>API Token 
+            <label>API Token
                 <a *ngIf="data.provider.docs_href" href="{{ data.provider.docs_href }}" style="float:right; font-weight:normal" target="_blank">Get from {{ data.provider.fullName }} <i class="external square alternate icon"></i></a>
             </label>
             <input type="text" name="API Token" placeholder="Enter an API key" [(ngModel)]="newApiKey.access_token" />
           </div>
         </div>
       </form>
-    </div>
-    
-  </div>
 </mat-dialog-content>
 
 <mat-dialog-actions>
