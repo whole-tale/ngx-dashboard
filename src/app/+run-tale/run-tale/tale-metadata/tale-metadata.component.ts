@@ -10,11 +10,18 @@ import { TaleService } from '@api/services/tale.service';
 import { LogService } from '@framework/core/log.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { NotificationService } from '@shared/error-handler/services/notification.service';
+import { ErrorService } from '@shared/error-handler/services/error.service';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { Observable } from 'rxjs';
 
+
 // import * as $ from 'jquery';
 declare var $: any;
+
+interface TaleAuthorValidationError {
+  index: number;
+  message: string;
+}
 
 @Component({
   selector: 'app-tale-metadata',
@@ -26,16 +33,12 @@ export class TaleMetadataComponent implements OnInit {
   @Input() creator: User;
 
   licenses: Observable<Array<License>>;
-
   environments: Observable<Array<Image>>;
-  environment: Image;
-  newAuthor: TaleAuthor;
 
   apiRoot: string;
 
   // Edit mode
   _previousState: Tale;
-  editing = false;
 
   constructor(private ref: ChangeDetectorRef,
               private zone: NgZone,
@@ -44,53 +47,97 @@ export class TaleMetadataComponent implements OnInit {
               private taleService: TaleService,
               private licenseService: LicenseService,
               private notificationService: NotificationService,
+              private errorHandler: ErrorService,
               private imageService: ImageService) {
     this.apiRoot = this.config.rootUrl;
-    this.resetNewAuthor();
   }
 
   ngOnInit(): void {
     const params = {};
     this.environments = this.imageService.imageListImages(params);
     this.licenses = this.licenseService.licenseGetLicenses();
+    setTimeout(() => {
+      $('#environmentDropdown:parent').dropdown().css('width', '100%');
+      $('#licenseDropdown:parent').dropdown().css('width', '100%');
+      this.saveState();
+    }, 800);
+  }
+
+  canDeactivate(): boolean {
+    // TODO: Revert to last known _previousState
+    // TODO: Ask for confirmation, if yes then
+    this.tale = this.copy(this._previousState);
+    // and then
+    return true;
+  }
+
+  saveState(): void {
+    this._previousState = this.copy(this.tale);
+  }
+
+  revertState(): void {
+    this.zone.run(() => {
+      this.tale = this.copy(this._previousState);
+    });
+  }
+
+  copy(obj: any): Tale {
+    return JSON.parse(JSON.stringify(obj));
+  }
+
+  trackBySpdx(index: number, license: License): string {
+    return license.spdx;
   }
 
   trackById(index: number, model: any): string {
     return model._id || model.orcid || model.itemId;
   }
 
-  // TODO: Abstract to generic helper method
-  copy(json: any): any {
-    return JSON.parse(JSON.stringify(json));
+  trackByAuthorHash(index: number, author: TaleAuthor): number {
+    return index;
   }
 
-  editTale(): void {
-    this._previousState = this.copy(this.tale);
-    this.editing = true;
-    setTimeout(() => $('.ui.dropdown').dropdown(), 500);
-  }
+  updateTale(): Promise<any> {
+    const errors = this.validateAuthors();
+    if (errors && errors.length > 0) {
+      this.notificationService.showError('Failed to save: ' + errors[0].message);
+      return new Promise(() => {});
+    }
 
-  saveTaleEdit(): void {
     const params = { id: this.tale._id , tale: this.tale };
-    this.taleService.taleUpdateTale(params).subscribe(res => {
+    const promise = this.taleService.taleUpdateTale(params).toPromise()
+    promise.then(res => {
       this.logger.debug("Successfully saved tale state:", this.tale);
+      this.saveState();
       this.zone.run(() => {
-        this.editing = false;
         this.notificationService.showSuccess("Tale saved successfully");
       });
     }, err => {
       this.logger.error("Failed updating tale:", err);
     });
+    return promise;
   }
 
-  cancelTaleEdit(): void {
-    this.tale = this.copy(this._previousState);
-    this.editing = false;
+  validateAuthors(): Array<TaleAuthorValidationError> {
+    if (!this.tale.authors || !this.tale.authors.length) {
+      return [];
+    }
+
+    const errors: Array<TaleAuthorValidationError> = [];
+    this.tale.authors.forEach((author: TaleAuthor, index: number) => {
+      if (!author.firstName) { errors.push({ index, message: 'Author\'s first name cannot be left blank.' }); }
+      if (!author.lastName) { errors.push({ index, message: 'Author\'s last name cannot be left blank.' }); }
+      if (!author.orcid) { errors.push({ index, message: 'Author\'s ORCID cannot be left blank.' }); }
+
+      // TODO: Validate ORCID value (URL prefix, regex, etc)
+      // NOTE: This only really matters during publishing
+    });
+
+    return errors;
   }
 
-  addAuthor(author: TaleAuthor): void {
-    this.tale.authors.push(author);
-    this.resetNewAuthor();
+  addNewAuthor(): void {
+    this.tale.authors.push({ firstName: '', lastName: '', orcid: '' });
   }
 
   removeAuthor(author: TaleAuthor): void {
@@ -98,11 +145,7 @@ export class TaleMetadataComponent implements OnInit {
     this.tale.authors.splice(index, 1);
   }
 
-  resetNewAuthor(): void {
-    this.newAuthor = {
-      firstName: '',
-      lastName: '',
-      orcid: ''
-    };
+  generateIcon(): void {
+    this.tale.illustration = 'http://lorempixel.com/400/400/abstract/';
   }
 }
