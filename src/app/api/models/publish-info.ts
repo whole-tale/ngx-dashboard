@@ -18,4 +18,10 @@ export interface PublishInfo {
    * A URI pointing to the location of the published Tale.
    */
   uri: string;
+
+  /**
+   * Repository and Repository ID of where this data was published.
+   */
+  repository: string;
+  repository_id: string;
 }

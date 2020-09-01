@@ -110,6 +110,11 @@ export interface Tale {
   publishInfo: Array<PublishInfo>;
 
   /**
+   * DOIs and other identifiers related to this Tale.
+   */
+  relatedIdentifiers: Array<any>;
+
+  /**
    * Title of the Tale
    */
   title?: string;
