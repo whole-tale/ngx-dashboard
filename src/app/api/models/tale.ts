@@ -112,7 +112,7 @@ export interface Tale {
   /**
    * DOIs and other identifiers related to this Tale.
    */
-  relatedIdentifiers: Array<any>;
+  relatedIdentifiers?: Array<any>;
 
   /**
    * Title of the Tale
