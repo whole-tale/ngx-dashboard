@@ -33,7 +33,7 @@ enum TaleExportFormat {
 })
 export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges {
     taleId: string;
-    tale: Tale = { title:'???', authors: [], imageId: '', category: '', license: 'CC-BY-4.0', dataSet: [], description: '', public: false, publishInfo: []  };
+    tale: Tale;
     instance: Instance;
     creator: User;
     currentTab = 'metadata';
