@@ -8,10 +8,11 @@ FROM node:dubnium-slim
 RUN npm install -g @angular/cli@7
 
 # Raise NodeJS memory limit and build up some helpers
-ARG MEM_LIMIT=2048
+ARG MEM_LIMIT=4096
 ENV NODE="node --max_old_space_size=$MEM_LIMIT" \
-    YARN="$NODE /usr/local/bin/yarn" \
-    NG="$NODE ./node_modules/@angular/cli/bin/ng"
+    YARN="/usr/local/bin/yarn" \
+    NG="$NODE ./node_modules/@angular/cli/bin/ng" \
+    NODE_OPTIONS=--max_old_space_size=${MEM_LIMIT}
 
 # Perform an Angular production build
 ENTRYPOINT ["sh", "-c"]
