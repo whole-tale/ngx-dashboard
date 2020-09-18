@@ -521,21 +521,24 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
   moveElement(event: { element: FileElement; moveTo: FileElement }): void {
     const src = event.element;
-    const dest = event.moveTo;
-    const params = { id: src._id, parentId: dest._id };
+    const dest = event.moveTo;;
     if (src._modelType === 'folder') {
+      const params = { id: src._id, parentId: dest._id, parentType: ParentType.Folder, baseParentId: dest.baseParentId }
       // Element is a folder, move it
       this.folderService.folderUpdateFolder(params)
                         .pipe(enterZone(this.zone))
                         .subscribe(resp => {
-        this.logger.debug("Folder moved successfully:", resp);
+        this.logger.info("Folder moved successfully:", resp);
+        this.load();
       });
     } else if (src._modelType === 'item') {
+      const params = { id: src._id, folderId: dest._id, baseParentId: dest.baseParentId }
       // Element is an item, move it
       this.itemService.itemUpdateItem(params)
                       .pipe(enterZone(this.zone))
                       .subscribe(resp => {
-        this.logger.debug("Item moved successfully:", resp);
+        this.logger.info("Item moved successfully:", resp);
+        this.load();
       });
     }
   }

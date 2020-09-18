@@ -65,8 +65,8 @@
               <div *ngIf="!readOnlyDropdown" class="item" (click)="renameElement(ele)"><i class="fas fa-edit"></i> Rename</div>
               <div *ngIf="!readOnlyDropdown" class="item" (click)="removeElement(ele)"><i class="fas fa-trash"></i> Remove</div>
               <div class="item" (click)="downloadElement(ele)"><i class="fas fa-download"></i> Download</div>
-              <div *ngIf="!readOnlyDropdown" class="item" (click)="moveElement(ele)"><i class="fas fa-exchange-alt"></i> Move To...</div>
-              <div *ngIf="!readOnlyDropdown" class="item" (click)="copyElement(ele)"><i class="fas fa-clone"></i> Copy To...</div>
+              <div *ngIf="!readOnlyDropdown" class="item" (click)="openMoveToDialog(ele)"><i class="fas fa-exchange-alt"></i> Move To...</div>
+              <div *ngIf="!readOnlyDropdown" class="item" (click)="copyElement(ele)"><i class="fas fa-clone"></i> Copy</div>
             </div>
           </div>
         </td>
