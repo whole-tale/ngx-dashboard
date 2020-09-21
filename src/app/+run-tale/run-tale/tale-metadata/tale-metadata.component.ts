@@ -3,6 +3,7 @@ import { ApiConfiguration } from '@api/api-configuration';
 import { Image } from '@api/models/image';
 import { License } from '@api/models/license';
 import { Tale } from '@api/models/tale';
+import { PublishInfo } from '@api/models/publish-info';
 import { User } from '@api/models/user';
 import { ImageService } from '@api/services/image.service';
 import { LicenseService } from '@api/services/license.service';
@@ -38,7 +39,31 @@ export class TaleMetadataComponent implements OnInit {
   apiRoot: string;
 
   // Edit mode
+  editing: Boolean = false;
   _previousState: Tale;
+
+  get canEdit(): boolean {
+    if (!this.tale) {
+      return false;
+    }
+    return this.tale._accessLevel >= 2;
+  }
+
+  get latestPublish(): PublishInfo {
+    if (!this.tale || !this.tale.publishInfo || !this.tale.publishInfo.length) {
+      return undefined;
+    }
+
+    // Sort by date, then
+    return this.tale.publishInfo.sort((a: PublishInfo, b: PublishInfo) => {
+      // Example Format: "2019-01-23T15:48:17.476000+00:0"
+      const dateA = Date.parse(a.date);
+      const dateB = Date.parse(b.date);
+      if (dateA > dateB) { return 1; }
+      if (dateA < dateB) { return -1; }
+      return 0;
+    }).slice(-1).pop();
+  }
 
   constructor(private ref: ChangeDetectorRef,
               private zone: NgZone,
@@ -71,14 +96,43 @@ export class TaleMetadataComponent implements OnInit {
     return true;
   }
 
+  startEdit(): void {
+    // Save a backup of the Tale's state in memory
+    this.saveState();
+    this.editing = true;
+  }
+
+  saveEdit(): void {
+    // Overwrite our backup of the Tale's state in memory with a new one
+    this.editing = false;
+    this.saveState();
+
+    // Update the Tale in Girder
+    this.updateTale();
+  }
+
+  cancelEdit(): void {
+    // Revert to our backup of the Tale's state in memory
+    this.editing = false;
+    this.revertState();
+  }
+
   saveState(): void {
     this._previousState = this.copy(this.tale);
   }
 
   revertState(): void {
-    this.zone.run(() => {
-      this.tale = this.copy(this._previousState);
-    });
+    const prev = this.copy(this._previousState);
+
+    // Restore editable fields from previous state
+    this.tale.title = prev.title;
+    this.tale.authors = prev.authors;
+    this.tale.category = prev.category;
+    this.tale.imageId = prev.imageId;
+    this.tale.description = prev.description;
+    this.tale.license = prev.license;
+    this.tale.illustration = prev.illustration;
+    this.tale.public = prev.public;
   }
 
   copy(obj: any): Tale {
@@ -90,11 +144,18 @@ export class TaleMetadataComponent implements OnInit {
   }
 
   trackById(index: number, model: any): string {
-    return model._id || model.orcid || model.itemId;
+    return model._id || model.orcid || model.itemId || model.identifier;
   }
 
   trackByAuthorHash(index: number, author: TaleAuthor): number {
     return index;
+  }
+
+  transformIdentifier(identifier: string) {
+    if (identifier.indexOf('doi:') === 0) {
+      return identifier.replace('doi:', 'doi.org/');
+    }
+    return identifier;
   }
 
   updateTale(): Promise<any> {
