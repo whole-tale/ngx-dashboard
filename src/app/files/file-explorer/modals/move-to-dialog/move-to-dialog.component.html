@@ -1,0 +1,82 @@
+<h1 mat-dialog-title>Move Item: {{ data.elementToMove.name | truncate:titleTruncateLength }}</h1>
+
+<mat-dialog-content>
+    <table class="ui compact striped table">
+        <!-- If we're in a folder, show the name of the folder -->
+        <thead *ngIf="currentRoot">
+          <th colspan="5" class="ui sub header collapsing noselect clickable blue" (click)="navigateUp()">
+              <span class="long alternate blue">
+                <i class="horizontally flipped level up icon"></i>
+                <span *ngIf="pathStack.length !== 2 || pathStack[0] !== wsRoot" title="{{currentRoot.name}}">
+                    {{ currentRoot.name | truncate:headTruncateLength }}
+                </span>
+                <span *ngIf="pathStack.length === 2 && pathStack[0] === wsRoot && (currentRoot.name | taleName | async) as taleTitle"
+                      title="{{taleTitle}} ({{currentRoot.name}})">
+                    {{ taleTitle | truncate:headTruncateLength }}
+                </span>
+              </span>
+          </th>
+        </thead>
+
+        <!-- If Workspaces is selected, translate taleIds into titles and show special tooltip -->
+        <tbody *ngIf="currentRoot && currentRoot === wsRoot && (folders | async).concat(files | async) as contents">
+          <tr *ngIf="!contents.length">{{ placeholderMessage }}</tr>
+          <tr [ngClass]="{
+                    'active': selectedFolder === elem,
+                    'clickable': elem._modelType === 'folder',
+                    'disabled not clickable': elem._modelType !== 'folder' || data.elementToMove._id === elem._id }"
+                *ngFor="let elem of contents; index as i; trackBy:trackById"
+                (click)="selectFolder(elem)"
+                (dblclick)="navigate(elem)">
+            <td>
+                <i class="fas fa-fw" [ngClass]="{
+                  'fa-folder': elem._modelType === 'folder',
+                  'fa-file': elem._modelType === 'item' || elem._modelType === 'file' }"></i>
+            </td>
+            <td *ngIf="(elem.name | taleName | async) as taleTitle" title="{{taleTitle}} ({{elem.name}})">
+                {{ taleTitle | truncate:bodyTruncateLength }}
+            </td>
+          </tr>
+        </tbody>
+
+        <!-- If any other folder is selected, just display title as-is -->
+        <tbody *ngIf="currentRoot && currentRoot !== wsRoot && (folders | async).concat(files | async) as contents">
+          <tr *ngIf="!contents.length">{{ placeholderMessage }}</tr>
+          <tr [ngClass]="{
+                'active': selectedFolder === elem,
+                'clickable': elem._modelType === 'folder',
+                'disabled not clickable': elem._modelType !== 'folder' || data.elementToMove._id === elem._id }"
+              *ngFor="let elem of contents; index as i; trackBy:trackById"
+              (click)="selectFolder(elem)"
+              (dblclick)="navigate(elem)">
+            <td>
+                <i class="fas fa-fw" [ngClass]="{
+                    'fa-folder': elem._modelType === 'folder',
+                    'fa-file': elem._modelType === 'item' || elem._modelType === 'file' }"></i>
+            </td>
+            <td title="{{elem.name}}">{{ elem.name | truncate:bodyTruncateLength }}</td>
+          </tr>
+        </tbody>
+
+        <!-- If no currentFolderId, show the root Home / Workspaces for selection -->
+        <tbody *ngIf="!currentRoot">
+          <tr class="clickable" [ngClass]="{ 'active': selectedFolder === homeRoot }"
+                (click)="selectFolder(homeRoot)" (dblclick)="navigate(homeRoot)">
+            <td><i class="fas fa-fw fa-folder"></i></td>
+            <td>Home</td>
+          </tr>
+          <tr class="clickable" (click)="navigate(wsRoot)" (dblclick)="navigate(wsRoot)">
+            <td><i class="fas fa-fw fa-folder"></i></td>
+            <td>Tale Workspaces</td>
+          </tr>
+        </tbody>
+    </table>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button class="ui black deny button" mat-dialog-close>Cancel</button>
+  <button class="ui positive right labeled icon button" [disabled]="!selectedFolder" [mat-dialog-close]="selectedFolder">
+    Confirm
+    <i class="checkmark icon"></i>
+  </button>
+</mat-dialog-actions>

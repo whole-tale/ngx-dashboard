@@ -7,11 +7,13 @@ import { LoadingOverlayComponent } from './components/loading-overlay/loading-ov
 import { MenuGroupComponent } from './components/menu/menu-group.component';
 import { MenuItemComponent } from './components/menu/menu-item.component';
 
+import { TruncatePipe } from './pipes/truncate.pipe';
+
 const COMPONENTS = [LoadingOverlayComponent, MenuGroupComponent, MenuItemComponent];
 
 @NgModule({
   imports: [CommonAngularModule, FormsModule, MaterialModule],
-  declarations: [COMPONENTS],
-  exports: [CommonAngularModule, COMPONENTS]
+  declarations: [COMPONENTS, TruncatePipe],
+  exports: [CommonAngularModule, COMPONENTS, TruncatePipe]
 })
 export class CommonModule {}

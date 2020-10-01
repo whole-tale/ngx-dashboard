@@ -19,7 +19,6 @@ declare var $: any;
 })
 export class TaleCatalogComponent extends BaseComponent implements AfterViewInit {
     currentPath = "tales";
-    searchQuery = '';
 
     @Output() readonly taleCreated = new EventEmitter<Tale>();
 
@@ -54,15 +53,21 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
               width: '600px',
               data: { params: queryParams }
             });
-            dialogRef.afterClosed().subscribe(tale => {
+            dialogRef.afterClosed().subscribe((result: {tale: Tale, asTale: boolean}) => {
+              const tale = result.tale;
+              const asTale = result.asTale;
+
+              // Short-circuit for 'Cancel' case
+              if (!tale) { return; }
+
               // TODO: "Analyze in WT" case
               const params = {
                 url: queryParams.uri ? queryParams.uri : '', // Pull from querystring
                 imageId: tale.imageId, // Pull from user input
-                asTale: queryParams.asTale, // TODO: Pull from querystring
+                asTale: asTale ? asTale : false, // Pull from user input
                 spawn: true, // ??
-                taleKwargs: tale.title ? `{ "title": "${tale.title}" }` : '{}', // ??
-                lookupKwargs: '{}', // ??
+                taleKwargs: tale.title ? { title: tale.title } : {}, // ??
+                lookupKwargs: {}, // ??
               };
               this.taleService.taleCreateTaleFromDataset(params).subscribe(resp => {
                 this.logger.debug("Successfully submitted 'Analyze in WT' Job:", resp);
@@ -81,7 +86,9 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
         data: { showGit }
       };
       const dialogRef = this.dialog.open(CreateTaleModalComponent, config);
-      dialogRef.afterClosed().subscribe(tale => {
+      dialogRef.afterClosed().subscribe((result: {tale: Tale, asTale: boolean}) => {
+        const tale = result.tale;
+
         if (!tale) { return; }
 
         // TODO: Validation

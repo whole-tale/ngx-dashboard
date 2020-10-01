@@ -3,6 +3,7 @@ import { ContainerConfig } from './container-config';
 import { DataSet } from './data-set';
 import { ImageInfo } from './image-info';
 import { PublishInfo } from './publish-info';
+import { TaleAuthor } from '@tales/models/tale-author';
 
 /**
  * Object representing a Tale.
@@ -37,7 +38,7 @@ export interface Tale {
   /**
    * Keyword describing topic of the Tale
    */
-  category?: string;
+  category: string;
   config?: ContainerConfig;
 
   /**
@@ -59,7 +60,7 @@ export interface Tale {
   /**
    * The description of the Tale (Markdown)
    */
-  description?: string;
+  description: string;
 
   /**
    * ID of a folder containing copy of tale['dataSet']
@@ -79,7 +80,7 @@ export interface Tale {
   /**
    * A list of authors that are associated with the Tale
    */
-  authors?: Array<{}>;
+  authors: Array<TaleAuthor>;
 
   /**
    * A URL to an image depicturing the content of the Tale
@@ -95,7 +96,7 @@ export interface Tale {
   /**
    * The license that the Tale is under
    */
-  license?: string;
+  license: string;
 
   /**
    * List of Girder Items containing Tale's narrative
@@ -110,8 +111,13 @@ export interface Tale {
   /**
    * If set to true the Tale is accessible by anyone.
    */
-  public?: boolean;
-  publishInfo?: Array<PublishInfo>;
+  public: boolean;
+  publishInfo: Array<PublishInfo>;
+
+  /**
+   * DOIs and other identifiers related to this Tale.
+   */
+  relatedIdentifiers?: Array<any>;
 
   /**
    * Title of the Tale

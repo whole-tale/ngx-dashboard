@@ -19,6 +19,12 @@ enum ParentType {
 interface Selectable {
   _modelType: string;
   _id: string;
+  name: string;
+}
+interface Selection {
+  _modelType: string;
+  mountPath: string;
+  itemId: string;
 }
 
 @Component({
@@ -30,6 +36,10 @@ export class SelectDataDialogComponent implements OnInit {
   allDatasets: Observable<Array<Dataset>>;
   myDatasets: Observable<Array<Dataset>>;
   datasets: Observable<Array<Dataset>>;
+
+  addedDatasets: BehaviorSubject<Array<Selectable>> = new BehaviorSubject<Array<Selectable>>([]);
+  datasetsToAdd: Array<Selectable> = [];
+  datasetsToRemove: Array<Selectable> = [];
 
   isSingleClick = false;
 
@@ -45,29 +55,41 @@ export class SelectDataDialogComponent implements OnInit {
   constructor(
     private logger: LogService,
     private zone: NgZone,
-    private datasetService: DatasetService, 
-    private folderService: FolderService, 
-    private itemService: ItemService, 
+    private datasetService: DatasetService,
+    private folderService: FolderService,
+    private itemService: ItemService,
     @Inject(MAT_DIALOG_DATA) public data: { tale: Tale }
   ) {}
 
   ngOnInit(): void {
     this.allDatasets = this.datasetService.datasetListDatasets({ myData: false });
     this.datasets = this.myDatasets = this.datasetService.datasetListDatasets({ myData: true });
-    this.datasets.pipe(enterZone(this.zone)).subscribe(datasets => {
-      this.data.tale.dataSet.forEach((ds: { itemId: string, mountPath: string, _modelType: string }) => {
-        // Lookup the Dataset by id and push it to our selection
-        const dataset = datasets.find((data: Dataset) => data._id === ds.itemId);
-        if (dataset) {
-          this.selected.push(dataset);
-        } else {
-          this.logger.error("Unknown tale.dataSet encountered... skipping:", ds);
-        }
-      });
+
+    let preAddedDatasets = this.data.tale.dataSet.map((ds: { itemId: string, mountPath: string, _modelType: string }) => {
+      // Lookup the Dataset by id and push it to our selection
+      return { _modelType: ds._modelType, _id: ds.itemId, name: ds.mountPath };
     });
+
+    this.addedDatasets.next(preAddedDatasets);
   }
-  
-  selectDataset(ds: Dataset): void {
+
+  addSelectedDatasets(): void {
+    const added = this.addedDatasets.value;
+    // Filter anything already added
+    const filtered = this.datasetsToAdd.filter(dataToAdd => !added.find(prevAddedData => dataToAdd._id === prevAddedData._id));
+    this.addedDatasets.next(added.concat(filtered));
+    this.datasetsToAdd = [];
+  }
+
+  removeSelectedDatasets(): void {
+    const added = this.addedDatasets.value;
+    // Filter anything that needs to be removed
+    const filtered = added.filter(ds => !this.datasetsToRemove.find(data => ds._id === data._id));
+    this.addedDatasets.next(filtered);
+    this.datasetsToRemove = [];
+  }
+
+  navigateIntoDataset(ds: Dataset): void {
     if (ds._modelType !== 'folder') {
       return;
     }
@@ -118,7 +140,7 @@ export class SelectDataDialogComponent implements OnInit {
                       });
     }
   }
-  
+
   setCurrentRoot(resourceId: string, modelType = 'folder'): void {
     // Lookup and set our root node
     if (resourceId) {
@@ -144,23 +166,23 @@ export class SelectDataDialogComponent implements OnInit {
     }
   }
 
-  toggledCheckbox(e: any, sel: Selectable): void {
+  toggledCheckbox(e: any, sel: Selectable, selection: Array<Selectable>): void {
     // Debounce single-click handler
     this.isSingleClick = true;
-    setTimeout(()=>{
+    setTimeout(() => {
       if (this.isSingleClick) {
-        const index = this.selected.indexOf(sel);
+        const index = selection.indexOf(sel);
         if (index === -1) {
-          this.selected.push(sel);
+          selection.push(sel);
         } else {
-          this.selected.splice(index, 1);
+          selection.splice(index, 1);
         }
       }
     }, 250);
   }
 
-  isSelected(target: Selectable): Selectable {
-    return this.selected.find(elem => elem._id === target._id);
+  isSelected(target: Selectable, selection: Array<Selectable>): Boolean {
+    return !!selection.find(elem => elem._id === target._id);
   }
 
   trackById(index: number, dataset: any): string {

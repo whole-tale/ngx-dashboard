@@ -146,9 +146,9 @@ class TaleService extends __BaseService {
     let __headers = new HttpHeaders();
     let __body: any = null;
     if (params.url != null) __params = __params.set('url', params.url.toString());
-    if (params.taleKwargs != null) __params = __params.set('taleKwargs', params.taleKwargs.toString());
+    if (params.taleKwargs != null) __params = __params.set('taleKwargs', JSON.stringify(params.taleKwargs));
     if (params.spawn != null) __params = __params.set('spawn', params.spawn.toString());
-    if (params.lookupKwargs != null) __params = __params.set('lookupKwargs', params.lookupKwargs.toString());
+    if (params.lookupKwargs != null) __params = __params.set('lookupKwargs', JSON.stringify(params.lookupKwargs));
     if (params.imageId != null) __params = __params.set('imageId', params.imageId.toString());
     if (params.asTale != null) __params = __params.set('asTale', params.asTale.toString());
     let req = new HttpRequest<any>('POST', this.rootUrl + `/tale/import`, __body, {
@@ -598,7 +598,7 @@ module TaleService {
     /**
      * Optional keyword arguments passed to POST /tale
      */
-    taleKwargs?: string;
+    taleKwargs?: {};
 
     /**
      * If false, create only Tale object without a corresponding Instance.
@@ -608,7 +608,7 @@ module TaleService {
     /**
      * Optional keyword arguments passed to GET /repository/lookup
      */
-    lookupKwargs?: string;
+    lookupKwargs?: {};
 
     /**
      * The ID of the tale's image.

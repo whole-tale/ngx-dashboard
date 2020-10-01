@@ -1,3 +1,5 @@
+$font-size: 1em;
+
 /*
  * WholeTale Dashboard - Semantic UI
  */
@@ -6,6 +8,7 @@
 
 html,
 body {
+  font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
 }
 
 body {
@@ -228,113 +231,6 @@ hr.env-separator {
   padding-right: 0.5rem;
 }
 
-.wt-panel {
-  background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  -webkit-border-radius: 1rem;
-  -moz-border-radius: 1rem;
-  border-radius: 1rem;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.075);
-  padding: 0;
-  height: 100%;
-}
-.wt-panel.bg-grey {
-  background: #f9fafb;
-}
-.wt-panel:nth-child(2) {
-  margin-top: 1rem;
-}
-
-.wt-panel .wt-panel-header {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-  padding: 0.8rem 1.6rem;
-  letter-spacing: 0.02rem;
-  background: #fff;
-  -webkit-border-top-left-radius: 1rem;
-  -moz-border-top-left-radius: 1rem;
-  border-top-left-radius: 1rem;
-  -webkit-border-top-right-radius: 1rem;
-  -moz-border-top-right-radius: 1rem;
-  border-top-right-radius: 1rem;
-}
-.wt-panel .wt-panel-header img {
-  height: 2.25rem;
-  margin: 0 0.75rem 0 0;
-  float: left;
-}
-.wt-panel .wt-panel-header span {
-  font-size: 1.3rem;
-  color: rgba(0, 0, 0, 0.75);
-  font-weight: 300;
-  font-style: italic;
-  letter-spacing: 0.05rem;
-  padding-left: 0.4rem;
-}
-.wt-panel .wt-panel-header span.quota {
-  color: rgba(0, 0, 0, 0.75);
-  float: right;
-  position: relative;
-  font-size: 1rem;
-}
-.wt-panel .wt-panel-header i {
-  padding-right: 0.75rem;
-}
-.wt-panel .wt-panel-header i.right {
-  color: rgba(0, 0, 0, 0.6);
-  float: right;
-  position: relative;
-  padding-right: 0;
-  padding-top: 0.35rem;
-}
-
-.wt-panel .wt-panel-body {
-  padding: 1.5rem 2rem 3rem;
-}
-.wt-panel .wt-panel-body.bg-grey,
-.wt-panel .wt-panel-header.bg-grey {
-  background-color: #f9fafb;
-}
-
-.wt-panel-body .ui.input {
-  width: 100%;
-}
-
-.wt-panel .wt-panel-header.tabs {
-  border: none;
-  padding: 0;
-  letter-spacing: 0;
-}
-
-.wt-panel .wt-panel-header.tabs .ui.menu {
-  -webkit-box-shadow: none;
-  box-shadow: none;
-  border: none;
-  -webkit-border-top-left-radius: 1rem;
-  -moz-border-top-left-radius: 1rem;
-  border-top-left-radius: 1rem;
-  -webkit-border-top-right-radius: 1rem;
-  -moz-border-top-right-radius: 1rem;
-  border-top-right-radius: 1rem;
-}
-.wt-panel .wt-panel-header.tabs .ui.menu > .item:first-child {
-  -webkit-border-top-left-radius: 1rem;
-  -moz-border-top-left-radius: 1rem;
-  border-top-left-radius: 1rem;
-}
-.wt-panel .wt-panel-header.tabs .ui.menu > .item:last-child {
-  -webkit-border-top-right-radius: 1rem;
-  -moz-border-top-right-radius: 1rem;
-  border-top-right-radius: 1rem;
-}
-.wt-panel .wt-panel-header.tabs .ui.menu > .item {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
-  font-size: 1.2rem;
-}
-.wt-panel .wt-panel-header.tabs .ui.menu > .item.active {
-  border-bottom: transparent;
-  font-weight: 600;
-}
-
 .placeholder-message {
   text-align: center;
   padding: 40% 0 40%;
@@ -353,60 +249,6 @@ hr.env-separator {
   font-size: 2.2rem;
   letter-spacing: 0.05rem;
   line-height: 1.3;
-}
-
-.wt-panel .tale-info {
-  padding: 1em 0 0;
-}
-.wt-panel .title-info,
-.wt-panel .action-info {
-  position: relative;
-  padding-left: 4rem;
-}
-.wt-panel .title-info img {
-  width: 3rem;
-  margin-right: 0.5rem;
-  position: absolute;
-  top: -0.25rem;
-  left: 0rem;
-}
-.wt-panel .action-info img {
-  width: 3rem;
-  height: auto;
-  margin-right: 0.5rem;
-  position: absolute;
-  top: -0.25rem;
-  left: 0rem;
-}
-.wt-panel .title-info img.env {
-  width: 2.5rem;
-  position: absolute;
-  top: -0.75rem;
-  left: -0.5rem;
-}
-.wt-panel .title-info p {
-  font-size: 1.2rem;
-  line-height: 1.2;
-  font-weight: 600;
-  margin: 0 1.5rem 0.2rem 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.wt-panel .action-info p {
-  font-size: 1.2rem;
-  line-height: 1.2;
-  font-weight: 600;
-  margin: 0 1.5rem 0.2rem 0;
-}
-.wt-panel .title-info p.qualifier,
-.wt-panel .action-info p.qualifier {
-  font-size: 1rem;
-  font-weight: 400;
-  font-style: italic;
-}
-
-.wt-panel .actions {
 }
 
 /* New Environment form */
@@ -535,7 +377,7 @@ p.status span {
 }
 
 .card .t-title {
-  height: 5.5em;
+  //height: 5.5em;
   overflow: hidden;
   position: relative;
   margin-bottom: 10px;

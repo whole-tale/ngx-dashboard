@@ -14,6 +14,8 @@ import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { routeAnimation } from '~/app/shared';
 
+import { ApiConfiguration } from '@api/api-configuration';
+import { TokenService } from '@api/token.service';
 import { PublishTaleDialogComponent } from './modals/publish-tale-dialog/publish-tale-dialog.component';
 import { ConnectGitRepoDialogComponent } from './modals/connect-git-repo-dialog/connect-git-repo-dialog.component';
 
@@ -32,7 +34,7 @@ enum TaleExportFormat {
 })
 export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges {
     taleId: string;
-    tale: Tale = { title:'???', authors: [], imageId: '', dataSet: [], publishInfo: [] };
+    tale: Tale;
     instance: Instance;
     creator: User;
     currentTab = 'metadata';
@@ -47,6 +49,8 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       private taleService: TaleService,
       private instanceService: InstanceService,
       private userService: UserService,
+      private tokenService: TokenService,
+      private config: ApiConfiguration,
       private dialog: MatDialog
     ) {
         super();
@@ -56,9 +60,13 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         return author.orcid;
     }
 
-    taleInstanceStateChanged(event: any): void {
-      // this.instance = event;
-      this.refresh();
+    taleInstanceStateChanged(event: {tale: Tale, instance: Instance}): void {
+      if (!event.tale) {
+        return;
+      } else if (event.tale._id === this.tale._id) {
+        this.instance = event.instance;
+      }
+      this.ref.detectChanges();
     }
 
     detectCurrentTab(): void {
@@ -211,9 +219,8 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     }
 
     exportTale(format: TaleExportFormat = TaleExportFormat.BagIt): void {
-      const params = { id: this.tale._id, taleFormat: format };
-      this.taleService.taleExportTale(params).subscribe(res => {
-        this.logger.debug(`Exporting tale=${this.tale._id} to ${format}`, res);
-      });
+      const token = this.tokenService.getToken();
+      const url = `${this.config.rootUrl}/tale/${this.tale._id}/export?token=${token}&taleFormat=${format}`;
+      this.windowService.open(url, '_blank');
     }
 }

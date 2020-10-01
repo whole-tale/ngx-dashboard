@@ -1,8 +1,9 @@
 /* tslint:disable */
 import { Injectable, OnDestroy } from '@angular/core';
-import { ApiConfiguration } from './api-configuration';
+import { ApiConfiguration } from '@api/api-configuration';
+import { LogService } from '@framework/core/log.service';
 
-import { TokenService } from './token.service';
+import { TokenService } from '@api/token.service';
 import { EventSourcePolyfill as EventSource } from 'ng-event-source';
 import { bypassSanitizationTrustResourceUrl } from '@angular/core/src/sanitization/bypass';
 
@@ -11,7 +12,7 @@ import { bypassSanitizationTrustResourceUrl } from '@angular/core/src/sanitizati
 })
 class NotificationStreamService implements OnDestroy {
   static readonly Path = '/notification/stream';
-  static readonly TimeoutMs = 360000;
+  static readonly TimeoutMs = 30;
   static readonly IntervalDelayMs = 30000;
 
   interval: any;
@@ -22,9 +23,20 @@ class NotificationStreamService implements OnDestroy {
   showNotificationStream = false;
 
   ackAll() {
-    this.setSince(new Date().getTime() / 1000);
-    this.reconnect(true);
+    const newSince = new Date().getTime() / 1000;
+    this.setSince(newSince);
+    //this.reconnect(true);
+    //this.connect();
     this.openNotificationStream(false);
+    this.events = [];
+  }
+
+  ackOne(evt: Event) {
+    // TODO: How to prevent event from redispaying on page load?
+
+    // Remove event from the list to hide it temporarily
+    const index = this.events.indexOf(evt);
+    this.events.splice(index, 1);
   }
 
   openNotificationStream(open: boolean = true) {
@@ -61,19 +73,25 @@ class NotificationStreamService implements OnDestroy {
     return url;
   }
 
-  constructor(private config: ApiConfiguration, private tokenService: TokenService) {
+  constructor(private config: ApiConfiguration, private tokenService: TokenService, private logger: LogService) {
     this.connect();
   }
 
   ngOnDestroy() {
     clearInterval(this.interval);
+    this.disconnect();
   }
 
   disconnect() {
-    this.source.close();
+    if (this.source) {
+      this.source.close();
+    }
   }
 
   connect() {
+    // Disconnect, if necessary
+    this.disconnect();
+
     // Connect to SSE using the given parameters
     this.source = new EventSource(this.url, { headers: { 'Girder-Token': this.token } });
 
@@ -81,19 +99,27 @@ class NotificationStreamService implements OnDestroy {
     this.source.onopen = this.onOpen.bind(this);
   }
 
-  reconnect(silent: boolean = false) {
-    silent || console.log('Reconnecting now...');
+  reconnect(silent: boolean = true) {
+    silent || this.logger.debug('Reconnecting now...');
     this.disconnect();
     this.connect();
-    silent || console.log('Reconnected.');
+    silent || this.logger.debug('Reconnected.');
   }
 
   onError(err: any) {
-    console.error('Error received from EventSource:', err);
+    if (!err || err.errorMessage === '') {
+      return;
+    }
+
+    if (err.errorMessage || err.message) {
+      this.logger.warn('Error received from EventSource:', err.errorMessage || err.message);
+    } else {
+      this.logger.error('Unknown error received from EventSource:', err);
+    }
   }
 
   onOpen(ack: any) {
-    console.log('Connection established:', ack);
+    this.logger.debug('Connection established:', ack);
 
     // Reconnect every ~30s to keep the connection open
     // XXX: This may be due to Girder not sending keep-alive bytes

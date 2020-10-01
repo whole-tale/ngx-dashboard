@@ -3,6 +3,10 @@
   overflow: auto;
 }
 
+#readOnlyMetadata .item > span {
+  margin-left: 5px;
+}
+
 .fields {
   margin-right: 0;
 }
@@ -10,4 +14,13 @@
 .field {
   width: 100%;
   padding-right: 0;
+}
+
+#taleMetadataForm .ng-valid[required]:not(form),
+.ng-valid.required:not(form) {
+  border-left: 5px solid rgb(139, 196, 74); /* green */
+}
+
+#taleMetadataForm .ng-invalid:not(form) {
+  border-left: 5px solid #a94442; /* red */
 }

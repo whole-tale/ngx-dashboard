@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>Error</h1>
 
 <mat-dialog-content>
-  <p>An error was encountered:</p>
+  <p>{{ data.title || 'An error was encountered' }}:</p>
   <pre>{{ data.error.message || data.error }}</pre>
 </mat-dialog-content>
 

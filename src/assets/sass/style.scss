@@ -18,7 +18,7 @@ body {
   background: c(grey, gallery);
 }
 
-@import './wholetale-dashboard';
+@import './theme';
 
 .clickable {
   cursor: pointer;
@@ -26,6 +26,10 @@ body {
 
 .not.clickable {
   cursor: not-allowed;
+}
+
+.mat-dialog-container {
+  overflow: unset !important;
 }
 
 a:hover {

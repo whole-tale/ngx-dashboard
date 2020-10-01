@@ -14,8 +14,8 @@ import { enterZone } from '@framework/ngrx/enter-zone.operator';
   selector: 'app-disconnect-account-modal'
 })
 export class DisconnectAccountModalComponent extends BaseComponent {
-  selectedProvider: Account; 
-  
+  selectedProvider: Account;
+
   constructor(
     private readonly zone: NgZone,
     private readonly accountService: AccountService,
