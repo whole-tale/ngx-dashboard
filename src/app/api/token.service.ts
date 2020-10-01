@@ -12,6 +12,8 @@ export class TokenService {
   // JWT helper service for checking token expiration
   jwt: JwtHelperService = new JwtHelperService();
 
+  returnRoute: string;
+
   // Cache the user that this token represents (for display)
   user: ReplaySubject<User> = new ReplaySubject<User>();
 
@@ -22,6 +24,21 @@ export class TokenService {
   }
   getToken(): string {
     return localStorage.getItem('girderToken');
+  }
+  clearToken(): void {
+    localStorage.removeItem('girderToken');
+  }
+  setReturnRoute(returnRoute: string) {
+    localStorage.setItem('returnRoute', returnRoute);
+  }
+  getReturnRoute(): string {
+    const route = localStorage.getItem('returnRoute');
+
+    if (route) {
+      return route;
+    } else {
+      return 'public';
+    }
   }
   isAuthenticated(): boolean {
     // get the token

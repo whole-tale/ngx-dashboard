@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, NgZone, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, NgZone, OnChanges, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Instance } from '@api/models/instance';
 import { Tale } from '@api/models/tale';
@@ -22,13 +22,17 @@ declare var $: any;
   styleUrls: ['./public-tales.component.scss'],
   selector: 'app-public-tales'
 })
-export class PublicTalesComponent implements OnInit {
+export class PublicTalesComponent implements OnChanges, OnInit {
   tales$: Observable<Array<Tale>> = new Observable<Array<Tale>>();
   tales: Array<Tale> = [];
   publicTales: Array<Tale> = [];
 
+  protected truncateLength = 100;
+
+  searchQuery = '';
+
   user: User;
-  
+
   get instanceCount(): number {
     return Object.keys(this.instances).length;
   }
@@ -55,7 +59,11 @@ export class PublicTalesComponent implements OnInit {
     this.refresh();
   }
 
-  taleInstanceStateChanged(event: any): void {
+  ngOnChanges(): void {
+    this.refresh();
+  }
+
+  taleInstanceStateChanged(updated: {tale: Tale, instance: Instance}): void {
     this.refresh();
   }
 
@@ -86,7 +94,8 @@ export class PublicTalesComponent implements OnInit {
     this.instanceService.instanceListInstances(listInstancesParams).subscribe((instances: Array<Instance>) => {
       this.zone.run(() => {
         // Convert array to map of taleId -> instance
-        this.instances = Object.assign({}, ...instances.map(i => ({[i.taleId]: i})));
+        // Filter deleting instances
+        this.instances = Object.assign({}, ...instances.filter(i => i.status !== 3).map(i => ({[i.taleId]: i})));
       });
     }, (err: any) => {
       this.logger.error("Failed to GET /instance:", err);
@@ -95,6 +104,7 @@ export class PublicTalesComponent implements OnInit {
     // Fetch the list of public tales
     const listTalesParams = {};
     this.taleService.taleListTales(listTalesParams).subscribe((tales: Array<Tale>) => {
+      // Filter based on search query
       this.tales = tales;
       this.ref.detectChanges();
 
@@ -116,10 +126,13 @@ export class PublicTalesComponent implements OnInit {
     const dialogRef = this.dialog.open(DeleteTaleModalComponent);
     dialogRef.afterClosed().subscribe(result => {
       if (!result) { return; }
-      
+
       const id = tale._id;
       this.taleService.taleDeleteTale({ id }).subscribe(response => {
         this.logger.debug("Successfully deleted Tale:", response);
+
+        // Explicitly force Tale list binding to refresh
+        this.tales$ = this.taleService.taleListTales({});
         this.refresh();
       }, err => {
           this.logger.error("Failed to delete Tale:", err);

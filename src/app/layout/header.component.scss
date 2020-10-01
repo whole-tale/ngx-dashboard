@@ -12,3 +12,24 @@
   padding: 2px 4px;
   text-align: center;
 }
+
+.ui.inverted.menu.wt-top {
+  background: #132f43;
+  font-size: 1.1rem;
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
+  border-radius: 0;
+}
+
+.circle.gravatar {
+  border-radius: 100px;
+  height: 42px;
+}
+
+.nomargin {
+  margin: 0 !important;
+}
+
+#avatar-item {
+  opacity: 1;
+}

@@ -1,3 +1,5 @@
+$font-size: 1em;
+
 /*
  * WholeTale Dashboard - Semantic UI
  */
@@ -6,6 +8,7 @@
 
 html,
 body {
+  font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
 }
 
 body {
@@ -355,60 +358,6 @@ hr.env-separator {
   line-height: 1.3;
 }
 
-.wt-panel .tale-info {
-  padding: 1em 0 0;
-}
-.wt-panel .title-info,
-.wt-panel .action-info {
-  position: relative;
-  padding-left: 4rem;
-}
-.wt-panel .title-info img {
-  width: 3rem;
-  margin-right: 0.5rem;
-  position: absolute;
-  top: -0.25rem;
-  left: 0rem;
-}
-.wt-panel .action-info img {
-  width: 3rem;
-  height: auto;
-  margin-right: 0.5rem;
-  position: absolute;
-  top: -0.25rem;
-  left: 0rem;
-}
-.wt-panel .title-info img.env {
-  width: 2.5rem;
-  position: absolute;
-  top: -0.75rem;
-  left: -0.5rem;
-}
-.wt-panel .title-info p {
-  font-size: 1.2rem;
-  line-height: 1.2;
-  font-weight: 600;
-  margin: 0 1.5rem 0.2rem 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.wt-panel .action-info p {
-  font-size: 1.2rem;
-  line-height: 1.2;
-  font-weight: 600;
-  margin: 0 1.5rem 0.2rem 0;
-}
-.wt-panel .title-info p.qualifier,
-.wt-panel .action-info p.qualifier {
-  font-size: 1rem;
-  font-weight: 400;
-  font-style: italic;
-}
-
-.wt-panel .actions {
-}
-
 /* New Environment form */
 
 .cancel-right {
@@ -535,7 +484,7 @@ p.status span {
 }
 
 .card .t-title {
-  height: 5.5em;
+  //height: 5.5em;
   overflow: hidden;
   position: relative;
   margin-bottom: 10px;

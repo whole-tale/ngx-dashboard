@@ -1,4 +1,4 @@
-import { Component, Inject, NgZone, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Inject, NgZone, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Image } from '@api/models/image';
 import { Tale } from '@api/models/tale';
@@ -11,9 +11,10 @@ declare var $: any;
   templateUrl: './create-tale-modal.component.html',
   styleUrls: ['./create-tale-modal.component.scss']
 })
-export class CreateTaleModalComponent implements OnInit {
+export class CreateTaleModalComponent implements OnInit,AfterViewInit {
   newTale: Tale;
   datasetCitation: any;
+  asTale: boolean = false;
 
   environments: Array<Image> = [];
 
@@ -21,12 +22,27 @@ export class CreateTaleModalComponent implements OnInit {
     this.newTale = {
       title: (data && data.params) ? data.params.name : '',
       imageId: '',
-      dataSet: []
+      authors: [],
+      license: 'CC-BY-4.0',
+      category: 'science',
+      publishInfo: [],
+      dataSet: [],
+      public: false,
+      copyOfTale: null,
+      description: '### Provide a description for your Tale'
     };
   }
 
   ngOnInit(): void {
     this.parseParameters();
+  }
+
+  ngAfterViewInit():void {
+    $('.ui.checkbox').checkbox();
+  }
+
+  result(): { tale: Tale, asTale: boolean } {
+    return { tale: this.newTale, asTale: this.asTale };
   }
 
   parseParameters(): void {
@@ -40,6 +56,13 @@ export class CreateTaleModalComponent implements OnInit {
         // TODO: Fetch / display data citation from datacite?
         this.datasetCitation = { doi: this.data.params.uri };
       });
+
+      // Set read/write radio buttons using asTale value
+      if (this.data.params.asTale) {
+        setTimeout(() => {
+          $('#readWriteRadio').click();
+        }, 350);
+      }
     }
 
     // Fetch all Tale environment Images
@@ -63,6 +86,22 @@ export class CreateTaleModalComponent implements OnInit {
     }, err => {
       console.error("Failed to list images:", err);
     });
+  }
+
+  enableReadOnly(evt: any): void {
+    console.log("Enabling read only on this Tale...");
+    const target = evt.target;
+    if (target.checked) {
+      this.asTale = false;
+    }
+  }
+
+  enableReadWrite(evt: any): void {
+    console.log("Enabling read/write on this Tale...");
+    const target = evt.target;
+    if (target.checked) {
+      this.asTale = true;
+    }
   }
 
   trackById(index: number, env: Image): string {
