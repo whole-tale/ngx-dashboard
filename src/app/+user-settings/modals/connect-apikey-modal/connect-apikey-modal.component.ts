@@ -1,4 +1,4 @@
-import { Component, Inject, NgZone } from '@angular/core';
+import { Component, Inject, OnInit, NgZone } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Account } from '@api/models/account';
 import { User } from '@api/models/user';
@@ -7,6 +7,8 @@ import { UserService } from '@api/services/user.service';
 import { BaseComponent } from '@framework/core/base.component';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
 
+// import * as $ from 'jquery';
+declare var $: any;
 
 // TODO: Abstract/move enums to reuseable helper
 enum KeyType {
@@ -31,9 +33,10 @@ interface UserToken {
   styleUrls: ['./connect-apikey-modal.component.scss'],
   selector: 'app-connect-apikey-modal'
 })
-export class ConnectApiKeyModalComponent extends BaseComponent {
+export class ConnectApiKeyModalComponent extends BaseComponent implements OnInit {
   newApiKey: UserToken;
-  
+  providerTargets: Array<string> = [];
+
   constructor(
     private readonly zone: NgZone,
     private readonly accountService: AccountService,
@@ -48,7 +51,18 @@ export class ConnectApiKeyModalComponent extends BaseComponent {
         'access_token': ''
       };
   }
-  
+
+  ngOnInit(): void {
+      $('#newResourceServerDropdown').dropdown({ onChange: this.onTargetChange.bind(this) });
+      this.accountService.accountListTargets({ provider: this.data.provider.name }).subscribe(targets => {
+        this.providerTargets = targets;
+      });
+  }
+
+  onTargetChange(value: any, text: string, $choice: any) {
+      this.newApiKey.resource_server = value;
+  }
+
   trackByTarget(index: number, target: string): string {
       return target;
   }

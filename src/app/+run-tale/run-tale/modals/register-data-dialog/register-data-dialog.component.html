@@ -46,10 +46,6 @@
           </div>
           
           <div class="ui tertiary segment white-bg" *ngIf="selectedResult">
-            <div class="inline field">
-              <label>Folder Name</label>
-              <input [(ngModel)]="registrationFolderName" type="text">
-            </div>
             <p>DOI: {{ selectedResult.doi }}</p>
             <p>DataID: {{ selectedResult.dataId }}</p>
             <p>Repository: {{ selectedResult.repository }}</p>

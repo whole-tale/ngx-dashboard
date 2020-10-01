@@ -8,13 +8,13 @@
             <div class="grouped fields">
                <div class="field">
                   <div id="privateRadio" class="ui radio checkbox">
-                     <input type="radio" name="taleAccess" tabindex="0" (change)="handleChange($event, 'private')">
+                     <input type="radio" name="taleAccess" tabindex="0" [checked]="!tale.public" (change)="handleChange($event, 'private')">
                      <label><i class="fas fa-lock"></i> <b>PRIVATE</b> — Access is required to view this Tale</label>
                   </div>
                </div>
                <div class="field">
                   <div id="publicRadio" class="ui radio checkbox">
-                     <input type="radio" name="taleAccess" tabindex="0" (change)="handleChange($event, 'public')">
+                     <input type="radio" name="taleAccess" tabindex="0" [checked]="tale.public" (change)="handleChange($event, 'public')">
                      <label><i class="fas fa-globe"></i> <b>PUBLIC</b> — Anyone can view/copy this Tale</label>
                   </div>
                </div>
@@ -39,10 +39,10 @@
          <p>Invite new collaborator:</p>
 
          <div class="ui action input">
-            <div class="ui category search" id="loginSearch">
+            <div class="ui category search" id="userSearch">
               <div class="ui left icon input">
                 <i class="search icon"></i>
-                <input id="loginInput" class="prompt" type="text" name="login" placeholder="Search users...">
+                <input id="userSearchInput" class="prompt" type="text" name="search" placeholder="Search users...">
               </div>
               <div class="results"></div>
             </div>

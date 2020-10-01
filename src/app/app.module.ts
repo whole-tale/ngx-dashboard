@@ -28,7 +28,8 @@ import { FooterComponent } from './layout/footer.component';
 import { HeaderComponent } from './layout/header.component';
 import { MainComponent } from './layout/main.component';
 import { LoginComponent } from './login/login.component';
-import { NotificationStreamComponent } from './notification-stream/notification-stream.component';
+
+import { NotificationStreamModule } from './layout/notification-stream/notification-stream.module';
 
 export const REQ_KEY = makeStateKey<string>('req');
 
@@ -74,9 +75,10 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = { supp
     MaterialModule,
     StoreModule.forRoot(),
     FontAwesomeModule,
-    ApiModule
+    ApiModule,
+    NotificationStreamModule
   ],
-  declarations: [HeaderComponent, FooterComponent, MainComponent, LoginComponent, AppComponent, NotificationStreamComponent],
+  declarations: [HeaderComponent, FooterComponent, MainComponent, LoginComponent, AppComponent],
   providers: [
     {
       provide: PERFECT_SCROLLBAR_CONFIG,

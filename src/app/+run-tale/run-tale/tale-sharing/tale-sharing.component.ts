@@ -101,7 +101,7 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
       this.users = users.filter(user => this.tale.creatorId !== user._id);
 
       // Initialize our user search
-      $('#loginSearch').search({
+      $('#userSearch').search({
         source: this.users,
         type: 'standard',
         fullTextSearch: 'true',

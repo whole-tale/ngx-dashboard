@@ -5,5 +5,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./rename-dialog.component.scss']
 })
 export class RenameDialogComponent {
-  folderName = '';
+  itemName = '';
 }

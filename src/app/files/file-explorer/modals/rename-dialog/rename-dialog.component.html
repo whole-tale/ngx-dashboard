@@ -1,9 +1,9 @@
-<h1 mat-dialog-title>Rename Element</h1>
+<h1 mat-dialog-title>Rename Item</h1>
 
 <mat-dialog-content>
   <form class="ui form">
     <div class="field">
-      <input matInput type="text" name="folder-name" placeholder="Folder Name" [(ngModel)]="folderName" required />
+      <input matInput type="text" name="item-name" placeholder="Item Name" [(ngModel)]="itemName" required />
     </div>
     <!--<button class="ui button" type="submit">Submit</button>-->
   </form>
@@ -11,7 +11,7 @@
 
 <mat-dialog-actions>
   <button class="ui black deny button" mat-dialog-close>Cancel</button>
-  <button class="ui positive right labeled icon button" [mat-dialog-close]="folderName">
+  <button class="ui positive right labeled icon button" [mat-dialog-close]="itemName">
     Submit
     <i class="checkmark icon"></i>
   </button>

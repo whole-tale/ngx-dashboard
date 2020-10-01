@@ -1,50 +1,67 @@
 <div fxFlex fxLayout="row" fxLayoutAlign="space-between stretch" [@routeAnimation]>
     <div class="ui stretched stackable grid panel-container">
-        <div class="row" style="padding-top:20px">
+        <div class="row">
             <div class="sixteen wide column">
 
                 <div class="ui breadcrumb">
-                    <a routerLink="/" routerLinkActive="active" class="section">
+                    <a [routerLink]="tale._accessLevel < 2 ? '/public' : '/mine'" class="section">
                       <i class="left angle icon"></i>
                       Return to Dashboard
                     </a>
                 </div>
 
-                <div class="wt-panel">
+                <div class="wt-panel" *ngIf="tale">
                     <div class="wt-panel-header">
                         <div class="tale-info">
                             <div class="ui stackable grid">
                                 <div class="ten wide column">
                                     <div class="title-info">
-                                        <img [src]="tale.illustration" *ngIf="tale.illustration">
+                                        <div class="img-holder">
+                                            <img [src]="tale.illustration" *ngIf="tale.illustration">
+                                        </div>
                                         <img [src]="tale.icon" class="env" *ngIf="tale.icon">
-                                        <p>{{ tale.title }}</p>
-
-                                        <p class="qualifier">
+                                        <div class="title">{{ tale.title | truncate:100 }}</div>
+                                        <div class="author">
                                             <span *ngFor="let author of tale.authors; index as i; trackBy: trackByAuthorOrcid">
                                                 <span *ngIf="i > 0">, </span> <span [title]="author.orcid">{{ author.firstName }} {{ author.lastName }}</span>
                                             </span>
                                             <span *ngIf="!tale.authors.length && creator">{{ creator.firstName }} {{ creator.lastName }}</span>
                                             <span *ngIf="!tale.authors.length && !creator">???</span>
-                                        </p>
+                                        </div>
+                                        <div class="title-tags">
+                                            <span class="ui horizontal label wt-green" *ngIf="tale.copyOfTale">COPY</span>
+                                            <span class="ui horizontal label wt-green">{{ tale.public ? 'PUBLIC' : 'PRIVATE'}}</span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="six wide column" style="text-align: right">
                                     <app-tale-run-button class="tale-run-button" [tale]="tale" [instance]="instance" isPrimary="true" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></app-tale-run-button>
                                     <a routerLink="/" routerLinkActive="active" class="ui button" style="margin-right: 10px">
-                                      Close
+                                        Close
                                     </a>
+
+
                                     <div class="ui floating dropdown theme" tabindex="0">
                                         <mat-icon fontSet="fa" fontIcon="fa-ellipsis-v"></mat-icon>
 
                                         <div class="menu transition hidden" tabindex="-1">
-                                            <div class="item" (click)="rebuildTale()">Rebuild Tale</div>
-                                            <div class="item" (click)="restartTale()">Restart Tale</div>
-                                            <div class="item" (click)="copyTale()">Duplicate Tale</div>
-                                            <div class="item" (click)="openPublishTaleDialog($event)">Publish Tale</div>
-                                            <div class="item" (click)="viewFullScreen()">View Fullscreen</div>
-                                            <div class="item" (click)="gotoDocs()">View Documentation</div>
-                                            <div class="item" (click)="exportTale()">Export Tale</div>
+                                            <div class="item" (click)="rebuildTale()"><i class="fas fa-redo-alt"></i> Rebuild Tale</div>
+                                            <div class="item" (click)="restartTale()"><i class="fas fa-sync-alt"></i> Restart Tale</div>
+
+                                            <div class="divider"></div>
+                                            <div class="item" (click)="saveTaleVersion()"><i class="fas fa-save"></i> Save Tale Version</div>
+                                            <div class="item" (click)="performRecordedRun()"><i class="fas fa-check-circle"></i> Recorded Run</div>
+                                            <div class="divider"></div>
+
+                                            <div class="item" (click)="copyTale()"><i class="fas fa-clone"></i> Duplicate Tale</div>
+                                            <div class="item" (click)="openPublishTaleDialog($event)"><i class="fas fa-newspaper"></i> Publish Tale</div>
+                                            <div class="item" (click)="exportTale()"><i class="fas fa-file-archive"></i> Export Tale</div>
+                                            <div class="divider"></div>
+                                            <div class="item" (click)="openConnectGitRepoDialog()"><i class="fab fa-git"></i> Connect to Git Repository...</div>
+                                            <div class="divider"></div>
+
+                                            <div class="item" (click)="viewFullScreen()"><i class="fas fa-expand"></i> View Fullscreen</div>
+                                            <div class="item" (click)="gotoDocs()"><i class="info circle icon"></i> Read the docs</div>
                                         </div>
                                     </div>
                                 </div>
@@ -63,6 +80,10 @@
                         </a>
                         <a class="item" [ngClass]="{ 'active': isTabActive('sharing') }" (click)="switchTab('sharing')">
                           Share <span class="counter">{{ collaborators.users.length + collaborators.groups.length }}</span>
+                        </a>
+
+                        <a *ngIf="instance && instance.status === 1" id="popout-link" class="right floated item" [href]="instance.url" target="_blank">
+                            <i class="fas fa-fw fa-external-link-alt"></i>
                         </a>
                     </div>
                     <div class="wt-panel-body" style="padding-bottom:40px" [ngSwitch]="currentTab">
