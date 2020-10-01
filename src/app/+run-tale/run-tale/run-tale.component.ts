@@ -142,14 +142,11 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     }
 
     ngOnInit(): void {
-      //$('.ui.tale.dropdown').dropdown();
-
       this.detectTaleId();
       this.detectCurrentTab();
     }
 
     ngOnChanges(): void {
-
       this.detectTaleId();
       this.detectCurrentTab();
     }

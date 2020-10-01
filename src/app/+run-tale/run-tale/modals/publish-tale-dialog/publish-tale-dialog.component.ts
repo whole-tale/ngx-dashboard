@@ -137,15 +137,18 @@ export class PublishTaleDialogComponent implements OnInit {
                 stopPolling();
               }
             } else if (watched.status === 4) {
-              this.publishStatus = 'error';
-
-              // Fetch final error message
-              const lastMessage = this.getLastNonEmptyMessage(watched.log);
-              this.lastMessage = lastMessage || 'Failed running publishing job - an unknown error has occurred. Please contact an administrator.';
-
               if (this.interval) {
                 stopPolling();
               }
+              this.publishStatus = 'error';
+
+              // Fetch final error message
+              this.jobService.jobGetJobResult(watched._id).subscribe((lastMessage) => {
+                this.lastMessage = lastMessage || 'Failed running publishing job - an unknown error has occurred. Please contact an administrator.';
+              },
+              (err) => {
+                this.lastMessage = 'Failed running publishing job - an unknown error has occurred. Please contact an administrator.';
+              });
             }
 
             // Poll / wait for launch
@@ -170,22 +173,5 @@ export class PublishTaleDialogComponent implements OnInit {
       this.publishStatus = 'error';
       this.lastMessage = err.error.message || 'Failed to submit publishing job';
     });
-  }
-
-  getLastNonEmptyMessage(messages: Array<string>): string {
-    let lastIndex = messages.length - 1;
-    let lastMessage = messages[lastIndex];
-
-    while (!lastMessage) {
-      // Remove last (blank) message
-      messages.pop();
-
-      // Check new lastMessage
-      lastIndex = messages.length - 1;
-      lastMessage = messages[lastIndex];
-    }
-
-    // We either have a message or have searched the full list and come up empty
-    return lastMessage;
   }
 }
