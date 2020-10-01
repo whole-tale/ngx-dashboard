@@ -121,6 +121,13 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
           this.creator = creator;
           this.logger.info("Fetched creator:", this.creator);
           this.ref.detectChanges();
+
+          // FIXME: Due to a timing issue, the Tale dropdown isn't present until tale is populated
+          this.zone.runOutsideAngular(() => {
+            setTimeout(() => {
+              $('.ui.tale.dropdown').dropdown();
+            }, 650);
+          });
         });
       }, err => {
         this.logger.error("Failed to fetch tale:", err);
@@ -135,13 +142,14 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     }
 
     ngOnInit(): void {
-      $('.ui.dropdown').dropdown();
+      //$('.ui.tale.dropdown').dropdown();
 
       this.detectTaleId();
       this.detectCurrentTab();
     }
 
     ngOnChanges(): void {
+
       this.detectTaleId();
       this.detectCurrentTab();
     }
