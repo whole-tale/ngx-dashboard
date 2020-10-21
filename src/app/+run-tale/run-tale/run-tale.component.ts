@@ -1,4 +1,3 @@
-import { trigger, transition, animate, state, style } from '@angular/animations';
 import { ChangeDetectorRef, Component, NgZone, OnChanges, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -8,6 +7,7 @@ import { User } from '@api/models/user';
 import { InstanceService } from '@api/services/instance.service';
 import { TaleService } from '@api/services/tale.service';
 import { UserService } from '@api/services/user.service';
+import { VersionService } from '@api/services/version.service';
 import { BaseComponent } from '@framework/core';
 import { LogService } from '@framework/core/log.service';
 import { WindowService } from '@framework/core/window.service';
@@ -18,6 +18,7 @@ import { routeAnimation } from '~/app/shared';
 import { ApiConfiguration } from '@api/api-configuration';
 import { TokenService } from '@api/token.service';
 import { PublishTaleDialogComponent } from './modals/publish-tale-dialog/publish-tale-dialog.component';
+//import { ConnectGitRepoDialogComponent } from './modals/connect-git-repo-dialog/connect-git-repo-dialog.component';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -30,15 +31,7 @@ enum TaleExportFormat {
 @Component({
     templateUrl: './run-tale.component.html',
     styleUrls: ['./run-tale.component.scss'],
-    animations: [routeAnimation,
-      trigger('openClose', [
-        state('closed', style({ width: '0px' })),
-        state('open', style({ width: '*' })),
-        transition('* <=> *', [
-          animate('0.2s')
-        ])
-      ])
-  ]
+    animations: [routeAnimation]
 })
 export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges {
     taleId: string;
@@ -46,9 +39,6 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     instance: Instance;
     creator: User;
     currentTab = 'metadata';
-
-    showVersionsPanel = false;
-    versionsPanelIsShown = false;
 
     constructor(
       private ref: ChangeDetectorRef,
@@ -61,14 +51,11 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       private instanceService: InstanceService,
       private userService: UserService,
       private tokenService: TokenService,
+      private versionService: VersionService,
       private config: ApiConfiguration,
       private dialog: MatDialog
     ) {
         super();
-    }
-
-    onAnimationEvent(event: Event) {
-      this.versionsPanelIsShown = this.showVersionsPanel;
     }
 
     trackByAuthorOrcid(index: number, author: TaleAuthor): string {
@@ -168,10 +155,21 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
     saveTaleVersion() {
       console.log('Saving Tale version');
+      this.versionService.versionCreateVersion({ taleId: this.taleId, force: true }).subscribe(version => {
+        console.log("Version saved successfully:", version);
+      });
     }
 
     openConnectGitRepoDialog() {
-      console.log('Connecting Git repo');
+      const config: MatDialogConfig = {
+        data: { tale: this.tale }
+      };
+      //const dialogRef = this.dialog.open(ConnectGitRepoDialogComponent, config);
+      //dialogRef.afterClosed().subscribe((gitRepo: string) => {
+      //  if (!gitRepo) { return; }
+
+        // TODO: Wire up to API
+      //});
     }
 
     rebuildTale(): void {

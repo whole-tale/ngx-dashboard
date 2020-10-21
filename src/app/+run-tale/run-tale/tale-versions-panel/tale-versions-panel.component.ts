@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, Input, NgZone, OnInit } from '@angular/core';
 import { Tale } from '@api/models/tale';
 import { TaleService } from '@api/services/tale.service';
+import { VersionService } from '@api/services/version.service';
 import { LogService } from '@framework/core/log.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { TaleAuthor } from '@tales/models/tale-author';
@@ -23,7 +24,8 @@ export class TaleVersionsPanelComponent implements OnInit {
   constructor(private ref: ChangeDetectorRef,
               private zone: NgZone,
               private logger: LogService,
-              private taleService: TaleService) {
+              private taleService: TaleService,
+              private versionService: VersionService) {
 
   }
 
@@ -58,7 +60,10 @@ export class TaleVersionsPanelComponent implements OnInit {
 
   /** Global panel functions */
   saveNewVersion() {
-
+     console.log('Saving Tale version');
+      this.versionService.versionCreateVersion({ taleId: this.tale._id, force: true }).subscribe(version => {
+        console.log("Version saved successfully:", version);
+      });
   }
 
   editRunConfigurations() {

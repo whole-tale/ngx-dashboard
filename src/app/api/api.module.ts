@@ -27,6 +27,7 @@ import { SystemService } from './services/system.service';
 import { TaleService } from './services/tale.service';
 import { TokenService } from './services/token.service';
 import { UserService } from './services/user.service';
+import { VersionService } from './services/version.service';
 import { WholetaleService } from './services/wholetale.service';
 import { WorkerService } from './services/worker.service';
 import { WorkspaceService } from './services/workspace.service';
@@ -70,6 +71,7 @@ import { AuthGuard } from './auth-guard';
     TaleService,
     TokenService,
     UserService,
+    VersionService,
     WholetaleService,
     WorkerService,
     WorkspaceService,
