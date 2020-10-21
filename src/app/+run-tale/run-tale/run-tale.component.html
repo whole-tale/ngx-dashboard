@@ -1,5 +1,5 @@
 <div fxFlex fxLayout="row" fxLayoutAlign="space-between stretch" [@routeAnimation]>
-    <div class="ui stretched stackable grid panel-container">
+    <div class="ui stretched stackable grid panel-container" *ngIf="tale">
         <div class="row">
             <div class="sixteen wide column">
 
@@ -10,7 +10,7 @@
                     </a>
                 </div>
 
-                <div class="wt-panel" *ngIf="tale">
+                <div class="wt-panel">
                     <div class="wt-panel-header">
                         <div class="tale-info">
                             <div class="ui stackable grid">
@@ -41,7 +41,7 @@
                                     </a>
 
 
-                                    <div class="ui floating dropdown theme" tabindex="0">
+                                    <div class="ui floating tale dropdown theme" tabindex="0">
                                         <mat-icon fontSet="fa" fontIcon="fa-ellipsis-v"></mat-icon>
 
                                         <div class="menu transition hidden" tabindex="-1">
