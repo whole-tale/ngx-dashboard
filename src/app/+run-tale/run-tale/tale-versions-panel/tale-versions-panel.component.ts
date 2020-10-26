@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, Input, NgZone, OnInit } from '@angular/core';
 import { Tale } from '@api/models/tale';
+import { Version } from '@api/models/version';
 import { TaleService } from '@api/services/tale.service';
 import { VersionService } from '@api/services/version.service';
 import { LogService } from '@framework/core/log.service';
@@ -31,10 +32,21 @@ export class TaleVersionsPanelComponent implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => {
-      $('.ui.dropdown').dropdown();
+      $('.ui.version.dropdown').dropdown();
     }, 500);
 
-    this.timeline = [
+    // TODO: What is the return type here? Folder? Something else?
+    this.versionService.versionGetRoot(this.tale._id).subscribe((root: any) => {
+      this.logger.info("Found root:", root);
+      this.versionService.versionListVersions({ rootId: root._id }).subscribe((versions: Array<Version>) => {
+        this.logger.info("Found versions:", versions);
+        this.timeline = versions.sort(this.sortByUpdatedDate);
+        this.ref.detectChanges();
+      });
+    });
+
+    // Mock data
+    /*this.timeline = [
       {
         id: '1',
         date: 'Sept 5, 2019 10:29AM',
@@ -51,7 +63,29 @@ export class TaleVersionsPanelComponent implements OnInit {
         title: 'Version saved:',
         date: 'Sept 5, 2019 10:35AM'
       }
-    ];
+    ];*/
+  }
+
+  /**
+   * Compare two Version objects and return a number value that
+   * represents the result of comparing their updated times:
+   *   0 if the two version updated date/time are equal
+   *   1 if the first version is after (greater than) the second
+   *   -1 if the first version is before (less than) the second
+   *
+   * @param a First version to compare
+   * @param b Second version to compare
+   */
+  sortByUpdatedDate(a: Version, b: Version): number {
+    const dateA = new Date(a.updated);
+    const dateB = new Date(b.updated);
+    if (dateA < dateB) {
+      return 1;
+    } else if (dateA > dateB) {
+      return -1;
+    } else {
+      return 0;
+    }
   }
 
   trackById(index: number, model: any): string {
@@ -92,6 +126,8 @@ export class TaleVersionsPanelComponent implements OnInit {
   }
 
   deleteVersion(version: any) {
-
+    this.versionService.versionDeleteVersion(version._id).subscribe(response => {
+      this.logger.info("Tale version successfully deleted:", version.name);
+    });
   }
 }

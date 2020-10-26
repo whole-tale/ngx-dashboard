@@ -31,21 +31,21 @@
    <div id="timeline" class="ui middle aligned divided list">
       <div class="item" *ngFor="let version of timeline; index as i; trackBy: trackById">
          <div class="right floated content">
-            <div class="ui floating dropdown icon" tabindex="0">
+            <div class="ui floating version dropdown icon" tabindex="0">
                <i class="fas fa-ellipsis-v"></i>
                <div class="menu left transition hidden" tabindex="-1" style="display: block !important;">
                   <div class="item active selected">View Info</div>
                   <div class="item">Restore</div>
                   <div class="item">Compare</div>
                   <div class="item">Rename</div>
-                  <div class="item">Delete</div>
+                  <div class="item" (click)="deleteVersion(version)">Delete</div>
                </div>
             </div>
          </div>
          <div class="content">
-            <div class="date">{{ version.date }}</div>
-            <div class="header"><i class="fas fa-save"></i>{{ version.title }}</div>
-            {{ version.label || version.date }}
+            <div class="date">{{ version.updated | date:'short'}}</div>
+            <div class="header"><i class="fas fa-save"></i>Version saved:</div>
+            {{ version.name }}
          </div>
       </div>
    </div>
