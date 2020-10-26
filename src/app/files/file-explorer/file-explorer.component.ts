@@ -116,7 +116,7 @@ export class FileExplorerComponent implements OnInit {
   constructor(private readonly dialog: MatDialog, private readonly logger: LogService) {}
 
   ngOnInit(): void {
-    $('.ui.dropdown').dropdown({ action: 'hide' });
+    $('.ui.file.dropdown').dropdown({ action: 'hide' });
   }
 
   getIcon(element: FileElement): string {
