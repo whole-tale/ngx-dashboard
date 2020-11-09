@@ -14,13 +14,12 @@ class VersionService extends __BaseService {
   static readonly versionCreateVersionPath = '/version';
   static readonly versionGetVersionPath = '/version/{id}';
   static readonly versionDeleteVersionPath = '/version/{id}';
-  static readonly versionListVersionsPath = '/version/list';
-
-  static readonly versionGetRootPath = '/version/{id}/getRoot';
+  static readonly versionListVersionsPath = '/version';
+  static readonly versionGetRootPath = '/version/{id}/root';
+  static readonly versionPutRenameVersionPath = '/version/{id}';
 
   // TBD
   static readonly versionGetDataSetPath = '/version/{id}/dataSet';
-  static readonly versionGetRenameVersionPath = '/version/{id}/rename';
   static readonly versionGetExistsPath = '/version/{id}/exists';
   static readonly versionGetLatestPath = '/version/{id}/latest';
 
@@ -59,7 +58,7 @@ class VersionService extends __BaseService {
     let __headers = new HttpHeaders();
     let __body: any = null;
     if (taleId != null) __params = __params.set('taleId', taleId.toString());
-    let req = new HttpRequest<any>('GET', this.rootUrl + `/version/getRoot`, __body, {
+    let req = new HttpRequest<any>('GET', this.rootUrl + `/version/root`, __body, {
       headers: __headers,
       params: __params,
       responseType: 'json'
@@ -127,7 +126,7 @@ class VersionService extends __BaseService {
     if (params.offset != null) __params = __params.set('offset', params.offset.toString());
     if (params.sort != null) __params = __params.set('sort', params.sort.toString());
     if (params.sortDir != null) __params = __params.set('sortDir', params.sortDir.toString());
-    let req = new HttpRequest<any>('GET', this.rootUrl + '/version/list', __body, {
+    let req = new HttpRequest<any>('GET', this.rootUrl + '/version', __body, {
       headers: __headers,
       params: __params,
       responseType: 'json'
@@ -142,6 +141,29 @@ class VersionService extends __BaseService {
   }
   versionListVersions(params: VersionService.VersionListVersionsParams): __Observable<null> {
     return this.versionListVersionsResponse(params).pipe(__map(_r => _r.body as null));
+  }
+
+  versionPutRenameVersionResponse(id: string, name: string): __Observable<__StrictHttpResponse<null>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (id != null) __params = __params.set('id', id.toString());
+    if (name != null) __params = __params.set('name', name.toString());
+    let req = new HttpRequest<any>('PUT', this.rootUrl + `/version/${id}`, __body, {
+      headers: __headers,
+      params: __params,
+      responseType: 'json'
+    });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map(_r => {
+        return _r as __StrictHttpResponse<null>;
+      })
+    );
+  }
+  versionPutRenameVersion(id: string, name: string): __Observable<null> {
+    return this.versionPutRenameVersionResponse(id, name).pipe(__map(_r => _r.body as null));
   }
 }
 

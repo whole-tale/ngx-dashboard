@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component, Input, NgZone, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, NgZone, OnChanges, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Tale } from '@api/models/tale';
 import { Version } from '@api/models/version';
 import { TaleService } from '@api/services/tale.service';
@@ -8,6 +9,9 @@ import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { Observable } from 'rxjs';
 
+import { CreateRenameVersionDialogComponent } from '../modals/create-rename-version-dialog/create-rename-version-dialog.component';
+import { TaleVersionInfoDialogComponent } from '../modals/tale-version-info-dialog/tale-version-info-dialog.component';
+
 // import * as $ from 'jquery';
 declare var $: any;
 
@@ -16,7 +20,7 @@ declare var $: any;
   templateUrl: './tale-versions-panel.component.html',
   styleUrls: ['./tale-versions-panel.component.scss']
 })
-export class TaleVersionsPanelComponent implements OnInit {
+export class TaleVersionsPanelComponent implements OnInit, OnChanges {
   @Input() tale: Tale;
 
   // TODO: Wire up to API
@@ -26,44 +30,25 @@ export class TaleVersionsPanelComponent implements OnInit {
               private zone: NgZone,
               private logger: LogService,
               private taleService: TaleService,
-              private versionService: VersionService) {
+              private versionService: VersionService,
+              private dialog: MatDialog) {
 
   }
 
   ngOnInit(): void {
-    setTimeout(() => {
-      $('.ui.version.dropdown').dropdown();
-    }, 500);
-
     // TODO: What is the return type here? Folder? Something else?
     this.versionService.versionGetRoot(this.tale._id).subscribe((root: any) => {
-      this.logger.info("Found root:", root);
       this.versionService.versionListVersions({ rootId: root._id }).subscribe((versions: Array<Version>) => {
-        this.logger.info("Found versions:", versions);
         this.timeline = versions.sort(this.sortByUpdatedDate);
         this.ref.detectChanges();
       });
     });
+  }
 
-    // Mock data
-    /*this.timeline = [
-      {
-        id: '1',
-        date: 'Sept 5, 2019 10:29AM',
-        title: 'Version saved:',
-        label: 'Version 1.0'
-      },
-      {
-        id: '2',
-        title: 'Version saved:',
-        date: 'Sept 5, 2019 10:31AM'
-      },
-      {
-        id: '3',
-        title: 'Version saved:',
-        date: 'Sept 5, 2019 10:35AM'
-      }
-    ];*/
+  ngOnChanges(): void {
+    setTimeout(() => {
+      $('.ui.version.dropdown').dropdown();
+    }, 500);
   }
 
   /**
@@ -93,41 +78,77 @@ export class TaleVersionsPanelComponent implements OnInit {
   }
 
   /** Global panel functions */
-  saveNewVersion() {
-     console.log('Saving Tale version');
-      this.versionService.versionCreateVersion({ taleId: this.tale._id, force: true }).subscribe(version => {
+  saveNewVersion(): void {
+    // TODO: Prompt for name (optional) / force?
+    this.openCreateRenameModal("create", (result: { name: string, force?: boolean }) => {
+    console.log('Creating New Tale version:', result);
+      this.versionService.versionCreateVersion({ taleId: this.tale._id, name: result.name, force: true }).subscribe(version => {
         console.log("Version saved successfully:", version);
+        this.timeline.unshift(version);
+        this.ref.detectChanges();
+
+        setTimeout(() => {
+          $('.ui.version.dropdown').dropdown();
+        }, 500);
+      });
+    });
+  }
+
+  openCreateRenameModal(mode: string = "create", after: Function): void {
+      const config = { data: { mode } };
+      const dialogRef = this.dialog.open(CreateRenameVersionDialogComponent, config);
+      dialogRef.afterClosed().subscribe((result: { name: string, force?: boolean }) => {
+        if (!result) { return; }
+        after(result);
       });
   }
 
-  editRunConfigurations() {
-
+  editRunConfigurations(): void {
+    // TODO: What does this actually change? Design needed.
   }
 
-  performRecordedRun() {
-
+  performRecordedRun(): void {
+    // TODO: Restore from previous version
+    // TODO: Execute autonomously
   }
 
   /** Per-version dropdown options */
-  viewVersionInfo(version: any) {
-
+  viewVersionInfo(version: Version): void {
+    this.dialog.open(TaleVersionInfoDialogComponent, {
+      data: { version, tale: this.tale }
+    });
   }
 
-  restoreVersion(version: any) {
-
+  restoreVersion(version: Version): void {
+    // TODO: Restore from previous version
+    // TODO: Once they do this, how can the user get back to HEAD?
   }
 
-  compareVersion(version: any) {
-
+  compareVersion(version: Version): void {
+    // TODO: Show diff of this version with the current one
   }
 
-  renameVersion(version: any) {
+  renameVersion(version: Version): void {
+    this.openCreateRenameModal("rename", (result: { name: string, force?: boolean }) => {
+      console.log('Renaming Tale version:', result);
 
+      // TODO: Prompt for new name
+      this.versionService.versionPutRenameVersion(version._id, result.name).subscribe(resp => {
+        this.logger.info("Tale version successfully renamed:", result.name);
+        const idx = this.timeline.indexOf(version);
+        this.timeline[idx].name = result.name;
+        this.ref.detectChanges();
+      });
+    });
   }
 
-  deleteVersion(version: any) {
+  deleteVersion(version: Version) {
+    // Delete the chosen version
     this.versionService.versionDeleteVersion(version._id).subscribe(response => {
       this.logger.info("Tale version successfully deleted:", version.name);
+      const idx = this.timeline.indexOf(version);
+      this.timeline.splice(idx, 1);
+      this.ref.detectChanges();
     });
   }
 }

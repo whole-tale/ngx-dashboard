@@ -1,0 +1,35 @@
+<h1 mat-dialog-title>{{ data.mode === "create" ? "Save New Version" : "Rename Version" }}</h1>
+
+<mat-dialog-content>
+  <div class="ui grid">
+    <div class="row">
+      <div class="sixteen wide column">
+        <form class="ui form">
+            <label>
+                <span *ngIf="data.mode!=='create'">New </span>
+                <span *ngIf="data.mode==='create'">Version </span>
+                 Name
+                <span *ngIf="data.mode==='create'"> (optional)</span>
+            </label>
+
+            <!-- Require new name in "Rename" mode -->
+            <input *ngIf="data.mode==='create'" type="text" name="name" id="name" [(ngModel)]="name" />
+            <input *ngIf="data.mode!=='create'" type="text" name="name" id="name" [(ngModel)]="name" required />
+
+            <div class="ui checkbox" *ngIf="data.mode==='create'">
+                <input type="checkbox" name="force" id="force" [(ngModel)]="force" />
+                <label>Force New Version?</label>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button class="ui black deny button" mat-dialog-close>Cancel</button>
+  <button class="ui primary right labeled icon button" [mat-dialog-close]="getResult()" [disabled]="data.mode !== 'create' && !name">
+    Save
+    <i class="checkmark icon"></i>
+  </button>
+</mat-dialog-actions>

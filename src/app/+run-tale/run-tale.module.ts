@@ -14,6 +14,8 @@ import { TalesModule } from '@tales/tales.module';
 import { MarkdownModule } from 'ngx-markdown';
 
 import { routes } from './run-tale.routes';
+import { TaleVersionInfoDialogComponent } from './run-tale/modals/tale-version-info-dialog/tale-version-info-dialog.component';
+import { CreateRenameVersionDialogComponent } from './run-tale/modals/create-rename-version-dialog/create-rename-version-dialog.component';
 import { PublishTaleDialogComponent } from './run-tale/modals/publish-tale-dialog/publish-tale-dialog.component';
 import { RegisterDataDialogComponent } from './run-tale/modals/register-data-dialog/register-data-dialog.component';
 import { SelectDataDialogComponent } from './run-tale/modals/select-data-dialog/select-data-dialog.component';
@@ -39,7 +41,9 @@ import { TaleVersionsPanelComponent } from './run-tale/tale-versions-panel/tale-
     SelectDataDialogComponent,
     RegisterDataDialogComponent,
     TaleWorkspacesDialogComponent,
+    CreateRenameVersionDialogComponent,
+    TaleVersionInfoDialogComponent,
   ],
-  entryComponents: [PublishTaleDialogComponent, SelectDataDialogComponent, RegisterDataDialogComponent, TaleWorkspacesDialogComponent]
+  entryComponents: [PublishTaleDialogComponent, SelectDataDialogComponent, RegisterDataDialogComponent, TaleWorkspacesDialogComponent, CreateRenameVersionDialogComponent, TaleVersionInfoDialogComponent]
 })
 export class RunTaleModule {}
