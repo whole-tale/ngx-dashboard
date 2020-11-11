@@ -69,7 +69,7 @@ export class HeaderComponent extends BaseComponent implements OnInit {
     this.user = this.tokenService.user;
 
     this.zone.runOutsideAngular(() => {
-      $('.ui.dropdown').dropdown({ action: 'hide' });
+      $('.ui.account.dropdown').dropdown({ action: 'hide' });
     });
 
     this.users.userGetMe().subscribe((user: any) => {

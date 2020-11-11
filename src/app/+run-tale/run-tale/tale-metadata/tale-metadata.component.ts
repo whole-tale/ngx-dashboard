@@ -49,6 +49,7 @@ export class TaleMetadataComponent implements OnInit {
     return this.tale._accessLevel >= 2;
   }
 
+  // FIXME: Duplicated code (see publish-tale-dialog.component.ts)
   get latestPublish(): PublishInfo {
     if (!this.tale || !this.tale.publishInfo || !this.tale.publishInfo.length) {
       return undefined;
