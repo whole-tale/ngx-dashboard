@@ -17,7 +17,7 @@
                             Create New Tale
                             <div class="menu transition hidden" tabindex="-1">
                                 <a class="item" (click)="openCreateTaleModal(false)">Create New Tale</a>
-                                <a class="item active selected" (click)="openCreateTaleModal(true)">Create Tale from Git Repository</a>
+                                <a class="item" (click)="openCreateTaleModal(true)">Create Tale from Git Repository</a>
                             </div>
                         </button>
 					</div>
@@ -28,8 +28,8 @@
 
     <!-- Sub-view changes based on URL -->
     <div class="row">
-			<div class="sixteen wide column">
-				<router-outlet></router-outlet>
+      <div class="sixteen wide column">
+        <router-outlet></router-outlet>
       </div>
     </div>
 

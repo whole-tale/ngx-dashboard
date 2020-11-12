@@ -34,7 +34,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
     }
 
     ngAfterViewInit(): void {
-      $('#createTaleDropdown').dropdown('hide');
+      $('#createTaleDropdown').dropdown({ action: 'hide' });
 
       // Sample parameters:
       //    environment=RStudio
@@ -53,23 +53,24 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
               width: '600px',
               data: { params: queryParams }
             });
-            dialogRef.afterClosed().subscribe((result: {tale: Tale, asTale: boolean}) => {
+            dialogRef.afterClosed().subscribe((result: {tale: Tale, asTale: boolean, url: string}) => {
               const tale = result.tale;
               const asTale = result.asTale;
 
               // Short-circuit for 'Cancel' case
               if (!tale) { return; }
 
-              // TODO: "Analyze in WT" case
+              // Import Tale from Dataset
               const params = {
-                url: queryParams.uri ? queryParams.uri : '', // Pull from querystring
+                url: queryParams.uri ? queryParams.uri : (result.url ? result.url : ''), // Pull from querystring/form
                 imageId: tale.imageId, // Pull from user input
                 asTale: asTale ? asTale : false, // Pull from user input
+                git: result.url ? true : false,
                 spawn: true, // ??
                 taleKwargs: tale.title ? { title: tale.title } : {}, // ??
                 lookupKwargs: {}, // ??
               };
-              this.taleService.taleCreateTaleFromDataset(params).subscribe(resp => {
+              this.taleService.taleCreateTaleFromUrl(params).subscribe(resp => {
                 this.logger.debug("Successfully submitted 'Analyze in WT' Job:", resp);
               }, err => {
                 this.logger.error("Failed to create Tale from Dataset:", err);
@@ -86,22 +87,41 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
         data: { showGit }
       };
       const dialogRef = this.dialog.open(CreateTaleModalComponent, config);
-      dialogRef.afterClosed().subscribe((result: {tale: Tale, asTale: boolean}) => {
+      dialogRef.afterClosed().subscribe((result: {tale: Tale, asTale: boolean, url?: string}) => {
         const tale = result.tale;
+        const gitUrl = result.url;
 
         if (!tale) { return; }
 
         // TODO: Validation
 
-        // TODO: Wire gitRepo up to API
+        if (showGit) {
+          // Import Tale from Git repo
+          const params = {
+            url: gitUrl ? gitUrl: '', // Pull from querystring/form
+            imageId: tale.imageId, // Pull from user input
+            asTale: false, // Pull from user input
+            git: gitUrl ? true : false,
+            spawn: true, // ??
+            taleKwargs: tale.title ? { title: tale.title } : {}, // ??
+            lookupKwargs: {}, // ??
+          };
 
-        this.taleService.taleCreateTale(tale).subscribe((response: Tale) => {
-          this.logger.debug("Successfully created Tale:", response);
-          this.taleCreated.emit(response);
-          this.router.navigate(['run', response._id])
-        }, err => {
-          this.logger.error("Failed to create Tale:", err);
-        });
+          this.taleService.taleCreateTaleFromUrl(params).subscribe(resp => {
+            this.logger.debug("Successfully submitted 'Analyze in WT' Job:", resp);
+          }, err => {
+            this.logger.error("Failed to create Tale from Dataset:", err);
+          });
+        } else {
+          // Create classic Tale
+          this.taleService.taleCreateTale(tale).subscribe((response: Tale) => {
+            this.logger.debug("Successfully created Tale:", response);
+            this.taleCreated.emit(response);
+            this.router.navigate(['run', response._id]);
+          }, err => {
+            this.logger.error("Failed to create Tale:", err);
+          });
+        }
       });
     }
 }
