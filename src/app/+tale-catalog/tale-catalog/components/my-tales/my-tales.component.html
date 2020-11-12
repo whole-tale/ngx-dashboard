@@ -13,8 +13,8 @@
     </div>
 
   <!-- Running Tales -->
-  <div class="row" *ngIf="(taleList | myTales:user | running:instances) as allRunningTales">
-    <div class="sixteen wide column" *ngIf="(taleList | searchTales:searchFilter:creators | myTales:user | running:instances) as filteredRunningTales">
+  <div class="row" *ngIf="(taleList | myTales | running:instances) as allRunningTales">
+    <div class="sixteen wide column" *ngIf="(taleList | searchTales:searchFilter:creators | myTales | running:instances) as filteredRunningTales">
 
       <div class="ui message" *ngIf="!allRunningTales.length">
           You do not have any running Tales.
@@ -83,8 +83,8 @@
     </div>
   </div>
 
-  <div class="row" style="margin-top:40px;margin-bottom:30px;" *ngIf="(taleList | myTales:user | stopped:instances) as allStoppedTales">
-    <div class="sixteen wide column" *ngIf="(taleList | searchTales:searchQuery:creators | myTales:user | stopped:instances) as filteredStoppedTales">
+  <div class="row" style="margin-top:40px;margin-bottom:30px;" *ngIf="(taleList | myTales | stopped:instances) as allStoppedTales">
+    <div class="sixteen wide column" *ngIf="(taleList | searchTales:searchQuery:creators | myTales | stopped:instances) as filteredStoppedTales">
 
       <!-- Placeholder Message -->
       <div class="ui message" *ngIf="!allStoppedTales.length">

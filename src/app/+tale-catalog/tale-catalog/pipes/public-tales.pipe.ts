@@ -8,7 +8,7 @@ export class PublicTalesPipe implements PipeTransform {
     if (!value) {
       return [];
     }
-    
-    return value.filter(tale => tale.public);
+
+    return value.filter(tale => tale._accessLevel < 1 || tale.public);
   }
 }
