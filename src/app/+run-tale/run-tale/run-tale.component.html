@@ -1,10 +1,10 @@
-<div fxFlex fxLayout="row" fxLayoutAlign="space-between stretch" [@routeAnimation]>
+<div fxFlex fxLayout="row" fxLayoutAlign="space-between stretch" [@routeAnimation] style="margin-bottom:4.5rem;">
     <div class="ui stretched stackable grid panel-container">
         <div class="row">
             <div class="sixteen wide column">
 
                 <div class="ui breadcrumb">
-                    <a [routerLink]="tale._accessLevel < 2 ? '/public' : '/mine'" class="section">
+                    <a *ngIf="tale" [routerLink]="tale._accessLevel < 2 ? '/public' : '/mine'" class="section">
                       <i class="left angle icon"></i>
                       Return to Dashboard
                     </a>
@@ -78,7 +78,7 @@
                         <a class="item" [ngClass]="{ 'active': isTabActive('metadata') }" (click)="switchTab('metadata')">
                           Metadata
                         </a>
-                        <a class="item" [ngClass]="{ 'active': isTabActive('sharing') }" (click)="switchTab('sharing')">
+                        <a class="item" *ngIf="tale._accessLevel >= 2" [ngClass]="{ 'active': isTabActive('sharing') }" (click)="switchTab('sharing')">
                           Share <span class="counter">{{ collaborators.users.length + collaborators.groups.length }}</span>
                         </a>
 

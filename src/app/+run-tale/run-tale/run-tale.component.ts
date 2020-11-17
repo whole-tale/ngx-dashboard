@@ -95,7 +95,6 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       this.taleService.taleGetTaleAccess(this.taleId).subscribe(resp => {
         this.zone.run(() => {
           this.collaborators = resp;
-          console.log('Response received:', resp);
         });
       });
     }
@@ -108,8 +107,6 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         return;
       }
 
-      this.refreshCollaborators();
-
       const params = { taleId: this.taleId };
       this.instanceService.instanceListInstances(params).subscribe((instances: Array<Instance>) => {
         const running = instances.filter(i => i.status !== 3);
@@ -120,15 +117,19 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
       this.logger.debug(`Fetching tale with _id=${this.taleId}`);
       this.taleService.taleGetTale(this.taleId)
-                      .subscribe(tale => {
+                      .subscribe((tale: Tale) => {
         if (!tale) {
           this.logger.error("Tale is null, something went horribly wrong");
 
           return;
         }
 
+        this.logger.info("Fetched tale:", tale);
         this.tale = tale;
-        this.logger.info("Fetched tale:", this.tale);
+        if (this.tale._accessLevel >= 2) {
+          this.logger.info("Fetching collaborators");
+          this.refreshCollaborators();
+        }
 
         this.userService.userGetUser(this.tale.creatorId)
                       .subscribe(creator => {

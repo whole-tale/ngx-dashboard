@@ -77,7 +77,7 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
   }
 
   ngOnInit(): void {
-    $('.ui.dropdown.access-dropdown').dropdown('activate');
+    $('.ui.dropdown.access-dropdown').dropdown({ action: 'activate' });
   }
 
   getDisplayedCollaborators(collaborators: CollaboratorList) {
