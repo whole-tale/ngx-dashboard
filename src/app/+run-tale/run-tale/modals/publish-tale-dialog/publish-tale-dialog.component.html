@@ -4,12 +4,12 @@
 <mat-dialog-content *ngIf="!repositories.length">
   <p>
     You have not yet authorized WholeTale to publish on your behalf to any repositories.
-    Add repositories by connecting additional account on the 
+    Add repositories by connecting additional account on the
     <a routerLink="settings" routerLinkActive="active" target="_blank">
       Settings
     </a> page.
   </p>
-  
+
   <p>For more information on how to publish and cite your Tale, please consult the
     <a href="https://wholetale.readthedocs.io/en/stable/users_guide/publishing.html" target="_blank">
       Publishing Guide
@@ -29,13 +29,13 @@
   <!-- Help text introducing Publishing with a link to RTD -->
   <p>
     Publishing creates an immutable copy of your
-    Tale with a DOI.For more information on publishing
-    and citing your Tale, please consult the 
+    Tale with a DOI. For more information on publishing
+    and citing your Tale, please consult the
     <a href="https://wholetale.readthedocs.io/en/stable/users_guide/publishing.html" target="_blank">
       Publishing Guide
     </a>.
   </p>
-  
+
   <!-- Target repository selector -->
   <form class="ui form">
     <div class="field">
@@ -44,39 +44,40 @@
       </select>
     </div>
   </form>
-  
+
   <!-- Help text pointing to Setting page -->
   <i>
     Don't see what you're looking for?
     Add repositories by connecting additional
-    accounts on the 
+    accounts on the
     <a routerLink="/settings" routerLinkActive="active">
       Settings
     </a>
     page.
   </i>
-  
-  
+
   <div class="ui message" *ngIf="publishStatus !== 'init'"
       [ngClass]="{ 'negative':publishStatus==='error','blue':publishStatus==='active','positive':publishStatus==='success' }">
     <div class="header">
-      <a class="ui label" [ngClass]="{ 'red': publishStatus==='error', 'blue': publishStatus==='active', 'green': publishStatus==='success' }">{{ publishStatus | uppercase }}</a>
+      <a class="ui label" id="publishStatusBadge" [ngClass]="{ 'red': publishStatus==='error', 'blue': publishStatus==='active', 'green': publishStatus==='success' }">{{ publishStatus | uppercase }}</a>
       <span *ngIf="publishStatus==='error'">An error was encountered while publishing your Tale.</span>
       <span *ngIf="publishStatus==='active'">Your Tale is being published to {{ selectedRepositoryName }}</span>
       <span *ngIf="publishStatus==='success'">{{ lastMessage }}</span>
     </div>
-    
-    <div class="ui progress active" *ngIf="publishStatus === 'active'">
+
+    <div class="ui progress indicating active" id="publish-progress" *ngIf="publishStatus === 'active'">
       <div class="bar">
         <div class="progress"></div>
       </div>
       <div class="label">{{ lastMessage || 'Publishing Tale...' }}</div>
     </div>
-    
-    <p *ngIf="publishStatus==='error'">{{ lastMessage }}</p>
-    <p *ngIf="publishStatus==='success'">Identifier: <a [href]="publishInfo.uri" target='_blank'>{{ publishInfo.pid }}</a></p>
+
+    <div *ngIf="publishStatus==='error'">
+        <pre>{{ lastMessage }}</pre>
+    </div>
+    <p *ngIf="publishStatus==='success'" style="text-align:center;">Identifier: <a [href]="latestPublish.uri" target='_blank'>{{ latestPublish.uri }}</a></p>
   </div>
- 
+
 </mat-dialog-content>
 
 <mat-dialog-actions *ngIf="repositories.length">
