@@ -73,6 +73,18 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       this.ref.detectChanges();
     }
 
+    get dashboardLink(): string {
+      if (!this.tale) {
+        return '/public';
+      } else if (this.tale._accessLevel == AccessLevel.None) {
+        return '/public';
+      } else if (this.tale._accessLevel == AccessLevel.Admin) {
+        return '/mine';
+      } else if (this.tale._accessLevel == AccessLevel.Read || this.tale._accessLevel == AccessLevel.Write) {
+        return '/shared';
+      }
+    }
+
     detectCurrentTab(): void {
       this.route.queryParams.subscribe(params => {
         const tab = params.tab;

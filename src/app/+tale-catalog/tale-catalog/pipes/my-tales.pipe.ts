@@ -12,6 +12,6 @@ export class MyTalesPipe implements PipeTransform {
       return [];
     }
 
-    return value.filter(tale => tale._accessLevel > AccessLevel.None);
+    return value.filter(tale => tale._accessLevel == AccessLevel.Admin);
   }
 }

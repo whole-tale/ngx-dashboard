@@ -1,0 +1,92 @@
+
+<!-- Shared Tales -->
+<div *ngIf="(tales$ | async) as taleList">
+
+    <!-- Search Tales -->
+    <div class="row">
+        <div class="sixteen wide column">
+            <div class="ui fluid icon wt-input input" id="tale-search-filter">
+                <input type="text" placeholder="Search Tales..." [(ngModel)]="searchQuery">
+                <i class="search icon"></i>
+            </div>
+        </div>
+    </div>
+
+  <!-- Running Tales -->
+  <app-running-tales [instances]="instances" [creators]="creators" [taleList]="taleList"></app-running-tales>
+
+  <!-- Shared Tales -->
+  <div class="row" style="margin-top:40px;margin-bottom:30px;" *ngIf="(taleList | sharedTales | stopped:instances) as allStoppedTales">
+    <div class="sixteen wide column" *ngIf="(taleList | searchTales:searchQuery:creators | sharedTales | stopped:instances) as filteredStoppedTales">
+
+      <!-- Placeholder Message -->
+      <div class="ui message" *ngIf="!allStoppedTales.length">
+          No one has shared any Tales with you.
+      </div>
+
+      <div class="ui message" *ngIf="allStoppedTales.length && !filteredStoppedTales.length">
+          No shared Tales matched your search query.
+      </div>
+
+      <div class="ui four stackable doubling selectable special cards" *ngIf="allStoppedTales.length && filteredStoppedTales.length">
+
+        <!-- Card for each Tale -->
+        <div class="ui card" *ngFor="let tale of filteredStoppedTales; index as i; trackBy: trackById">
+          <div class="extra content">
+            <div class="right floated meta" (click)="openDeleteTaleModal(tale)"><i class="close icon"></i></div>
+            <span style="text-transform:uppercase">
+              {{ tale.copyOfTale ? 'copy' : 'original' }}
+            </span>
+          </div>
+          <div class="blurring dimmable segment fluid image" id="{{ tale._id }}-dimmer" (mouseover)="showDimmer(tale)" (mouseout)="hideDimmer(tale)">
+
+            <!-- Abstract card into reusable template? Card component? -->
+            <div class="ui dimmer transition hidden">
+              <div class="content">
+                <div class="center">
+                  <a class="ui inverted button" [routerLink]="'/run/' + tale._id" [queryParams]="{ tab: 'metadata' }" routerLinkActive="active">View</a>
+                  <a class="ui tiny bottom right attached label" (click)="openDeleteTaleModal(tale)">
+                      <i class="red remove icon"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Illustration and Logo -->
+            <!-- TODO: Fix compute environment logo -->
+            <img class="pic" [src]="tale.illustration" alt="Research image">
+            <span class="zoom-icon">
+              <img [src]="tale.icon" width="80" style="width: 80px;" alt="Compute Icon">
+            </span>
+          </div>
+
+          <div class="content">
+            <div style="text-transform: uppercase; color: #ba975e;font-weight: 700;">
+                {{ tale.category }}
+            </div>
+            <div class="t-title">
+                <h3 [title]="tale.title">
+                    <a class="ui link" style="text-decoration:none;" [routerLink]="'/run/' + tale._id" [queryParams]="{ tab: 'metadata'}" routerLinkActive="active">{{ tale.title | truncate:truncateLength }}</a>
+                </h3>
+            </div>
+            <div>
+                by
+                <span *ngFor="let author of tale.authors; index as ii; trackBy: trackByAuthorOrcid" style="color:#67c096">
+                    <span *ngIf="ii > 0">, </span> <a [href]="author.orcid">{{ author.firstName }} {{ author.lastName }}</a>
+                </span>
+                <span *ngIf="!tale.authors.length && creators[tale._id]" style="color:#67c096">{{ creators[tale._id].firstName }} {{ creators[tale._id].lastName }}</span>
+                <span *ngIf="!tale.authors.length && !creators[tale._id]" style="color:#67c096">???</span>
+            </div>
+          </div>
+          <div class="extra content">
+            <span style="text-transform:uppercase">
+                {{ tale.public ? 'public' : 'private' }}
+            </span>
+            <app-tale-run-button [tale]="tale" [instance]="instances[tale._id]" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></app-tale-run-button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

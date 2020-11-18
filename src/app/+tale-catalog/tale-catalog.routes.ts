@@ -1,5 +1,6 @@
 import { MyTalesComponent } from './tale-catalog/components/my-tales/my-tales.component';
 import { PublicTalesComponent } from './tale-catalog/components/public-tales/public-tales.component';
+import { SharedTalesComponent } from './tale-catalog/components/shared-tales/shared-tales.component';
 import { TaleCatalogComponent } from './tale-catalog/tale-catalog.component';
 
 export const routes = [
@@ -19,6 +20,16 @@ export const routes = [
           meta: {
             title: 'PUBLIC.CATALOG.PUBLIC.PAGE_TITLE',
             description: 'PUBLIC.CATALOG.PUBLIC.META_DESCRIPTION'
+          }
+        },
+      },
+      {
+        path: 'shared',
+        component: SharedTalesComponent,
+        data: {
+          meta: {
+            title: 'PUBLIC.CATALOG.SHARED.PAGE_TITLE',
+            description: 'PUBLIC.CATALOG.SHARED.META_DESCRIPTION'
           }
         },
       },
