@@ -25,6 +25,7 @@ class TaleService extends __BaseService {
   static readonly taleExportTalePath = '/tale/{id}/export';
   static readonly taleGenerateManifestPath = '/tale/{id}/manifest';
   static readonly talePublishTalePath = '/tale/{id}/publish';
+  static readonly taleUpdateGitPath = '/tale/{id}/git';
 
   constructor(config: __Configuration, http: HttpClient) {
     super(config, http);
@@ -542,6 +543,40 @@ class TaleService extends __BaseService {
    */
   talePublishTale(params: TaleService.TalePublishTaleParams): __Observable<null> {
     return this.talePublishTaleResponse(params).pipe(__map(_r => _r.body as null));
+  }
+
+  /**
+   * - `id`: The ID of the Tale to modify.
+   *
+   * - `url`: The URL of the Git repo to import.
+   */
+  taleUpdateGitResponse(id: string, url: string): __Observable<__StrictHttpResponse<null>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    if (url != null) __params = __params.set('url', url.toString());
+    let req = new HttpRequest<any>('PUT', this.rootUrl + `/tale/${id}/git`, __body, {
+      headers: __headers,
+      params: __params,
+      responseType: 'json'
+    });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map(_r => {
+        return _r as __StrictHttpResponse<null>;
+      })
+    );
+  }
+
+  /**
+   * - `id`: The ID of the Tale to modify.
+   *
+   * - `url`: The URL of the Git repo to import.
+   */
+  taleUpdateGit(id: string, url: string): __Observable<null> {
+    return this.taleUpdateGitResponse(id, url).pipe(__map(_r => _r.body as null));
   }
 }
 

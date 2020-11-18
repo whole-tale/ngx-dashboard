@@ -169,6 +169,10 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         if (!gitRepo) { return; }
 
         // TODO: Wire up to API
+        const taleId = this.taleId;
+        this.taleService.taleUpdateGit(taleId, gitRepo).subscribe(resp => {
+          this.logger.info(`Git repo added to ${taleId}:`, gitRepo);
+        });
       });
     }
 
