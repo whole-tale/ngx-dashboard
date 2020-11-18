@@ -106,7 +106,7 @@
               <div class="content">
                 <div class="center">
                   <a class="ui inverted button" [routerLink]="'/run/' + tale._id" [queryParams]="{ tab: 'interact'}" routerLinkActive="active">View</a>
-                  <a class="ui tiny bottom right attached label" (click)="openDeleteTaleModal(tale)" *ngIf="tale._accessLevel > 1">
+                  <a class="ui tiny bottom right attached label" (click)="openDeleteTaleModal(tale)" *ngIf="tale._accessLevel >= AccessLevel.Admin">
                       <i class="red remove icon"></i>
                   </a>
                 </div>
