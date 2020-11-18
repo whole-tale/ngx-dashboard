@@ -20,6 +20,8 @@ import { WindowService } from '@framework/core/window.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
 
+import { AccessLevel } from '@api/models/access-level';
+
 import { RegisterDataDialogComponent } from '../modals/register-data-dialog/register-data-dialog.component';
 import { SelectDataDialogComponent } from '../modals/select-data-dialog/select-data-dialog.component';
 import { TaleWorkspacesDialogComponent } from '../modals/tale-workspaces-dialog/tale-workspaces-dialog.component';
@@ -61,6 +63,8 @@ interface Selectable {
 })
 export class TaleFilesComponent implements OnInit, OnChanges {
   uploadQueue: Set<File> = new Set();
+
+  AccessLevel: any = AccessLevel;
 
   @Input() tale: Tale;
   @Input() taleId: string;

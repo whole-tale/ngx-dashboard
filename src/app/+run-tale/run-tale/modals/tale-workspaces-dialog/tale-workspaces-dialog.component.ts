@@ -12,14 +12,7 @@ import { LogService }  from '@framework/core/log.service';
 import { TruncatePipe } from '@framework/core/truncate.pipe';
 import { enterZone }  from '@framework/ngrx';
 import { BehaviorSubject } from 'rxjs';
-
-// TODO: Move/abstract this to @api
-enum AccessLevel {
-    None = -1,
-    Read = 0,
-    Write = 1,
-    Admin = 2
-}
+import { AccessLevel } from '@api/models/access-level';
 
 enum ParentType {
     Folder = "folder",
@@ -128,7 +121,7 @@ export class TaleWorkspacesDialogComponent implements OnInit {
                       });
     }
   }
-  
+
   setCurrentRoot(resourceId: string, modelType = 'folder'): void {
     // Lookup and set our root node
     if (resourceId) {
@@ -154,7 +147,7 @@ export class TaleWorkspacesDialogComponent implements OnInit {
       this.currentPath = '';
     }
   }
-  
+
   toggledCheckbox(e: any, sel: Selectable): void {
     // Debounce single-click handler
     this.isSingleClick = true;

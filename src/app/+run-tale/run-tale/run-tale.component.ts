@@ -13,6 +13,7 @@ import { WindowService } from '@framework/core/window.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { routeAnimation } from '~/app/shared';
+import { AccessLevel } from '@api/models/access-level';
 
 import { ApiConfiguration } from '@api/api-configuration';
 import { TokenService } from '@api/token.service';
@@ -32,6 +33,8 @@ enum TaleExportFormat {
     animations: [routeAnimation]
 })
 export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges {
+    AccessLevel: any = AccessLevel;
+
     taleId: string;
     tale: Tale;
     instance: Instance;
@@ -126,7 +129,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
         this.logger.info("Fetched tale:", tale);
         this.tale = tale;
-        if (this.tale._accessLevel >= 2) {
+        if (this.tale._accessLevel >= AccessLevel.Admin) {
           this.logger.info("Fetching collaborators");
           this.refreshCollaborators();
         }

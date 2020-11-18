@@ -4,7 +4,7 @@
             <div class="sixteen wide column">
 
                 <div class="ui breadcrumb">
-                    <a *ngIf="tale" [routerLink]="tale._accessLevel < 2 ? '/public' : '/mine'" class="section">
+                    <a *ngIf="tale" [routerLink]="tale._accessLevel == AccessLevel.None ? '/public' : '/mine'" class="section">
                       <i class="left angle icon"></i>
                       Return to Dashboard
                     </a>
@@ -36,7 +36,7 @@
                                 </div>
                                 <div class="six wide column" style="text-align: right">
                                     <app-tale-run-button class="tale-run-button" [tale]="tale" [instance]="instance" isPrimary="true" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></app-tale-run-button>
-                                    <a [routerLink]="tale._accessLevel < 2 ? '/public' : '/mine'" routerLinkActive="active" class="ui button" style="margin-right: 10px">
+                                    <a [routerLink]="tale._accessLevel < AccessLevel.None ? '/public' : '/mine'" routerLinkActive="active" class="ui button" style="margin-right: 10px">
                                         Close
                                     </a>
 
@@ -78,7 +78,7 @@
                         <a class="item" [ngClass]="{ 'active': isTabActive('metadata') }" (click)="switchTab('metadata')">
                           Metadata
                         </a>
-                        <a class="item" *ngIf="tale._accessLevel >= 2" [ngClass]="{ 'active': isTabActive('sharing') }" (click)="switchTab('sharing')">
+                        <a class="item" *ngIf="tale._accessLevel >= AccessLevel.Admin" [ngClass]="{ 'active': isTabActive('sharing') }" (click)="switchTab('sharing')">
                           Share <span class="counter">{{ collaborators.users.length + collaborators.groups.length }}</span>
                         </a>
 
