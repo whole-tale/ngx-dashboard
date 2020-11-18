@@ -1,9 +1,6 @@
 
 <!-- Running Tales -->
-<div *ngIf="(tales$ | async) as taleList">
-
-  <!-- Running Tales -->
-  <div class="row" *ngIf="(taleList | myTales | running:instances) as allRunningTales">
+<div class="row" *ngIf="(taleList | myTales | running:instances) as allRunningTales">
     <div class="sixteen wide column" *ngIf="(taleList | myTales | running:instances) as filteredRunningTales">
 
       <div class="ui message" *ngIf="!allRunningTales.length">
@@ -71,5 +68,4 @@
       </div>
 
     </div>
-  </div>
 </div>
