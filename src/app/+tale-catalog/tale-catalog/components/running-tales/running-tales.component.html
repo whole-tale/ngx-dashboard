@@ -1,0 +1,75 @@
+
+<!-- Running Tales -->
+<div *ngIf="(tales$ | async) as taleList">
+
+  <!-- Running Tales -->
+  <div class="row" *ngIf="(taleList | myTales | running:instances) as allRunningTales">
+    <div class="sixteen wide column" *ngIf="(taleList | myTales | running:instances) as filteredRunningTales">
+
+      <div class="ui message" *ngIf="!allRunningTales.length">
+          You do not have any running Tales.
+      </div>
+
+      <div class="ui message" *ngIf="allRunningTales.length && !filteredRunningTales.length">
+          No running Tales matched your search query ({{ allRunningTales.length }} currently hidden).
+      </div>
+
+      <div class="ui message" *ngIf="allRunningTales.length && filteredRunningTales.length">
+
+        <p style="margin:0 0 15px;"><b>Currently running:</b> <i>{{ instanceCount }} Tale<span *ngIf="instanceCount > 1">s</span> (<span *ngIf="filteredRunningTales.length !== allRunningTales.length">{{ runningTales.length - filteredRunningTales.length }} currently hidden, </span>of 2 maximum)</i></p>
+
+        <div class="ui two stackable doubling selectable special cards">
+          <div class="ui card" *ngFor="let tale of filteredRunningTales; index as i; trackBy: trackById">
+            <div class="extra content">
+              <span style="text-transform:uppercase">
+                {{ tale.copyOfTale ? 'copy' : 'original' }}
+              </span>
+            </div>
+            <div class="blurring dimmable segment fluid image" id="{{ tale._id }}-dimmer" (mouseover)="showDimmer(tale)" (mouseout)="hideDimmer(tale)">
+              <div class="ui dimmer transition hidden">
+                <div class="content">
+                  <div class="center">
+                    <a [routerLink]="'/run/' + tale._id" [queryParams]="{ tab: 'metadata' }" routerLinkActive="active" class="ui inverted button">View</a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Illustration and Logo -->
+              <!-- TODO: Fix compute environment logo -->
+              <img class="pic" [src]="tale.illustration" alt="Research image">
+              <span class="zoom-icon">
+                <img [src]="tale.icon" width="80" style="width: 80px;" alt="Compute Icon">
+              </span>
+            </div>
+            <div class="content">
+              <div style="text-transform: uppercase; color: #ba975e;font-weight: 700;">
+                {{ tale.category }}
+              </div>
+              <div class="t-title">
+                <h3 [title]="tale.title">
+                    <a class="ui link" style="text-decoration:none;" [routerLink]="'/run/' + tale._id" [queryParams]="{ tab: 'interact'}" routerLinkActive="active">{{ tale.title | truncate:truncateLength }}</a>
+                </h3>
+              </div>
+              <div>
+                  by
+                  <span *ngFor="let author of tale.authors; index as ii; trackBy: trackByAuthorOrcid" style="color:#67c096">
+                      <span *ngIf="ii > 0">, </span> <a [href]="author.orcid">{{ author.firstName }} {{ author.lastName }}</a>
+                  </span>
+                  <span *ngIf="!tale.authors.length && creators[tale._id]" style="color:#67c096">{{ creators[tale._id].firstName }} {{ creators[tale._id].lastName }}</span>
+                  <span *ngIf="!tale.authors.length && !creators[tale._id]" style="color:#67c096">???</span>
+              </div>
+            </div>
+            <div class="extra content">
+              <span style="text-transform:uppercase">
+                  {{ tale.public ? 'public' : 'private' }}
+              </span>
+              <app-tale-run-button [tale]="tale" [instance]="instances[tale._id]" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></app-tale-run-button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
