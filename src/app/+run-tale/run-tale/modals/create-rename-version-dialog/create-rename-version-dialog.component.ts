@@ -10,7 +10,7 @@ import { LogService }  from '@framework/core/log.service';
 })
 export class CreateRenameVersionDialogComponent {
   name = "";
-  force = false;
+  force = true;
 
   constructor(private logger: LogService,
               @Inject(MAT_DIALOG_DATA) public data: { mode: string }) {}

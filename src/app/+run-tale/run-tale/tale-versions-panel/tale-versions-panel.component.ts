@@ -79,17 +79,20 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
 
   /** Global panel functions */
   saveNewVersion(): void {
-    // TODO: Prompt for name (optional) / force?
+    // Prompt for name (optional) / force?
     this.openCreateRenameModal("create", (result: { name: string, force?: boolean }) => {
-    console.log('Creating New Tale version:', result);
-      this.versionService.versionCreateVersion({ taleId: this.tale._id, name: result.name, force: true }).subscribe(version => {
+      console.log('Creating New Tale version:', result);
+      const params: VersionService.VersionCreateVersionParams = { taleId: this.tale._id, force: true };
+
+      // Only send name if it has a value (backend sets the name otherwise)
+      if (result.name) { params.name = result.name; }
+
+      this.versionService.versionCreateVersion(params).subscribe(version => {
         console.log("Version saved successfully:", version);
         this.timeline.unshift(version);
         this.ref.detectChanges();
 
-        setTimeout(() => {
-          $('.ui.version.dropdown').dropdown();
-        }, 500);
+        setTimeout($('.ui.version.dropdown').dropdown, 500);
       });
     });
   }
@@ -132,7 +135,7 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
     this.openCreateRenameModal("rename", (result: { name: string, force?: boolean }) => {
       console.log('Renaming Tale version:', result);
 
-      // TODO: Prompt for new name
+      // Prompt for new name, disable "Save" if empty
       this.versionService.versionPutRenameVersion(version._id, result.name).subscribe(resp => {
         this.logger.info("Tale version successfully renamed:", result.name);
         const idx = this.timeline.indexOf(version);
