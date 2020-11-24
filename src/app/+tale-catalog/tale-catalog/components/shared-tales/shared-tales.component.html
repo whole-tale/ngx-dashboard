@@ -33,7 +33,6 @@
         <!-- Card for each Tale -->
         <div class="ui card" *ngFor="let tale of filteredStoppedTales; index as i; trackBy: trackById">
           <div class="extra content">
-            <div class="right floated meta" (click)="openDeleteTaleModal(tale)"><i class="close icon"></i></div>
             <span style="text-transform:uppercase">
               {{ tale.copyOfTale ? 'copy' : 'original' }}
             </span>

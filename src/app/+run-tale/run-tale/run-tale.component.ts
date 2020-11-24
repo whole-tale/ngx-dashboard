@@ -74,9 +74,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     }
 
     get dashboardLink(): string {
-      if (!this.tale) {
-        return '/public';
-      } else if (this.tale._accessLevel == AccessLevel.None) {
+      if (!this.tale || this.tale._accessLevel == AccessLevel.None) {
         return '/public';
       } else if (this.tale._accessLevel == AccessLevel.Admin) {
         return '/mine';
