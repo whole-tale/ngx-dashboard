@@ -26,7 +26,6 @@ export interface Tale extends BaseDocument {
   title: string;
   updated: Date;
   workspaceId: string;
-  workspaceModified: number;
 
   // currently unused by frontend
   _modelType: string;
