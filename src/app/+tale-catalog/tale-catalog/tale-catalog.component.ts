@@ -66,7 +66,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
                 imageId: tale.imageId, // Pull from user input
                 asTale: asTale ? asTale : false, // Pull from user input
                 git: result.url ? true : false,
-                spawn: true, // ??
+                spawn: true, // if true, immediately launch a Tale instance
                 taleKwargs: tale.title ? { title: tale.title } : {}, // ??
                 lookupKwargs: {}, // ??
               };
@@ -102,15 +102,17 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
             imageId: tale.imageId, // Pull from user input
             asTale: false, // Pull from user input
             git: gitUrl ? true : false,
-            spawn: true, // ??
+            spawn: false, // if true, immediately launch a Tale instance
             taleKwargs: tale.title ? { title: tale.title } : {}, // ??
             lookupKwargs: {}, // ??
           };
 
-          this.taleService.taleCreateTaleFromUrl(params).subscribe(resp => {
-            this.logger.debug("Successfully submitted 'Analyze in WT' Job:", resp);
+          this.taleService.taleCreateTaleFromUrl(params).subscribe((response: Tale) => {
+            this.logger.debug("Importing Tale from Git:", response);
+            this.taleCreated.emit(response);
+            this.router.navigate(['run', response._id]);
           }, err => {
-            this.logger.error("Failed to create Tale from Dataset:", err);
+            this.logger.error("Failed to create Tale from Git repo:", err);
           });
         } else {
           // Create classic Tale
