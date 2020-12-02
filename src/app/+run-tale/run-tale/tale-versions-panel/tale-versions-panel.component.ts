@@ -47,7 +47,7 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
 
   ngOnChanges(): void {
     setTimeout(() => {
-      $('.ui.version.dropdown').dropdown();
+      $('.ui.version.dropdown').dropdown({ context: 'body', keepOnScreen: true});
     }, 500);
   }
 
@@ -82,17 +82,21 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
     // Prompt for name (optional) / force?
     this.openCreateRenameModal("create", (result: { name: string, force?: boolean }) => {
       console.log('Creating New Tale version:', result);
-      const params: VersionService.VersionCreateVersionParams = { taleId: this.tale._id, force: true };
+      const params: VersionService.VersionCreateVersionParams = {
+        taleId: this.tale._id,
+        name: result.name,
+        force: result.force
+      };
 
-      // Only send name if it has a value (backend sets the name otherwise)
-      if (result.name) { params.name = result.name; }
-
+      // Backend sets the name, if not provided
       this.versionService.versionCreateVersion(params).subscribe(version => {
         console.log("Version saved successfully:", version);
         this.timeline.unshift(version);
         this.ref.detectChanges();
 
-        setTimeout($('.ui.version.dropdown').dropdown, 500);
+        this.zone.runOutsideAngular(() => setTimeout(() => {
+          $('.ui.version.dropdown').dropdown({ context: 'body', keepOnScreen: true});
+        }, 500));
       });
     });
   }

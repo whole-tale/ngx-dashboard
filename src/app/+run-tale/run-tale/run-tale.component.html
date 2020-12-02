@@ -79,19 +79,22 @@
                           Metadata
                         </a>
 
-                        <a class="item right floated" (click)="showVersionsPanel = !showVersionsPanel">
-                          <i class="fas fa-history lighter"></i>
-                        </a>
+                        <div class="right menu">
+                            <a *ngIf="instance && instance.status === 1 && currentTab === 'interact'" id="popout-link" class="item" [href]="instance.url" target="_blank">
+                                <i class="fas fa-fw fa-external-link-alt"></i>
+                            </a>
 
-                        <a *ngIf="instance && instance.status === 1" id="popout-link" class="right floated item" [href]="instance.url" target="_blank">
-                            <i class="fas fa-fw fa-external-link-alt"></i>
-                        </a>
+                            <a class="item" (click)="toggleVersionsPanel()">
+                                <i class="fas fa-history lighter"></i>
+                            </a>
+                        </div>
+
                     </div>
 
                     <div class="wt-panel-body" style="padding-bottom:40px" [ngSwitch]="currentTab">
                         <div class="ui grid">
                             <div class="row">
-                                <div [ngClass]="{ 'sixteen wide column': !showVersionsPanel, 'twelve wide column': showVersionsPanel }">
+                                <div [ngClass]="{ 'sixteen': !isVersionsPanelShown(), 'twelve': isVersionsPanelShown(), 'wide column': true }">
                                     <div *ngSwitchCase="'interact'">
                                         <app-tale-interact [tale]="tale" [instance]="instance"></app-tale-interact>
                                     </div>
@@ -108,7 +111,7 @@
                                         Select a tab to continue
                                     </div>
                                 </div>
-                                <div class="four wide right floated column" *ngIf="showVersionsPanel">
+                                <div class="four wide right floated column" *ngIf="isVersionsPanelShown()">
                                     <app-tale-versions-panel [tale]="tale"></app-tale-versions-panel>
                                 </div>
                             </div>

@@ -39,6 +39,11 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     instance: Instance;
     creator: User;
     currentTab = 'metadata';
+    showVersionsPanel = false;
+
+    isVersionsPanelShown() :boolean {
+      return this.showVersionsPanel;
+    }
 
     constructor(
       private ref: ChangeDetectorRef,
@@ -69,6 +74,10 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         this.instance = event.instance;
       }
       this.ref.detectChanges();
+    }
+
+    toggleVersionsPanel(): void {
+      this.showVersionsPanel = !this.showVersionsPanel;
     }
 
     detectCurrentTab(): void {
