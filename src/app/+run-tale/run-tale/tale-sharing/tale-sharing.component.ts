@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnInit, Output } from '@angular/core';
 import { ApiConfiguration } from '@api/api-configuration';
+import { AccessLevel } from '@api/models/access-level';
 import { Group } from '@api/models/group';
 import { Tale } from '@api/models/tale';
 import { User } from '@api/models/user';
@@ -43,9 +44,9 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
   @Output() collaboratorsChange: EventEmitter<CollaboratorList> = new EventEmitter<CollaboratorList>();
   displayedCollaborators: Array<Collaborator> = [];
 
+  AccessLevel = AccessLevel;
   users: Array<any> = [];
 
-  newCollabLogin = '';
   newCollabAccess = 0;
   newCollabUser: User;
 
@@ -77,91 +78,116 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
   }
 
   ngOnInit(): void {
-    $('.ui.dropdown.access-dropdown').dropdown({ action: 'activate' });
+    $('.ui.dropdown.access-dropdown').dropdown();
   }
 
   getDisplayedCollaborators(collaborators: CollaboratorList) {
-    const users = collaborators.users.filter(collab => collab.id !== this.tale.creatorId);
-    return users.concat(collaborators.groups)
+    return collaborators.users.filter(collab => collab.id !== this.tale.creatorId).concat(collaborators.groups);
+  }
+
+  fetchUsers(): Promise<Array<User>> {
+    const userFetch = this.userService.userFind({}).toPromise();
+    userFetch.then((users: Array<User>) => {
+      users.forEach((user: User) => {
+        user.name = `${user.firstName} ${user.lastName}`;
+      });
+
+      this.users = users;
+      this.ref.detectChanges();
+
+      return users;
+    });
+    return userFetch;
+  }
+
+  filterUsers(users: Array<User>): Array<User> {
+    return users.filter(user => {
+      const isCreator = this.tale.creatorId === user._id;
+      const existingCollaborator = this.collaborators.users.find(collab => user._id == collab.id);
+
+      return !isCreator && !existingCollaborator;
+    });
+  }
+
+  refilterSearch(filteredUsers: Array<User>): void {
+    $('.ui.search').search('setting', 'source', filteredUsers);
+    $('.ui.search').search('clear cache');
+    this.ref.detectChanges();
+  }
+
+  initializeSearch(filteredUsers: Array<User>): void {
+    const self = this;
+
+    // Initialize the user search
+    $('#userSearch').search({
+      source: filteredUsers,
+      type: 'standard',
+      fullTextSearch: 'true',
+      searchOnFocus: true,
+      debug: false,
+      verbose: false,
+      minCharacters: 0,
+      templates: {
+        // Customize user search result template
+        userSearch: (response: any, fields: any) => {
+          //this.users = response.results;
+          // returns results html for custom results
+          let template = `<div class="ui relaxed divided list" style="padding:10px;">`
+          response.results.forEach((result: User) => {
+            template +=  `<a class="item clickable result">
+                <div class="image">
+                  <img class="ui avatar image circular" src="${result[fields.image]}"></img>
+                </div>
+                <div class="content">
+                  <div class="title">${result[fields.title]}</div>
+                  <div class="description">${result[fields.description]}</div>
+                </div>
+              </a>`
+          })
+          template += `</div>`
+          return template;
+        },
+      },
+      fields: {
+        title: 'name',
+        image: 'gravatar_baseUrl',
+        description: 'login',
+        displayField: 'name'
+      },
+      searchFields: [
+        'login',
+        'name',
+        'email',
+        'firstName',
+        'lastName',
+        'description',
+      ],
+      onSelect: function(result: any, response: any) {
+        self.logger.debug('Selected:', result);
+
+        const displayName = result.login;
+        $('#userSearch').search('set value', displayName);
+        //$('#userSearch').find('input').val(displayName);
+        $('#userSearch').search('hide results');
+        $('#userSearchInput').val(displayName);
+
+        self.newCollabUser = result;
+        self.ref.detectChanges();
+        return true;
+      }
+    });
+
+    this.ref.detectChanges();
   }
 
   ngOnChanges(): void {
-    const self = this;
-
     if (this.tale && this.tale.public) {
       $('#publicRadio').checkbox('check');
     } else if (this.tale && !this.tale.public) {
       $('#privateRadio').checkbox('check');
     }
 
-    this.userService.userFind({}).subscribe((users: Array<User>) => {
-      users.forEach((user: User) => {
-        user.name = `${user.firstName} ${user.lastName}`;
-      });
-      this.users = users.filter(user => this.tale.creatorId !== user._id);
-
-      // Initialize our user search
-      $('#userSearch').search({
-        source: this.users,
-        type: 'standard',
-        fullTextSearch: 'true',
-        searchOnFocus: true,
-        debug: true,
-        verbose: true,
-        minCharacters: 0,
-        templates: {
-          // Customize user search result template
-          userSearch: (response: any, fields: any) => {
-            //this.users = response.results;
-            // returns results html for custom results
-            let template = `<div class="ui relaxed divided list" style="padding:10px;">`
-            response.results.forEach((result: User) => {
-              template +=  `<a class="item clickable result">
-                  <div class="image">
-                    <img class="ui avatar image circular" src="${result[fields.image]}"></img>
-                  </div>
-                  <div class="content">
-                    <div class="title">${result[fields.title]}</div>
-                    <div class="description">${result[fields.description]}</div>
-                  </div>
-                </a>`
-            })
-            template += `</div>`
-            return template;
-          },
-        },
-        fields: {
-          title: 'name',
-          image: 'gravatar_baseUrl',
-          description: 'login',
-          displayField: 'name'
-        },
-        searchFields: [
-          'login',
-          'name',
-          'email',
-          'firstName',
-          'lastName',
-          'description',
-        ],
-        onSelect: function(result: any, response: any) {
-          self.logger.debug('Selected:', result);
-
-          // this.newCollabLogin = result.login;
-          const displayName = result.login;
-          $('#loginSearch').search('set value', displayName);
-          //$('#loginSearch').find('input').val(displayName);
-          $('#loginSearch').search('hide results');
-          $('#loginInput').val(displayName);
-
-          self.newCollabUser = result;
-          self.ref.detectChanges();
-          return true;
-        }
-      });
-
-      this.ref.detectChanges();
-    });
+    this.fetchUsers().then(users => this.initializeSearch(this.filterUsers(users)));
 
     // Initialize new collaborator access dropdown menu
     $('#new-collab-access-dropdown').dropdown({ action: (text: string, value: any) => {
@@ -217,13 +243,13 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
   }
 
   addCollaborator() {
-    const collab = {
+    const collab: Collaborator = {
       id: this.newCollabUser._id,
-      level: +this.newCollabAccess,
-      login: this.newCollabLogin,
+      level: this.newCollabAccess === 1 ? AccessLevel.Write : AccessLevel.Read,
+      login: this.newCollabUser.login,
       name: this.newCollabUser.name,
       showAlert: true,
-      description: this.newCollabUser.description,
+      affiliation: this.newCollabUser.description,
       gravatar_baseUrl: this.newCollabUser.gravatar_baseUrl,
     };
     this.collaborators.users.push(collab);
@@ -231,10 +257,13 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
     this.saveCollaborators().then(resp => {
       this.clearNewCollaborator();
       this.ref.detectChanges();
+
       setTimeout(() => {
         const selector = `#${collab.id}-access-dropdown`;
         this.initializeDropdown(selector, collab);
-      });
+      }, 200);
+    }, err => {
+      this.logger.error(`Failed to save access list for taleId=${this.tale._id}:`, err)
     });
 
     // TODO: Handle failure
@@ -261,6 +290,21 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
   }
 
   saveCollaborators(): Promise<any> {
+    // Make sure Owner retains access (backend should validate this too)
+    const owner = this.collaborators.users.find(user => this.tale.creatorId == user.id);
+    if (!owner) {
+      this.collaborators.users.push({
+        id: this.tale.creatorId,
+        level: this.tale._accessLevel,
+        login: this.creator.login,
+        name: this.creator.name,
+        flags: [],
+        showAlert: false,
+        gravatar_baseUrl: this.creator.gravatar_baseUrl,
+        affiliation: this.creator.description,
+      });
+    }
+
     const params = {
       id: this.tale._id,
       access: JSON.stringify(this.collaborators)
@@ -269,14 +313,20 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
     let promise = this.taleService.taleUpdateTaleAccess(params).toPromise();
     promise.then((response: any) => {
       this.logger.debug('Tale access updated successfully:', response);
+      this.collaboratorsChange.emit(this.collaborators);
+      this.refilterSearch(this.filterUsers(this.users));
     });
     return promise;
   }
 
+  newCollabAccessChanged(event: any): void {
+    this.newCollabAccess = +event.currentTarget.value
+    this.ref.detectChanges();
+  }
+
   clearNewCollaborator() {
-    $('#loginSearch').search('set value', '');
-    this.newCollabLogin = '';
-    this.newCollabAccess = 1;
+    $('#userSearch').search('set value', '');
+    this.newCollabAccess = 0;
     this.newCollabUser = null;
   }
 

@@ -48,7 +48,7 @@
             </div>
 
             <div id="new-collab-access-dropdown" class="ui compact selection dropdown access-dropdown">
-              <input type="hidden" name="access" [(ngModel)]="newCollabAccess">
+              <input type="hidden" name="access" (change)="newCollabAccessChanged($event)">
               <i class="dropdown icon"></i>
               <div class="text">Can View</div>
               <div class="menu">
@@ -74,8 +74,8 @@
                        <i class="dropdown icon"></i>
                        <div class="text">Can View</div>
                        <div class="menu">
-                         <div class="item" data-value="0">Can View</div>
-                         <div class="item" data-value="1">Can Edit</div>
+                         <div class="item access-dropdown" data-value="0">Can View</div>
+                         <div class="item access-dropdown" data-value="1">Can Edit</div>
                        </div>
                     </div>
 

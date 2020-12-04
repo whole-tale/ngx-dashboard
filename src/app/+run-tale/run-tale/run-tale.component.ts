@@ -106,9 +106,11 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
     refreshCollaborators() {
       this.taleService.taleGetTaleAccess(this.taleId).subscribe(resp => {
-        this.zone.run(() => {
+        //this.zone.run(() => {
+          this.logger.info("Fetched collaborators:", resp);
           this.collaborators = resp;
-        });
+          this.ref.detectChanges();
+        //});
       });
     }
 
@@ -140,7 +142,6 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         this.logger.info("Fetched tale:", tale);
         this.tale = tale;
         if (this.tale._accessLevel >= AccessLevel.Admin) {
-          this.logger.info("Fetching collaborators");
           this.refreshCollaborators();
         }
 
