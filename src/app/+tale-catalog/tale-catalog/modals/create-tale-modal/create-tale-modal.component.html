@@ -2,9 +2,14 @@
 
 <mat-dialog-content>
   <form class="ui form segment">
+    <div class="field" *ngIf="showGit">
+      <label>Git repository URL</label>
+      <input matInput type="text" name="repo" placeholder="Enter a repository URL" [(ngModel)]="gitUrl" required />
+    </div>
+
     <div class="field">
       <label>Title</label>
-      <input matInput type="text" name="tale-name" placeholder="Enter a Tale Name" [(ngModel)]="newTale.title" required />
+      <input matInput type="text" name="title" placeholder="Enter a Tale Name" [(ngModel)]="newTale.title" required />
     </div>
 
     <div class="field">
@@ -35,7 +40,7 @@
             <label>
                 <b>READ ONLY</b>
                 <i style="margin-left:5px;">recommended</i> — Treat as source dataset for analysis
-                <a href="https://docs.wholetale.org/en/stable/users_guide/compose.html" 
+                <a href="https://docs.wholetale.org/en/stable/users_guide/compose.html"
                    style="margin-left: .75rem;font-style:italic" target="_blank">Why would I do this?</a>
             </label>
         </div>
@@ -53,7 +58,7 @@
 
 <mat-dialog-actions>
   <button class="ui black deny button" mat-dialog-close>Cancel</button>
-  <button class="ui positive right labeled icon button" [disabled]="!newTale.title || !newTale.imageId" [mat-dialog-close]="result()">
+  <button class="ui positive right labeled icon button" [disabled]="!newTale.title || !newTale.imageId || (data.showGit && !gitUrl)" [mat-dialog-close]="result()">
     Create New Tale
     <i class="play icon"></i>
   </button>

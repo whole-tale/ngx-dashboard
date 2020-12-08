@@ -15,10 +15,13 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
   newTale: Tale;
   datasetCitation: any;
   asTale: boolean = false;
+  gitUrl = '';
+
+  showGit = false;
 
   environments: Array<Image> = [];
 
-  constructor(private zone: NgZone, public dialogRef: MatDialogRef<CreateTaleModalComponent>, @Inject(MAT_DIALOG_DATA) public data:any, private imageService: ImageService) {
+  constructor(private zone: NgZone, public dialogRef: MatDialogRef<CreateTaleModalComponent>, @Inject(MAT_DIALOG_DATA) public data: { params: any, showGit: boolean }, private imageService: ImageService) {
     this.newTale = {
       title: (data && data.params) ? data.params.name : '',
       imageId: '',
@@ -31,6 +34,7 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
       copyOfTale: null,
       description: '### Provide a description for your Tale'
     };
+    this.showGit = data.showGit;
   }
 
   ngOnInit(): void {
@@ -41,8 +45,12 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
     $('.ui.checkbox').checkbox();
   }
 
-  result(): { tale: Tale, asTale: boolean } {
-    return { tale: this.newTale, asTale: this.asTale };
+  result(): { tale: Tale, asTale: boolean, url?: string } {
+    if (this.data.showGit) {
+      return { tale: this.newTale, asTale: this.asTale, url: this.gitUrl };
+    } else {
+      return { tale: this.newTale, asTale: this.asTale };
+    }
   }
 
   parseParameters(): void {

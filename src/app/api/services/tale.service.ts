@@ -14,7 +14,7 @@ import { Tale } from '../models/tale';
 class TaleService extends __BaseService {
   static readonly taleListTalesPath = '/tale';
   static readonly taleCreateTalePath = '/tale';
-  static readonly taleCreateTaleFromDatasetPath = '/tale/import';
+  static readonly taleCreateTaleFromUrlPath = '/tale/import';
   static readonly taleDeleteTalePath = '/tale/{id}';
   static readonly taleGetTalePath = '/tale/{id}';
   static readonly taleUpdateTalePath = '/tale/{id}';
@@ -25,6 +25,7 @@ class TaleService extends __BaseService {
   static readonly taleExportTalePath = '/tale/{id}/export';
   static readonly taleGenerateManifestPath = '/tale/{id}/manifest';
   static readonly talePublishTalePath = '/tale/{id}/publish';
+  static readonly taleUpdateGitPath = '/tale/{id}/git';
 
   constructor(config: __Configuration, http: HttpClient) {
     super(config, http);
@@ -127,7 +128,7 @@ class TaleService extends __BaseService {
 
   /**
    * Currently, this task only handles importing raw data. A serialized Tale can be sent as the body of the request using an appropriate content-type and with the other parameters as part of the query string. The file will be stored in a temporary space. However, it is not currently being processed in any way.
-   * @param params The `TaleService.TaleCreateTaleFromDatasetParams` containing the following parameters:
+   * @param params The `TaleService.TaleCreateTaleFromUrlParams` containing the following parameters:
    *
    * - `url`: External dataset identifier.
    *
@@ -139,12 +140,15 @@ class TaleService extends __BaseService {
    *
    * - `imageId`: The ID of the tale's image.
    *
+   * - `git`: If True, assume that url is a git repo that needs to be cloned to the workspace.
+   *
    * - `asTale`: If True, assume that external dataset is a Tale.
    */
-  taleCreateTaleFromDatasetResponse(params: TaleService.TaleCreateTaleFromDatasetParams): __Observable<__StrictHttpResponse<null>> {
+  taleCreateTaleFromUrlResponse(params: TaleService.TaleCreateTaleFromUrlParams): __Observable<__StrictHttpResponse<null>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
+    if (params.git != null) __params = __params.set('git', params.git.toString());
     if (params.url != null) __params = __params.set('url', params.url.toString());
     if (params.taleKwargs != null) __params = __params.set('taleKwargs', JSON.stringify(params.taleKwargs));
     if (params.spawn != null) __params = __params.set('spawn', params.spawn.toString());
@@ -166,7 +170,7 @@ class TaleService extends __BaseService {
   }
   /**
    * Currently, this task only handles importing raw data. A serialized Tale can be sent as the body of the request using an appropriate content-type and with the other parameters as part of the query string. The file will be stored in a temporary space. However, it is not currently being processed in any way.
-   * @param params The `TaleService.TaleCreateTaleFromDatasetParams` containing the following parameters:
+   * @param params The `TaleService.TaleCreateTaleFromUrlParams` containing the following parameters:
    *
    * - `url`: External dataset identifier.
    *
@@ -178,10 +182,12 @@ class TaleService extends __BaseService {
    *
    * - `imageId`: The ID of the tale's image.
    *
+   * - `git`: If True, assume that url is a git repo that needs to be cloned to the workspace.
+   *
    * - `asTale`: If True, assume that external dataset is a Tale.
    */
-  taleCreateTaleFromDataset(params: TaleService.TaleCreateTaleFromDatasetParams): __Observable<null> {
-    return this.taleCreateTaleFromDatasetResponse(params).pipe(__map(_r => _r.body as null));
+  taleCreateTaleFromUrl(params: TaleService.TaleCreateTaleFromUrlParams): __Observable<null> {
+    return this.taleCreateTaleFromUrlResponse(params).pipe(__map(_r => _r.body as null));
   }
 
   /**
@@ -538,6 +544,40 @@ class TaleService extends __BaseService {
   talePublishTale(params: TaleService.TalePublishTaleParams): __Observable<null> {
     return this.talePublishTaleResponse(params).pipe(__map(_r => _r.body as null));
   }
+
+  /**
+   * - `id`: The ID of the Tale to modify.
+   *
+   * - `url`: The URL of the Git repo to import.
+   */
+  taleUpdateGitResponse(id: string, url: string): __Observable<__StrictHttpResponse<null>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    if (url != null) __params = __params.set('url', url.toString());
+    let req = new HttpRequest<any>('PUT', this.rootUrl + `/tale/${id}/git`, __body, {
+      headers: __headers,
+      params: __params,
+      responseType: 'json'
+    });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map(_r => {
+        return _r as __StrictHttpResponse<null>;
+      })
+    );
+  }
+
+  /**
+   * - `id`: The ID of the Tale to modify.
+   *
+   * - `url`: The URL of the Git repo to import.
+   */
+  taleUpdateGit(id: string, url: string): __Observable<null> {
+    return this.taleUpdateGitResponse(id, url).pipe(__map(_r => _r.body as null));
+  }
 }
 
 module TaleService {
@@ -587,11 +627,11 @@ module TaleService {
   }
 
   /**
-   * Parameters for taleCreateTaleFromDataset
+   * Parameters for taleCreateTaleFromUrl
    */
-  export interface TaleCreateTaleFromDatasetParams {
+  export interface TaleCreateTaleFromUrlParams {
     /**
-     * External dataset identifier.
+     * External dataset identifier or git repo.
      */
     url?: string;
 
@@ -614,6 +654,11 @@ module TaleService {
      * The ID of the tale's image.
      */
     imageId?: string;
+
+    /**
+     * If True, assume that url is a git repo that needs to be cloned to the workspace.
+     */
+    git?: boolean;
 
     /**
      * If True, assume that external dataset is a Tale.
