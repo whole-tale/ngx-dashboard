@@ -16,6 +16,7 @@ import { MarkdownModule } from 'ngx-markdown';
 import { routes } from './run-tale.routes';
 import { PublishTaleDialogComponent } from './run-tale/modals/publish-tale-dialog/publish-tale-dialog.component';
 import { RegisterDataDialogComponent } from './run-tale/modals/register-data-dialog/register-data-dialog.component';
+import { ConnectGitRepoDialogComponent } from './run-tale/modals/connect-git-repo-dialog/connect-git-repo-dialog.component';
 import { SelectDataDialogComponent } from './run-tale/modals/select-data-dialog/select-data-dialog.component';
 import { TaleWorkspacesDialogComponent } from './run-tale/modals/tale-workspaces-dialog/tale-workspaces-dialog.component';
 import { RunTaleComponent } from './run-tale/run-tale.component';
@@ -38,8 +39,9 @@ import { TaleSharingComponent } from './run-tale/tale-sharing/tale-sharing.compo
     PublishTaleDialogComponent,
     SelectDataDialogComponent,
     RegisterDataDialogComponent,
-    TaleWorkspacesDialogComponent
+    TaleWorkspacesDialogComponent,
+    ConnectGitRepoDialogComponent
   ],
-  entryComponents: [PublishTaleDialogComponent, SelectDataDialogComponent, RegisterDataDialogComponent, TaleWorkspacesDialogComponent]
+  entryComponents: [PublishTaleDialogComponent, SelectDataDialogComponent, RegisterDataDialogComponent, TaleWorkspacesDialogComponent, ConnectGitRepoDialogComponent]
 })
 export class RunTaleModule {}

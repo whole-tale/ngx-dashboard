@@ -18,6 +18,7 @@ import { AccessLevel } from '@api/models/access-level';
 import { ApiConfiguration } from '@api/api-configuration';
 import { TokenService } from '@api/token.service';
 import { PublishTaleDialogComponent } from './modals/publish-tale-dialog/publish-tale-dialog.component';
+import { ConnectGitRepoDialogComponent } from './modals/connect-git-repo-dialog/connect-git-repo-dialog.component';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -189,7 +190,19 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     }
 
     openConnectGitRepoDialog() {
-      console.log('Connecting Git repo');
+      const config: MatDialogConfig = {
+        data: { tale: this.tale }
+      };
+      const dialogRef = this.dialog.open(ConnectGitRepoDialogComponent, config);
+      dialogRef.afterClosed().subscribe((gitRepo: string) => {
+        if (!gitRepo) { return; }
+
+        // TODO: Wire up to API
+        const taleId = this.taleId;
+        this.taleService.taleUpdateGit(taleId, gitRepo).subscribe(resp => {
+          this.logger.info(`Git repo added to ${taleId}:`, gitRepo);
+        });
+      });
     }
 
     rebuildTale(): void {

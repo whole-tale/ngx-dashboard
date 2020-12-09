@@ -1,0 +1,22 @@
+<h1 mat-dialog-title>Connect to Git Repository</h1>
+
+<mat-dialog-content>
+  <div class="ui grid content">
+    <div class="row">
+      <div class="sixteen wide column">
+        <p>Connect Tale workspace to an existing Git repository.</p>
+        <div class="ui fluid input">
+            <input type="url" [(ngModel)]="gitRepo" placeholder="URL of a public Git repository">
+        </div>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button class="ui black deny button" mat-dialog-close>Cancel</button>
+  <button class="ui primary right labeled icon button" [disabled]="!valid()" [mat-dialog-close]="gitRepo">
+    Import
+    <i class="checkmark icon"></i>
+  </button>
+</mat-dialog-actions>
