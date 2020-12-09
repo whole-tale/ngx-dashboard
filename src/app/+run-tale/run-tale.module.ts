@@ -42,7 +42,7 @@ import { TaleVersionsPanelComponent } from './run-tale/tale-versions-panel/tale-
     SelectDataDialogComponent,
     RegisterDataDialogComponent,
     TaleWorkspacesDialogComponent,
-    ConnectGitRepoDialogComponent
+    ConnectGitRepoDialogComponent,
     CreateRenameVersionDialogComponent,
     TaleVersionInfoDialogComponent,
   ],
