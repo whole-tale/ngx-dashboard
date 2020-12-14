@@ -20,3 +20,33 @@
   border-radius: 0;
   border: none;
 }
+
+.ui.form {
+  width: 30vw;
+}
+
+.smallmargin {
+  margin-top: 10px;
+}
+
+.name-input-row {
+  padding-bottom: 0 !important;
+}
+
+.force-checkbox-row {
+  padding-top: 10px !important;
+}
+
+.validation-label-row {
+  margin: 0;
+  padding: 0 !important;
+}
+
+.ng-valid[required]:not(form),
+.ng-valid.required:not(form) {
+  border-left: 5px solid rgb(139, 196, 74); /* green */
+}
+
+.ng-invalid:not(form) {
+  border-left: 5px solid #a94442; /* red */
+}

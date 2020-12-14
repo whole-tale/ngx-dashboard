@@ -4,6 +4,7 @@ import { Tale } from '@api/models/tale';
 import { Version } from '@api/models/version';
 import { TaleService } from '@api/services/tale.service';
 import { VersionService } from '@api/services/version.service';
+import { NotificationService } from '@shared/error-handler/services/notification.service';
 import { LogService } from '@framework/core/log.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { TaleAuthor } from '@tales/models/tale-author';
@@ -31,7 +32,8 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
               private logger: LogService,
               private taleService: TaleService,
               private versionService: VersionService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private notificationService: NotificationService) {
 
   }
 
@@ -102,7 +104,7 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
   }
 
   openCreateRenameModal(mode: string = "create", after: Function): void {
-      const config = { data: { mode } };
+      const config = { data: { taleId: this.tale._id, mode } };
       const dialogRef = this.dialog.open(CreateRenameVersionDialogComponent, config);
       dialogRef.afterClosed().subscribe((result: { name: string, force?: boolean }) => {
         if (!result) { return; }
@@ -145,6 +147,9 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
         const idx = this.timeline.indexOf(version);
         this.timeline[idx].name = result.name;
         this.ref.detectChanges();
+      }, (err) => {
+        console.debug("Error recv'd:", err);
+        this.notificationService.showError("Error: something went wrong.");
       });
     });
   }

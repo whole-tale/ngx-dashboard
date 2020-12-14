@@ -20,7 +20,7 @@ class VersionService extends __BaseService {
 
   // TBD
   static readonly versionGetDataSetPath = '/version/{id}/dataSet';
-  static readonly versionGetExistsPath = '/version/{id}/exists';
+  static readonly versionGetExistsPath = '/version/exists';
   static readonly versionGetLatestPath = '/version/{id}/latest';
 
   // Admin-only
@@ -164,6 +164,29 @@ class VersionService extends __BaseService {
   }
   versionPutRenameVersion(id: string, name: string): __Observable<null> {
     return this.versionPutRenameVersionResponse(id, name).pipe(__map(_r => _r.body as null));
+  }
+
+  versionExistsResponse(rootId: string, name: string): __Observable<__StrictHttpResponse<null>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (rootId != null) __params = __params.set('rootId', rootId.toString());
+    if (name != null) __params = __params.set('name', name.toString());
+    let req = new HttpRequest<any>('GET', this.rootUrl + `/version/exists`, __body, {
+      headers: __headers,
+      params: __params,
+      responseType: 'json'
+    });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map(_r => {
+        return _r as __StrictHttpResponse<null>;
+      })
+    );
+  }
+  versionExists(rootId: string, name: string): __Observable<null> {
+    return this.versionExistsResponse(rootId, name).pipe(__map(_r => _r.body as null));
   }
 }
 

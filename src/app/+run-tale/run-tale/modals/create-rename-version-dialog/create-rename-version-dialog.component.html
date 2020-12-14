@@ -12,13 +12,31 @@
                 <span *ngIf="data.mode==='create'"> (optional)</span>
             </label>
 
-            <!-- Require new name in "Rename" mode -->
-            <input *ngIf="data.mode==='create'" type="text" name="name" id="name" [(ngModel)]="name" />
-            <input *ngIf="data.mode!=='create'" type="text" name="name" id="name" [(ngModel)]="name" required />
-
-            <div class="ui checkbox" *ngIf="data.mode==='create'">
-                <input type="checkbox" name="force" id="force" [(ngModel)]="force" />
-                <label>Force New Version?</label>
+            <div class="ui grid">
+                <div class="row name-input-row">
+                    <div class="sixteen wide column">
+                        <div class="field" [ngClass]="{ 'error': nameAlreadyExists }">
+                            <!-- Require new name in "Rename" mode -->
+                            <input *ngIf="data.mode==='create'" type="text" name="name" id="name" [(ngModel)]="name" (ngModelChange)="doesNameExist($event)" />
+                            <input *ngIf="data.mode!=='create'" type="text" name="name" id="name" [(ngModel)]="name" required (ngModelChange)="doesNameExist($event)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row validation-label-row" *ngIf="nameAlreadyExists">
+                    <div class="sixteen wide column">
+                        <label class="ui small red label">Version name already exists.</label>
+                    </div>
+                </div>
+                <div class="row force-checkbox-row">
+                    <div class="sixteen wide column">
+                        <div class="field">
+                            <div class="ui checkbox" *ngIf="data.mode==='create'">
+                                <input type="checkbox" name="force" id="force" [(ngModel)]="force" />
+                                <label>Force New Version?</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </form>
       </div>
@@ -28,7 +46,7 @@
 
 <mat-dialog-actions>
   <button class="ui black deny button" mat-dialog-close>Cancel</button>
-  <button class="ui primary right labeled icon button" [mat-dialog-close]="getResult()" [disabled]="data.mode !== 'create' && !name">
+  <button class="ui primary right labeled icon button" [mat-dialog-close]="getResult()" [disabled]="(data.mode !== 'create' && !name) || nameAlreadyExists">
     Save
     <i class="checkmark icon"></i>
   </button>
