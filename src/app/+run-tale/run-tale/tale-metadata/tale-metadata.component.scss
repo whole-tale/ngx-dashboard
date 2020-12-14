@@ -1,6 +1,5 @@
 #tale-metadata-container {
-  height: calc(60vh - 64px);
-  overflow: auto;
+  min-height: 60vh;
 }
 
 #readOnlyMetadata .item > span {

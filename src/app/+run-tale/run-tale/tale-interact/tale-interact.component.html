@@ -15,7 +15,7 @@
     </div>
 
     <!-- Running state -->
-    <iframe height="500px" width="100%" [src]="instance.url | safe:'url'" *ngIf="instance.status === 1"></iframe>
+    <iframe height="100%" width="100%" [src]="instance.url | safe:'url'" *ngIf="instance.status === 1"></iframe>
 
     <!-- Error state -->
     <div *ngIf="instance.status === 2" style="margin-top:10vh;text-align:center;">
