@@ -15,11 +15,12 @@ export class CreateRenameVersionDialogComponent {
   name = "";
   force = true;
   nameAlreadyExists = false;
-  modelChanged: Subject<any> = new Subject<any>();
+  modelChanged: Subject<string> = new Subject<string>();
 
   constructor(private logger: LogService,
               private versionService: VersionService,
               @Inject(MAT_DIALOG_DATA) public data: { taleId: string, mode: string }) {
+                // FIXME: Debounce input
                 this.modelChanged.pipe(
                     debounceTime(300),
                     distinctUntilChanged())
