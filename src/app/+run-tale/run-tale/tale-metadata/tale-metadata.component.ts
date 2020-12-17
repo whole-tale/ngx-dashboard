@@ -15,6 +15,8 @@ import { ErrorService } from '@shared/error-handler/services/error.service';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { Observable } from 'rxjs';
 
+import { AccessLevel } from '@api/models/access-level';
+
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -46,7 +48,7 @@ export class TaleMetadataComponent implements OnInit {
     if (!this.tale) {
       return false;
     }
-    return this.tale._accessLevel >= 2;
+    return this.tale._accessLevel >= AccessLevel.Write;
   }
 
   // FIXME: Duplicated code (see publish-tale-dialog.component.ts)

@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
+import { AccessLevel } from '@api/models/access-level';
 import { Instance } from '@api/models/instance';
 import { Tale } from '@api/models/tale';
 import { InstanceService } from '@api/services/instance.service';
@@ -89,7 +90,7 @@ export class TaleRunButtonComponent implements OnChanges {
   }
 
   startTale(): void {
-    if (this.tale._accessLevel < 2) {
+    if (this.tale._accessLevel <= AccessLevel.Read) {
       this.openCopyOnLaunchModal();
 
       return;

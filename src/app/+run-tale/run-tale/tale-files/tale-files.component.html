@@ -2,7 +2,7 @@
 
   <div class="four wide column">
     <div class="ui secondary fluid vertical pointing menu">
-      <a *ngIf="tale._accessLevel > 1" class="item" [ngClass]="{ 'active': isNavActive('home') }" (click)="switchNav('home')">
+      <a *ngIf="tale._accessLevel >= AccessLevel.Write" class="item" [ngClass]="{ 'active': isNavActive('home') }" (click)="switchNav('home')">
         Home
       </a>
       <a class="item" [ngClass]="{ 'active': isNavActive('external_data') }" (click)="switchNav('external_data')">
@@ -20,8 +20,8 @@
         [path]="currentPath"
         [placeholderMessage]="placeholderMessage"
         [preventNavigation]="isNavActive('external_data')"
-        [readOnly]="tale._accessLevel < 1"
-        [readOnlyDropdown]="tale._accessLevel < 1 || isNavActive('external_data')"
+        [readOnly]="tale._accessLevel <= AccessLevel.Read"
+        [readOnlyDropdown]="tale._accessLevel <= AccessLevel.Read || isNavActive('external_data')"
         (openSelectDataModal)="openSelectDataModal($event)"
         (openTaleWorkspacesModal)="openTaleWorkspacesModal($event)"
         (openRegisterDataModal)="openRegisterDataModal($event)"

@@ -11,6 +11,7 @@ import { LogService } from '@framework/core/log.service';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { Observable, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { AccessLevel } from '@api/models/access-level';
 
 import { DeleteTaleModalComponent } from '../../modals/delete-tale-modal/delete-tale-modal.component';
 
@@ -26,6 +27,8 @@ export class PublicTalesComponent implements OnChanges, OnInit {
   tales$: Observable<Array<Tale>> = new Observable<Array<Tale>>();
   tales: Array<Tale> = [];
   publicTales: Array<Tale> = [];
+
+  AccessLevel: any = AccessLevel;
 
   protected truncateLength = 100;
 

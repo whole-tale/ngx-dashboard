@@ -13,6 +13,7 @@ import { WindowService } from '@framework/core/window.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { routeAnimation } from '~/app/shared';
+import { AccessLevel } from '@api/models/access-level';
 
 import { ApiConfiguration } from '@api/api-configuration';
 import { TokenService } from '@api/token.service';
@@ -33,11 +34,15 @@ enum TaleExportFormat {
     animations: [routeAnimation]
 })
 export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges {
+    AccessLevel: any = AccessLevel;
+
     taleId: string;
     tale: Tale;
     instance: Instance;
     creator: User;
     currentTab = 'metadata';
+
+    collaborators: { users: Array<User>, groups: Array<User> } = { users: [], groups: [] };
 
     constructor(
       private ref: ChangeDetectorRef,
@@ -69,6 +74,16 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       this.ref.detectChanges();
     }
 
+    get dashboardLink(): string {
+      if (!this.tale || this.tale._accessLevel == AccessLevel.None) {
+        return '/public';
+      } else if (this.tale._accessLevel == AccessLevel.Admin) {
+        return '/mine';
+      } else if (this.tale._accessLevel == AccessLevel.Read || this.tale._accessLevel == AccessLevel.Write) {
+        return '/shared';
+      }
+    }
+
     detectCurrentTab(): void {
       this.route.queryParams.subscribe(params => {
         const tab = params.tab;
@@ -90,6 +105,16 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       return this.currentTab === tab;
     }
 
+    refreshCollaborators() {
+      this.taleService.taleGetTaleAccess(this.taleId).subscribe(resp => {
+        //this.zone.run(() => {
+          this.logger.info("Fetched collaborators:", resp);
+          this.collaborators = resp;
+          this.ref.detectChanges();
+        //});
+      });
+    }
+
     refresh(): void {
       if (!this.taleId) {
         // TODO: redirect to catalog view?
@@ -97,6 +122,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
         return;
       }
+
       const params = { taleId: this.taleId };
       this.instanceService.instanceListInstances(params).subscribe((instances: Array<Instance>) => {
         const running = instances.filter(i => i.status !== 3);
@@ -107,15 +133,18 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
       this.logger.debug(`Fetching tale with _id=${this.taleId}`);
       this.taleService.taleGetTale(this.taleId)
-                      .subscribe(tale => {
+                      .subscribe((tale: Tale) => {
         if (!tale) {
           this.logger.error("Tale is null, something went horribly wrong");
 
           return;
         }
 
+        this.logger.info("Fetched tale:", tale);
         this.tale = tale;
-        this.logger.info("Fetched tale:", this.tale);
+        if (this.tale._accessLevel >= AccessLevel.Admin) {
+          this.refreshCollaborators();
+        }
 
         this.userService.userGetUser(this.tale.creatorId)
                       .subscribe(creator => {
