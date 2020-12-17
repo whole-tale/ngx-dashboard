@@ -1,9 +1,8 @@
 <div fxLayout="column" fxFlex>
     <app-header></app-header>
-    <div class="main" #scrollContainer [perfectScrollbar]>
+    <div class="main" #scrollContainer id="scrollContainer" [perfectScrollbar]>
         <router-outlet (activate)="onActivate($event, scrollContainer)"></router-outlet>
     </div>
-    <app-footer></app-footer>
 </div>
 
 <app-notification-stream></app-notification-stream>

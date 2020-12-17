@@ -15,17 +15,25 @@
   margin-top: 10vh;
 }
 
-.login.area {
-  background-image: url(../../assets/img/login-backdrop.png);
+.login.banner {
+  //background-image: url(../../assets/img/login-backdrop.png);
   background-size: cover;
+
+  background-image: url(../../assets/img/login-banner-top.png);
   background-repeat: no-repeat;
   background-position: center center;
-  padding: 100px 0;
+  padding-top: 100px;
+  padding-bottom: 40px;
+}
+
+.login.area {
   text-align: center;
   margin: auto;
   color: #fff;
   height: calc(100vh - 94px - 0px - 48px + 1rem);
   overflow-y: auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
 .ui.blue.button {
@@ -57,10 +65,12 @@ i.icon.criss.cross {
   text-align: left;
   padding: 1rem;
 }
+
 .nomargin {
   margin: 0;
   padding: 0;
 }
+
 .botmargin {
   margin: 0 0 -5px 0;
   padding: 0;
@@ -77,16 +87,14 @@ i.icon.criss.cross {
 .ui.inverted.blue.segment {
   background-color: #283b49 !important;
   color: #fff !important;
-  padding: 1em 2.5em;
 }
 
 .footer {
   bottom: 0;
   left: 0;
-  position: fixed;
   border-radius: 0;
-  height: 48px;
-  padding: 0 2rem;
+  height: 40px;
+  //padding: 0 2rem;
 }
 
 .ui.menu.wt.top {
@@ -130,7 +138,6 @@ i.icon.criss.cross {
 }
 
 body .ui.inverted.menu {
-  background: #1e2e44;
   border-radius: 0;
   height: 48px;
   padding: 0 2rem;
