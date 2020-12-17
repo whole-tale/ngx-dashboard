@@ -143,7 +143,11 @@ app-tale-versions-panel {
 .wt-panel:nth-child(2) {
   margin-top: 1rem;
 }
-.wt-panel .wt-panel-body > div {
+.wt-panel .wt-panel-body .row .sixteen.wide.column > div {
+  height: 100%;
+}
+
+.ui.grid {
   height: 100%;
 }
 
