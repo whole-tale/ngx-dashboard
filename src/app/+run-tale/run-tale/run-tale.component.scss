@@ -12,6 +12,10 @@
   }
 }
 
+:host {
+  min-height: 95%;
+}
+
 .ui.breadcrumb a {
   color: #333;
 }
@@ -135,13 +139,21 @@
 .wt-panel:nth-child(2) {
   margin-top: 1rem;
 }
+.wt-panel .wt-panel-body > div {
+  height: 100%;
+}
 
 .wt-panel .wt-panel-body {
-  padding: 1.5rem 2rem 3rem;
+  padding: 2rem 2rem 0 2rem;
+  height: 82%;
 }
 .wt-panel .wt-panel-body.bg-grey,
 .wt-panel .wt-panel-header.bg-grey {
   background-color: #f9fafb;
+}
+
+.ui.grid {
+  margin-left: 0 !important;
 }
 
 .wt-panel-body .ui.input {
