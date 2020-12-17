@@ -1,5 +1,19 @@
 #tale-interact-container {
   //height: calc(60vh - 64px);
   //overflow: auto;
-  min-height: 60vh;
+  //min-height: 60vh;
+  height: 100%;
+}
+
+:host {
+  height: 100%;
+}
+
+.status-banner {
+  margin-top: 10vh;
+  text-align: center;
+}
+
+.status-banner .fas {
+  margin-top: 10vh;
 }
