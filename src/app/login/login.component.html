@@ -5,11 +5,13 @@
 
 <!-- Styled login area -->
 <div class="login area">
-  <div class="ui huge white header">Reproducibility Simplified</div>
+  <div class="login banner">
+    <div class="ui huge white header">Reproducibility Simplified</div>
 
-  <div class="ui white header">
-    <p class="nomargin">Tell the Whole Tale about your research through powerful computing tools</p>
-    <p class="nomargin">like Jupyter and RStudio, or craft your own.</p>
+    <div class="ui white header">
+        <p class="nomargin">Empower and share your research with Whole Tale, an open source platform for</p>
+        <p class="nomargin">reproducible computational research. <a href="https://wholetale.org" style="color:white;"><u>Learn more...</u></a></p>
+    </div>
   </div>
 
   <a class="ui large blue button" (click)="loginWithGlobus()">
@@ -17,78 +19,48 @@
     <img src="../../assets/img/whole_tale_logo_text_long_light_large.png" width="200px" style="width:200px">
   </a>
 
-  <div class="login icon backdrop">
-    <div class="ui grid">
-      <div class="center aligned four wide column">
-        <i class="huge disk icon"></i>
-        <div class="ui large header">
-          <p class="botmargin">Registered</p>
-          <p class="nomargin">Data</p>
-        </div>
-      </div>
+  <p style="botmargin" style="margin: 10px; color:black;">By accessing Whole Tale, you agree to our
+    <a href="https://docs.wholetale.org/tos" style="color:black"><u>Terms of Use</u></a>.
+  </p>
 
-      <div class="two wide column">
-      </div>
-
-      <div class="center aligned four wide column">
-        <i class="huge dashboard icon"></i>
-        <div class="ui large header">
-          <p class="botmargin">Analyze/</p>
-          <p class="nomargin">Compute</p>
-        </div>
-      </div>
-
-      <div class="two wide column">
-      </div>
-
-      <div class="center aligned four wide column">
-        <i class="criss cross icon"></i>
-        <div class="ui large header">
-          <p class="botmargin">Published</p>
-          <p class="nomargin">Results</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="accordion-container">
-    <div class="ui accordion">
-      <div class="title">
-        <i class="dropdown icon"></i>
-        <a class="ui white header">Login questions?</a>
-      </div>
-      <div class="content">
-        <div class="ui raised segment">
-          <div class="ui header header">
-              In order to use the Whole Tale, you need to be able to sign in using Globus. Click below to find out more.
-          </div>
-          <a class="ui button" target="_blank" href="https://wholetale.readthedocs.io/en/stable/users_guide/sign_in.html">Signing In</a>
-        </div>
-      </div>
-    </div>
+  <div style="color:black">
+    <p class="nomargin" style="margin-top: 50px; font-size: 12pt;">Whole Tale is supported by the National Science Foundation under Grant No. OAC-1541450.</p>
+    <p class="nomargin" style="font-size: 12pt;">Computational resources are provided by XSEDE through Jetstream.</p>
+    <p class="botmargin" style="font-size: 12pt;">Access to Stata is provided by StataCorp LLC.</p>
   </div>
 </div>
 
-<!-- Fake footer (yuck) -->
+<!-- Fake footer -->
 <div class="ui centered footer grid">
   <div class="ui inverted basic blue segment row">
     <div class="three wide column"></div>
-    <div class="ten wide column">
-      <div style="text-align: center">
-        <span style="font-size: 140%">© WholeTale (Build: {{ '{' }}commit{{ '}' }})</span>
-        <span>
-          <a target="_blank" href="https://github.com/whole-tale/whole-tale/issues" class="ui icon button" data-tooltip="Create an issue on Github" data-position="top right">
-              <i class="fab fa-github"></i> Report a problem
-          </a>
-        </span>
-      </div>
+
+    <div class="two wide column" title="University of Illinois at Urbana-Champaign">
+        <a href="http://illinois.edu/">
+            <img src="../../assets/img/uiuc-200.png" alt="University of Illinois at Urbana-Champaign" width="148" height="98.6" />
+        </a>
     </div>
-    <div class="right floated right aligned middle aligned three wide column"></div>
-    <div class="sixteen wide column acknowledgement">
-      <p style="font-size: 100%; text-align: center">
-        This material is based upon work supported by the National Science Foundation under
-        Grant No. OAC-1541450.
-      </p>
+    <div class="two wide column" title="University of Chicago">
+        <a href="http://www.uchicago.edu/">
+            <img src="../../assets/img/uc-200.png" alt="University of Chicago" width="148" height="98.6" />
+        </a>
     </div>
+    <div class="two wide column" title="University of California, Santa Barabara">
+        <a href="http://www.ucsb.edu/">
+            <img src="../../assets/img/ucsb-200.png" alt="University of California, Santa Barabara" width="148" height="98.6" />
+        </a>
+    </div>
+    <div class="two wide column" title="University of Texas at Austin">
+        <a href="http://www.utexas.edu/">
+            <img src="../../assets/img/ut-200.png" alt="University of Texas at Austin" width="148" height="98.6" />
+        </a>
+    </div>
+    <div class="two wide column" title="University of Notre Dame">
+        <a href="http://www.nd.edu/">
+            <img src="../../assets/img/nd-200.png" alt="University of Notre Dame" width="148" height="98.6" />
+        </a>
+    </div>
+
+    <div class="three wide column"></div>
   </div>
 </div>

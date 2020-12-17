@@ -1,8 +1,10 @@
 #tale-files-container {
-  height: calc(60vh - 64px);
+  //height: calc(60vh - 64px);
+  //min-height: 60vh;
+  height: 100%;
 }
 
 #tale-files-browser {
-  height: 40vh;
-  overflow-y: auto;
+  //height: 40vh;
+  //overflow-y: auto;
 }

@@ -1,4 +1,6 @@
+import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { BaseComponent } from '~/app/framework/core';
 
 @Component({
@@ -8,6 +10,18 @@ import { BaseComponent } from '~/app/framework/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MainComponent extends BaseComponent {
+  route = '';
+
+  constructor(location: Location, router: Router) {
+    super();
+
+    router.events.subscribe(val => {
+      if (location.path() != '') {
+        this.route = location.path();
+      }
+    });
+  }
+
   onActivate(event$: any, scrollContainer: any): void {
     scrollContainer.scrollTop = 0;
   }
