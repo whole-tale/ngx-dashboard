@@ -10,7 +10,7 @@
 
       <!-- Running state -->
       <div *ngIf="instance.status === 1">
-        <iframe *ngIf="instance.iframe" height="500px" width="100%" [src]="instance.url | safe:'url'"></iframe>
+        <iframe *ngIf="instance.iframe" height="100%" width="100%" [src]="instance.url | safe:'url'"></iframe>
 
         <div *ngIf="!instance.iframe" class="ui message">
             This Tale must be run in a separate window.
