@@ -20,6 +20,8 @@ import { WindowService } from '@framework/core/window.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
 
+import { AccessLevel } from '@api/models/access-level';
+
 import { RegisterDataDialogComponent } from '../modals/register-data-dialog/register-data-dialog.component';
 import { SelectDataDialogComponent } from '../modals/select-data-dialog/select-data-dialog.component';
 import { TaleWorkspacesDialogComponent } from '../modals/tale-workspaces-dialog/tale-workspaces-dialog.component';
@@ -61,6 +63,8 @@ interface Selectable {
 })
 export class TaleFilesComponent implements OnInit, OnChanges {
   uploadQueue: Set<File> = new Set();
+
+  AccessLevel: any = AccessLevel;
 
   @Input() tale: Tale;
   @Input() taleId: string;
@@ -156,6 +160,52 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     });
   }
 
+  uploadChunk(uploadId: string, offset: number, chunk: Blob): Promise<any> {
+    const chunkParams = { uploadId, offset, chunk };
+    const chunkResp = this.fileService.fileReadChunk(chunkParams).toPromise();
+
+    chunkResp.catch((err) => {
+      this.logger.error("Failed to upload chunk:", err);
+    });
+    // Update file size as upload progresses
+    // TODO: File upload progress updates
+    /*const files = this.files.value;
+    const existing = files.find(file => file._id === uploadId);
+    if (existing) {
+      const index = files.indexOf(existing);
+      files[index] = chunkResp;
+    } else {
+      files.push(chunkResp);
+    }
+    this.files.next(files);
+    this.ref.detectChanges();*/
+
+    return chunkResp;
+  }
+
+  delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // Girder default chunk size is 67108864?
+  async uploadChunks(uploadId: string, upload: File, chunkSize: number = 67108863) { // = 10000000) {
+    const numChunks = Math.ceil(upload.size / chunkSize);
+    this.logger.info(`Beginning upload of ${upload.name} (${upload.size} bytes in ${numChunks} chunks):`, upload);
+
+    for (let offset = 0; offset < upload.size; offset += (chunkSize + 1)) {
+      // Upload the file blob one slice/chunk at a time
+      const start = offset;
+      const end = offset + chunkSize + 1;
+      const chunk = upload.slice(start, end);
+
+      this.logger.debug(`Uploading ${start} - ${end - 1} / ${upload.size} bytes (${start/(chunkSize + 1) + 1} / ${numChunks} chunks)`);
+      const chunkResp = await this.uploadChunk(uploadId, offset, chunk);
+      this.logger.info(`Uploaded ${chunkResp.received ? chunkResp.received : upload.size} / ${upload.size} bytes (${start/(chunkSize + 1) + 1} / ${numChunks} chunks):`, chunkResp);
+      //await this.delay(500);
+      //this.logger.info("Artificial delay (500ms)");
+    }
+  }
+
   uploadFiles(filesToUpload: { [key: string]: File }): void {
     for (const key in filesToUpload) {
       if (!isNaN(parseInt(key, 10))) {
@@ -165,49 +215,47 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     this.logger.debug(`${filesToUpload.length} files added... upload queue contents:`, this.uploadQueue);
 
     this.uploadQueue.forEach(upload => {
-      const url = URL.createObjectURL(upload);
-
       // Upload to the current folder, if possible
       const parentId = this.getParentId();
 
-      // FIXME: This may cause a crash with extremely large files
-      fetch(url).then(resp => resp.arrayBuffer()).then(contents => {
-        const params = {
-          parentId,
-          parentType: UploadType.Folder,
-          name: upload.name,
-          size: upload.size,
-          chunk: contents
-        };
+      const initUploadParams = {
+        parentId,
+        parentType: UploadType.Folder,
+        name: upload.name,
+        size: upload.size,
+        //chunk: contents
+      };
 
-        this.logger.info(`Starting upload for ${params.name}...`);
-        this.fileService.fileInitUpload(params).subscribe((initResp: any) => {
-          this.logger.info(`Uploading chunks for ${params.name}:`, initResp);
-          const offset = 0;
+      this.fileService.fileInitUpload(initUploadParams).subscribe(async (initResp: any) => {
+        const uploadId = initResp._id;
 
-          // TODO: Check file size and upload additional chunks?
+        // Add new file upload to the list
+        // TODO: Progress updates / indicator
+        const files = this.files.value;
+        files.push(initResp);
+        this.files.next(files);
+        this.ref.detectChanges();
 
-          const itemId = initResp.itemId;
-          this.itemService.itemGetItem(itemId).subscribe(item => {
-            const currentItems = this.files.value;
-            currentItems.push(item);
-            this.files.next(currentItems);
-          });
+        // This should be a blocking call
+        await this.uploadChunks(uploadId, upload);
 
-          // Create a URL to the file blob and start the upload
-          /*const chunkParams = { uploadId: initResp._id, offset, chunk: contents };
-          this.fileService.fileReadChunk(chunkParams).subscribe((chunkResp: any) => {
-            this.logger.debug(`Uploading chunk ${offset} of ${params.name}:`, chunkResp);
-            if (chunkResp.size === upload.size) {
-              this.logger.debug("Upload complete: ", chunkResp.name);
-            }
-            const files = this.files.value;
-            const existing = files.find(file => file._id === chunkResp._id);
-            const index = files.indexOf(existing);
-            files[index] = chunkResp;
-            this.files.next(files);
-          });*/
-        });
+        // Once all chunks are uploaded, then the upload is complete
+        this.logger.info(`Upload complete: ${upload.name} (${upload.size})`, upload);
+
+        // This is apparently not needed all the time? Files are weird...
+        /*this.fileService.fileFinalizeUpload(uploadId).subscribe(finalResp => {
+
+          // Update with final uploaded item
+          const files = this.files.value;
+          const existing = files.find(file => file._id === uploadId);
+          const index = files.indexOf(existing);
+          files[index] = finalResp;
+          this.files.next(files);
+          this.ref.detectChanges();
+        })*/
+
+        // Update UI with final uploaded item (logo, size, etc)
+        this.load();
       });
 
       this.uploadQueue.delete(upload);

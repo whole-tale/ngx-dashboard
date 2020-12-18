@@ -54,7 +54,11 @@ class FileService extends __BaseService {
   fileInitUploadResponse(params: FileService.FileInitUploadParams): __Observable<__StrictHttpResponse<null>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
-    let __body: any = params.chunk;
+    __headers.append('Content-Type', 'application/x-www-form-urlencoded');
+    let __body: any;
+    if (params.chunk) {
+      __body = params.chunk;
+    }
     if (params.parentType != null) __params = __params.set('parentType', params.parentType.toString());
     if (params.parentId != null) __params = __params.set('parentId', params.parentId.toString());
     if (params.name != null) __params = __params.set('name', params.name.toString());
@@ -115,8 +119,11 @@ class FileService extends __BaseService {
   fileReadChunkResponse(params: FileService.FileReadChunkParams): __Observable<__StrictHttpResponse<null>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
-    __headers.append('Content-Type', 'application/octet-stream');
-    let __body: any = params.chunk;
+    //__headers.append('Content-Type', 'multipart/form-data');
+    let __body: any;
+    if (params.chunk) {
+      __body = params.chunk;
+    }
     if (params.uploadId != null) __params = __params.set('uploadId', params.uploadId.toString());
     if (params.offset != null) __params = __params.set('offset', params.offset.toString());
     let req = new HttpRequest<any>('POST', this.rootUrl + `/file/chunk`, __body, {
@@ -154,7 +161,7 @@ class FileService extends __BaseService {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
-    __headers.append('Content-Type', 'multipart/form-data');
+    __headers.append('Content-Type', 'application/x-www-form-urlencoded');
     let __formData = new FormData();
     __body = __formData;
     if (uploadId !== null && typeof uploadId !== 'undefined') {
@@ -624,7 +631,7 @@ module FileService {
     /*
      * First binary data chunk to upload (optional).
      */
-    chunk: ArrayBuffer;
+    chunk?: ArrayBuffer;
   }
 
   /**

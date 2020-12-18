@@ -46,6 +46,19 @@ app-tale-versions-panel {
   padding-right: 0.5em;
 }
 
+.counter {
+  background: #999;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  height: 1rem;
+  width: 1rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  padding: 0.15rem;
+  margin-left: 0.5rem;
+}
+
 #popout-link > i {
   color: #4183c4;
 }
@@ -143,7 +156,7 @@ app-tale-versions-panel {
 .wt-panel:nth-child(2) {
   margin-top: 1rem;
 }
-.wt-panel .wt-panel-body .row .sixteen.wide.column > div {
+.wt-panel .wt-panel-body .ui.grid .row .wide.column > div {
   height: 100%;
 }
 

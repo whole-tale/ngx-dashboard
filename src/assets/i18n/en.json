@@ -25,11 +25,15 @@
     },
     "CATALOG": {
       "PUBLIC": {
-        "PAGE_TITLE": "Public Tale Catalog",
+        "PAGE_TITLE": "Public Tales Catalog",
         "META_DESCRIPTION": "Browse public Tales"
       },
+      "SHARED": {
+        "PAGE_TITLE": "Shared Tales Catalog",
+        "META_DESCRIPTION": "Browse Tales that others have shared with you"
+      },
       "MINE": {
-        "PAGE_TITLE": "My Tale Catalog",
+        "PAGE_TITLE": "My Tales Catalog",
         "META_DESCRIPTION": "Browse your created Tales"
       }
     },

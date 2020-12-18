@@ -4,6 +4,14 @@
  * Attributes describing an item in Girder
  */
 export interface User {
+  _accessLevel?: number;
+  gravatar_baseUrl?: string;
+
+  email?: string;
+  login?: string;
+  firstName?: string;
+  lastName?: string;
+
   creatorId?: string;
   _id?: string;
   baseParentId?: string;
@@ -15,5 +23,5 @@ export interface User {
   name?: string;
   size?: number;
   updated?: string;
-  otherTokens: Array<any>;
+  otherTokens?: Array<any>;
 }

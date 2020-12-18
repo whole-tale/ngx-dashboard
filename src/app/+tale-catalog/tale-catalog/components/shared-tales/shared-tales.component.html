@@ -1,5 +1,5 @@
 
-<!-- Public Tales -->
+<!-- Shared Tales -->
 <div *ngIf="(tales$ | async) as taleList">
 
     <!-- Search Tales -->
@@ -15,47 +15,58 @@
   <!-- Running Tales -->
   <app-running-tales [instances]="instances" [creators]="creators" [taleList]="taleList"></app-running-tales>
 
-  <div class="row" style="margin-top:40px;margin-bottom:30px;" *ngIf="(taleList | publicTales) as allPublicTales">
-    <div class="sixteen wide column" *ngIf="(taleList | searchTales:searchQuery:creators | publicTales) as filteredPublicTales">
+  <!-- Shared Tales -->
+  <div class="row" style="margin-top:40px;margin-bottom:30px;" *ngIf="(taleList | sharedTales | stopped:instances) as allStoppedTales">
+    <div class="sixteen wide column" *ngIf="(taleList | searchTales:searchQuery:creators | sharedTales | stopped:instances) as filteredStoppedTales">
 
-      <div class="ui message" *ngIf="!allPublicTales.length">
-          No Public Tales have been shared.
+      <!-- Placeholder Message -->
+      <div class="ui message" *ngIf="!allStoppedTales.length">
+          No one has shared any Tales with you.
       </div>
 
-      <div class="ui message" *ngIf="allPublicTales.length && !filteredPublicTales.length">
-          No Public Tales matched your search query.
+      <div class="ui message" *ngIf="allStoppedTales.length && !filteredStoppedTales.length">
+          No shared Tales matched your search query.
       </div>
 
-  	  <div class="ui four stackable doubling selectable special cards" *ngIf="allPublicTales.length && filteredPublicTales.length">
+      <div class="ui four stackable doubling selectable special cards" *ngIf="allStoppedTales.length && filteredStoppedTales.length">
 
         <!-- Card for each Tale -->
-        <div class="ui card" *ngFor="let tale of filteredPublicTales; index as i; trackBy: trackById">
+        <div class="ui card" *ngFor="let tale of filteredStoppedTales; index as i; trackBy: trackById">
+          <div class="extra content">
+            <span style="text-transform:uppercase">
+              {{ tale.copyOfTale ? 'copy' : 'original' }}
+            </span>
+          </div>
           <div class="blurring dimmable segment fluid image" id="{{ tale._id }}-dimmer" (mouseover)="showDimmer(tale)" (mouseout)="hideDimmer(tale)">
 
             <!-- Abstract card into reusable template? Card component? -->
             <div class="ui dimmer transition hidden">
               <div class="content">
                 <div class="center">
-                  <a class="ui inverted button" [routerLink]="'/run/' + tale._id" [queryParams]="{ tab: 'interact'}" routerLinkActive="active">View</a>
+                  <a class="ui inverted button" [routerLink]="'/run/' + tale._id" [queryParams]="{ tab: 'metadata' }" routerLinkActive="active">View</a>
                   <a *ngIf="tale._accessLevel >= AccessLevel.Admin" class="ui tiny bottom right attached label" (click)="openDeleteTaleModal(tale)">
                       <i class="red remove icon"></i>
                   </a>
                 </div>
               </div>
             </div>
+
+            <!-- Illustration and Logo -->
+            <!-- TODO: Fix compute environment logo -->
             <img class="pic" [src]="tale.illustration" alt="Research image">
             <span class="zoom-icon">
               <img [src]="tale.icon" width="80" style="width: 80px;" alt="Compute Icon">
             </span>
           </div>
+
           <div class="content">
             <div style="text-transform: uppercase; color: #ba975e;font-weight: 700;">
                 {{ tale.category }}
             </div>
             <div class="t-title">
-              <h3 [title]="tale.title">
-                <a class="ui link" style="text-decoration:none;" [routerLink]="'/run/' + tale._id" [queryParams]="{ tab: 'metadata'}" routerLinkActive="active">{{ tale.title | truncate:truncateLength }}</a>
-              </h3>
+                <h3 [title]="tale.title">
+                    <a class="ui link" style="text-decoration:none;" [routerLink]="'/run/' + tale._id" [queryParams]="{ tab: 'metadata'}" routerLinkActive="active">{{ tale.title | truncate:truncateLength }}</a>
+                </h3>
             </div>
             <div>
                 by
@@ -74,6 +85,7 @@
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </div>
