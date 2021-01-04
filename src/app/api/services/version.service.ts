@@ -11,20 +11,18 @@ import { map as __map, filter as __filter } from 'rxjs/operators';
   providedIn: 'root'
 })
 class VersionService extends __BaseService {
+  static readonly versionListVersionsPath = '/version';
   static readonly versionCreateVersionPath = '/version';
   static readonly versionGetVersionPath = '/version/{id}';
-  static readonly versionDeleteVersionPath = '/version/{id}';
-  static readonly versionListVersionsPath = '/version';
-  static readonly versionGetRootPath = '/version/{id}/root';
   static readonly versionPutRenameVersionPath = '/version/{id}';
+  static readonly versionDeleteVersionPath = '/version/{id}';
 
   // TBD
   static readonly versionGetDataSetPath = '/version/{id}/dataSet';
   static readonly versionGetExistsPath = '/version/exists';
-  static readonly versionGetLatestPath = '/version/{id}/latest';
 
   // Admin-only
-  // static readonly versionGetClearVersionsPath = '/version/{id}/clear';
+  // static readonly versionGetClearVersionsPath = '/version/clear?taleId=taleId&name=name';
 
   constructor(config: __Configuration, http: HttpClient) {
     super(config, http);
@@ -51,28 +49,6 @@ class VersionService extends __BaseService {
   }
   versionCreateVersion(params: VersionService.VersionCreateVersionParams): __Observable<null> {
     return this.versionCreateVersionResponse(params).pipe(__map(_r => _r.body as null));
-  }
-
-  versionGetRootResponse(taleId: string): __Observable<__StrictHttpResponse<null>> {
-    let __params = this.newParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    if (taleId != null) __params = __params.set('taleId', taleId.toString());
-    let req = new HttpRequest<any>('GET', this.rootUrl + `/version/root`, __body, {
-      headers: __headers,
-      params: __params,
-      responseType: 'json'
-    });
-
-    return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
-        return _r as __StrictHttpResponse<null>;
-      })
-    );
-  }
-  versionGetRoot(taleId: string): __Observable<null> {
-    return this.versionGetRootResponse(taleId).pipe(__map(_r => _r.body as null));
   }
 
   versionGetVersionResponse(id: string): __Observable<__StrictHttpResponse<null>> {
@@ -121,7 +97,7 @@ class VersionService extends __BaseService {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
-    if (params.rootId != null) __params = __params.set('rootId', params.rootId.toString());
+    if (params.taleId != null) __params = __params.set('taleId', params.taleId.toString());
     if (params.limit != null) __params = __params.set('limit', params.limit.toString());
     if (params.offset != null) __params = __params.set('offset', params.offset.toString());
     if (params.sort != null) __params = __params.set('sort', params.sort.toString());
@@ -166,11 +142,11 @@ class VersionService extends __BaseService {
     return this.versionPutRenameVersionResponse(id, name).pipe(__map(_r => _r.body as null));
   }
 
-  versionExistsResponse(rootId: string, name: string): __Observable<__StrictHttpResponse<null>> {
+  versionExistsResponse(taleId: string, name: string): __Observable<__StrictHttpResponse<null>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
-    if (rootId != null) __params = __params.set('rootId', rootId.toString());
+    if (taleId != null) __params = __params.set('taleId', taleId.toString());
     if (name != null) __params = __params.set('name', name.toString());
     let req = new HttpRequest<any>('GET', this.rootUrl + `/version/exists`, __body, {
       headers: __headers,
@@ -185,8 +161,8 @@ class VersionService extends __BaseService {
       })
     );
   }
-  versionExists(rootId: string, name: string): __Observable<null> {
-    return this.versionExistsResponse(rootId, name).pipe(__map(_r => _r.body as null));
+  versionExists(taleId: string, name: string): __Observable<null> {
+    return this.versionExistsResponse(taleId, name).pipe(__map(_r => _r.body as null));
   }
 }
 
@@ -198,7 +174,7 @@ module VersionService {
   }
 
   export interface VersionListVersionsParams {
-    rootId: string;
+    taleId: string;
     limit?: number;
     offset?: number;
     sort?: string;

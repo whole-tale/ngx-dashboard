@@ -30,8 +30,7 @@ export class CreateRenameVersionDialogComponent {
   async doesNameExist(name: string): Promise<boolean> {
     this.modelChanged.next(this.name);
 
-    const root: { _id: string } = await this.versionService.versionGetRoot(this.data.taleId).toPromise();
-    return this.versionService.versionExists(root._id, name).toPromise()
+    return this.versionService.versionExists(this.data.taleId, name).toPromise()
       .then((resp: { exists: boolean }) => this.nameAlreadyExists = resp.exists);
   }
 

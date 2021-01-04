@@ -24,7 +24,7 @@ declare var $: any;
 export class TaleVersionsPanelComponent implements OnInit, OnChanges {
   @Input() tale: Tale;
 
-  // TODO: Wire up to API
+  // Tale Version timeline (sorted list)
   timeline: Array<any> = [];
 
   constructor(private ref: ChangeDetectorRef,
@@ -38,12 +38,9 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    // TODO: What is the return type here? Folder? Something else?
-    this.versionService.versionGetRoot(this.tale._id).subscribe((root: any) => {
-      this.versionService.versionListVersions({ rootId: root._id }).subscribe((versions: Array<Version>) => {
-        this.timeline = versions.sort(this.sortByUpdatedDate);
-        this.ref.detectChanges();
-      });
+    this.versionService.versionListVersions({ taleId: this.tale._id }).subscribe((versions: Array<Version>) => {
+      this.timeline = versions.sort(this.sortByUpdatedDate);
+      this.ref.detectChanges();
     });
   }
 
@@ -83,7 +80,7 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
   saveNewVersion(): void {
     // Prompt for name (optional) / force?
     this.openCreateRenameModal("create", (result: { name: string, force?: boolean }) => {
-      console.log('Creating New Tale version:', result);
+      this.logger.debug('Creating New Tale version:', result);
       const params: VersionService.VersionCreateVersionParams = {
         taleId: this.tale._id,
         name: result.name,
@@ -92,7 +89,7 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
 
       // Backend sets the name, if not provided
       this.versionService.versionCreateVersion(params).subscribe(version => {
-        console.log("Version saved successfully:", version);
+        this.logger.info("Version saved successfully:", version);
         this.timeline.unshift(version);
         this.ref.detectChanges();
 
@@ -139,7 +136,7 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
 
   renameVersion(version: Version): void {
     this.openCreateRenameModal("rename", (result: { name: string, force?: boolean }) => {
-      console.log('Renaming Tale version:', result);
+      this.logger.debug('Renaming Tale version:', result);
 
       // Prompt for new name, disable "Save" if empty
       this.versionService.versionPutRenameVersion(version._id, result.name).subscribe(resp => {
@@ -148,7 +145,7 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
         this.timeline[idx].name = result.name;
         this.ref.detectChanges();
       }, (err) => {
-        console.debug("Error recv'd:", err);
+        this.logger.error("Failed renaming Tale version:", err);
         this.notificationService.showError("Error: something went wrong.");
       });
     });
