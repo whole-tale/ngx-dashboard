@@ -4,7 +4,7 @@
             <div class="sixteen wide column">
 
                 <div class="ui breadcrumb">
-                    <a [routerLink]="tale._accessLevel < 2 ? '/public' : '/mine'" class="section">
+                    <a *ngIf="tale" [routerLink]="dashboardLink" class="section">
                       <i class="left angle icon"></i>
                       Return to Dashboard
                     </a>
@@ -36,12 +36,12 @@
                                 </div>
                                 <div class="six wide column" style="text-align: right">
                                     <app-tale-run-button class="tale-run-button" [tale]="tale" [instance]="instance" isPrimary="true" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></app-tale-run-button>
-                                    <a [routerLink]="tale._accessLevel < 2 ? '/public' : '/mine'" routerLinkActive="active" class="ui button" style="margin-right: 10px">
+                                    <a [routerLink]="dashboardLink" routerLinkActive="active" class="ui button" style="margin-right: 10px">
                                         Close
                                     </a>
 
+                                    <div id="tale-actions-dropdown"  class="ui floating tale dropdown theme" tabindex="0">
 
-                                    <div class="ui floating tale dropdown theme" tabindex="0">
                                         <mat-icon fontSet="fa" fontIcon="fa-ellipsis-v"></mat-icon>
 
                                         <div class="menu transition hidden" tabindex="-1">
@@ -78,26 +78,50 @@
                         <a class="item" [ngClass]="{ 'active': isTabActive('metadata') }" (click)="switchTab('metadata')">
                           Metadata
                         </a>
-
-                        <a *ngIf="instance && instance.status === 1" id="popout-link" class="right floated item" [href]="instance.url" target="_blank">
-                            <i class="fas fa-fw fa-external-link-alt"></i>
+                        <a class="item" *ngIf="tale._accessLevel >= AccessLevel.Admin" [ngClass]="{ 'active': isTabActive('sharing') }" (click)="switchTab('sharing')">
+                          Share <span class="counter">{{ collaborators.users.length + collaborators.groups.length }}</span>
                         </a>
+
+                        <div class="right menu">
+                            <a *ngIf="instance && instance.status === 1 && currentTab === 'interact'" id="popout-link" class="item" [href]="instance.url" target="_blank">
+                                <i class="fas fa-fw fa-external-link-alt"></i>
+                            </a>
+
+                            <a class="item" (click)="toggleVersionsPanel()">
+                                <i class="fas fa-history lighter"></i>
+                            </a>
+                        </div>
+
                     </div>
-                    <div class="wt-panel-body" style="padding-bottom:40px" [ngSwitch]="currentTab">
-                        <div *ngSwitchCase="'interact'">
-                          <app-tale-interact [tale]="tale" [instance]="instance"></app-tale-interact>
-                        </div>
 
-                        <div *ngSwitchCase="'files'">
-                          <app-tale-files [tale]="tale" [taleId]="taleId"></app-tale-files>
-                        </div>
+                    <div class="wt-panel-body" [ngSwitch]="currentTab">
+                        <div class="ui grid">
+                            <div class="row">
+                                <div [ngClass]="{ 'sixteen': !isVersionsPanelShown(), 'twelve': isVersionsPanelShown(), 'wide column': true }">
+                                    <div *ngSwitchCase="'interact'">
+                                        <app-tale-interact [tale]="tale" [instance]="instance"></app-tale-interact>
+                                    </div>
 
-                        <div *ngSwitchCase="'metadata'">
-                          <app-tale-metadata [tale]="tale" [creator]="creator"></app-tale-metadata>
-                        </div>
+                                    <div *ngSwitchCase="'files'">
+                                        <app-tale-files [tale]="tale" [taleId]="taleId"></app-tale-files>
+                                    </div>
 
-                        <div *ngSwitchDefault>
-                            Select a tab to continue
+                                    <div *ngSwitchCase="'metadata'">
+                                        <app-tale-metadata [tale]="tale" [creator]="creator"></app-tale-metadata>
+                                    </div>
+
+                                    <div *ngSwitchCase="'sharing'">
+                                      <app-tale-sharing [tale]="tale" [creator]="creator" [(collaborators)]="collaborators"></app-tale-sharing>
+                                    </div>
+
+                                    <div *ngSwitchDefault>
+                                        Select a tab to continue
+                                    </div>
+                                </div>
+                                <div class="four wide right floated column" *ngIf="isVersionsPanelShown()">
+                                    <app-tale-versions-panel [tale]="tale"></app-tale-versions-panel>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

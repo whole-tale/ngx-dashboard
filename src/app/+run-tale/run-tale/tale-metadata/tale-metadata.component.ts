@@ -15,6 +15,8 @@ import { ErrorService } from '@shared/error-handler/services/error.service';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { Observable } from 'rxjs';
 
+import { AccessLevel } from '@api/models/access-level';
+
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -46,7 +48,7 @@ export class TaleMetadataComponent implements OnInit {
     if (!this.tale) {
       return false;
     }
-    return this.tale._accessLevel >= 2;
+    return this.tale._accessLevel >= AccessLevel.Write;
   }
 
   // FIXME: Duplicated code (see publish-tale-dialog.component.ts)
@@ -97,6 +99,13 @@ export class TaleMetadataComponent implements OnInit {
     return true;
   }
 
+  scrollToTop() {
+      this.zone.runOutsideAngular(() => {
+        // Edge case: Scroll to top of view
+        document.querySelector('#scrollContainer').scrollTop = 0;
+      });
+  }
+
   startEdit(): void {
     // Save a backup of the Tale's state in memory
     this.saveState();
@@ -109,13 +118,15 @@ export class TaleMetadataComponent implements OnInit {
     this.saveState();
 
     // Update the Tale in Girder
-    this.updateTale();
+    this.updateTale().then((res) => { this.scrollToTop(); });
   }
 
   cancelEdit(): void {
     // Revert to our backup of the Tale's state in memory
     this.editing = false;
     this.revertState();
+
+    this.scrollToTop();
   }
 
   saveState(): void {

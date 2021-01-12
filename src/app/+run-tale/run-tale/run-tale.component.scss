@@ -12,6 +12,10 @@
   }
 }
 
+:host {
+  min-height: 95%;
+}
+
 .ui.breadcrumb a {
   color: #333;
 }
@@ -23,6 +27,36 @@
 .tale-run-button {
   display: inline-block;
   margin-right: 10px;
+}
+
+app-tale-versions-panel {
+  //position: absolute;
+  right: 0;
+  height: 100%;
+  height: fill-available;
+  height: -moz-fill-available;
+  height: -webkit-fill-available;
+}
+
+.lighter {
+  color: #999;
+}
+
+.item i {
+  padding-right: 0.5em;
+}
+
+.counter {
+  background: #999;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  height: 1rem;
+  width: 1rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  padding: 0.15rem;
+  margin-left: 0.5rem;
 }
 
 #popout-link > i {
@@ -122,13 +156,25 @@
 .wt-panel:nth-child(2) {
   margin-top: 1rem;
 }
+.wt-panel .wt-panel-body .ui.grid .row .wide.column > div {
+  height: 100%;
+}
+
+.ui.grid {
+  height: 100%;
+}
 
 .wt-panel .wt-panel-body {
-  padding: 1.5rem 2rem 3rem;
+  padding: 2rem 2rem 0 2rem;
+  height: 82%;
 }
 .wt-panel .wt-panel-body.bg-grey,
 .wt-panel .wt-panel-header.bg-grey {
   background-color: #f9fafb;
+}
+
+.ui.grid {
+  margin-left: 0 !important;
 }
 
 .wt-panel-body .ui.input {
@@ -220,4 +266,8 @@
   font-size: 1rem;
   font-weight: 400;
   font-style: italic;
+}
+
+.no-margin {
+  margin: 0 !important;
 }

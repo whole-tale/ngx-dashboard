@@ -10,6 +10,11 @@
   user-select: none;
 }
 
+.ui.placeholder {
+  width: 100%;
+  max-width: none;
+}
+
 .toolbar {
   min-height: 64px;
 }

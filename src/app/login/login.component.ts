@@ -96,6 +96,10 @@ export class LoginComponent extends BaseComponent implements OnInit {
     }
   }
 
+  gotoHref(href: string): void {
+    this.window.location.href = href;
+  }
+
   loginWithGlobus(): void {
     const route = this.tokenService.getReturnRoute();
 
