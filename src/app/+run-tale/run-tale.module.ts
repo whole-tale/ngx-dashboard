@@ -14,6 +14,8 @@ import { TalesModule } from '@tales/tales.module';
 import { MarkdownModule } from 'ngx-markdown';
 
 import { routes } from './run-tale.routes';
+import { TaleVersionInfoDialogComponent } from './run-tale/modals/tale-version-info-dialog/tale-version-info-dialog.component';
+import { CreateRenameVersionDialogComponent } from './run-tale/modals/create-rename-version-dialog/create-rename-version-dialog.component';
 import { PublishTaleDialogComponent } from './run-tale/modals/publish-tale-dialog/publish-tale-dialog.component';
 import { RegisterDataDialogComponent } from './run-tale/modals/register-data-dialog/register-data-dialog.component';
 import { ConnectGitRepoDialogComponent } from './run-tale/modals/connect-git-repo-dialog/connect-git-repo-dialog.component';
@@ -23,6 +25,7 @@ import { RunTaleComponent } from './run-tale/run-tale.component';
 import { TaleFilesComponent } from './run-tale/tale-files/tale-files.component';
 import { TaleInteractComponent } from './run-tale/tale-interact/tale-interact.component';
 import { TaleMetadataComponent } from './run-tale/tale-metadata/tale-metadata.component';
+import { TaleVersionsPanelComponent } from './run-tale/tale-versions-panel/tale-versions-panel.component';
 import { TaleSharingComponent } from './run-tale/tale-sharing/tale-sharing.component';
 
 
@@ -35,13 +38,16 @@ import { TaleSharingComponent } from './run-tale/tale-sharing/tale-sharing.compo
     TaleFilesComponent,
     TaleInteractComponent,
     TaleMetadataComponent,
+    TaleVersionsPanelComponent,
     TaleSharingComponent,
     PublishTaleDialogComponent,
     SelectDataDialogComponent,
     RegisterDataDialogComponent,
     TaleWorkspacesDialogComponent,
-    ConnectGitRepoDialogComponent
+    ConnectGitRepoDialogComponent,
+    CreateRenameVersionDialogComponent,
+    TaleVersionInfoDialogComponent,
   ],
-  entryComponents: [PublishTaleDialogComponent, SelectDataDialogComponent, RegisterDataDialogComponent, TaleWorkspacesDialogComponent, ConnectGitRepoDialogComponent]
+  entryComponents: [PublishTaleDialogComponent, SelectDataDialogComponent, RegisterDataDialogComponent, TaleWorkspacesDialogComponent, ConnectGitRepoDialogComponent, CreateRenameVersionDialogComponent, TaleVersionInfoDialogComponent]
 })
 export class RunTaleModule {}

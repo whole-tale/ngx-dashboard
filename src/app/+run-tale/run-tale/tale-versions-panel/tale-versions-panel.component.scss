@@ -1,0 +1,42 @@
+#timeline-column {
+  padding: 0 1rem 1rem;
+  border-left: 1px solid #ddd;
+}
+#timeline-column h3 {
+  padding-left: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 14px;
+  font-size: 18px;
+  font-weight: 700;
+}
+#timeline-column > .vertical.segment {
+  padding-top: 0;
+}
+
+#timeline {
+  height: calc(100vh - 500px);
+  overflow: scroll;
+  padding: 0 1rem;
+}
+#timeline .item {
+  padding: 1rem 0;
+}
+#timeline .item .header {
+  margin: 0.5rem 0 0.25rem;
+}
+#timeline .item .date {
+  color: #999;
+  font-size: 0.9rem;
+}
+#timeline .item div.link-title {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#timeline .item .run-version-note {
+  color: #999;
+  font-size: 0.9rem;
+  font-style: italic;
+  margin-top: 0.25rem;
+}

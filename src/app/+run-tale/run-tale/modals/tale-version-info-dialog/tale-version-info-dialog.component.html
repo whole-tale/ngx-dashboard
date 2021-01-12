@@ -1,0 +1,15 @@
+<h1 mat-dialog-title>Tale Version Info</h1>
+
+<mat-dialog-content>
+  <div class="ui grid">
+    <div class="row">
+      <div class="sixteen wide column" style="min-height: 300px; min-width: 300px; padding: 20px 20px 40px 0;">
+        <pre style="height:100%;">{{ data.version | json }}</pre>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button class="ui black deny button" mat-dialog-close>Close</button>
+</mat-dialog-actions>

@@ -29,6 +29,23 @@
   margin-right: 10px;
 }
 
+app-tale-versions-panel {
+  //position: absolute;
+  right: 0;
+  height: 100%;
+  height: fill-available;
+  height: -moz-fill-available;
+  height: -webkit-fill-available;
+}
+
+.lighter {
+  color: #999;
+}
+
+.item i {
+  padding-right: 0.5em;
+}
+
 .counter {
   background: #999;
   color: #fff;
@@ -139,7 +156,11 @@
 .wt-panel:nth-child(2) {
   margin-top: 1rem;
 }
-.wt-panel .wt-panel-body > div {
+.wt-panel .wt-panel-body .ui.grid .row .wide.column > div {
+  height: 100%;
+}
+
+.ui.grid {
   height: 100%;
 }
 
@@ -245,4 +266,8 @@
   font-size: 1rem;
   font-weight: 400;
   font-style: italic;
+}
+
+.no-margin {
+  margin: 0 !important;
 }

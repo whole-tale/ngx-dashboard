@@ -7,6 +7,7 @@ import { User } from '@api/models/user';
 import { InstanceService } from '@api/services/instance.service';
 import { TaleService } from '@api/services/tale.service';
 import { UserService } from '@api/services/user.service';
+import { VersionService } from '@api/services/version.service';
 import { BaseComponent } from '@framework/core';
 import { LogService } from '@framework/core/log.service';
 import { WindowService } from '@framework/core/window.service';
@@ -41,6 +42,11 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     instance: Instance;
     creator: User;
     currentTab = 'metadata';
+    showVersionsPanel = false;
+
+    isVersionsPanelShown() :boolean {
+      return this.showVersionsPanel;
+    }
 
     collaborators: { users: Array<User>, groups: Array<User> } = { users: [], groups: [] };
 
@@ -55,6 +61,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       private instanceService: InstanceService,
       private userService: UserService,
       private tokenService: TokenService,
+      private versionService: VersionService,
       private config: ApiConfiguration,
       private dialog: MatDialog
     ) {
@@ -72,6 +79,10 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         this.instance = event.instance;
       }
       this.ref.detectChanges();
+    }
+
+    toggleVersionsPanel(): void {
+      this.showVersionsPanel = !this.showVersionsPanel;
     }
 
     get dashboardLink(): string {
@@ -187,6 +198,9 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
     saveTaleVersion() {
       console.log('Saving Tale version');
+      this.versionService.versionCreateVersion({ taleId: this.taleId, force: true }).subscribe(version => {
+        console.log("Version saved successfully:", version);
+      });
     }
 
     openConnectGitRepoDialog() {
@@ -197,7 +211,6 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       dialogRef.afterClosed().subscribe((gitRepo: string) => {
         if (!gitRepo) { return; }
 
-        // TODO: Wire up to API
         const taleId = this.taleId;
         this.taleService.taleUpdateGit(taleId, gitRepo).subscribe(resp => {
           this.logger.info(`Git repo added to ${taleId}:`, gitRepo);

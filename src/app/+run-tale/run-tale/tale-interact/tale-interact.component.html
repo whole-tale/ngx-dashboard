@@ -1,35 +1,37 @@
 
-<!--
-<iframe [src]="tale.instance.url" *ngIf="tale.instance.iframe"></iframe>
-<div class="ui placeholder message">
-    This tale must be run in a separate window.
-    <a class="ui button primary" href="tale.instance.url" target="_blank">Click here to comply</a>
-</div>
--->
 <div class="ui stretched stackable grid" id="tale-interact-container">
-  <div class="sixteen wide column" *ngIf="instance">
-    <!-- Launching state -->
-    <div *ngIf="instance.status === 0" class="status-banner">
-      <h3>Tale is launching, please wait...</h3>
-      <i class="fas fa-5x fa-spinner fa-pulse"></i>
+  <div class="row">
+    <div class="sixteen wide column" *ngIf="instance">
+      <!-- Launching state -->
+      <div *ngIf="instance.status === 0" class="status-banner">
+        <h3>Tale is launching, please wait...</h3>
+        <i class="fas fa-5x fa-spinner fa-pulse"></i>
+      </div>
+
+      <!-- Running state -->
+      <div *ngIf="instance.status === 1">
+        <iframe *ngIf="instance.iframe" height="100%" width="100%" [src]="instance.url | safe:'url'"></iframe>
+
+        <div *ngIf="!instance.iframe" class="ui message">
+            This Tale must be run in a separate window.
+            <a class="ui button primary" [href]="instance.url" target="_blank">Click here to comply</a>
+        </div>
+      </div>
+
+      <!-- Error state -->
+      <div *ngIf="instance.status === 2" class="status-banner">
+        <i class="fas fa-warning"></i>
+      </div>
+
+      <!-- Deleting state -->
+      <div *ngIf="instance.status === 3" class="status-banner">
+        <h3>Tale is stopping, please wait...</h3>
+        <i class="fas fa-5x fa-trash fa-spin"></i>
+      </div>
     </div>
 
-    <!-- Running state -->
-    <iframe height="100%" width="100%" [src]="instance.url | safe:'url'" *ngIf="instance.status === 1"></iframe>
-
-    <!-- Error state -->
-    <div *ngIf="instance.status === 2" class="status-banner">
-      <i class="fas fa-warning"></i>
+    <div class="sixteen wide column" *ngIf="!instance" class="status-banner">
+      You must Run this Tale before you can Interact.
     </div>
-
-    <!-- Deleting state -->
-    <div *ngIf="instance.status === 3" class="status-banner">
-      <h3>Tale is stopping, please wait...</h3>
-      <i class="fas fa-5x fa-trash fa-spin"></i>
-    </div>
-  </div>
-
-  <div class="sixteen wide column" *ngIf="!instance" class="status-banner">
-    You must Run this Tale before you can Interact.
   </div>
 </div>
