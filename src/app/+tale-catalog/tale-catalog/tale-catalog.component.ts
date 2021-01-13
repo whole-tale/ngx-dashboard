@@ -57,7 +57,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
               const tale = result.tale;
               const asTale = result.asTale;
 
-              // Short-circuit for 'Cancel' case
+              // Short-circuit for 'Cancel' case
               if (!tale) { return; }
 
               // Import Tale from Dataset
@@ -67,8 +67,8 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
                 asTale: asTale ? asTale : false, // Pull from user input
                 git: result.url ? true : false,
                 spawn: true, // if true, immediately launch a Tale instance
-                taleKwargs: tale.title ? { title: tale.title } : {}, // ??
-                lookupKwargs: {}, // ??
+                taleKwargs: tale.title ? { title: tale.title } : {}, 
+                lookupKwargs: {},
               };
               this.taleService.taleCreateTaleFromUrl(params).subscribe(resp => {
                 this.logger.debug("Successfully submitted 'Analyze in WT' Job:", resp);
@@ -103,8 +103,8 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
             asTale: false, // Pull from user input
             git: gitUrl ? true : false,
             spawn: false, // if true, immediately launch a Tale instance
-            taleKwargs: tale.title ? { title: tale.title } : {}, // ??
-            lookupKwargs: {}, // ??
+            taleKwargs: tale.title ? { title: tale.title } : {},
+            lookupKwargs: {},
           };
 
           this.taleService.taleCreateTaleFromUrl(params).subscribe((response: Tale) => {

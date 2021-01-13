@@ -57,6 +57,7 @@ export class TaleRunButtonComponent implements OnChanges {
     this.interval = setInterval(() => {
       if (!this.instance || !this.instance._id) {
         stopPolling();
+
         return;
       }
 
@@ -163,7 +164,7 @@ export class TaleRunButtonComponent implements OnChanges {
           // this.refresh();
           // this.startTale(taleCopy);
           // Update the display with the newly-created Tale copy
-          this.taleInstanceStateChanged.emit({ tale: taleCopy, instance: null });
+          this.taleInstanceStateChanged.emit({ tale: taleCopy, instance: undefined });
 
           // Navigate the UI to the new Tale copy
           this.router.navigate(['run', taleCopy._id]);

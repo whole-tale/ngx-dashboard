@@ -16,7 +16,7 @@ export class MainComponent extends BaseComponent {
     super();
 
     router.events.subscribe(val => {
-      if (location.path() != '') {
+      if (location.path() !== '') {
         this.route = location.path();
       }
     });

@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateChild, Router, RouterStateSnapshot } from '@angular/router';
-
 import { User } from '@api/models/user';
 import { UserService } from '@api/services/user.service';
 import { TokenService } from '@api/token.service';
@@ -9,7 +8,7 @@ import { TokenService } from '@api/token.service';
 export class AuthGuard implements CanActivateChild {
   constructor(private readonly router: Router, private readonly userService: UserService, private readonly tokenService: TokenService) {}
 
-  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       this.userService.userGetMe().subscribe(
         (user: User) => {
@@ -24,6 +23,7 @@ export class AuthGuard implements CanActivateChild {
           }
 
           this.router.navigate(['login'], { queryParams: { rd: url } });
+
           return resolve(false);
         },
         () => resolve(false)

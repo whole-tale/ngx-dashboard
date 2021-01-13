@@ -60,6 +60,7 @@ export class PublishTaleDialogComponent implements OnInit {
       const dateB = Date.parse(b.date);
       if (dateA > dateB) { return 1; }
       if (dateA < dateB) { return -1; }
+
       return 0;
     }).slice(-1).pop();
   }

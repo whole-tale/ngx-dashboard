@@ -17,9 +17,9 @@ import { DeleteTaleModalComponent } from './tale-catalog/modals/delete-tale-moda
 import { MyTalesPipe } from './tale-catalog/pipes/my-tales.pipe';
 import { PublicTalesPipe } from './tale-catalog/pipes/public-tales.pipe';
 import { RunningTalesPipe } from './tale-catalog/pipes/running-tales.pipe';
-import { StoppedTalesPipe } from './tale-catalog/pipes/stopped-tales.pipe';
 import { SearchTalesPipe } from './tale-catalog/pipes/search-tales.pipe';
 import { SharedTalesPipe } from './tale-catalog/pipes/shared-tales.pipe';
+import { StoppedTalesPipe } from './tale-catalog/pipes/stopped-tales.pipe';
 import { TaleCatalogComponent } from './tale-catalog/tale-catalog.component';
 
 @NgModule({

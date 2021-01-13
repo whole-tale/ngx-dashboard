@@ -1,6 +1,8 @@
 import { ChangeDetectorRef, Component, NgZone, OnChanges, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ApiConfiguration } from '@api/api-configuration';
+import { AccessLevel } from '@api/models/access-level';
 import { Instance } from '@api/models/instance';
 import { Tale } from '@api/models/tale';
 import { User } from '@api/models/user';
@@ -8,18 +10,16 @@ import { InstanceService } from '@api/services/instance.service';
 import { TaleService } from '@api/services/tale.service';
 import { UserService } from '@api/services/user.service';
 import { VersionService } from '@api/services/version.service';
+import { TokenService } from '@api/token.service';
 import { BaseComponent } from '@framework/core';
 import { LogService } from '@framework/core/log.service';
 import { WindowService } from '@framework/core/window.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { routeAnimation } from '~/app/shared';
-import { AccessLevel } from '@api/models/access-level';
 
-import { ApiConfiguration } from '@api/api-configuration';
-import { TokenService } from '@api/token.service';
-import { PublishTaleDialogComponent } from './modals/publish-tale-dialog/publish-tale-dialog.component';
 import { ConnectGitRepoDialogComponent } from './modals/connect-git-repo-dialog/connect-git-repo-dialog.component';
+import { PublishTaleDialogComponent } from './modals/publish-tale-dialog/publish-tale-dialog.component';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -44,10 +44,6 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     currentTab = 'metadata';
     showVersionsPanel = false;
 
-    isVersionsPanelShown() :boolean {
-      return this.showVersionsPanel;
-    }
-
     collaborators: { users: Array<User>, groups: Array<User> } = { users: [], groups: [] };
 
     constructor(
@@ -68,6 +64,10 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         super();
     }
 
+    isVersionsPanelShown() :boolean {
+      return this.showVersionsPanel;
+    }
+
     trackByAuthorOrcid(index: number, author: TaleAuthor): string {
         return author.orcid;
     }
@@ -86,11 +86,11 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     }
 
     get dashboardLink(): string {
-      if (!this.tale || this.tale._accessLevel == AccessLevel.None) {
+      if (!this.tale || this.tale._accessLevel === AccessLevel.None) {
         return '/public';
-      } else if (this.tale._accessLevel == AccessLevel.Admin) {
+      } else if (this.tale._accessLevel === AccessLevel.Admin) {
         return '/mine';
-      } else if (this.tale._accessLevel == AccessLevel.Read || this.tale._accessLevel == AccessLevel.Write) {
+      } else if (this.tale._accessLevel === AccessLevel.Read || this.tale._accessLevel === AccessLevel.Write) {
         return '/shared';
       }
     }
@@ -116,13 +116,11 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       return this.currentTab === tab;
     }
 
-    refreshCollaborators() {
+    refreshCollaborators(): void {
       this.taleService.taleGetTaleAccess(this.taleId).subscribe(resp => {
-        //this.zone.run(() => {
-          this.logger.info("Fetched collaborators:", resp);
-          this.collaborators = resp;
-          this.ref.detectChanges();
-        //});
+        this.logger.info("Fetched collaborators:", resp);
+        this.collaborators = resp;
+        this.ref.detectChanges();
       });
     }
 
@@ -192,18 +190,18 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       this.detectCurrentTab();
     }
 
-    performRecordedRun() {
-      console.log('Performing recorded run');
+    performRecordedRun(): void {
+      this.logger.debug('Performing recorded run');
     }
 
-    saveTaleVersion() {
-      console.log('Saving Tale version');
+    saveTaleVersion(): void {
+      this.logger.debug('Saving Tale version');
       this.versionService.versionCreateVersion({ taleId: this.taleId, force: true }).subscribe(version => {
-        console.log("Version saved successfully:", version);
+        this.logger.debug("Version saved successfully:", version);
       });
     }
 
-    openConnectGitRepoDialog() {
+    openConnectGitRepoDialog(): void {
       const config: MatDialogConfig = {
         data: { tale: this.tale }
       };

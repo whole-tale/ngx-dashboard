@@ -15,7 +15,7 @@
         <div class="inline fields ui grid">
           <label class="two wide column right aligned">Authors</label>
           <div class="thirteen wide column" style="padding-left:0;">
-            <h4 style="text-align: center">Created by <span style="color:#67c096">{{creator.firstName}} {{creator.lastName}}</span></h4>
+            <h4 style="text-align: center">Created by <span style="color:#67c096">{{ creator.firstName }} {{ creator.lastName }}</span></h4>
 
             <form id="taleAuthorsSubForm" #taleAuthorsSubForm="ngForm" class="ui form" *ngIf="tale.authors.length">
               <table class="ui table striped condensed">

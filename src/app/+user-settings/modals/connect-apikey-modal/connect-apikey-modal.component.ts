@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, NgZone } from '@angular/core';
+import { Component, Inject, NgZone, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Account } from '@api/models/account';
 import { User } from '@api/models/user';
@@ -59,7 +59,7 @@ export class ConnectApiKeyModalComponent extends BaseComponent implements OnInit
       });
   }
 
-  onTargetChange(value: any, text: string, $choice: any) {
+  onTargetChange(value: any, text: string, $choice: any): void {
       this.newApiKey.resource_server = value;
   }
 

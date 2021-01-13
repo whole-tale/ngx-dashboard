@@ -65,10 +65,9 @@ export class SelectDataDialogComponent implements OnInit {
     this.allDatasets = this.datasetService.datasetListDatasets({ myData: false });
     this.datasets = this.myDatasets = this.datasetService.datasetListDatasets({ myData: true });
 
-    let preAddedDatasets = this.data.tale.dataSet.map((ds: { itemId: string, mountPath: string, _modelType: string }) => {
+    const preAddedDatasets = this.data.tale.dataSet.map((ds: { itemId: string, mountPath: string, _modelType: string }) =>
       // Lookup the Dataset by id and push it to our selection
-      return { _modelType: ds._modelType, _id: ds.itemId, name: ds.mountPath };
-    });
+      ({ _modelType: ds._modelType, _id: ds.itemId, name: ds.mountPath }));
 
     this.addedDatasets.next(preAddedDatasets);
   }

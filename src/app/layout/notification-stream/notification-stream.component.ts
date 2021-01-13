@@ -45,6 +45,7 @@ export class NotificationStreamComponent {
     if (!this.events) {
       return 0;
     }
+
     return this.events.length;
   }
 
@@ -52,7 +53,7 @@ export class NotificationStreamComponent {
     return this.notificationStream.showNotificationStream;
   }
 
-  ackAll() {
+  ackAll(): void {
     this.zone.run(() => {
       this.notificationStream.ackAll();
       this.ref.detectChanges();
@@ -104,6 +105,7 @@ export class NotificationStreamComponent {
   openLogViewerModal(event: EventData): void {
     if (!event || !event.data || !event.data.resource || !event.data.resource.jobs || !event.data.resource.jobs.length) {
       this.logger.error('Failed to view logs - no jobId provided by event.');
+
       return;
     }
 

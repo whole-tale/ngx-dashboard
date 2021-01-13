@@ -39,34 +39,36 @@ export class ViewLogsDialogComponent implements OnInit, OnDestroy {
     this.autoFetch(latestJob);
   }
 
-  mergeLogs() {
+  mergeLogs(): void {
     let logs = '';
 
     // Sort jobs by date/time
-    this.jobs.sort((a: Job, b: Job) => {
-      if (a.created > b.created) {
-        return 1;
+    this.jobs.sort(
+      (a: Job, b: Job): number => {
+        if (a.created > b.created) {
+          return 1;
+        }
+        if (a.created < b.created) {
+          return -1;
+        }
+
+        return 0;
       }
-      if (a.created < b.created) {
-        return -1;
-      }
-      return 0;
-    });
+    );
 
     // Concatenate all logs together for display
     this.jobs.forEach((job: Job) => {
-      logs += job.log.join('') + '\n\n\n\n\n';
+      logs += `${job.log.join('')}\n\n\n\n\n`;
     });
 
     this.logs.next(logs);
     this.ref.detectChanges();
   }
 
-  stopPolling(interval: any) {
+  stopPolling(interval: any): void {
     if (interval) {
       this.intervals.splice(this.intervals.indexOf(interval), 1);
       clearInterval(interval);
-      interval = undefined;
     }
   }
 
@@ -91,7 +93,7 @@ export class ViewLogsDialogComponent implements OnInit, OnDestroy {
     this.intervals.push(interval);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.intervals.forEach((interval: any) => {
       this.stopPolling(interval);
     });

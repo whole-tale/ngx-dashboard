@@ -2,6 +2,7 @@ import { Component, Inject, NgZone, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 // import { Workspace } from '@api/models/workspace';   // TODO: Missing model
 // import { WorkspaceService } from '@api/services/workspace.service';
+import { AccessLevel } from '@api/models/access-level';
 import { Tale } from '@api/models/tale';
 import { FolderService } from '@api/services/folder.service';
 import { ItemService } from '@api/services/item.service';
@@ -12,7 +13,6 @@ import { LogService }  from '@framework/core/log.service';
 import { TruncatePipe } from '@framework/core/truncate.pipe';
 import { enterZone }  from '@framework/ngrx';
 import { BehaviorSubject } from 'rxjs';
-import { AccessLevel } from '@api/models/access-level';
 
 enum ParentType {
     Folder = "folder",

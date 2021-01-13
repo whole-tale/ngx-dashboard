@@ -1,22 +1,20 @@
 import { ChangeDetectorRef, Component, Input, NgZone, OnInit } from '@angular/core';
 import { ApiConfiguration } from '@api/api-configuration';
+import { AccessLevel } from '@api/models/access-level';
 import { Image } from '@api/models/image';
 import { License } from '@api/models/license';
-import { Tale } from '@api/models/tale';
 import { PublishInfo } from '@api/models/publish-info';
+import { Tale } from '@api/models/tale';
 import { User } from '@api/models/user';
 import { ImageService } from '@api/services/image.service';
 import { LicenseService } from '@api/services/license.service';
 import { TaleService } from '@api/services/tale.service';
 import { LogService } from '@framework/core/log.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
-import { NotificationService } from '@shared/error-handler/services/notification.service';
 import { ErrorService } from '@shared/error-handler/services/error.service';
+import { NotificationService } from '@shared/error-handler/services/notification.service';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { Observable } from 'rxjs';
-
-import { AccessLevel } from '@api/models/access-level';
-
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -48,6 +46,7 @@ export class TaleMetadataComponent implements OnInit {
     if (!this.tale) {
       return false;
     }
+
     return this.tale._accessLevel >= AccessLevel.Write;
   }
 
@@ -64,6 +63,7 @@ export class TaleMetadataComponent implements OnInit {
       const dateB = Date.parse(b.date);
       if (dateA > dateB) { return 1; }
       if (dateA < dateB) { return -1; }
+
       return 0;
     }).slice(-1).pop();
   }
@@ -95,15 +95,15 @@ export class TaleMetadataComponent implements OnInit {
     // TODO: Revert to last known _previousState
     // TODO: Ask for confirmation, if yes then
     this.tale = this.copy(this._previousState);
-    // and then
+
     return true;
   }
 
-  scrollToTop() {
-      this.zone.runOutsideAngular(() => {
-        // Edge case: Scroll to top of view
-        document.querySelector('#scrollContainer').scrollTop = 0;
-      });
+  scrollToTop(): void {
+    this.zone.runOutsideAngular(() => {
+      // Edge case: Scroll to top of view
+      document.querySelector('#scrollContainer').scrollTop = 0;
+    });
   }
 
   startEdit(): void {
@@ -163,18 +163,20 @@ export class TaleMetadataComponent implements OnInit {
     return index;
   }
 
-  transformIdentifier(identifier: string) {
+  transformIdentifier(identifier: string): string {
     if (identifier.indexOf('doi:') === 0) {
       return identifier.replace('doi:', 'doi.org/');
     }
+
     return identifier;
   }
 
   updateTale(): Promise<any> {
     const errors = this.validateAuthors();
     if (errors && errors.length > 0) {
-      this.notificationService.showError('Failed to save: ' + errors[0].message);
-      return new Promise(() => {});
+      this.notificationService.showError(`Failed to save: ${errors[0].message}`);
+
+      return new Promise(() => { this.logger.debug('Noop') });
     }
 
     const params = { id: this.tale._id , tale: this.tale };
@@ -188,6 +190,7 @@ export class TaleMetadataComponent implements OnInit {
     }, err => {
       this.logger.error("Failed updating tale:", err);
     });
+
     return promise;
   }
 
