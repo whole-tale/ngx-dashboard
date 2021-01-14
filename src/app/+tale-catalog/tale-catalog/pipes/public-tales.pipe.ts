@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Tale } from '@api/models/tale';
 import { AccessLevel } from '@api/models/access-level';
+import { Tale } from '@api/models/tale';
 
 // Given a list of tales, returns only public tales
 @Pipe({name: 'publicTales'})
@@ -10,6 +10,6 @@ export class PublicTalesPipe implements PipeTransform {
       return [];
     }
 
-    return value.filter(tale => tale._accessLevel == AccessLevel.None || tale.public);
+    return value.filter(tale => tale._accessLevel === AccessLevel.None || tale.public);
   }
 }

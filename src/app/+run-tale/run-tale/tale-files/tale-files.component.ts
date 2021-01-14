@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnInit, Output } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AccessLevel } from '@api/models/access-level';
 import { Dataset } from '@api/models/dataset';
 import { Tale } from '@api/models/tale';
 import { User } from '@api/models/user';
@@ -19,8 +20,6 @@ import { TruncatePipe } from '@framework/core/truncate.pipe';
 import { WindowService } from '@framework/core/window.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
-
-import { AccessLevel } from '@api/models/access-level';
 
 import { RegisterDataDialogComponent } from '../modals/register-data-dialog/register-data-dialog.component';
 import { SelectDataDialogComponent } from '../modals/select-data-dialog/select-data-dialog.component';
@@ -169,26 +168,26 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     });
     // Update file size as upload progresses
     // TODO: File upload progress updates
-    /*const files = this.files.value;
-    const existing = files.find(file => file._id === uploadId);
-    if (existing) {
-      const index = files.indexOf(existing);
-      files[index] = chunkResp;
-    } else {
-      files.push(chunkResp);
-    }
-    this.files.next(files);
-    this.ref.detectChanges();*/
+    // const files = this.files.value;
+    // const existing = files.find(file => file._id === uploadId);
+    // if (existing) {
+    //   const index = files.indexOf(existing);
+    //   files[index] = chunkResp;
+    // } else {
+    //   files.push(chunkResp);
+    // }
+    // this.files.next(files);
+    // this.ref.detectChanges();
 
     return chunkResp;
   }
 
-  delay(ms: number) {
+  delay(ms: number): Promise<any> {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   // Girder default chunk size is 67108864?
-  async uploadChunks(uploadId: string, upload: File, chunkSize: number = 67108863) { // = 10000000) {
+  async uploadChunks(uploadId: string, upload: File, chunkSize = 67108863): Promise<any> { // = 10000000) {
     const numChunks = Math.ceil(upload.size / chunkSize);
     this.logger.info(`Beginning upload of ${upload.name} (${upload.size} bytes in ${numChunks} chunks):`, upload);
 
@@ -201,8 +200,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       this.logger.debug(`Uploading ${start} - ${end - 1} / ${upload.size} bytes (${start/(chunkSize + 1) + 1} / ${numChunks} chunks)`);
       const chunkResp = await this.uploadChunk(uploadId, offset, chunk);
       this.logger.info(`Uploaded ${chunkResp.received ? chunkResp.received : upload.size} / ${upload.size} bytes (${start/(chunkSize + 1) + 1} / ${numChunks} chunks):`, chunkResp);
-      //await this.delay(500);
-      //this.logger.info("Artificial delay (500ms)");
+      // await this.delay(500);
+      // this.logger.info("Artificial delay (500ms)");
     }
   }
 
@@ -223,7 +222,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         parentType: UploadType.Folder,
         name: upload.name,
         size: upload.size,
-        //chunk: contents
+        // chunk: contents
       };
 
       this.fileService.fileInitUpload(initUploadParams).subscribe(async (initResp: any) => {
@@ -243,16 +242,15 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         this.logger.info(`Upload complete: ${upload.name} (${upload.size})`, upload);
 
         // This is apparently not needed all the time? Files are weird...
-        /*this.fileService.fileFinalizeUpload(uploadId).subscribe(finalResp => {
-
-          // Update with final uploaded item
-          const files = this.files.value;
-          const existing = files.find(file => file._id === uploadId);
-          const index = files.indexOf(existing);
-          files[index] = finalResp;
-          this.files.next(files);
-          this.ref.detectChanges();
-        })*/
+        // this.fileService.fileFinalizeUpload(uploadId).subscribe(finalResp => {
+        //    // Update with final uploaded item
+        //   const files = this.files.value;
+        //   const existing = files.find(file => file._id === uploadId);
+        //   const index = files.indexOf(existing);
+        //   files[index] = finalResp;
+        //   this.files.next(files);
+        //   this.ref.detectChanges();
+        // })
 
         // Update UI with final uploaded item (logo, size, etc)
         this.load();
@@ -328,7 +326,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
             });
             promises.push(promise);
           } else {
-            console.log('Unrecognized modelType: ' + mount._modelType);
+            this.logger.error('Unrecognized modelType', mount._modelType);
           }
         });
 
@@ -343,6 +341,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         this.currentFolderId = undefined;
         this.canNavigateUp = false;
         this.currentPath = '';
+
         break;
       case 'tale_workspace':
         if (!this.tale || !this.tale.workspaceId) {
@@ -374,9 +373,11 @@ export class TaleFilesComponent implements OnInit, OnChanges {
           this.canNavigateUp = false;
           this.currentPath = '';
         }
+
         break;
       default:
         this.logger.warn("Unrecognized nav encountered:", this.currentNav);
+
         break;
     }
   }
@@ -511,6 +512,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     const parentId = this.currentFolderId ? this.currentFolderId :
       // Otherwise upload to "workspace" if we're on the Workspaces nav and have no currentFolderId, else upload to "Home" folder
       this.currentNav === 'tale_workspace' ? this.tale.workspaceId : this.homeRoot._id;
+
       return parentId;
   }
 
@@ -680,9 +682,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
       const tale = this.tale
       const id = tale._id;
-      tale.dataSet = datasets.map(ds => {
-        return { itemId: ds._id, mountPath: ds.name, _modelType: ds._modelType };
-      });
+      tale.dataSet = datasets.map(ds =>
+        ({ itemId: ds._id, mountPath: ds.name, _modelType: ds._modelType }));
 
       this.taleService.taleUpdateTale({ id, tale }).subscribe(response => {
         this.logger.debug("Successfully updated Tale datasets:", response);

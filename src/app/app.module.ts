@@ -27,9 +27,8 @@ import { routes } from './app.routes';
 import { FooterComponent } from './layout/footer.component';
 import { HeaderComponent } from './layout/header.component';
 import { MainComponent } from './layout/main.component';
-import { LoginComponent } from './login/login.component';
-
 import { NotificationStreamModule } from './layout/notification-stream/notification-stream.module';
+import { LoginComponent } from './login/login.component';
 
 export const REQ_KEY = makeStateKey<string>('req');
 

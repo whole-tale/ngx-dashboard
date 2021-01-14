@@ -1,4 +1,4 @@
-import { Component, Input, Output, NgZone } from '@angular/core';
+import { Component, Input, NgZone, Output } from '@angular/core';
 import { Instance } from '@api/models/instance';
 import { Tale } from '@api/models/tale';
 import { User } from '@api/models/user';
@@ -15,14 +15,11 @@ declare var $: any;
 })
 export class RunningTalesComponent {
 
-  @Input()
-  taleList: Array<Tale>;
+  @Input() taleList: Array<Tale>;
 
-  @Input()
-  instances: Map<string, Instance>; // = new Map<string, Instance> ();
+  @Input() instances: Map<string, Instance>; // = new Map<string, Instance> ();
 
-  @Input()
-  creators: Map<string, Instance>; // = new Map<string, Instance> ();
+  @Input() creators: Map<string, Instance>; // = new Map<string, Instance> ();
 
   constructor(private readonly zone: NgZone) {  }
 
@@ -44,6 +41,6 @@ export class RunningTalesComponent {
   }
 
   taleInstanceStateChanged(updated: {tale: Tale, instance: Instance}): void {
-    //this.refresh();
+    // this.refresh();
   }
 }

@@ -35,7 +35,7 @@ export class HeaderComponent extends BaseComponent implements OnInit {
 
   // events: Array<EventData>;
 
-  @Output() toggledNotificationStream: EventEmitter<Boolean> = new EventEmitter<Boolean>();
+  @Output() readonly toggledNotificationStream: EventEmitter<Boolean> = new EventEmitter<Boolean>();
 
   constructor(
     private readonly zone: NgZone,
@@ -100,6 +100,7 @@ export class HeaderComponent extends BaseComponent implements OnInit {
     if (!this.events) {
       return 0;
     }
+
     return this.events.length;
   }
 }

@@ -4,9 +4,9 @@ import { Tale } from '@api/models/tale';
 import { Version } from '@api/models/version';
 import { TaleService } from '@api/services/tale.service';
 import { VersionService } from '@api/services/version.service';
-import { NotificationService } from '@shared/error-handler/services/notification.service';
 import { LogService } from '@framework/core/log.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
+import { NotificationService } from '@shared/error-handler/services/notification.service';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { Observable } from 'rxjs';
 
@@ -100,7 +100,7 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
     });
   }
 
-  openCreateRenameModal(mode: string = "create", after: Function): void {
+  openCreateRenameModal(mode = "create", after: Function): void {
       const config = { data: { taleId: this.tale._id, mode } };
       const dialogRef = this.dialog.open(CreateRenameVersionDialogComponent, config);
       dialogRef.afterClosed().subscribe((result: { name: string, force?: boolean }) => {
@@ -151,7 +151,7 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
     });
   }
 
-  deleteVersion(version: Version) {
+  deleteVersion(version: Version): void {
     // Delete the chosen version
     this.versionService.versionDeleteVersion(version._id).subscribe(response => {
       this.logger.info("Tale version successfully deleted:", version.name);

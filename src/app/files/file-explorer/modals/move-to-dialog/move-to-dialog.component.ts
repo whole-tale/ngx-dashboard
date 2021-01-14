@@ -60,6 +60,7 @@ export class MoveToDialogComponent implements OnInit {
     if (!lastItem) {
       return undefined;
     }
+
     return lastItem._id;
   }
 
@@ -70,6 +71,7 @@ export class MoveToDialogComponent implements OnInit {
 
     const lastIndex = this.pathStack.length - 1;
     const lastItem = this.pathStack[lastIndex];
+
     return lastItem;
   }
 
@@ -85,6 +87,7 @@ export class MoveToDialogComponent implements OnInit {
           // Fetch Tale via ID, then display its title
           return (async () => {
             const taleId = e.name;
+
             return this.taleNamePipe.transform(taleId).toPromise();
           })();
         } else {
@@ -179,6 +182,7 @@ export class MoveToDialogComponent implements OnInit {
   navigate(elem: FileElement): void {
     if (!elem || elem._modelType !== 'folder') {
       this.logger.warn('Attempted to navigate into a non-folder: ', elem);
+
       return;
     }
 
@@ -191,6 +195,7 @@ export class MoveToDialogComponent implements OnInit {
   navigateUp(): void {
     if (!this.pathStack.length) {
       this.logger.warn('Attempted to pop from empty path: ', this.pathStack);
+
       return;
     }
 
@@ -200,12 +205,14 @@ export class MoveToDialogComponent implements OnInit {
   }
 
   // Select folder
-  selectFolder(elem: FileElement) {
+  selectFolder(elem: FileElement): void {
     if (!elem || elem._modelType !== 'folder') {
       this.logger.warn('Attempted to select a non-folder: ', elem);
+
       return;
     } else if (elem._id === this.data.elementToMove._id) {
       this.logger.warn('Attempted to move the current item into itself: ', elem);
+
       return;
     }
     this.selectedFolder = elem;

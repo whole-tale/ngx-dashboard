@@ -4,7 +4,7 @@ export class WindowService implements Window {
   navigator: any = {};
   location: any = {};
 
-  open(url: string, target?: string) {
+  open(url: string, target?: string): void {
     return;
   }
 

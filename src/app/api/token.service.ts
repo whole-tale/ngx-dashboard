@@ -28,7 +28,7 @@ export class TokenService {
   clearToken(): void {
     localStorage.removeItem('girderToken');
   }
-  setReturnRoute(returnRoute: string) {
+  setReturnRoute(returnRoute: string): void {
     localStorage.setItem('returnRoute', returnRoute);
   }
   getReturnRoute(): string {

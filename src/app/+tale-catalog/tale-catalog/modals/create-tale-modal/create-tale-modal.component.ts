@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Image } from '@api/models/image';
 import { Tale } from '@api/models/tale';
 import { ImageService } from '@api/services/image.service';
+import { LogService } from '@framework/core/log.service';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -14,14 +15,20 @@ declare var $: any;
 export class CreateTaleModalComponent implements OnInit,AfterViewInit {
   newTale: Tale;
   datasetCitation: any;
-  asTale: boolean = false;
+  asTale = false;
   gitUrl = '';
 
   showGit = false;
 
   environments: Array<Image> = [];
 
-  constructor(private zone: NgZone, public dialogRef: MatDialogRef<CreateTaleModalComponent>, @Inject(MAT_DIALOG_DATA) public data: { params: any, showGit: boolean }, private imageService: ImageService) {
+  constructor(
+      private zone: NgZone,
+      public dialogRef: MatDialogRef<CreateTaleModalComponent>,
+      @Inject(MAT_DIALOG_DATA) public data: { params: any, showGit: boolean },
+      private imageService: ImageService,
+      private logger: LogService
+    ) {
     this.newTale = {
       title: (data && data.params) ? data.params.name : '',
       imageId: '',
@@ -31,7 +38,7 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
       publishInfo: [],
       dataSet: [],
       public: false,
-      copyOfTale: null,
+      copyOfTale: undefined,
       description: '### Provide a description for your Tale'
     };
     this.showGit = data.showGit;
@@ -87,17 +94,17 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
             // If found, select it in the dropdown
             this.newTale.imageId = match._id;
           } else {
-            console.error(`Failed to find an environment named ${this.data.params.environment}`);
+            this.logger.error(`Failed to find an environment named ${this.data.params.environment}`);
           }
         }
       });
     }, err => {
-      console.error("Failed to list images:", err);
+      this.logger.error("Failed to list images:", err);
     });
   }
 
   enableReadOnly(evt: any): void {
-    console.log("Enabling read only on this Tale...");
+    this.logger.info("Enabling read only on this Tale...");
     const target = evt.target;
     if (target.checked) {
       this.asTale = false;
@@ -105,7 +112,7 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
   }
 
   enableReadWrite(evt: any): void {
-    console.log("Enabling read/write on this Tale...");
+    this.logger.info("Enabling read/write on this Tale...");
     const target = evt.target;
     if (target.checked) {
       this.asTale = true;

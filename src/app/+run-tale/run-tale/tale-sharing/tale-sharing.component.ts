@@ -41,7 +41,7 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
   @Input() creator: User;
 
   @Input() collaborators: CollaboratorList;
-  @Output() collaboratorsChange: EventEmitter<CollaboratorList> = new EventEmitter<CollaboratorList>();
+  @Output() readonly collaboratorsChange: EventEmitter<CollaboratorList> = new EventEmitter<CollaboratorList>();
   displayedCollaborators: Array<Collaborator> = [];
 
   AccessLevel = AccessLevel;
@@ -50,7 +50,7 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
   newCollabAccess = 0;
   newCollabUser: User;
 
-  handleChange(evt: any, level: string) {
+  handleChange(evt: any, level: string): void {
     const target = evt.target;
     if (!target.checked) {
       return;
@@ -63,7 +63,7 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
     }
 
     this.taleService.taleUpdateTale({ id: this.tale._id, tale: this.tale }).subscribe((resp: any) => {
-      this.logger.debug('Tale is now ' + this.tale.public ? 'public' : 'private');
+      this.logger.debug(`Tale is now ${this.tale.public ? 'public' : 'private'}`);
     });
   }
 
@@ -81,7 +81,7 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
     $('.ui.dropdown.access-dropdown').dropdown();
   }
 
-  getDisplayedCollaborators(collaborators: CollaboratorList) {
+  getDisplayedCollaborators(collaborators: CollaboratorList): Array<Collaborator> {
     return collaborators.users.filter(collab => collab.id !== this.tale.creatorId).concat(collaborators.groups);
   }
 
@@ -97,13 +97,14 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
 
       return users;
     });
+
     return userFetch;
   }
 
   filterUsers(users: Array<User>): Array<User> {
     return users.filter(user => {
       const isCreator = this.tale.creatorId === user._id;
-      const existingCollaborator = this.collaborators.users.find(collab => user._id == collab.id);
+      const existingCollaborator = this.collaborators.users.find(collab => user._id === collab.id);
 
       return !isCreator && !existingCollaborator;
     });
@@ -116,10 +117,8 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
   }
 
   initializeSearch(filteredUsers: Array<User>): void {
-    const self = this;
-
     // Initialize the user search
-    $('#userSearch').search({
+    $('#userSearch').search.call(this, {
       source: filteredUsers,
       type: 'standard',
       fullTextSearch: 'true',
@@ -130,7 +129,7 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
       templates: {
         // Customize user search result template
         userSearch: (response: any, fields: any) => {
-          //this.users = response.results;
+          // this.users = response.results;
           // returns results html for custom results
           let template = `<div class="ui relaxed divided list" style="padding:10px;">`
           response.results.forEach((result: User) => {
@@ -145,6 +144,7 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
               </a>`
           })
           template += `</div>`
+
           return template;
         },
       },
@@ -162,17 +162,18 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
         'lastName',
         'description',
       ],
-      onSelect: function(result: any, response: any) {
-        self.logger.debug('Selected:', result);
+      onSelect: (result: any, response: any): boolean => {
+        this.logger.debug('Selected:', result);
 
         const displayName = result.login;
         $('#userSearch').search('set value', displayName);
-        //$('#userSearch').find('input').val(displayName);
+        // $('#userSearch').find('input').val(displayName);
         $('#userSearch').search('hide results');
         $('#userSearchInput').val(displayName);
 
-        self.newCollabUser = result;
-        self.ref.detectChanges();
+        this.newCollabUser = result;
+        this.ref.detectChanges();
+
         return true;
       }
     });
@@ -229,7 +230,7 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
   }
 
   // Init the dropdown and set our action handler
-  initializeDropdown(selector: string, collab: Collaborator) {
+  initializeDropdown(selector: string, collab: Collaborator): void {
     this.logger.debug(`Activating ${selector}`);
     $(selector).dropdown({ action: (text: string, value: any) => {
       $(selector).dropdown('hide');
@@ -242,7 +243,7 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
     $(selector).dropdown('set selected', collab.level);
   }
 
-  addCollaborator() {
+  addCollaborator(): void {
     const collab: Collaborator = {
       id: this.newCollabUser._id,
       level: this.newCollabAccess === 1 ? AccessLevel.Write : AccessLevel.Read,
@@ -270,7 +271,7 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
 
   }
 
-  removeCollaborator(id: string) {
+  removeCollaborator(id: string): void {
     const user = this.collaborators.users.find((c) => id === c.id);
     if (user) {
       const index = this.collaborators.users.indexOf(user);
@@ -291,7 +292,7 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
 
   saveCollaborators(): Promise<any> {
     // Make sure Owner retains access (backend should validate this too)
-    const owner = this.collaborators.users.find(user => this.tale.creatorId == user.id);
+    const owner = this.collaborators.users.find(user => this.tale.creatorId === user.id);
     if (!owner) {
       this.collaborators.users.push({
         id: this.tale.creatorId,
@@ -310,12 +311,13 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
       access: JSON.stringify(this.collaborators)
     };
 
-    let promise = this.taleService.taleUpdateTaleAccess(params).toPromise();
+    const promise = this.taleService.taleUpdateTaleAccess(params).toPromise();
     promise.then((response: any) => {
       this.logger.debug('Tale access updated successfully:', response);
       this.collaboratorsChange.emit(this.collaborators);
       this.refilterSearch(this.filterUsers(this.users));
     });
+
     return promise;
   }
 
@@ -324,10 +326,10 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
     this.ref.detectChanges();
   }
 
-  clearNewCollaborator() {
+  clearNewCollaborator(): void {
     $('#userSearch').search('set value', '');
     this.newCollabAccess = 0;
-    this.newCollabUser = null;
+    this.newCollabUser = undefined;
   }
 
   trackById(index: number, user: any): string {

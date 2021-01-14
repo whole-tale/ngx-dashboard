@@ -5,10 +5,9 @@ import { SharedModule } from '@framework/core';
 import { MaterialModule } from '@framework/material';
 import { TalesService } from '@tales/tales.service';
 
-import { NotificationStreamService } from './notification-stream.service';
-
 import { ViewLogsDialogComponent } from './modals/view-logs-dialog/view-logs-dialog.component';
 import { NotificationStreamComponent } from './notification-stream.component';
+import { NotificationStreamService } from './notification-stream.service';
 
 @NgModule({
   declarations: [NotificationStreamComponent, ViewLogsDialogComponent],

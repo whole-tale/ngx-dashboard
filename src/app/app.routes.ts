@@ -42,7 +42,7 @@ export const routes = [
         loadChildren: './+user-settings/user-settings.module#UserSettingsModule'
       }
     ],
-    canActivateChild: [MetaGuard, CustomAuthGuard /*, AuthGuard */],
+    canActivateChild: [MetaGuard, CustomAuthGuard], // AuthGuard
     data: {
       i18n: {
         isRoot: true
