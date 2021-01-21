@@ -146,6 +146,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         if (!tale) {
           this.logger.error("Tale is null, something went horribly wrong");
           this.router.navigate(['public']);
+
           return;
         }
 
