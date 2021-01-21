@@ -118,7 +118,7 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
 
   initializeSearch(filteredUsers: Array<User>): void {
     // Initialize the user search
-    $('#userSearch').search.call(this, {
+    $('#userSearch').search({
       source: filteredUsers,
       type: 'standard',
       fullTextSearch: 'true',
