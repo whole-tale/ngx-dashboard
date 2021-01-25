@@ -14,6 +14,7 @@ class NotificationStreamService implements OnDestroy {
   static readonly Path = '/notification/stream';
   static readonly TimeoutMs = 30;
   static readonly IntervalDelayMs = 30000;
+  private _since: number = 0;
 
   interval: any;
 
@@ -24,7 +25,7 @@ class NotificationStreamService implements OnDestroy {
 
   ackAll() {
     const newSince = new Date().getTime() / 1000;
-    this.setSince(newSince);
+    this.since = newSince;
     //this.reconnect(true);
     //this.connect();
     this.openNotificationStream(false);
@@ -43,13 +44,16 @@ class NotificationStreamService implements OnDestroy {
     this.showNotificationStream = open;
   }
 
-  setSince(lastRead: number): void {
-    // number -> string to conform to localStorage
-    localStorage.setItem('lastRead', lastRead.toFixed().toString());
-  }
-  getSince(): number {
+  get since(): number {
     // The leading "+" converts the value to a number
     return +localStorage.getItem('lastRead');
+  }
+
+  set since(value: number) {
+    this._since = value;
+    // number -> string to conform to localStorage
+    localStorage.setItem('lastRead', value.toFixed().toString());
+    this.source.url = this.url; // This is ugly, but there's no other way
   }
 
   get token() {
@@ -60,9 +64,8 @@ class NotificationStreamService implements OnDestroy {
     let url = this.config.rootUrl + NotificationStreamService.Path;
 
     // TODO: Add query-string parameters
-    let since = this.getSince();
-    if (since) {
-      url += (url.indexOf('?') === -1 ? '?' : '&') + `since=${since}`;
+    if (this.since) {
+      url += (url.indexOf('?') === -1 ? '?' : '&') + `since=${this.since}`;
     }
 
     let timeout = NotificationStreamService.TimeoutMs;
