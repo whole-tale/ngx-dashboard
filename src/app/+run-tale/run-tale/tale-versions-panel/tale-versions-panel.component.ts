@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, Input, NgZone, OnChanges, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { AccessLevel } from '@api/models/access-level';
 import { Tale } from '@api/models/tale';
 import { Version } from '@api/models/version';
 import { TaleService } from '@api/services/tale.service';
@@ -26,6 +27,7 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
 
   // Tale Version timeline (sorted list)
   timeline: Array<any> = [];
+  AccessLevel = AccessLevel;
 
   constructor(private ref: ChangeDetectorRef,
               private zone: NgZone,

@@ -1,10 +1,8 @@
 <div id="timeline-column">
-  <div class="ui vertical segment">
-    <div style="margin-bottom: 1rem">
-        <button class="ui button fluid" (click)="saveNewVersion()">
-        <i class="fas fa-save icon"></i>Save Tale Version
-        </button>
-    </div>
+  <div class="ui vertical segment" *ngIf="tale._accessLevel >= AccessLevel.Write">
+    <button class="ui button fluid" (click)="saveNewVersion()">
+      <i class="fas fa-save icon"></i>Save Tale Version
+    </button>
 
     <!-- TODO: Recorded Runs configurations -->
     <div class="ui fluid selection version dropdown" tabindex="0" *ngIf="false">
@@ -49,8 +47,8 @@
                 <!-- TODO: Compare Versions button -->
                 <div class="item" *ngIf="false">Compare</div>
 
-                <div class="item" (click)="renameVersion(version)">Rename</div>
-                <div class="item" (click)="deleteVersion(version)">Delete</div>
+                <div class="item" (click)="renameVersion(version)" *ngIf="tale._accessLevel >= AccessLevel.Write">Rename</div>
+                <div class="item" (click)="deleteVersion(version)" *ngIf="tale._accessLevel >= AccessLevel.Write">Delete</div>
               </div>
           </div>
         </div>
