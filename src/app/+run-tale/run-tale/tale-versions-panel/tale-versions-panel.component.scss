@@ -1,6 +1,6 @@
 #timeline-column {
-  padding: 0 1rem 1rem;
   border-left: 1px solid #ddd;
+  height: 100%;
 }
 #timeline-column h3 {
   padding-left: 1rem;
@@ -14,8 +14,8 @@
 }
 
 #timeline {
-  height: calc(100vh - 500px);
-  overflow: scroll;
+  height: 48vh;
+  overflow: auto;
   padding: 0 1rem;
 }
 #timeline .item {
