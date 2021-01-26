@@ -22,7 +22,7 @@
   padding: 1rem 0;
 }
 #timeline .item .header {
-  margin: 0.5rem 0 0.25rem;
+  margin: 0.2rem 0 0.1rem;
 }
 #timeline .item .date {
   color: #999;
@@ -39,4 +39,12 @@
   font-size: 0.9rem;
   font-style: italic;
   margin-top: 0.25rem;
+}
+
+.ui.avatar {
+  height: 20px;
+  width: 20px;
+}
+.ui.avatar + span {
+  margin-left: 5px;
 }
