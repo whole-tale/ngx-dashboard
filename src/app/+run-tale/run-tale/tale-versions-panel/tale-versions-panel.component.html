@@ -42,7 +42,7 @@
                 <div class="item" (click)="viewVersionInfo(version)">View Info</div>
 
                 <!-- TODO: Restore Version button -->
-                <div class="item" *ngIf="false">Restore</div>
+                <div class="item" (click)="restoreVersion(version)" *ngIf="tale._accessLevel >= AccessLevel.Write">Restore</div>
 
                 <!-- TODO: Compare Versions button -->
                 <div class="item" *ngIf="false">Compare</div>

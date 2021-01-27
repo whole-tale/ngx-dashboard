@@ -128,7 +128,10 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
   }
 
   restoreVersion(version: Version): void {
-    // TODO: Restore from previous version
+    this.taleService.taleRestoreVersion(this.tale._id, version._id).subscribe(response => {
+      this.logger.info("Tale version successfully restored");
+      // TODO: here goes the code that updates tale related places
+    });
     // TODO: Once they do this, how can the user get back to HEAD?
   }
 
