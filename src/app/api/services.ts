@@ -25,4 +25,3 @@ export { UserService } from './services/user.service';
 export { VersionService } from './services/version.service';
 export { WholetaleService } from './services/wholetale.service';
 export { WorkerService } from './services/worker.service';
-export { WorkspaceService } from './services/workspace.service';
