@@ -20,7 +20,8 @@
 
       <!-- Placeholder Message -->
       <div class="ui message" *ngIf="!allStoppedTales.length">
-          You do not have any stopped Tales.
+          You haven't created any Tales yet. Select the "Create New Tale" button above 
+          or <a [routerLink]="'/public'">explore Tales created by other users</a>.
       </div>
 
       <div class="ui message" *ngIf="allStoppedTales.length && !filteredStoppedTales.length">
