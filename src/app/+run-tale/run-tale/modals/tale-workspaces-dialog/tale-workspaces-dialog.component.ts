@@ -1,7 +1,5 @@
 import { Component, Inject, NgZone, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-// import { Workspace } from '@api/models/workspace';   // TODO: Missing model
-// import { WorkspaceService } from '@api/services/workspace.service';
 import { AccessLevel } from '@api/models/access-level';
 import { Tale } from '@api/models/tale';
 import { FolderService } from '@api/services/folder.service';

@@ -10,7 +10,6 @@ import { ItemService } from '@api/services/item.service';
 import { ResourceService } from '@api/services/resource.service';
 import { TaleService } from '@api/services/tale.service';
 import { UserService } from '@api/services/user.service';
-import { WorkspaceService } from '@api/services/workspace.service';
 import { FileElement } from '@files/models/file-element';
 import { LogService } from '@framework/core/log.service';
 import { TruncatePipe } from '@framework/core/truncate.pipe';
@@ -117,7 +116,6 @@ export class MoveToDialogComponent implements OnInit {
     private readonly folderService: FolderService,
     private readonly collectionService: CollectionService,
     private readonly itemService: ItemService,
-    private readonly workspaceService: WorkspaceService,
     private readonly fileService: FileService,
     private readonly userService: UserService,
     private readonly taleService: TaleService,

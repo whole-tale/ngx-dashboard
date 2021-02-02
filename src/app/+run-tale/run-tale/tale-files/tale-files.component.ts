@@ -13,7 +13,6 @@ import { ItemService } from '@api/services/item.service';
 import { ResourceService } from '@api/services/resource.service';
 import { TaleService } from '@api/services/tale.service';
 import { UserService } from '@api/services/user.service';
-import { WorkspaceService } from '@api/services/workspace.service';
 import { FileElement } from '@files/models/file-element';
 import { LogService } from '@framework/core/log.service';
 import { TruncatePipe } from '@framework/core/truncate.pipe';
@@ -94,7 +93,6 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     private collectionService: CollectionService,
     private itemService: ItemService,
     private datasetService: DatasetService,
-    private workspaceService: WorkspaceService,
     private fileService: FileService,
     private userService: UserService,
     private taleService: TaleService,
