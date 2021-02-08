@@ -55,11 +55,6 @@ export class ViewLogsDialogComponent implements OnInit, OnDestroy {
     return this.stayAtBottom;
   }
 
-  scrollToBottomChanged(element: any, event: any) {
-    this.logger.info('Toggled: ', element.checked);
-    this.stayAtBottom = element.checked;
-  }
-
   scrollToBottom(): void {
     setTimeout(() => {
       const id = 'log-viewer-content';
