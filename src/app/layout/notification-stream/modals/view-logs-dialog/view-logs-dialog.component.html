@@ -11,5 +11,9 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
+  <div class="ui checkbox">
+    <input type="checkbox" name="stayAtBottom" [(ngModel)]="stayAtBottom" />
+    <label>Scroll to Bottom</label>
+  </div>
   <button class="ui black deny button" mat-dialog-close>Close</button>
 </mat-dialog-actions>
