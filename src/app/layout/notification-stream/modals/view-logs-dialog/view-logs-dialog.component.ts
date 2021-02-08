@@ -98,12 +98,9 @@ export class ViewLogsDialogComponent implements OnInit, OnDestroy {
 
   autoFetch(jobId: string, intervalMs: number = this.refreshInterval): void {
     const interval: any = setInterval(() => {
-      this.logger.info('fetching...');
       this.jobService.jobGetJob(jobId).subscribe((job: Job) => {
-        this.logger.info('fetched!');
         // If job is done, stop polling
         if (job.status === 3) {
-          this.logger.info('stopping!');
           this.stopPolling(interval);
         }
 
