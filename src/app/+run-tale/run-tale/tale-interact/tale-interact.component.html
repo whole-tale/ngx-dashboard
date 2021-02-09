@@ -14,7 +14,13 @@
 
         <div *ngIf="!instance.iframe" class="ui message">
             <p>This Tale must be run in a separate window.</p>
-            <p><a class="ui button primary" [href]="instance.url" target="_blank">Click here to comply</a></p>
+            <p><a class="ui button primary"
+                  [href]="instance.url"
+                  [matTooltipShowDelay]="2000"
+                  matTooltip="Take a deep breath. Calm your mind. You know what is best. What is best is you comply. Compliance will be rewarded."
+                  target="_blank">
+              Click here to comply</a>
+            </p>
         </div>
       </div>
 
