@@ -13,14 +13,21 @@
         <iframe *ngIf="instance.iframe" height="100%" width="100%" [src]="instance.url | safe:'url'"></iframe>
 
         <div *ngIf="!instance.iframe" class="ui message">
-            This Tale must be run in a separate window.
-            <a class="ui button primary" [href]="instance.url" target="_blank">Click here to comply</a>
+            <p>This Tale must be run in a separate window.</p>
+            <p><a class="ui button primary"
+                  [href]="instance.url"
+                  [matTooltipShowDelay]="2000"
+                  matTooltip="Take a deep breath. Calm your mind. You know what is best. What is best is you comply. Compliance will be rewarded."
+                  target="_blank">
+              Click here to comply</a>
+            </p>
         </div>
       </div>
 
       <!-- Error state -->
       <div *ngIf="instance.status === 2" class="status-banner">
-        <i class="fas fa-warning"></i>
+        <i class="fas fa-exclamation-triangle"></i> Something went wrong.
+        Please wait a few moments and try again.
       </div>
 
       <!-- Deleting state -->
@@ -30,8 +37,10 @@
       </div>
     </div>
 
-    <div class="sixteen wide column" *ngIf="!instance" class="status-banner">
-      You must Run this Tale before you can Interact.
+    <div class="sixteen wide column" *ngIf="!instance">
+      <div class="status-banner">
+        <h3>You must Run this Tale before you can Interact.</h3>
+      </div>
     </div>
   </div>
 </div>
