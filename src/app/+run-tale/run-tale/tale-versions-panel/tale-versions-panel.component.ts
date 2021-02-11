@@ -86,7 +86,8 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
       const params: VersionService.VersionCreateVersionParams = {
         taleId: this.tale._id,
         name: result.name,
-        force: result.force
+        force: result.force,
+        allowRename: true
       };
 
       // Backend sets the name, if not provided

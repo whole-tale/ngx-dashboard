@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Tale } from '@api/models/tale';
 import { RepositoryService } from '@api/services/repository.service';
@@ -15,10 +15,12 @@ export class CreateRenameVersionDialogComponent {
   name = "";
   force = true;
   nameAlreadyExists = false;
+  submitLoading = false;
   modelChanged: Subject<string> = new Subject<string>();
 
   constructor(private logger: LogService,
               private versionService: VersionService,
+              private ref: ChangeDetectorRef,
               @Inject(MAT_DIALOG_DATA) public data: { taleId: string, mode: string }) {
                 // FIXME: Debounce input
                 this.modelChanged.pipe(
@@ -28,10 +30,21 @@ export class CreateRenameVersionDialogComponent {
               }
 
   async doesNameExist(name: string): Promise<boolean> {
+    // Disable Submit button
+    this.submitLoading = true;
+    this.ref.detectChanges();
+
+    // Then evaluate whether the button should actually be enabled
+    // This prevents a race condition in slow connections
     this.modelChanged.next(this.name);
 
     return this.versionService.versionExists(this.data.taleId, name).toPromise()
-      .then((resp: { exists: boolean }) => this.nameAlreadyExists = resp.exists);
+      .then((resp: { exists: boolean }) => {
+        this.nameAlreadyExists = resp.exists;
+        this.submitLoading = false;
+
+        return resp.exists;
+      });
   }
 
   getResult(): { name: string, force?: boolean } {
