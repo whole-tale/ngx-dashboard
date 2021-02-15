@@ -20,7 +20,7 @@
         [path]="currentPath"
         [placeholderMessage]="placeholderMessage"
         [preventNavigation]="isNavActive('external_data')"
-        [readOnly]="tale._accessLevel <= AccessLevel.Read || tale.restoredFrom"
+        [readOnly]="tale._accessLevel <= AccessLevel.Read"
         [readOnlyDropdown]="tale._accessLevel <= AccessLevel.Read || isNavActive('external_data')"
         (openSelectDataModal)="openSelectDataModal($event)"
         (openTaleWorkspacesModal)="openTaleWorkspacesModal($event)"
