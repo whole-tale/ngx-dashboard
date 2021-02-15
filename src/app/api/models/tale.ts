@@ -139,5 +139,5 @@ export interface Tale {
    * The ID of the version from which this Tale was restored.
    * If null, then we are at the newest available version/snapshot (e.g. HEAD)
    */
-  restoredFrom: string;
+  restoredFrom?: string;
 }
