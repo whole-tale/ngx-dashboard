@@ -53,7 +53,7 @@
           </div>
         </div>
         <div class="content">
-          <div class="date">{{ version.updated | date:'short' }}</div>
+          <div class="date" [ngStyle]="{'font-weight': version._id === tale.restoredFrom ? 'bold': 'normal' }">{{ version.updated | date:'short' }}</div>
           <div class="header">
             <img class="ui avatar image" *ngIf="(version | taleCreator | async) as creator" [src]="creator.gravatar_baseUrl" title="{{ creator.firstName }} {{ creator.lastName }} ({{ creator.login }})" />
             <span>Version saved:</span>
