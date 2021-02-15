@@ -16,6 +16,7 @@ export class ViewLogsDialogComponent implements OnInit, OnDestroy {
   refreshInterval = 2000;
   jobs: Array<Job> = [];
   intervals: Array<any> = [];
+  stayAtBottom = true;
 
   constructor(
     private readonly ref: ChangeDetectorRef,
@@ -35,8 +36,31 @@ export class ViewLogsDialogComponent implements OnInit, OnDestroy {
       });
     });
     const count = this.data.jobIds.length;
-    const latestJob = this.data.jobIds[count - 1];
+    const latestJob = this.data.jobIds.sort(
+      (a: string, b: string): number => {
+        if (a > b) {
+          return 1;
+        }
+        if (a < b) {
+          return -1;
+        }
+
+        return 0;
+      }
+    )[count - 1];
     this.autoFetch(latestJob);
+  }
+
+  shouldStayAtBottom(): boolean {
+    return this.stayAtBottom;
+  }
+
+  scrollToBottom(): void {
+    setTimeout(() => {
+      const id = 'log-viewer-content';
+      const logViewer = document.getElementById(id);
+      logViewer.scrollTop = logViewer.scrollHeight;
+    }, 200);
   }
 
   mergeLogs(): void {
@@ -87,6 +111,11 @@ export class ViewLogsDialogComponent implements OnInit, OnDestroy {
 
         // Concatenate all logs together for display
         this.mergeLogs();
+
+        // If requested, keep scrolling at the bottom
+        if (this.shouldStayAtBottom()) {
+          this.scrollToBottom();
+        }
       });
     }, intervalMs);
 

@@ -30,7 +30,6 @@ import { UserService } from './services/user.service';
 import { VersionService } from './services/version.service';
 import { WholetaleService } from './services/wholetale.service';
 import { WorkerService } from './services/worker.service';
-import { WorkspaceService } from './services/workspace.service';
 
 import { TokenInterceptor } from './token.interceptor';
 import { TokenService as JwtTokenService } from './token.service';
@@ -74,7 +73,6 @@ import { AuthGuard } from './auth-guard';
     VersionService,
     WholetaleService,
     WorkerService,
-    WorkspaceService,
     JwtTokenService,
     {
       provide: HTTP_INTERCEPTORS,

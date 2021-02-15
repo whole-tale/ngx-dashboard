@@ -149,6 +149,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
                       .subscribe((tale: Tale) => {
         if (!tale) {
           this.logger.error("Tale is null, something went horribly wrong");
+          this.router.navigate(['public']);
 
           return;
         }
@@ -174,6 +175,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         });
       }, err => {
         this.logger.error("Failed to fetch tale:", err);
+        this.router.navigate(['public']);
       });
     }
 
