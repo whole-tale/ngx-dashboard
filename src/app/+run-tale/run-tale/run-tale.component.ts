@@ -278,4 +278,8 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       const url = `${this.config.rootUrl}/tale/${this.tale._id}/export?token=${token}&taleFormat=${format}`;
       this.windowService.open(url, '_blank');
     }
+
+    restoreHeadVersion(): void {
+      // TODO: How do we restore a Tale to HEAD version?
+    }
 }
