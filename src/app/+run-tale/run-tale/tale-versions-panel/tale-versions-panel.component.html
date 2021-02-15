@@ -34,7 +34,8 @@
     <div class="ui message" style="height:100%;" *ngIf="!timeline.length">
       No previous versions saved for Tale.
     </div>
-    <div class="item" *ngFor="let version of timeline; index as i; trackBy: trackById">
+    <div class="item" *ngFor="let version of timeline; index as i; trackBy: trackById"
+            [ngClass]="{ 'selected-version': tale.restoredFrom === version._id }">
         <div class="right floated content">
           <div class="ui floating version dropdown icon" tabindex="0">
               <i class="fas fa-ellipsis-v"></i>
@@ -53,7 +54,7 @@
           </div>
         </div>
         <div class="content">
-          <div class="date" [ngStyle]="{'font-weight': version._id === tale.restoredFrom ? 'bold': 'normal' }">{{ version.updated | date:'short' }}</div>
+          <div class="date">{{ version.updated | date:'short' }}</div>
           <div class="header">
             <img class="ui avatar image" *ngIf="(version | taleCreator | async) as creator" [src]="creator.gravatar_baseUrl" title="{{ creator.firstName }} {{ creator.lastName }} ({{ creator.login }})" />
             <span>Version saved:</span>
