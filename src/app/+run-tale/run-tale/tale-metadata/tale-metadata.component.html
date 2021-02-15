@@ -241,7 +241,7 @@
             </div>
           </div>
 
-          <div class="inline fields ui grid" *ngIf="canEdit">
+          <div class="inline fields ui grid" *ngIf="canEdit && !tale.restoredFrom">
             <label class="two wide column right aligned"></label>
             <div class="field two wide right aligned column">
               <button class="ui blue button" (click)="startEdit()">Edit</button>
