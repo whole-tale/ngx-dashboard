@@ -24,6 +24,9 @@ export interface EventData {
 
   // Data payload for the message
   data: {
+    /* type=wt_tale_updated */
+    modelType?: string; // The type of model this update affects
+
     // Message payload
     state: string; // status of the overall operation
     title: string; // unused - effectively a friendly job name= (e.g. "Creating instance")
@@ -37,13 +40,18 @@ export interface EventData {
     estimateTime: boolean; // True if a time estimate is provided
 
     // Our custom resource, which includes associated IDs relevant to this message
+    event: string;
     resourceName: string;
-    resource: {
-      instance_id?: string; // ID of the Instance for which this message is relevant
-      jobs?: Array<string>; // Job IDs associated with this progress update
-      tale_id?: string; // ID of the Tale for which this message is relevant
-      tale_title?: string; // Title of the Tale
-      type?: string; // WT job name (e.g. "wt_create_instance")
-    };
+    resource:
+      | any
+      | string
+      | {
+          /* type=wt_progress */
+          instance_id?: string; // ID of the Instance for which this message is relevant
+          jobs?: Array<string>; // Job IDs associated with this progress update
+          tale_id?: string; // ID of the Tale for which this message is relevant
+          tale_title?: string; // Title of the Tale
+          type?: string; // WT job name (e.g. "wt_create_instance")
+        };
   };
 }

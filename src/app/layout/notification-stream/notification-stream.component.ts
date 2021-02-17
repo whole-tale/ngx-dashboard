@@ -4,6 +4,7 @@ import { EventData } from '@api/events/event-data';
 import { GirderEvent } from '@api/events/girder-event';
 import { Job } from '@api/models/job';
 import { LogService } from '@framework/core/log.service';
+import { SyncService } from '@tales/sync.service';
 import { EventSourcePolyfill as EventSource } from 'ng-event-source';
 import { BehaviorSubject } from 'rxjs';
 
@@ -22,6 +23,7 @@ export class NotificationStreamComponent {
   constructor(
     private readonly ref: ChangeDetectorRef,
     private readonly zone: NgZone,
+    private readonly sync: SyncService,
     private readonly logger: LogService,
     private readonly dialog: MatDialog,
     private readonly notificationStream: NotificationStreamService
@@ -60,11 +62,24 @@ export class NotificationStreamComponent {
     });
   }
 
-  onMessage(event: GirderEvent): void {
+  onMessage(girderEvent: GirderEvent): void {
     // Discard everything outside of "data"
-    const eventData: EventData = JSON.parse(event.data);
+    const eventData: EventData = JSON.parse(girderEvent.data);
+    const { modelType, resource, resourceName, event } = eventData.data;
 
-    // Ignore everything except for progress updates
+    // FIXME: this should use `eventData.type` instead, or adjust wt_progress + others
+    // Handle resource-specific updates
+    switch (event) {
+      case 'wt_tale_updated':
+        return this.sync.taleUpdated(resource);
+      // case "wt_tale_created":
+      //  return this.sync.taleCreated(resource);
+      default:
+        this.logger.info('Unrecognized update event: ' + event);
+        break;
+    }
+
+    // Ignore everything else except for progress updates
     if (eventData.type !== 'wt_progress') {
       this.logger.debug(`Skipping ignored event type (${eventData.type}):`, eventData);
 

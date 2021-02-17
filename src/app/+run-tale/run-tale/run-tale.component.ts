@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, NgZone, OnChanges, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiConfiguration } from '@api/api-configuration';
@@ -17,6 +17,8 @@ import { WindowService } from '@framework/core/window.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { routeAnimation } from '~/app/shared';
+import { SyncService } from '@tales/sync.service';
+import { Subscription } from 'rxjs';
 
 import { ConnectGitRepoDialogComponent } from './modals/connect-git-repo-dialog/connect-git-repo-dialog.component';
 import { PublishTaleDialogComponent } from './modals/publish-tale-dialog/publish-tale-dialog.component';
@@ -34,7 +36,7 @@ enum TaleExportFormat {
     styleUrls: ['./run-tale.component.scss'],
     animations: [routeAnimation]
 })
-export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges {
+export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges, OnDestroy {
     AccessLevel: any = AccessLevel;
 
     taleId: string;
@@ -43,8 +45,11 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     creator: User;
     currentTab = 'metadata';
     showVersionsPanel = false;
+    fetching = false;
 
     collaborators: { users: Array<User>, groups: Array<User> } = { users: [], groups: [] };
+
+    subscription: Subscription;
 
     constructor(
       private ref: ChangeDetectorRef,
@@ -58,6 +63,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       private userService: UserService,
       private tokenService: TokenService,
       private versionService: VersionService,
+      private syncService: SyncService,
       private config: ApiConfiguration,
       private dialog: MatDialog
     ) {
@@ -185,11 +191,27 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     ngOnInit(): void {
       this.detectTaleId();
       this.detectCurrentTab();
+
+      this.subscription = this.syncService.taleSubject.subscribe((taleId) => {
+        this.logger.info("Tale update received from SyncService: ", taleId);
+        if (taleId === this.taleId && !this.fetching) {
+          this.fetching = true;
+          setTimeout(() => {
+            this.logger.info("Tale update applied via SyncService: ", taleId);
+            this.refresh();
+            this.fetching = false;
+          }, 1000);
+        }
+      });
     }
 
     ngOnChanges(): void {
       this.detectTaleId();
       this.detectCurrentTab();
+    }
+
+    ngOnDestroy(): void {
+      this.subscription.unsubscribe();
     }
 
     performRecordedRun(): void {

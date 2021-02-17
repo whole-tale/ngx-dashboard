@@ -11,6 +11,7 @@ import { ConfigLoader, ConfigService } from '@ngx-config/core';
 import { MetaLoader } from '@ngx-meta/core';
 import { TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { ErrorHandlerModule } from '@shared/error-handler/error-handler.module';
+import { SyncService } from '@tales/sync.service';
 import { ANGULARTICS2_TOKEN } from 'angulartics2';
 import { Angulartics2GoogleAnalytics } from 'angulartics2/ga';
 import { CookieService } from 'ngx-cookie-service';
@@ -37,7 +38,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = { supp
 @NgModule({
   imports: [
     BrowserModule.withServerTransition({ appId: 'my-app-id' }),
-    TransferHttpCacheModule,
+    // TransferHttpCacheModule,
     RouterModule.forRoot(routes),
     PerfectScrollbarModule,
     ErrorHandlerModule,
@@ -83,7 +84,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = { supp
       provide: PERFECT_SCROLLBAR_CONFIG,
       useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG
     },
-    CookieService
+    CookieService,
+    SyncService
   ],
   exports: [AppComponent],
   entryComponents: [ChangeLanguageComponent],
