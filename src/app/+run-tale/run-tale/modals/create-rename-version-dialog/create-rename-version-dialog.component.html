@@ -17,7 +17,7 @@
                     <div class="sixteen wide column">
                         <div class="field" [ngClass]="{ 'error': nameAlreadyExists }">
                             <!-- Require new name in "Rename" mode -->
-                            <input *ngIf="data.mode==='create'" type="text" name="name" id="name" [(ngModel)]="name" (ngModelChange)="doesNameExist($event)" />
+                            <input *ngIf="data.mode==='create'" type="text" name="name" id="name" [(ngModel)]="name" />
                             <input *ngIf="data.mode!=='create'" type="text" name="name" id="name" [(ngModel)]="name" required (ngModelChange)="doesNameExist($event)" />
                         </div>
                     </div>
@@ -46,7 +46,7 @@
 
 <mat-dialog-actions>
   <button class="ui black deny button" mat-dialog-close>Cancel</button>
-  <button class="ui primary right labeled icon button" [mat-dialog-close]="getResult()" [disabled]="(data.mode !== 'create' && !name) || nameAlreadyExists">
+  <button class="ui primary right labeled icon button" [ngClass]="{ 'loading': submitLoading, 'disabled': submitLoading || nameAlreadyExists }" [mat-dialog-close]="getResult()" [disabled]="(data.mode !== 'create' && !name) || submitLoading || nameAlreadyExists">
     Save
     <i class="checkmark icon"></i>
   </button>

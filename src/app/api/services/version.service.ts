@@ -33,7 +33,11 @@ class VersionService extends __BaseService {
     let __body: any = null;
     if (params.taleId != null) __params = __params.set('taleId', params.taleId.toString());
     if (params.name != null) __params = __params.set('name', params.name.toString());
-    if (params.force != null) __params = __params.set('force', params.force.toString());
+
+    // Set defaults for optional parameters
+    __params = __params.set('force', params.force != null ? params.force.toString() : 'false');
+    __params = __params.set('allowRename', params.allowRename != null ? params.allowRename.toString() : 'false');
+
     let req = new HttpRequest<any>('POST', this.rootUrl + VersionService.versionCreateVersionPath, __body, {
       headers: __headers,
       params: __params,
@@ -171,6 +175,7 @@ module VersionService {
     taleId: string;
     name?: string;
     force?: boolean;
+    allowRename?: boolean;
   }
 
   export interface VersionListVersionsParams {
