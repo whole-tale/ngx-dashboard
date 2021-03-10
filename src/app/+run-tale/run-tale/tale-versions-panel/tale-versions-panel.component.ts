@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, NgZone, OnChanges, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output, NgZone, OnChanges, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AccessLevel } from '@api/models/access-level';
 import { Tale } from '@api/models/tale';
@@ -17,6 +17,10 @@ import { TaleVersionInfoDialogComponent } from '../modals/tale-version-info-dial
 // import * as $ from 'jquery';
 declare var $: any;
 
+interface VersionUpdate {
+  taleId: string;
+  versionId: string;
+}
 @Component({
   selector: 'app-tale-versions-panel',
   templateUrl: './tale-versions-panel.component.html',
@@ -24,6 +28,8 @@ declare var $: any;
 })
 export class TaleVersionsPanelComponent implements OnInit, OnChanges {
   @Input() tale: Tale;
+
+  @Output() readonly taleVersionChanged = new EventEmitter<VersionUpdate>();
 
   // Tale Version timeline (sorted list)
   timeline: Array<any> = [];
@@ -129,7 +135,10 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
   }
 
   restoreVersion(version: Version): void {
-    // TODO: Restore from previous version
+    this.taleService.taleRestoreVersion(this.tale._id, version._id).subscribe(response => {
+      this.logger.info("Tale version successfully restored");
+      this.taleVersionChanged.emit(response);
+    });
     // TODO: Once they do this, how can the user get back to HEAD?
   }
 

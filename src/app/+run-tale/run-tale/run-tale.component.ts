@@ -85,6 +85,10 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       this.showVersionsPanel = !this.showVersionsPanel;
     }
 
+    taleVersionChanged(event: any): void {
+      this.refresh();
+    }
+
     get dashboardLink(): string {
       if (!this.tale || this.tale._accessLevel === AccessLevel.None) {
         return '/public';

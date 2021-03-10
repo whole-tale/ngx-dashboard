@@ -23,8 +23,11 @@ export interface Tale extends BaseDocument {
   licenseSPDX: string;
   public: boolean;
   publishInfo: Array<any>; // TODO: sub-model
+  restoredFrom: string;
+  runsRootId: string;
   title: string;
   updated: Date;
+  versionsRootId: string;
   workspaceId: string;
 
   // currently unused by frontend

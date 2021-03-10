@@ -128,4 +128,16 @@ export interface Tale {
    * ID of a folder containing Tale's workspace
    */
   workspaceId?: string;
+
+  /**
+   * ID of a folder containing the Tale's Versions and Recorded Runs
+   */
+  runsRootId?: string;
+  versionsRootId?: string;
+
+  /**
+   * The ID of the version from which this Tale was restored.
+   * If null, then we are at the newest available version/snapshot (e.g. HEAD)
+   */
+  restoredFrom?: string;
 }

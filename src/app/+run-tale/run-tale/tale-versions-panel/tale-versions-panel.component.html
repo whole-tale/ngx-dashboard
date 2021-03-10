@@ -34,7 +34,8 @@
     <div class="ui message" style="height:100%;" *ngIf="!timeline.length">
       No previous versions saved for Tale.
     </div>
-    <div class="item" *ngFor="let version of timeline; index as i; trackBy: trackById">
+    <div class="item" *ngFor="let version of timeline; index as i; trackBy: trackById"
+            [ngClass]="{ 'selected-version': tale.restoredFrom === version._id }">
         <div class="right floated content">
           <div class="ui floating version dropdown icon" tabindex="0">
               <i class="fas fa-ellipsis-v"></i>
@@ -42,7 +43,7 @@
                 <div class="item" (click)="viewVersionInfo(version)">View Info</div>
 
                 <!-- TODO: Restore Version button -->
-                <div class="item" *ngIf="false">Restore</div>
+                <div class="item" (click)="restoreVersion(version)" *ngIf="tale._accessLevel >= AccessLevel.Write">Restore</div>
 
                 <!-- TODO: Compare Versions button -->
                 <div class="item" *ngIf="false">Compare</div>

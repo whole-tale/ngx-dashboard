@@ -25,6 +25,7 @@ class TaleService extends __BaseService {
   static readonly taleExportTalePath = '/tale/{id}/export';
   static readonly taleGenerateManifestPath = '/tale/{id}/manifest';
   static readonly talePublishTalePath = '/tale/{id}/publish';
+  static readonly taleRestoreVersionPath = '/tale/{id}/restore';
   static readonly taleUpdateGitPath = '/tale/{id}/git';
 
   constructor(config: __Configuration, http: HttpClient) {
@@ -577,6 +578,29 @@ class TaleService extends __BaseService {
    */
   taleUpdateGit(id: string, url: string): __Observable<null> {
     return this.taleUpdateGitResponse(id, url).pipe(__map(_r => _r.body as null));
+  }
+
+  taleRestoreVersionResponse(id: string, versionId: string): __Observable<__StrictHttpResponse<null>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (versionId != null) __params = __params.set('versionId', versionId.toString());
+    let req = new HttpRequest<any>('PUT', this.rootUrl + `/tale/${id}/restore`, __body, {
+      headers: __headers,
+      params: __params,
+      responseType: 'json'
+    });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map(_r => {
+        return _r as __StrictHttpResponse<null>;
+      })
+    );
+  }
+
+  taleRestoreVersion(id: string, versionId: string): __Observable<null> {
+    return this.taleRestoreVersionResponse(id, versionId).pipe(__map(_r => _r.body as null));
   }
 }
 
