@@ -1,0 +1,13 @@
+<h1 mat-dialog-title>{{ data.title || 'Confirmation Required' }}</h1>
+
+<mat-dialog-content>
+  <p *ngFor="let message of data.content">{{ message }}</p>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button class="ui black deny button" mat-dialog-close>No</button>
+  <button class="ui positive right labeled icon button" [mat-dialog-close]="true">
+    Yes
+    <i class="play icon"></i>
+  </button>
+</mat-dialog-actions>
