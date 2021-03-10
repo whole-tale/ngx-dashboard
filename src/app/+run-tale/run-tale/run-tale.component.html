@@ -68,12 +68,6 @@
                             </div>
                         </div>
                     </div>
-                    <div *ngIf="false">
-                        <a class="ui mini button fluid restore-head" (click)="restoreHeadVersion()">
-                            <i class="fas fa-load icon"></i>
-                            You are viewing a previous version of this Tale. Click here to switch to the most recent version.
-                        </a>
-                    </div>
                     <div class="ui secondary pointing menu" style="margin-top: 0">
                         <a class="item" [ngClass]="{ 'active': isTabActive('interact') }" (click)="switchTab('interact')">
                           Interact
