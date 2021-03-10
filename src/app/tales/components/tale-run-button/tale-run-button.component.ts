@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 import { AccessLevel } from '@api/models/access-level';
@@ -10,13 +10,16 @@ import { LogService } from '@framework/core/log.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { ErrorModalComponent } from '@shared/error-handler/error-modal/error-modal.component';
 import { CopyOnLaunchModalComponent } from '@tales/components/modals/copy-on-launch-modal/copy-on-launch-modal.component';
+import { SyncService } from '@tales/sync.service';
+
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-tale-run-button',
   templateUrl: './tale-run-button.component.html',
   styleUrls: ['./tale-run-button.component.scss']
 })
-export class TaleRunButtonComponent implements OnChanges {
+export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
   @Input() instance: Instance;
   @Input() tale: Tale;
 
@@ -26,19 +29,37 @@ export class TaleRunButtonComponent implements OnChanges {
 
   @Output() readonly taleInstanceStateChanged = new EventEmitter<{ tale: Tale; instance: Instance }>();
 
+  instanceLaunchingSubscription: Subscription;
+  instanceRunningSubscription: Subscription;
+
   constructor(
     private readonly ref: ChangeDetectorRef,
     private readonly dialog: MatDialog,
     private readonly logger: LogService,
     private readonly router: Router,
     private readonly taleService: TaleService,
-    private readonly instanceService: InstanceService
+    private readonly instanceService: InstanceService,
+    private readonly syncService: SyncService
   ) {}
+
+  ngOnInit(): void {
+    this.instanceLaunchingSubscription = this.syncService.instanceLaunchingSubject.subscribe((instanceId: string) => {
+      // TODO: How do we know that this instance is for the Tale that this button represents?
+    });
+    this.instanceRunningSubscription = this.syncService.instanceRunningSubject.subscribe((instanceId: string) => {
+      // TODO: How do we know that this instance is for the Tale that this button represents?
+    });
+  }
 
   ngOnChanges(): void {
     if (this.instance && (this.instance.status === 0 || this.instance.status === 3)) {
       this.autoRefresh();
     }
+  }
+
+  ngOnDestroy(): void {
+    this.instanceLaunchingSubscription.unsubscribe();
+    this.instanceRunningSubscription.unsubscribe();
   }
 
   autoRefresh(): void {

@@ -22,6 +22,7 @@ import { Subscription } from 'rxjs';
 
 import { ConnectGitRepoDialogComponent } from './modals/connect-git-repo-dialog/connect-git-repo-dialog.component';
 import { PublishTaleDialogComponent } from './modals/publish-tale-dialog/publish-tale-dialog.component';
+import { AlertModalComponent } from '@shared/common/components/alert-modal/alert-modal.component';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -49,6 +50,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
     collaborators: { users: Array<User>, groups: Array<User> } = { users: [], groups: [] };
 
+    removeSubscription:Subscription;
     subscription: Subscription;
 
     constructor(
@@ -92,10 +94,10 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     }
 
     get dashboardLink(): string {
-      if (!this.tale || this.tale._accessLevel === AccessLevel.None) {
-        return '/public';
-      } else if (this.tale._accessLevel === AccessLevel.Admin) {
+      if (!this.tale || this.tale._accessLevel === AccessLevel.Admin) {
         return '/mine';
+      } else if (this.tale._accessLevel === AccessLevel.None) {
+        return '/public';
       } else if (this.tale._accessLevel === AccessLevel.Read || this.tale._accessLevel === AccessLevel.Write) {
         return '/shared';
       }
@@ -151,7 +153,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
                       .subscribe((tale: Tale) => {
         if (!tale) {
           this.logger.error("Tale is null, something went horribly wrong");
-          this.router.navigate(['public']);
+          this.router.navigate(['mine']);
 
           return;
         }
@@ -177,7 +179,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         });
       }, err => {
         this.logger.error("Failed to fetch tale:", err);
-        this.router.navigate(['public']);
+        this.router.navigate(['mine']);
       });
     }
 
@@ -192,7 +194,25 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       this.detectTaleId();
       this.detectCurrentTab();
 
-      this.subscription = this.syncService.taleSubject.subscribe((taleId) => {
+      this.removeSubscription = this.syncService.taleRemovedSubject.subscribe((taleId) => {
+        if (taleId === this.taleId) {
+          const returnRoute = this.tale ? this.dashboardLink : '/mine';
+          const dialogRef = this.dialog.open(AlertModalComponent, { data: {
+            title: 'Tale was deleted',
+            content: [
+              'The Tale was removed by another user.',
+              'You will be redirected back to the catalog.'
+            ]
+          }});
+          dialogRef.afterClosed().subscribe((result: boolean) => {
+            this.router.navigate([returnRoute]);
+          })
+
+          return;
+        }
+      });
+
+      this.subscription = this.syncService.taleUpdatedSubject.subscribe((taleId) => {
         this.logger.info("Tale update received from SyncService: ", taleId);
         if (taleId === this.taleId && !this.fetching) {
           this.fetching = true;
@@ -212,6 +232,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
     ngOnDestroy(): void {
       this.subscription.unsubscribe();
+      this.removeSubscription.unsubscribe();
     }
 
     performRecordedRun(): void {
