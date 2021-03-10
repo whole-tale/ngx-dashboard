@@ -72,8 +72,27 @@ export class NotificationStreamComponent {
     switch (event) {
       case 'wt_tale_updated':
         return this.sync.taleUpdated(resource);
-      // case "wt_tale_created":
-      //  return this.sync.taleCreated(resource);
+      case 'wt_tale_created':
+        return this.sync.taleCreated(resource);
+      case 'wt_tale_removed':
+        return this.sync.taleRemoved(resource);
+
+      case 'wt_tale_shared':
+        return this.sync.taleShared(resource);
+      case 'wt_tale_unshared':
+        return this.sync.taleUnshared(resource);
+
+      case 'wt_import_started':
+        return this.sync.taleImportStarted(resource);
+      case 'wt_import_completed':
+        return this.sync.taleImportCompleted(resource);
+      case 'wt_import_failed':
+        return this.sync.taleImportFailed(resource);
+
+      case 'wt_instance_launching':
+        return this.sync.instanceLaunching(resource);
+      case 'wt_instance_running':
+        return this.sync.instanceRunning(resource);
       default:
         this.logger.info('Unrecognized update event: ' + event);
         break;

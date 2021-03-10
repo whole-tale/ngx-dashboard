@@ -11,13 +11,14 @@ import { ConfigLoader, ConfigService } from '@ngx-config/core';
 import { MetaLoader } from '@ngx-meta/core';
 import { TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { ErrorHandlerModule } from '@shared/error-handler/error-handler.module';
+import { SharedModule } from '@shared/shared.module';
 import { SyncService } from '@tales/sync.service';
 import { ANGULARTICS2_TOKEN } from 'angulartics2';
 import { Angulartics2GoogleAnalytics } from 'angulartics2/ga';
 import { CookieService } from 'ngx-cookie-service';
 import { PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface, PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { AnalyticsModule } from '~/app/framework/analytics';
-import { configFactory, CoreModule, metaFactory, SharedModule } from '~/app/framework/core';
+import { configFactory, CoreModule, metaFactory, SharedModule as SharedCoreModule } from '~/app/framework/core';
 import { HttpInterceptorModule } from '~/app/framework/http';
 import { ChangeLanguageComponent, I18NModule, translateFactory } from '~/app/framework/i18n';
 import { MaterialModule } from '~/app/framework/material';
@@ -63,6 +64,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = { supp
         deps: [ConfigService, TranslateService]
       }
     ]),
+    SharedCoreModule,
     SharedModule,
     HttpInterceptorModule,
     I18NModule.forRoot([
