@@ -1,11 +1,14 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, Output, NgZone, OnChanges, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { ApiConfiguration } from '@api/api-configuration';
 import { AccessLevel } from '@api/models/access-level';
 import { Tale } from '@api/models/tale';
 import { Version } from '@api/models/version';
 import { TaleService } from '@api/services/tale.service';
 import { VersionService } from '@api/services/version.service';
+import { TokenService } from '@api/token.service';
 import { LogService } from '@framework/core/log.service';
+import { WindowService } from '@framework/core/window.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { NotificationService } from '@shared/error-handler/services/notification.service';
 import { TaleAuthor } from '@tales/models/tale-author';
@@ -35,14 +38,16 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
   timeline: Array<any> = [];
   AccessLevel = AccessLevel;
 
-  constructor(private ref: ChangeDetectorRef,
+  constructor(private config: ApiConfiguration,
+              private ref: ChangeDetectorRef,
               private zone: NgZone,
               private logger: LogService,
               private taleService: TaleService,
+              private tokenService: TokenService,
               private versionService: VersionService,
               private dialog: MatDialog,
-              private notificationService: NotificationService) {
-
+              private notificationService: NotificationService,
+              private windowService: WindowService) {
   }
 
   ngOnInit(): void {
@@ -161,6 +166,12 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
         this.notificationService.showError("Error: something went wrong.");
       });
     });
+  }
+
+  exportVersion(version: Version): void {
+    const token = this.tokenService.getToken();
+    const url = `${this.config.rootUrl}/tale/${this.tale._id}/export?token=${token}&taleFormat=bagit&versionId=${version._id}`;
+    this.windowService.open(url, '_blank');
   }
 
   deleteVersion(version: Version): void {
