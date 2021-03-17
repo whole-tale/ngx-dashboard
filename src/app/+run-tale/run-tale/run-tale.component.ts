@@ -52,6 +52,9 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
     removeSubscription:Subscription;
     subscription: Subscription;
+    taleUnsharedSubscription: Subscription;
+    taleInstanceLaunchingSubscription: Subscription;
+    taleInstanceRunningSubscription: Subscription;
 
     constructor(
       private ref: ChangeDetectorRef,
@@ -124,11 +127,13 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       return this.currentTab === tab;
     }
 
-    refreshCollaborators(): void {
-      this.taleService.taleGetTaleAccess(this.taleId).subscribe(resp => {
+    refreshCollaborators(): Promise<any> {
+      return this.taleService.taleGetTaleAccess(this.taleId).toPromise().then((resp: any) => {
         this.logger.info("Fetched collaborators:", resp);
         this.collaborators = resp;
         this.ref.detectChanges();
+
+        return resp;
       });
     }
 
@@ -194,6 +199,68 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       this.detectTaleId();
       this.detectCurrentTab();
 
+      this.taleInstanceLaunchingSubscription = this.syncService.instanceLaunchingSubject.subscribe((resource: {taleId: string, instanceId: string}) => {
+        if (resource.taleId === this.taleId) {
+          this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
+            this.instance = instance;
+            this.ref.detectChanges();
+          });
+        }
+      });
+
+      this.taleInstanceRunningSubscription = this.syncService.instanceRunningSubject.subscribe((resource: {taleId: string, instanceId: string}) => {
+        if (resource.taleId === this.taleId) {
+          this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
+            this.instance = instance;
+            this.ref.detectChanges();
+          });
+        }
+      });
+
+      this.taleUnsharedSubscription = this.syncService.taleUnsharedSubject.subscribe((taleId) => {
+        if (taleId === this.taleId) {
+          // Update current collaborators list
+          this.refreshCollaborators();
+
+          this.taleService.taleGetTale(taleId).subscribe((tale: Tale) => {
+            // Update the current access level
+            this.tale._accessLevel = tale._accessLevel;
+            this.ref.detectChanges();
+
+            // If we can no longer view this Tale, redirect to the Catalog
+            if (tale._accessLevel < AccessLevel.Read) {
+              const returnRoute = this.tale ? this.dashboardLink : '/mine';
+              const dialogRef = this.dialog.open(AlertModalComponent, { data: {
+                title: 'Tale was unshared',
+                content: [
+                  'This Tale is no longer being shared with you.',
+                  'You will be redirected back to the catalog.'
+                ]
+              }});
+              dialogRef.afterClosed().subscribe((result: boolean) => {
+                this.router.navigate([returnRoute]);
+              });
+            }
+          },
+          (err: any) => {
+            this.logger.error("Failed to fetch Tale:", err);
+            if (err.status === 403) {
+              const returnRoute = this.tale ? this.dashboardLink : '/mine';
+              const dialogRef = this.dialog.open(AlertModalComponent, { data: {
+                title: 'Tale was unshared',
+                content: [
+                  'This Tale is no longer being shared with you.',
+                  'You will be redirected back to the catalog.'
+                ]
+              }});
+              dialogRef.afterClosed().subscribe((result: boolean) => {
+                this.router.navigate([returnRoute]);
+              });
+            }
+          });
+        }
+      });
+
       this.removeSubscription = this.syncService.taleRemovedSubject.subscribe((taleId) => {
         if (taleId === this.taleId) {
           const returnRoute = this.tale ? this.dashboardLink : '/mine';
@@ -206,7 +273,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
           }});
           dialogRef.afterClosed().subscribe((result: boolean) => {
             this.router.navigate([returnRoute]);
-          })
+          });
 
           return;
         }
@@ -233,6 +300,9 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     ngOnDestroy(): void {
       this.subscription.unsubscribe();
       this.removeSubscription.unsubscribe();
+      this.taleUnsharedSubscription.unsubscribe();
+      this.taleInstanceLaunchingSubscription.unsubscribe();
+      this.taleInstanceRunningSubscription.unsubscribe();
     }
 
     performRecordedRun(): void {
