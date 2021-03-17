@@ -65,34 +65,34 @@ export class NotificationStreamComponent {
   onMessage(girderEvent: GirderEvent): void {
     // Discard everything outside of "data"
     const eventData: EventData = JSON.parse(girderEvent.data);
-    const { modelType, resource, resourceName, event } = eventData.data;
+    const { affectedResourceIds, event } = eventData.data;
 
     // FIXME: this should use `eventData.type` instead, or adjust wt_progress + others
     // Handle resource-specific updates
     switch (event) {
       case 'wt_tale_updated':
-        return this.sync.taleUpdated(resource);
+        return this.sync.taleUpdated(affectedResourceIds.taleId);
       case 'wt_tale_created':
-        return this.sync.taleCreated(resource);
+        return this.sync.taleCreated(affectedResourceIds.taleId);
       case 'wt_tale_removed':
-        return this.sync.taleRemoved(resource);
+        return this.sync.taleRemoved(affectedResourceIds.taleId);
 
       case 'wt_tale_shared':
-        return this.sync.taleShared(resource);
+        return this.sync.taleShared(affectedResourceIds.taleId);
       case 'wt_tale_unshared':
-        return this.sync.taleUnshared(resource);
+        return this.sync.taleUnshared(affectedResourceIds.taleId);
 
       case 'wt_import_started':
-        return this.sync.taleImportStarted(resource);
+        return this.sync.taleImportStarted(affectedResourceIds.taleId);
       case 'wt_import_completed':
-        return this.sync.taleImportCompleted(resource);
+        return this.sync.taleImportCompleted(affectedResourceIds.taleId);
       case 'wt_import_failed':
-        return this.sync.taleImportFailed(resource);
+        return this.sync.taleImportFailed(affectedResourceIds.taleId);
 
       case 'wt_instance_launching':
-        return this.sync.instanceLaunching(resource);
+        return this.sync.instanceLaunching(affectedResourceIds.taleId, affectedResourceIds.instanceId);
       case 'wt_instance_running':
-        return this.sync.instanceRunning(resource);
+        return this.sync.instanceRunning(affectedResourceIds.taleId, affectedResourceIds.instanceId);
       default:
         this.logger.info('Unrecognized update event: ' + event);
         break;

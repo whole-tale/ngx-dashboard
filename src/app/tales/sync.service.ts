@@ -17,8 +17,8 @@ export class SyncService {
   readonly taleImportCompletedSubject = new Subject<string>();
   readonly taleImportFailedSubject = new Subject<string>();
 
-  readonly instanceLaunchingSubject = new Subject<string>();
-  readonly instanceRunningSubject = new Subject<string>();
+  readonly instanceLaunchingSubject = new Subject<{ taleId: string; instanceId: string }>();
+  readonly instanceRunningSubject = new Subject<{ taleId: string; instanceId: string }>();
 
   constructor(private readonly logger: LogService) {}
   taleCreated(taleId: string): void {
@@ -43,13 +43,13 @@ export class SyncService {
     this.delay(() => this.taleUnsharedSubject.next(taleId));
   }
 
-  instanceLaunching(instanceId: string): void {
+  instanceLaunching(taleId: string, instanceId: string): void {
     this.logger.info('Updating Instance via SyncService: ', instanceId);
-    this.delay(() => this.instanceLaunchingSubject.next(instanceId));
+    this.delay(() => this.instanceLaunchingSubject.next({ taleId, instanceId }));
   }
-  instanceRunning(instanceId: string): void {
+  instanceRunning(taleId: string, instanceId: string): void {
     this.logger.info('Updating Instance via SyncService: ', instanceId);
-    this.delay(() => this.instanceRunningSubject.next(instanceId));
+    this.delay(() => this.instanceRunningSubject.next({ taleId, instanceId }));
   }
 
   // TODO: Indicate Tale import state in UI

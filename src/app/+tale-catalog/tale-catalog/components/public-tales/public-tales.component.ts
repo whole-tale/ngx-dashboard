@@ -103,10 +103,10 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
       this.refresh();
     });
 
-    this.instanceLaunchingSubscription = this.syncService.instanceLaunchingSubject.subscribe((taleId: string) => {
+    this.instanceLaunchingSubscription = this.syncService.instanceLaunchingSubject.subscribe((resource: { taleId: string, instanceId: string }) => {
       this.refresh();
     });
-    this.instanceRunningSubscription = this.syncService.instanceRunningSubject.subscribe((taleId: string) => {
+    this.instanceRunningSubscription = this.syncService.instanceRunningSubject.subscribe((resource: { taleId: string, instanceId: string }) => {
       this.refresh();
     });
   }

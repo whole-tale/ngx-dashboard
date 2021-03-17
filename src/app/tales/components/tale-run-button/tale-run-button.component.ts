@@ -43,17 +43,37 @@ export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.instanceLaunchingSubscription = this.syncService.instanceLaunchingSubject.subscribe((instanceId: string) => {
-      // TODO: How do we know that this instance is for the Tale that this button represents?
-    });
-    this.instanceRunningSubscription = this.syncService.instanceRunningSubject.subscribe((instanceId: string) => {
-      // TODO: How do we know that this instance is for the Tale that this button represents?
-    });
+    this.instanceLaunchingSubscription = this.syncService.instanceLaunchingSubject.subscribe(
+      (resource: { taleId: string; instanceId: string }) => {
+        // Ignore updates that aren't for this Tale
+        if (resource.taleId != this.tale._id) {
+          return;
+        }
+
+        this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
+          this.instance = instance;
+          this.ref.detectChanges();
+        });
+      }
+    );
+    this.instanceRunningSubscription = this.syncService.instanceRunningSubject.subscribe(
+      (resource: { taleId: string; instanceId: string }) => {
+        // Ignore updates that aren't for this Tale
+        if (resource.taleId != this.tale._id) {
+          return;
+        }
+
+        this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
+          this.instance = instance;
+          this.ref.detectChanges();
+        });
+      }
+    );
   }
 
   ngOnChanges(): void {
     if (this.instance && (this.instance.status === 0 || this.instance.status === 3)) {
-      this.autoRefresh();
+      // this.autoRefresh();
     }
   }
 
@@ -129,7 +149,7 @@ export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
 
         // Poll / wait for launch
         // TODO: Fix edge cases (refresh, etc)
-        this.autoRefresh();
+        // this.autoRefresh();
       },
       (err: any) => {
         this.logger.error('Failed to create instance:', err);
