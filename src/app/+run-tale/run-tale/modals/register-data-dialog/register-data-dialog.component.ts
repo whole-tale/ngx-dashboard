@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Tale } from '@api/models/tale';
 import { RepositoryService } from '@api/services/repository.service';
 import { LogService }  from '@framework/core/log.service';
+import { WindowService } from '@framework/core/window.service';
 
 @Component({
   templateUrl: './register-data-dialog.component.html',
@@ -18,10 +19,15 @@ export class RegisterDataDialogComponent {
   searchResults: Array<any> = [];
   selectedResult: any;
 
-  // URL to the DataONE production server
-  readonly repositoryBaseUrl = 'https://cn.dataone.org/cn/v2';
+  constructor(
+    private logger: LogService,
+    private repositoryService: RepositoryService,
+    private window: WindowService
+  ) {}
 
-  constructor(private logger: LogService, private repositoryService: RepositoryService) {}
+  dataONERepositoryBaseUrl(): string {
+    return this.window.env.dataONEBaseUrl;
+  }
 
   searchDatasetUrl(): void {
     if (!this.registrationUrl) { return; }
@@ -31,7 +37,7 @@ export class RegisterDataDialogComponent {
     this.searchResultsLoading = true;
 
     const dataId = [this.registrationUrl];
-    const params = { dataId: JSON.stringify(dataId), baseUrl: this.repositoryBaseUrl }
+    const params = { dataId: JSON.stringify(dataId), baseUrl: this.dataONERepositoryBaseUrl() }
     this.repositoryService.repositoryLookupData(params).subscribe((values: Array<any>) => {
       this.searchResults = values;
       if (values.length > 0) {

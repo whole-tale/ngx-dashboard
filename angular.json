@@ -49,7 +49,8 @@
               "src/assets/img",
               "src/assets/data",
               "src/assets/i18n",
-              "src/assets/config.local.json"
+              "src/assets/config.local.json",
+              "src/assets/env.template.js"
             ],
             "styles": [
               "src/assets/sass/lib.scss",
