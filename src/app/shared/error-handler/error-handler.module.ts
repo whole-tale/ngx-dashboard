@@ -16,7 +16,7 @@ import { ErrorService } from './services/error.service';
   providers: [
     ErrorService,
     LogService,
-    { provide: ErrorHandler, useClass: GlobalErrorHandler },
+    //{ provide: ErrorHandler, useClass: GlobalErrorHandler },
     { provide: HTTP_INTERCEPTORS, useClass: ServerErrorInterceptor, multi: true }
   ],
   entryComponents: [ErrorModalComponent]
