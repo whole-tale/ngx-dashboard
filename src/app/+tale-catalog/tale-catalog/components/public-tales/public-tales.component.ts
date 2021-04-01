@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, NgZone, OnChanges, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, NgZone, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AccessLevel } from '@api/models/access-level';
 import { Instance } from '@api/models/instance';
@@ -10,6 +10,7 @@ import { UserService } from '@api/services/user.service';
 import { TokenService } from '@api/token.service';
 import { LogService } from '@framework/core/log.service';
 import { TaleAuthor } from '@tales/models/tale-author';
+import { SyncService } from '@tales/sync.service';
 import { Observable, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
@@ -23,10 +24,24 @@ declare var $: any;
   styleUrls: ['./public-tales.component.scss'],
   selector: 'app-public-tales'
 })
-export class PublicTalesComponent implements OnChanges, OnInit {
+export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
   tales$: Observable<Array<Tale>> = new Observable<Array<Tale>>();
   tales: Array<Tale> = [];
   publicTales: Array<Tale> = [];
+
+  taleCreatedSubscription: Subscription;
+  taleUpdatedSubscription: Subscription;
+  taleRemovedSubscription: Subscription;
+
+  taleImportStartedSubscription: Subscription;
+  taleImportCompletedSubscription: Subscription;
+  taleImportFailedSubscription: Subscription;
+
+  taleSharedSubscription: Subscription;
+  taleUnsharedSubscription: Subscription;
+
+  instanceLaunchingSubscription: Subscription;
+  instanceRunningSubscription: Subscription;
 
   AccessLevel: any = AccessLevel;
 
@@ -50,7 +65,8 @@ export class PublicTalesComponent implements OnChanges, OnInit {
     private logger: LogService,
     private taleService: TaleService,
     private instanceService: InstanceService,
-    private userService: UserService
+    private userService: UserService,
+    private syncService: SyncService
   ) { }
 
   ngOnInit(): void {
@@ -60,10 +76,59 @@ export class PublicTalesComponent implements OnChanges, OnInit {
       this.user = user;
     });
     this.refresh();
+    this.taleCreatedSubscription = this.syncService.taleCreatedSubject.subscribe((taleId: string) => {
+      this.refresh();
+    });
+    this.taleRemovedSubscription = this.syncService.taleRemovedSubject.subscribe((taleId: string) => {
+      this.refresh();
+    });
+    this.taleUpdatedSubscription = this.syncService.taleUpdatedSubject.subscribe((taleId: string) => {
+      this.refresh();
+    });
+
+    this.taleSharedSubscription = this.syncService.taleSharedSubject.subscribe((taleId: string) => {
+      this.refresh();
+    });
+    this.taleUnsharedSubscription = this.syncService.taleUnsharedSubject.subscribe((taleId: string) => {
+      this.refresh();
+    });
+
+    this.taleImportStartedSubscription = this.syncService.taleImportFailedSubject.subscribe((taleId: string) => {
+      this.refresh();
+    });
+    this.taleImportCompletedSubscription = this.syncService.taleImportCompletedSubject.subscribe((taleId: string) => {
+      this.refresh();
+    });
+    this.taleImportFailedSubscription = this.syncService.taleImportFailedSubject.subscribe((taleId: string) => {
+      this.refresh();
+    });
+
+    this.instanceLaunchingSubscription = this.syncService.instanceLaunchingSubject.subscribe((resource: { taleId: string, instanceId: string }) => {
+      this.refresh();
+    });
+    this.instanceRunningSubscription = this.syncService.instanceRunningSubject.subscribe((resource: { taleId: string, instanceId: string }) => {
+      this.refresh();
+    });
   }
 
   ngOnChanges(): void {
     this.refresh();
+  }
+
+  ngOnDestroy(): void {
+    this.taleCreatedSubscription.unsubscribe();
+    this.taleUpdatedSubscription.unsubscribe();
+    this.taleRemovedSubscription.unsubscribe();
+
+    this.taleSharedSubscription.unsubscribe();
+    this.taleUnsharedSubscription.unsubscribe();
+
+    this.taleImportCompletedSubscription.unsubscribe();
+    this.taleImportStartedSubscription.unsubscribe();
+    this.taleImportFailedSubscription.unsubscribe();
+
+    this.instanceLaunchingSubscription.unsubscribe();
+    this.instanceRunningSubscription.unsubscribe();
   }
 
   taleInstanceStateChanged(updated: {tale: Tale, instance: Instance}): void {
@@ -92,6 +157,8 @@ export class PublicTalesComponent implements OnChanges, OnInit {
 
   // Refresh tale/instance data from the server
   refresh(): void {
+    this.ref.detectChanges();
+
     // Fetch a map of taleId => instance
     const listInstancesParams = {};
     this.instanceService.instanceListInstances(listInstancesParams).subscribe((instances: Array<Instance>) => {
@@ -109,6 +176,7 @@ export class PublicTalesComponent implements OnChanges, OnInit {
     this.taleService.taleListTales(listTalesParams).subscribe((tales: Array<Tale>) => {
       // Filter based on search query
       this.tales = tales;
+      this.tales$ = this.taleService.taleListTales(listTalesParams);
       this.ref.detectChanges();
 
       // For each tale, also fetch its creator

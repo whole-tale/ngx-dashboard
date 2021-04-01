@@ -8,7 +8,7 @@
         <div class="inline fields ui grid">
           <label class="two wide column right aligned">Title</label>
           <div class="field thirteen wide column">
-            <input placeholder="Title is required." type="text" name="title" [(ngModel)]="tale.title" required>
+            <input placeholder="Title is required." type="text" name="title" [(ngModel)]="_editState.title" required>
           </div>
         </div>
 
@@ -17,7 +17,7 @@
           <div class="thirteen wide column" style="padding-left:0;">
             <h4 style="text-align: center">Created by <span style="color:#67c096">{{ creator.firstName }} {{ creator.lastName }}</span></h4>
 
-            <form id="taleAuthorsSubForm" #taleAuthorsSubForm="ngForm" class="ui form" *ngIf="tale.authors.length">
+            <form id="taleAuthorsSubForm" #taleAuthorsSubForm="ngForm" class="ui form" *ngIf="_editState.authors.length">
               <table class="ui table striped condensed">
                 <tr>
                   <th>First Name</th>
@@ -25,7 +25,7 @@
                   <th>ORCID</th>
                   <th></th>
                 </tr>
-                <tr *ngFor="let author of tale.authors; index as i; trackBy: trackByAuthorHash">
+                <tr *ngFor="let author of _editState.authors; index as i; trackBy: trackByAuthorHash">
                   <td><input type="text" name="firstName_{{i}}" placeholder="First name is required." [(ngModel)]="author.firstName" required></td>
                   <td><input type="text" name="lastName_{{i}}" placeholder="Last name is required." [(ngModel)]="author.lastName" required></td>
                   <td><input type="text" name="orcid_{{i}}" placeholder="ORCID is required." [(ngModel)]="author.orcid" required></td>
@@ -40,14 +40,14 @@
         <div class="inline fields ui grid">
           <label class="two wide column right aligned">Category</label>
           <div class="field thirteen wide column">
-            <input placeholder="Category is required." type="text" name="category" [(ngModel)]="tale.category" required>
+            <input placeholder="Category is required." type="text" name="category" [(ngModel)]="_editState.category" required>
           </div>
         </div>
 
         <div class="inline fields ui grid">
           <label class="two wide column right aligned">Environment</label>
           <div class="field thirteen wide column">
-              <select id="environmentDropdown" class="ui labeled icon fluid dropdown" name="imageId" [(ngModel)]="tale.imageId">
+              <select id="environmentDropdown" class="ui labeled icon fluid dropdown" name="imageId" [(ngModel)]="_editState.imageId">
                   <option class="item" [ngValue]="env._id" *ngFor="let env of (environments | async); index as i; trackBy: trackById">
                   <img class="ui avatar image" [src]="env.icon | safe:'url'" />
                   {{ env.name }}
@@ -60,8 +60,8 @@
           <label class="two wide column right aligned">Datasets used</label>
           <span *ngIf="!tale.dataSetCitation">No citable data</span>
           <ul *ngIf="tale.dataSetCitation" style="max-width:60vw">
-              <li *ngFor="let citation of tale.dataSetCitation">
-                  <a routerLink="/run/{{ tale._id }}" [queryParams]="{ tab: 'files' }" routerLinkActive="active" queryParamsHandling="merge">
+              <li *ngFor="let citation of _editState.dataSetCitation">
+                  <a routerLink="/run/{{ _editState._id }}" [queryParams]="{ tab: 'files' }" routerLinkActive="active" queryParamsHandling="merge">
                       {{ citation }}
                   </a>
               </li>
@@ -71,7 +71,7 @@
         <div class="inline fields ui grid">
           <label class="two wide column right aligned">License</label>
           <div class="field thirteen wide column">
-              <select id="licenseDropdown" class="ui labeled icon fluid dropdown" name="licenseSPDX" [(ngModel)]="tale.licenseSPDX">
+              <select id="licenseDropdown" class="ui labeled icon fluid dropdown" name="licenseSPDX" [(ngModel)]="_editState.licenseSPDX">
                   <option class="item" [ngValue]="license.spdx" *ngFor="let license of (licenses | async); index as i; trackBy: trackBySpdx">
                   {{ license.name }}
                   </option>
@@ -82,14 +82,14 @@
         <div class="inline fields ui grid">
           <label class="two wide column right aligned">Date created</label>
           <div class="field thirteen wide column">
-            <span>{{ tale.created | date:'full' }}</span>
+            <span>{{ _editState.created | date:'full' }}</span>
           </div>
         </div>
 
         <div class="inline fields ui grid">
           <label class="two wide column right aligned">Last updated</label>
           <div class="field thirteen wide column">
-            <span>{{ tale.updated | date:'full' }}</span>
+            <span>{{ _editState.updated | date:'full' }}</span>
           </div>
         </div>
 
@@ -107,10 +107,10 @@
               </a>
             </div>
             <div class="ui bottom attached tab segment" [ngClass]="{ 'active': !previewMarkdown }">
-              <textarea rows="5" type="text" name="description" placeholder="Description is required." [(ngModel)]="tale.description" required></textarea>
+              <textarea rows="5" type="text" name="description" placeholder="Description is required." [(ngModel)]="_editState.description" required></textarea>
             </div>
             <div class="ui bottom attached tab segment" [ngClass]="{ 'active': previewMarkdown }">
-              <markdown ngPreserveWhitespaces [data]="tale.description"></markdown>
+              <markdown ngPreserveWhitespaces [data]="_editState.description"></markdown>
             </div>
           </div>
         </div>
@@ -119,7 +119,7 @@
         <div class="inline fields ui grid">
           <label class="two wide column right aligned">Illustration</label>
           <div class="ui action field thirteen wide column">
-            <input placeholder="http://" type="text" name="icon" [(ngModel)]="tale.illustration">
+            <input placeholder="http://" type="text" name="icon" [(ngModel)]="_editState.illustration">
             <div class="or"></div>
             <button class="ui blue button" (click)="generateIcon()">Generate Illustration</button>
           </div>
@@ -145,8 +145,8 @@
 
           <div class="field toggle ui checkbox four wide column">
             <input type="checkbox" name="public"
-                [checked]="tale.public"
-                (change)="tale.public=!tale.public">
+                [checked]="_editState.public"
+                (change)="_editState.public=!_editState.public">
             <label>Public?</label>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 import { AccessLevel } from '@api/models/access-level';
@@ -10,13 +10,16 @@ import { LogService } from '@framework/core/log.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { ErrorModalComponent } from '@shared/error-handler/error-modal/error-modal.component';
 import { CopyOnLaunchModalComponent } from '@tales/components/modals/copy-on-launch-modal/copy-on-launch-modal.component';
+import { SyncService } from '@tales/sync.service';
+
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-tale-run-button',
   templateUrl: './tale-run-button.component.html',
   styleUrls: ['./tale-run-button.component.scss']
 })
-export class TaleRunButtonComponent implements OnChanges {
+export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
   @Input() instance: Instance;
   @Input() tale: Tale;
 
@@ -26,19 +29,57 @@ export class TaleRunButtonComponent implements OnChanges {
 
   @Output() readonly taleInstanceStateChanged = new EventEmitter<{ tale: Tale; instance: Instance }>();
 
+  instanceLaunchingSubscription: Subscription;
+  instanceRunningSubscription: Subscription;
+
   constructor(
     private readonly ref: ChangeDetectorRef,
     private readonly dialog: MatDialog,
     private readonly logger: LogService,
     private readonly router: Router,
     private readonly taleService: TaleService,
-    private readonly instanceService: InstanceService
+    private readonly instanceService: InstanceService,
+    private readonly syncService: SyncService
   ) {}
+
+  ngOnInit(): void {
+    this.instanceLaunchingSubscription = this.syncService.instanceLaunchingSubject.subscribe(
+      (resource: { taleId: string; instanceId: string }) => {
+        // Ignore updates that aren't for this Tale
+        if (resource.taleId != this.tale._id) {
+          return;
+        }
+
+        this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
+          this.instance = instance;
+          this.ref.detectChanges();
+        });
+      }
+    );
+    this.instanceRunningSubscription = this.syncService.instanceRunningSubject.subscribe(
+      (resource: { taleId: string; instanceId: string }) => {
+        // Ignore updates that aren't for this Tale
+        if (resource.taleId != this.tale._id) {
+          return;
+        }
+
+        this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
+          this.instance = instance;
+          this.ref.detectChanges();
+        });
+      }
+    );
+  }
 
   ngOnChanges(): void {
     if (this.instance && (this.instance.status === 0 || this.instance.status === 3)) {
-      this.autoRefresh();
+      // this.autoRefresh();
     }
+  }
+
+  ngOnDestroy(): void {
+    this.instanceLaunchingSubscription.unsubscribe();
+    this.instanceRunningSubscription.unsubscribe();
   }
 
   autoRefresh(): void {
@@ -108,7 +149,7 @@ export class TaleRunButtonComponent implements OnChanges {
 
         // Poll / wait for launch
         // TODO: Fix edge cases (refresh, etc)
-        this.autoRefresh();
+        // this.autoRefresh();
       },
       (err: any) => {
         this.logger.error('Failed to create instance:', err);

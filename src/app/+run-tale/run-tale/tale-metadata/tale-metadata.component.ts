@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, Input, NgZone, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { ApiConfiguration } from '@api/api-configuration';
 import { AccessLevel } from '@api/models/access-level';
 import { Image } from '@api/models/image';
@@ -14,7 +15,10 @@ import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { ErrorService } from '@shared/error-handler/services/error.service';
 import { NotificationService } from '@shared/error-handler/services/notification.service';
 import { TaleAuthor } from '@tales/models/tale-author';
+import { SyncService } from '@tales/sync.service';
 import { Observable } from 'rxjs';
+
+import { ConfirmationModalComponent } from '@shared/common/components/confirmation-modal/confirmation-modal.component';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -36,11 +40,12 @@ export class TaleMetadataComponent implements OnInit {
   licenses: Observable<Array<License>>;
   environments: Observable<Array<Image>>;
 
+  confirmationModalShowing: boolean = false;
   apiRoot: string;
 
   // Edit mode
   editing: Boolean = false;
-  _previousState: Tale;
+  _editState: Tale;
 
   get canEdit(): boolean {
     if (!this.tale) {
@@ -76,7 +81,9 @@ export class TaleMetadataComponent implements OnInit {
               private licenseService: LicenseService,
               private notificationService: NotificationService,
               private errorHandler: ErrorService,
-              private imageService: ImageService) {
+              private imageService: ImageService,
+              private syncService: SyncService,
+              private dialog: MatDialog) {
     this.apiRoot = this.config.rootUrl;
   }
 
@@ -87,14 +94,46 @@ export class TaleMetadataComponent implements OnInit {
     setTimeout(() => {
       $('#environmentDropdown:parent').dropdown().css('width', '100%');
       $('#licenseDropdown:parent').dropdown().css('width', '100%');
-      this.saveState();
+      this.revertState();
     }, 800);
+
+    // Special handling for syncing data while editing
+    this.syncService.taleUpdatedSubject.subscribe((taleId: string) => {
+      if (taleId !== this.tale._id) {
+        return;
+      } else if (this.editing && !this.confirmationModalShowing) {
+        this.confirmationModalShowing = true;
+
+        // Prompt user that Tale state has changed, ask to refresh state
+        const dialogRef = this.dialog.open(ConfirmationModalComponent, { data: {
+            title: 'Tale was updated',
+            content: [
+              'This Tale was updated by another user.',
+              'Would you like to refresh the Tale\'s data?',
+              'Warning: Any unsaved changes will be lost.'
+            ]
+          }});
+        dialogRef.afterClosed().subscribe((result: boolean) => {
+          this.confirmationModalShowing = false;
+
+          // EDGE CASE: Form fields won't update if they're focused - blur first
+          const $focused = $(':focus');
+          $focused.blur();
+
+          if (result) {
+            this.revertState();
+          }
+        });
+      }
+    });
   }
 
   canDeactivate(): boolean {
-    // TODO: Revert to last known _previousState
+    // TODO: Revert to last known _editState
     // TODO: Ask for confirmation, if yes then
-    this.tale = this.copy(this._previousState);
+    if (this.editing) {
+      this.revertState();
+    }
 
     return true;
   }
@@ -108,17 +147,19 @@ export class TaleMetadataComponent implements OnInit {
 
   startEdit(): void {
     // Save a backup of the Tale's state in memory
-    this.saveState();
+    this.revertState();
     this.editing = true;
   }
 
   saveEdit(): void {
     // Overwrite our backup of the Tale's state in memory with a new one
     this.editing = false;
-    this.saveState();
 
-    // Update the Tale in Girder
-    this.updateTale().then((res) => { this.scrollToTop(); });
+    // Update the Tale in Girder, then in Angular
+    this.updateTale().then((res) => {
+      this.saveState();
+      this.scrollToTop();
+    });
   }
 
   cancelEdit(): void {
@@ -130,21 +171,11 @@ export class TaleMetadataComponent implements OnInit {
   }
 
   saveState(): void {
-    this._previousState = this.copy(this.tale);
+    this.tale = this.copy(this._editState);
   }
 
   revertState(): void {
-    const prev = this.copy(this._previousState);
-
-    // Restore editable fields from previous state
-    this.tale.title = prev.title;
-    this.tale.authors = prev.authors;
-    this.tale.category = prev.category;
-    this.tale.imageId = prev.imageId;
-    this.tale.description = prev.description;
-    this.tale.license = prev.license;
-    this.tale.illustration = prev.illustration;
-    this.tale.public = prev.public;
+    this._editState = this.copy(this.tale);
   }
 
   copy(obj: any): Tale {
@@ -179,10 +210,12 @@ export class TaleMetadataComponent implements OnInit {
       return new Promise(() => { this.logger.debug('Noop') });
     }
 
-    const params = { id: this.tale._id , tale: this.tale };
+    const tale = this._editState;
+
+    const params = { id: tale._id , tale };
     const promise = this.taleService.taleUpdateTale(params).toPromise()
     promise.then(res => {
-      this.logger.debug("Successfully saved tale state:", this.tale);
+      this.logger.debug("Successfully saved tale state:", tale);
       this.saveState();
       this.zone.run(() => {
         this.notificationService.showSuccess("Tale saved successfully");
@@ -195,12 +228,13 @@ export class TaleMetadataComponent implements OnInit {
   }
 
   validateAuthors(): Array<TaleAuthorValidationError> {
-    if (!this.tale.authors || !this.tale.authors.length) {
+    const tale = this._editState;
+    if (!tale.authors || !tale.authors.length) {
       return [];
     }
 
     const errors: Array<TaleAuthorValidationError> = [];
-    this.tale.authors.forEach((author: TaleAuthor, index: number) => {
+    tale.authors.forEach((author: TaleAuthor, index: number) => {
       if (!author.firstName) { errors.push({ index, message: 'Author\'s first name cannot be left blank.' }); }
       if (!author.lastName) { errors.push({ index, message: 'Author\'s last name cannot be left blank.' }); }
       if (!author.orcid) { errors.push({ index, message: 'Author\'s ORCID cannot be left blank.' }); }
@@ -213,15 +247,15 @@ export class TaleMetadataComponent implements OnInit {
   }
 
   addNewAuthor(): void {
-    this.tale.authors.push({ firstName: '', lastName: '', orcid: '' });
+    this._editState.authors.push({ firstName: '', lastName: '', orcid: '' });
   }
 
   removeAuthor(author: TaleAuthor): void {
     const index = this.tale.authors.indexOf(author);
-    this.tale.authors.splice(index, 1);
+    this._editState.authors.splice(index, 1);
   }
 
   generateIcon(): void {
-    this.tale.illustration = 'http://lorempixel.com/400/400/abstract/';
+    this._editState.illustration = 'http://lorempixel.com/400/400/abstract/';
   }
 }

@@ -12,8 +12,8 @@ import { bypassSanitizationTrustResourceUrl } from '@angular/core/src/sanitizati
 })
 class NotificationStreamService implements OnDestroy {
   static readonly Path = '/notification/stream';
-  static readonly TimeoutMs = 30;
-  static readonly IntervalDelayMs = 30000;
+  static readonly TimeoutMs = 85;
+  static readonly IntervalDelayMs = 85000;
   private _since: number = 0;
 
   interval: any;
@@ -96,7 +96,7 @@ class NotificationStreamService implements OnDestroy {
     this.disconnect();
 
     // Connect to SSE using the given parameters
-    this.source = new EventSource(this.url, { headers: { 'Girder-Token': this.token } });
+    this.source = new EventSource(this.url, { headers: { 'Girder-Token': this.token }, heartbeatTimeout: 90000 });
 
     this.source.onerror = this.onError.bind(this);
     this.source.onopen = this.onOpen.bind(this);
