@@ -25,3 +25,6 @@ FROM nginx:stable-alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 RUN rm -rf /usr/share/nginx/html/*
 COPY --from=nodebuild /srv/app/dist/* /usr/share/nginx/html/
+COPY ./entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]

@@ -107,7 +107,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
     const params = { redirect: `${this.window.location.origin}/login?token={girderToken}&rd=${route}`, list: false };
     this.oauth.oauthListProviders(params).subscribe(
       (providers: any) => {
-        this.window.location.href = providers.Globus;
+        this.window.location.href = providers[this.window.env.authProvider];
       },
       err => {
         this.logger.error('Failed to GET /oauth/providers:', err);
