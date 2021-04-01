@@ -270,7 +270,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
     gotoDocs(): void {
       // TODO: how to avoid hard-coding this link?
-      this.windowService.location.href = "https://wholetale.readthedocs.io/en/stable/users_guide/run.html";
+      this.windowService.open("https://wholetale.readthedocs.io/en/stable/users_guide/run.html", '_blank');
     }
 
     exportTale(format: TaleExportFormat = TaleExportFormat.BagIt): void {
