@@ -1,20 +1,16 @@
 {
-  "name": "@ng-seed/universal",
-  "version": "7.0.0",
-  "description": "Seed project for Angular Universal apps featuring Server-Side Rendering (SSR), Webpack, CLI scaffolding, dev/prod modes, AoT compilation, HMR, SCSS compilation, lazy loading, config, cache, i18n, SEO, and TSLint/codelyzer",
+  "name": "wholetale",
+  "version": "v1.0rc1",
+  "description": "Whole Tale dashboard application",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ng-seed/universal.git"
-  },
-  "author": {
-    "name": "Burak Tasci",
-    "email": "me@fulls1z3.com"
+    "url": "https://github.com/whole-tale/ngx-dashboard.git"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ng-seed/universal/issues"
+    "url": "https://github.com/whole-tale/ngx-dashboard/issues"
   },
-  "homepage": "https://github.com/ng-seed/universal#readme",
+  "homepage": "https://wholetale.org",
   "scripts": {
     "ng": "ng",
     "clean": "rimraf .cache dist coverage test-report.xml",
