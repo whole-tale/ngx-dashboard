@@ -81,7 +81,7 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
     }
 
     // Fetch all Tale environment Images
-    const listImagesParams = {};
+    const listImagesParams = { limit: 0 };
     this.imageService.imageListImages(listImagesParams).subscribe(images => {
       this.zone.run(() => {
         this.environments = images;

@@ -172,7 +172,7 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
     });
 
     // Fetch the list of public tales
-    const listTalesParams = {};
+    const listTalesParams = { limit: 0 };
     this.taleService.taleListTales(listTalesParams).subscribe((tales: Array<Tale>) => {
       // Filter based on search query
       this.tales = tales;

@@ -261,13 +261,13 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   load(): void {
     if (this.currentFolderId) {
         // Fetch folders in the given folder
-      this.folderService.folderFind({ parentId: this.currentFolderId, parentType: ParentType.Folder })
+      this.folderService.folderFind({ parentId: this.currentFolderId, parentType: ParentType.Folder, limit: 0 })
                         .pipe(enterZone(this.zone))
                         .subscribe(folders => {
                           this.folders.next(folders);
                         });
         // Fetch items in the given folder
-      this.itemService.itemFind({ folderId: this.currentFolderId })
+      this.itemService.itemFind({ folderId: this.currentFolderId, limit: 0 })
                       .pipe(enterZone(this.zone))
                       .subscribe(items => {
                         this.files.next(items);
@@ -284,14 +284,14 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         }
 
         // Fetch folders in the home folder
-        this.folderService.folderFind({ parentId: this.homeRoot._id, parentType: ParentType.Folder })
+        this.folderService.folderFind({ parentId: this.homeRoot._id, parentType: ParentType.Folder, limit: 0 })
                         .pipe(enterZone(this.zone))
                         .subscribe(folders => {
                           this.folders.next(folders);
                         });
 
         // Fetch items in the home folder
-        this.itemService.itemFind({ folderId: this.homeRoot._id })
+        this.itemService.itemFind({ folderId: this.homeRoot._id, limit: 0 })
                         .pipe(enterZone(this.zone))
                         .subscribe(items => {
                           this.files.next(items);
@@ -355,13 +355,13 @@ export class TaleFilesComponent implements OnInit, OnChanges {
           this.currentFolderId = this.tale.workspaceId;
 
           // Fetch folders in the workspace
-          this.folderService.folderFind({ parentId: this.currentFolderId, parentType: ParentType.Folder })
+          this.folderService.folderFind({ parentId: this.currentFolderId, parentType: ParentType.Folder, limit: 0 })
                             .subscribe(folders => {
                               this.zone.run(() => { this.folders.next(folders); });
                             });
 
           // Fetch items in the workspace
-          this.itemService.itemFind({ folderId: this.currentFolderId })
+          this.itemService.itemFind({ folderId: this.currentFolderId, limit: 0 })
                           .subscribe(items => {
                             this.zone.run(() => { this.files.next(items); });
                           });

@@ -62,8 +62,8 @@ export class SelectDataDialogComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.allDatasets = this.datasetService.datasetListDatasets({ myData: false });
-    this.datasets = this.myDatasets = this.datasetService.datasetListDatasets({ myData: true });
+    this.allDatasets = this.datasetService.datasetListDatasets({ myData: false, limit: 0 });
+    this.datasets = this.myDatasets = this.datasetService.datasetListDatasets({ myData: true, limit: 0 });
 
     const preAddedDatasets = this.data.tale.dataSet.map((ds: { itemId: string, mountPath: string, _modelType: string }) =>
       // Lookup the Dataset by id and push it to our selection
@@ -101,13 +101,13 @@ export class SelectDataDialogComponent implements OnInit {
   load(): void {
     if (this.currentFolderId) {
         // Fetch folders in the given folder
-      this.folderService.folderFind({ parentId: this.currentFolderId, parentType: ParentType.Folder })
+      this.folderService.folderFind({ parentId: this.currentFolderId, parentType: ParentType.Folder, limit: 0 })
                         .pipe(enterZone(this.zone))
                         .subscribe(folders => {
                           this.folders.next(folders);
                         });
         // Fetch items in the given folder
-      this.itemService.itemFind({ folderId: this.currentFolderId })
+      this.itemService.itemFind({ folderId: this.currentFolderId, limit: 0 })
                       .pipe(enterZone(this.zone))
                       .subscribe(items => {
                         this.files.next(items);
@@ -125,14 +125,14 @@ export class SelectDataDialogComponent implements OnInit {
       this.currentFolderId = this.selectedDataset._id;
 
       // Fetch folders in the workspace
-      this.folderService.folderFind({ parentId: this.currentFolderId, parentType: ParentType.Folder })
+      this.folderService.folderFind({ parentId: this.currentFolderId, parentType: ParentType.Folder, limit: 0 })
                         .pipe(enterZone(this.zone))
                         .subscribe(folders => {
                           this.folders.next(folders);
                         });
 
       // Fetch items in the workspace
-      this.itemService.itemFind({ folderId: this.currentFolderId })
+      this.itemService.itemFind({ folderId: this.currentFolderId, limit: 0 })
                       .pipe(enterZone(this.zone))
                       .subscribe(items => {
                         this.files.next(items);
