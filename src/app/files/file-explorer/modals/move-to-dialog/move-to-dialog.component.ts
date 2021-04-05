@@ -1,6 +1,7 @@
 import { Component, Inject, NgZone, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AccessLevel } from '@api/models/access-level';
 import { User } from '@api/models/user';
 import { CollectionService } from '@api/services/collection.service';
 import { DatasetService } from '@api/services/dataset.service';
@@ -162,14 +163,17 @@ export class MoveToDialogComponent implements OnInit {
 
     // Fetch folders in the current folder
     this.folderService
-      .folderFind({ parentId: this.currentFolderId, parentType: ParentType.Folder })
+      .folderFind({ parentId: this.currentFolderId, parentType: ParentType.Folder, limit: 0 })
       .pipe(enterZone(this.zone))
       .subscribe(folders => {
-        this.folders.next(folders);
+        const filteredFolders = folders.filter((folder: FileElement) => {
+          return folder._accessLevel >= AccessLevel.Write; // Only show writeable
+        });
+        this.folders.next(filteredFolders);
       });
     // Fetch items in the current folder
     this.itemService
-      .itemFind({ folderId: this.currentFolderId })
+      .itemFind({ folderId: this.currentFolderId, limit: 0 })
       .pipe(enterZone(this.zone))
       .subscribe(items => {
         this.files.next(items);
