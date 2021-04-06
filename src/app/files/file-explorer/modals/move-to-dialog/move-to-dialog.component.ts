@@ -2,6 +2,7 @@ import { Component, Inject, NgZone, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccessLevel } from '@api/models/access-level';
+import { SortDir } from '@api/models/sortdir';
 import { User } from '@api/models/user';
 import { CollectionService } from '@api/services/collection.service';
 import { DatasetService } from '@api/services/dataset.service';
@@ -161,9 +162,21 @@ export class MoveToDialogComponent implements OnInit {
       return;
     }
 
+    const folderListParams = {
+      parentId: this.currentFolderId,
+      parentType: ParentType.Folder,
+      limit: 0,
+      sort: 'lowerName',
+      sortdir: SortDir.ASCENDING
+    };
+    if (this.currentFolderId === this.wsRoot._id) {
+      folderListParams.sort = 'updated';
+      folderListParams.sortdir = SortDir.DESCENDING;
+    }
+
     // Fetch folders in the current folder
     this.folderService
-      .folderFind({ parentId: this.currentFolderId, parentType: ParentType.Folder, limit: 0 })
+      .folderFind(folderListParams)
       .pipe(enterZone(this.zone))
       .subscribe(folders => {
         const filteredFolders = folders.filter((folder: FileElement) => {
