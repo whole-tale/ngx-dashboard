@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogConfig } from '@angular/material/d
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccessLevel } from '@api/models/access-level';
 import { SortDir } from '@api/models/sortdir';
+import { Tale } from '@api/models/tale';
 import { User } from '@api/models/user';
 import { CollectionService } from '@api/services/collection.service';
 import { DatasetService } from '@api/services/dataset.service';
@@ -170,20 +171,21 @@ export class MoveToDialogComponent implements OnInit {
       sortdir: SortDir.ASCENDING
     };
     if (this.currentFolderId === this.wsRoot._id) {
-      folderListParams.sort = 'updated';
-      folderListParams.sortdir = SortDir.DESCENDING;
-    }
-
-    // Fetch folders in the current folder
-    this.folderService
-      .folderFind(folderListParams)
-      .pipe(enterZone(this.zone))
-      .subscribe(folders => {
-        const filteredFolders = folders.filter((folder: FileElement) => {
-          return folder._accessLevel >= AccessLevel.Write; // Only show writeable
+      this.taleService
+        .taleListTales({ limit: 0, level: AccessLevel.Write, sortdir: SortDir.ASCENDING })
+        .pipe(enterZone(this.zone))
+        .subscribe(tales => {
+          this.folders.next(tales.map((tale: Tale) => new FileElement(tale, this.wsRoot)));
         });
-        this.folders.next(filteredFolders);
-      });
+    } else {
+      // Fetch folders in the current folder
+      this.folderService
+        .folderFind(folderListParams)
+        .pipe(enterZone(this.zone))
+        .subscribe(folders => {
+          this.folders.next(folders);
+        });
+    }
     // Fetch items in the current folder
     this.itemService
       .itemFind({ folderId: this.currentFolderId, limit: 0 })

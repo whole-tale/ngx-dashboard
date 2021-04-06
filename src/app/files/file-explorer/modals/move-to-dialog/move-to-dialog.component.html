@@ -10,37 +10,12 @@
                 <span *ngIf="pathStack.length !== 2 || pathStack[0] !== wsRoot" title="{{currentRoot.name}}">
                     {{ currentRoot.name | truncate:headTruncateLength }}
                 </span>
-                <span *ngIf="pathStack.length === 2 && pathStack[0] === wsRoot && (currentRoot.name | taleName | async) as taleTitle"
-                      title="{{taleTitle}} ({{currentRoot.name}})">
-                    {{ taleTitle | truncate:headTruncateLength }}
-                </span>
               </span>
           </th>
         </thead>
 
-        <!-- If Workspaces is selected, translate taleIds into titles and show special tooltip -->
-        <tbody *ngIf="currentRoot && currentRoot === wsRoot && (folders | async).concat(files | async) as contents">
-          <tr *ngIf="!contents.length">{{ placeholderMessage }}</tr>
-          <tr [ngClass]="{
-                    'active': selectedFolder === elem,
-                    'clickable': elem._modelType === 'folder',
-                    'disabled not clickable': elem._modelType !== 'folder' || data.elementToMove._id === elem._id }"
-                *ngFor="let elem of contents; index as i; trackBy:trackById"
-                (click)="selectFolder(elem)"
-                (dblclick)="navigate(elem)">
-            <td>
-                <i class="fas fa-fw" [ngClass]="{
-                  'fa-folder': elem._modelType === 'folder',
-                  'fa-file': elem._modelType === 'item' || elem._modelType === 'file' }"></i>
-            </td>
-            <td *ngIf="(elem.name | taleName | async) as taleTitle" title="{{taleTitle}} ({{elem.name}})">
-                {{ taleTitle | truncate:bodyTruncateLength }}
-            </td>
-          </tr>
-        </tbody>
-
         <!-- If any other folder is selected, just display title as-is -->
-        <tbody *ngIf="currentRoot && currentRoot !== wsRoot && (folders | async).concat(files | async) as contents">
+        <tbody *ngIf="currentRoot && (folders | async).concat(files | async) as contents">
           <tr *ngIf="!contents.length">{{ placeholderMessage }}</tr>
           <tr [ngClass]="{
                 'active': selectedFolder === elem,
