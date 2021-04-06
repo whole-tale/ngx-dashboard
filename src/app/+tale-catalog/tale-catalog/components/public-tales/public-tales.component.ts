@@ -204,7 +204,6 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
 
         // Explicitly force Tale list binding to refresh
         this.tales$ = this.taleService.taleListTales({});
-        this.refresh();
       }, err => {
           this.logger.error("Failed to delete Tale:", err);
       });
