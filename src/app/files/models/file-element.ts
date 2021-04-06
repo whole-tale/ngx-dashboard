@@ -1,3 +1,4 @@
+import { Tale } from '@api/models/tale';
 import { BaseDocument } from '~/app/framework/ngrx';
 
 export interface FileElement extends BaseDocument {
@@ -62,4 +63,23 @@ export class FileElement implements FileElement {
 
   // datasets only
   provider: string;
+
+  constructor(tale?: Tale, root?: FileElement) {
+    // allow to construct Workspace folder with a Tale name from Tale object
+    // the same trick could be later used for other aux folders.
+    if (tale) {
+      this._id = tale.workspaceId;
+      this._modelType = 'folder';
+      this.created = new Date(tale.created);
+      this.description = tale.description;
+      this.name = tale.title;
+      this.updated = new Date(tale.updated);
+      this.creatorId = tale.creatorId;
+      this.baseParentId = root.baseParentId;
+      this.baseParentType = root.baseParentType;
+      this._accessLevel = tale._accessLevel;
+      this.public = tale.public;
+      this.parentId = root._id;
+    }
+  }
 }
