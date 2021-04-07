@@ -81,7 +81,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   currentPath = '';
   canNavigateUp = false;
 
-  currentNav = 'external_data';
+  currentNav = 'tale_workspace';
 
   constructor(
     private ref: ChangeDetectorRef,
