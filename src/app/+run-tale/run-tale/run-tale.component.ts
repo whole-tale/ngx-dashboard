@@ -79,6 +79,10 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       return this.showVersionsPanel;
     }
 
+    isTaleWritable() :boolean {
+      return this.tale._accessLevel >= AccessLevel.Write;
+    }
+
     trackByAuthorOrcid(index: number, author: TaleAuthor): string {
         return author.orcid;
     }

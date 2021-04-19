@@ -86,7 +86,7 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
   }
 
   fetchUsers(): Promise<Array<User>> {
-    const userFetch = this.userService.userFind({}).toPromise();
+    const userFetch = this.userService.userFind({ limit: 0 }).toPromise();
     userFetch.then((users: Array<User>) => {
       users.forEach((user: User) => {
         user.name = `${user.firstName} ${user.lastName}`;

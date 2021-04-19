@@ -25,7 +25,6 @@ declare var $: any;
   selector: 'app-public-tales'
 })
 export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
-  // tales$: Observable<Array<Tale>> = new Observable<Array<Tale>>();
   tales: Array<Tale> = [];
   publicTales: Array<Tale> = [];
 
@@ -70,8 +69,6 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    const listTalesParams = {};
-    // this.tales$ = this.taleService.taleListTales(listTalesParams);
     this.refresh();
     this.userService.userGetMe().subscribe(user => {
       this.user = user;
@@ -173,11 +170,10 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
     });
 
     // Fetch the list of public tales
-    const listTalesParams = {};
+    const listTalesParams = { limit: 0 };
     this.taleService.taleListTales(listTalesParams).subscribe((tales: Array<Tale>) => {
       // Filter based on search query
       this.tales = tales;
-      // this.tales$ = this.taleService.taleListTales(listTalesParams);
       this.ref.detectChanges();
 
       // For each tale, also fetch its creator
@@ -205,7 +201,7 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
 
         const deletedTale = this.tales.find((t: Tale) => id === t._id);
         const deletedIndex = this.tales.indexOf(deletedTale);
-        this.tales = this.tales.splice(deletedIndex);
+        this.tales = this.tales.splice(deletedIndex, 1);
         this.ref.detectChanges();
       }, err => {
           this.logger.error("Failed to delete Tale:", err);
