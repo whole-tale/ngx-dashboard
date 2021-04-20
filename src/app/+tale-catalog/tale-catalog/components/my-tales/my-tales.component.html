@@ -1,6 +1,6 @@
 
 <!-- My Tales -->
-<div *ngIf="(tales$ | async) as taleList">
+<div *ngIf="tales.length">
 
     <!-- Search Tales -->
     <div class="row">
@@ -13,14 +13,14 @@
     </div>
 
   <!-- Running Tales -->
-  <app-running-tales [instances]="instances" [creators]="creators" [taleList]="taleList"></app-running-tales>
+  <app-running-tales [instances]="instances" [creators]="creators" [taleList]="tales"></app-running-tales>
 
-  <div class="row" style="margin-top:40px;margin-bottom:30px;" *ngIf="(taleList | myTales | stopped:instances) as allStoppedTales">
-    <div class="sixteen wide column" *ngIf="(taleList | searchTales:searchQuery:creators | myTales | stopped:instances) as filteredStoppedTales">
+  <div class="row" style="margin-top:40px;margin-bottom:30px;" *ngIf="(tales | myTales | stopped:instances) as allStoppedTales">
+    <div class="sixteen wide column" *ngIf="(tales | searchTales:searchQuery:creators | myTales | stopped:instances) as filteredStoppedTales">
 
       <!-- Placeholder Message -->
       <div class="ui message" *ngIf="!allStoppedTales.length">
-          You haven't created any Tales yet. Select the "Create New Tale" button above 
+          You haven't created any Tales yet. Select the "Create New Tale" button above
           or <a [routerLink]="'/public'">explore Tales created by other users</a>.
       </div>
 

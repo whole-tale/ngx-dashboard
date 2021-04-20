@@ -1,6 +1,6 @@
 
 <!-- Shared Tales -->
-<div *ngIf="(tales$ | async) as taleList">
+<div *ngIf="tales.length">
 
     <!-- Search Tales -->
     <div class="row">
@@ -13,11 +13,11 @@
     </div>
 
   <!-- Running Tales -->
-  <app-running-tales [instances]="instances" [creators]="creators" [taleList]="taleList"></app-running-tales>
+  <app-running-tales [instances]="instances" [creators]="creators" [taleList]="tales"></app-running-tales>
 
   <!-- Shared Tales -->
-  <div class="row" style="margin-top:40px;margin-bottom:30px;" *ngIf="(taleList | sharedTales | stopped:instances) as allStoppedTales">
-    <div class="sixteen wide column" *ngIf="(taleList | searchTales:searchQuery:creators | sharedTales | stopped:instances) as filteredStoppedTales">
+  <div class="row" style="margin-top:40px;margin-bottom:30px;" *ngIf="(tales | sharedTales | stopped:instances) as allStoppedTales">
+    <div class="sixteen wide column" *ngIf="(tales | searchTales:searchQuery:creators | sharedTales | stopped:instances) as filteredStoppedTales">
 
       <!-- Placeholder Message -->
       <div class="ui message" *ngIf="!allStoppedTales.length">
