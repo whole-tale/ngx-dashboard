@@ -199,9 +199,7 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
       this.taleService.taleDeleteTale({ id }).subscribe(response => {
         this.logger.debug("Successfully deleted Tale:", response);
 
-        const deletedTale = this.tales.find((t: Tale) => id === t._id);
-        const deletedIndex = this.tales.indexOf(deletedTale);
-        this.tales = this.tales.splice(deletedIndex, 1);
+        this.tales = this.tales.filter((t: Tale) => t._id !== id);
         this.ref.detectChanges();
       }, err => {
           this.logger.error("Failed to delete Tale:", err);
