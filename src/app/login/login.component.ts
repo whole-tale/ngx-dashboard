@@ -131,4 +131,8 @@ export class LoginComponent extends BaseComponent implements OnInit {
 
     return auth$;
   }
+
+  get tosUrl(): string {
+    return this.window.env.rtdBaseUrl + "/tos";
+  }
 }

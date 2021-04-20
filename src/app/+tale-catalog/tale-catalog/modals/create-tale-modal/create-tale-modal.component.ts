@@ -4,6 +4,7 @@ import { Image } from '@api/models/image';
 import { Tale } from '@api/models/tale';
 import { ImageService } from '@api/services/image.service';
 import { LogService } from '@framework/core/log.service';
+import { WindowService } from '@framework/core/window.service';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -27,7 +28,8 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
       public dialogRef: MatDialogRef<CreateTaleModalComponent>,
       @Inject(MAT_DIALOG_DATA) public data: { params: any, showGit: boolean },
       private imageService: ImageService,
-      private logger: LogService
+      private logger: LogService,
+      private readonly window: WindowService
     ) {
     this.newTale = {
       title: (data && data.params) ? data.params.name : '',
@@ -121,5 +123,9 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
 
   trackById(index: number, env: Image): string {
     return env._id;
+  }
+
+  get docUrl(): string {
+    return this.window.env.rtdBaseUrl + "/users_guide/compose.html";
   }
 }

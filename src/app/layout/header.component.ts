@@ -11,6 +11,7 @@ import { ConfigService } from '@ngx-config/core';
 import { CookieService } from 'ngx-cookie-service';
 import { Observable } from 'rxjs';
 import { Language, LanguageSelectors, State } from '~/app/store';
+import { WindowService } from '@framework/core/window.service';
 
 import { NotificationStreamService } from './notification-stream/notification-stream.service';
 
@@ -48,7 +49,8 @@ export class HeaderComponent extends BaseComponent implements OnInit {
     private readonly cookies: CookieService,
     private readonly users: UserService,
     private readonly tokenService: TokenService,
-    private readonly notificationStream: NotificationStreamService
+    private readonly notificationStream: NotificationStreamService,
+    private readonly window: WindowService
   ) {
     super();
 
@@ -67,6 +69,7 @@ export class HeaderComponent extends BaseComponent implements OnInit {
     this.availableLanguages = this.config.getSettings('i18n.availableLanguages');
     this.isAuthenticated = this.auth.isAuthenticated;
     this.user = this.tokenService.user;
+
 
     this.zone.runOutsideAngular(() => {
       $('.ui.account.dropdown').dropdown({ action: 'hide' });
@@ -102,5 +105,9 @@ export class HeaderComponent extends BaseComponent implements OnInit {
     }
 
     return this.events.length;
+  }
+
+  get docUrl(): string {
+    return this.window.env.rtdBaseUrl + "/users_guide";
   }
 }

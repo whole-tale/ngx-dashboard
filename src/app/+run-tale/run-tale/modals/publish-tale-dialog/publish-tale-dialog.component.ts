@@ -9,6 +9,8 @@ import { JobService } from '@api/services/job.service';
 import { RepositoryService } from '@api/services/repository.service';
 import { TaleService } from '@api/services/tale.service';
 import { LogService } from '@framework/core/log.service';
+import { WindowService } from '@framework/core/window.service';
+
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -43,6 +45,7 @@ export class PublishTaleDialogComponent implements OnInit {
     private readonly taleService: TaleService,
     private readonly jobService: JobService,
     private readonly logger: LogService,
+    private readonly window: WindowService,
     @Inject(MAT_DIALOG_DATA) public data: { tale: Tale }) {
 
   }
@@ -174,5 +177,9 @@ export class PublishTaleDialogComponent implements OnInit {
       this.publishStatus = 'error';
       this.lastMessage = err.error.message || 'Failed to submit publishing job';
     });
+  }
+
+  get docUrl(): string {
+    return this.window.env.rtdBaseUrl + "/users_guide/publishing.html";
   }
 }
