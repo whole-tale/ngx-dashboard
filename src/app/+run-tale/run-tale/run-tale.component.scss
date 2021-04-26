@@ -157,13 +157,19 @@ app-tale-versions-panel {
   height: 100%;
 }
 
+.wt_panel_body > .ui.grid,
+.wt_panel_body > .ui.grid > .row,
+.wt_panel_body > .ui.grid > .row > .column {
+  margin: 0;
+  padding: 0;
+}
+
 .ui.grid {
   height: 100%;
 }
 
 .wt-panel .wt-panel-body {
-  padding: 2rem 2rem 0 2rem;
-  height: 82%;
+  height: 88%;
 }
 .wt-panel .wt-panel-body.bg-grey,
 .wt-panel .wt-panel-header.bg-grey {
