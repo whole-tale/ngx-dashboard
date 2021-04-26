@@ -30,6 +30,11 @@
 
         <!-- Card for each Tale -->
         <div class="ui card" *ngFor="let tale of filteredPublicTales; index as i; trackBy: trackById">
+          <div class="extra content">
+            <span style="text-transform:uppercase">
+              {{ tale.copyOfTale ? 'copy' : 'original' }}
+            </span>
+          </div>
           <div class="blurring dimmable segment fluid image" id="{{ tale._id }}-dimmer" (mouseover)="showDimmer(tale)" (mouseout)="hideDimmer(tale)">
 
             <!-- Abstract card into reusable template? Card component? -->
