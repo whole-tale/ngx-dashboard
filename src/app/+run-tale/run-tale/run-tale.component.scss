@@ -14,6 +14,7 @@
 
 :host {
   min-height: 95%;
+  margin: 12pt 0 0 0;
 }
 
 .ui.breadcrumb a {
@@ -154,18 +155,28 @@ app-tale-versions-panel {
   margin-top: 1rem;
 }
 .wt-panel .wt-panel-body .ui.grid .row .wide.column > div {
-  height: 100%;
+  height: 99.4%;
 }
 
 .wt_panel_body > .ui.grid,
 .wt_panel_body > .ui.grid > .row,
 .wt_panel_body > .ui.grid > .row > .column {
+  height: 100%;
   margin: 0;
   padding: 0;
 }
 
 .ui.grid {
   height: 100%;
+}
+
+.wt-panel > .wt-panel-body > .row {
+  padding-bottom: 0 !important;
+}
+
+.ui.stretched.stackable.grid.panel-container {
+  height: 100%;
+  height: auto;
 }
 
 .wt-panel .wt-panel-body {
