@@ -9,6 +9,41 @@
   //overflow-y: auto;
 }
 
+.four.wide.column {
+  padding-right: 0;
+}
+
+.ui.grid > .row > .stretched.column > *,
+.ui.grid > .stretched.column:not(.row) > *,
+.ui.grid > .stretched.row > .column > *,
+.ui.stretched.grid > .column > *,
+.ui.stretched.grid > .row > .column > * {
+  flex-grow: unset;
+}
+
+.twelve.wide.column > .ui.segment {
+  border-radius: 0 0 10pt 0;
+  box-shadow: none;
+}
+
+.ui.message {
+  border-radius: 0 0 10pt 0;
+  box-shadow: none;
+}
+
+.ui.segment {
+  border: none;
+  padding: 0;
+  height: 100%;
+}
+
+.four.wide.column,
+.twelve.wide.column {
+  padding-top: 0;
+  padding-left: 0;
+  padding-bottom: 0;
+}
+
 .ui.grid {
   height: 100%;
 }
