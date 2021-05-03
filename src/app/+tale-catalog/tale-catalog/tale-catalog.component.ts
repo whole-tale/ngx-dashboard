@@ -70,8 +70,10 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
                 taleKwargs: tale.title ? { title: tale.title } : {}, 
                 lookupKwargs: {},
               };
-              this.taleService.taleCreateTaleFromUrl(params).subscribe(resp => {
-                this.logger.debug("Successfully submitted 'Analyze in WT' Job:", resp);
+              this.taleService.taleCreateTaleFromUrl(params).subscribe((response: Tale) => {
+                this.logger.debug("Successfully submitted 'Analyze in WT' Job:", response);
+                this.taleCreated.emit(response);
+                this.router.navigate(['run', response._id]);
               }, err => {
                 this.logger.error("Failed to create Tale from Dataset:", err);
               });
