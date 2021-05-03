@@ -66,7 +66,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
                 imageId: tale.imageId, // Pull from user input
                 asTale: asTale ? asTale : false, // Pull from user input
                 git: result.url ? true : false,
-                spawn: true, // if true, immediately launch a Tale instance
+                spawn: false, // if true, immediately launch a Tale instance
                 taleKwargs: tale.title ? { title: tale.title } : {}, 
                 lookupKwargs: {},
               };
