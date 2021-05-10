@@ -66,4 +66,8 @@ export class ConnectApiKeyModalComponent extends BaseComponent implements OnInit
   trackByTarget(index: number, target: string): string {
       return target;
   }
+
+  getToken(): string {
+    return this.data.provider.docs_href.replace("{siteUrl}", this.newApiKey.resource_server);
+  }
 }

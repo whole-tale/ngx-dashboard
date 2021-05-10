@@ -23,7 +23,7 @@
           </div>
           <div class="field">
             <label>API Token
-                <a *ngIf="data.provider.docs_href" href="{{ data.provider.docs_href }}" style="float:right; font-weight:normal" target="_blank">Get from {{ data.provider.fullName }} <i class="external square alternate icon"></i></a>
+              <a *ngIf="newApiKey.resource_server" href="{{ getToken() }}" style="float:right; font-weight:normal" target="_blank">Get from {{ data.provider.fullName }} <i class="external square alternate icon"></i></a>
             </label>
             <input type="text" name="API Token" placeholder="Enter an API key" [(ngModel)]="newApiKey.access_token" />
           </div>
