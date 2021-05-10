@@ -41,6 +41,7 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
 
   instanceLaunchingSubscription: Subscription;
   instanceRunningSubscription: Subscription;
+  instanceErrorSubscription: Subscription;
 
   AccessLevel: any = AccessLevel;
 
@@ -107,6 +108,9 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
     this.instanceRunningSubscription = this.syncService.instanceRunningSubject.subscribe((resource: { taleId: string, instanceId: string }) => {
       this.refresh();
     });
+    this.instanceErrorSubscription = this.syncService.instanceErrorSubject.subscribe((resource: { taleId: string, instanceId: string }) => {
+      this.refresh();
+    });
   }
 
   ngOnChanges(): void {
@@ -127,6 +131,7 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
 
     this.instanceLaunchingSubscription.unsubscribe();
     this.instanceRunningSubscription.unsubscribe();
+    this.instanceErrorSubscription.unsubscribe();
   }
 
   taleInstanceStateChanged(updated: {tale: Tale, instance: Instance}): void {

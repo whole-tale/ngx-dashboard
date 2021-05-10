@@ -55,6 +55,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     taleUnsharedSubscription: Subscription;
     taleInstanceLaunchingSubscription: Subscription;
     taleInstanceRunningSubscription: Subscription;
+    taleInstanceErrorSubscription: Subscription;
 
     constructor(
       private ref: ChangeDetectorRef,
@@ -225,6 +226,15 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         }
       });
 
+      this.taleInstanceErrorSubscription = this.syncService.instanceErrorSubject.subscribe((resource: {taleId: string, instanceId: string}) => {
+        if (resource.taleId === this.taleId) {
+          this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
+            this.instance = instance;
+            this.ref.detectChanges();
+          });
+        }
+      });
+
       this.taleUnsharedSubscription = this.syncService.taleUnsharedSubject.subscribe((taleId) => {
         if (taleId === this.taleId) {
           // Update current collaborators list
@@ -311,6 +321,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       this.taleUnsharedSubscription.unsubscribe();
       this.taleInstanceLaunchingSubscription.unsubscribe();
       this.taleInstanceRunningSubscription.unsubscribe();
+      this.taleInstanceErrorSubscription.unsubscribe();
     }
 
     performRecordedRun(): void {
