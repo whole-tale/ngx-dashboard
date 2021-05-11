@@ -68,6 +68,6 @@ export class ConnectApiKeyModalComponent extends BaseComponent implements OnInit
   }
 
   getToken(): string {
-    return this.data.provider.docs_href.replace("{siteUrl}", this.newApiKey.resource_server);
+    return this.data.provider.docs_href.replace(/{siteUrl}/g, this.newApiKey.resource_server);
   }
 }
