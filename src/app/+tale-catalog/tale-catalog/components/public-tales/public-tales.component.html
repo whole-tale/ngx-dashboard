@@ -41,7 +41,7 @@
             <div class="ui dimmer transition hidden">
               <div class="content">
                 <div class="center">
-                  <a class="ui inverted button" [routerLink]="'/run/' + tale._id" [queryParams]="{ tab: 'interact'}" routerLinkActive="active">View</a>
+                  <a class="ui inverted button" [routerLink]="'/run/' + tale._id" [queryParams]="{ tab: 'metadata'}" routerLinkActive="active">View</a>
                   <a *ngIf="tale._accessLevel >= AccessLevel.Admin" class="ui tiny bottom right attached label" (click)="openDeleteTaleModal(tale)">
                       <i class="red remove icon"></i>
                   </a>
