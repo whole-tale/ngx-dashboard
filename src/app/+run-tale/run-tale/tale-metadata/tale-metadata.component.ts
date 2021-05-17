@@ -196,7 +196,7 @@ export class TaleMetadataComponent implements OnInit {
 
   transformIdentifier(identifier: string): string {
     if (identifier.indexOf('doi:') === 0) {
-      return identifier.replace('doi:', 'doi.org/');
+      return identifier.replace('doi:', 'https://doi.org/');
     }
 
     return identifier;

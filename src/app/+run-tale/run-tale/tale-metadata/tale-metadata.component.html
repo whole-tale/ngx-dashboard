@@ -246,7 +246,7 @@ Fields Names / Order:
               <span *ngIf="!tale.dataSetCitation.length">No citable data</span>
               <ul *ngIf="tale.dataSetCitation.length" style="max-width:60vw">
                 <li *ngFor="let citation of tale.dataSetCitation">
-                    <a routerLink="/run/{{ tale._id }}" [queryParams]="{ tab: 'files' }" routerLinkActive="active" queryParamsHandling="merge">
+                    <a routerLink="/run/{{ tale._id }}" [queryParams]="{ tab: 'files', nav: 'external_data' }" routerLinkActive="active" queryParamsHandling="merge">
                         {{ citation }}
                     </a>
                 </li>
