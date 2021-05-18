@@ -31,6 +31,7 @@ export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
 
   instanceLaunchingSubscription: Subscription;
   instanceRunningSubscription: Subscription;
+  instanceErrorSubscription: Subscription;
 
   constructor(
     private readonly ref: ChangeDetectorRef,
@@ -69,6 +70,19 @@ export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
         });
       }
     );
+    this.instanceErrorSubscription = this.syncService.instanceErrorSubject.subscribe(
+      (resource: { taleId: string; instanceId: string }) => {
+        // Ignore updates that aren't for this Tale
+        if (resource.taleId != this.tale._id) {
+          return;
+        }
+
+        this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
+          this.instance = instance;
+          this.ref.detectChanges();
+        });
+      }
+    );
   }
 
   ngOnChanges(): void {
@@ -80,6 +94,7 @@ export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy(): void {
     this.instanceLaunchingSubscription.unsubscribe();
     this.instanceRunningSubscription.unsubscribe();
+    this.instanceErrorSubscription.unsubscribe();
   }
 
   autoRefresh(): void {

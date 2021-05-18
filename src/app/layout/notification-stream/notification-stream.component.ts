@@ -69,6 +69,8 @@ export class NotificationStreamComponent {
 
     // FIXME: this should use `eventData.type` instead, or adjust wt_progress + others
     // Handle resource-specific updates
+
+    this.logger.info('Processing event: ' + event);
     switch (event) {
       case 'wt_tale_updated':
         return this.sync.taleUpdated(affectedResourceIds.taleId);
@@ -93,8 +95,10 @@ export class NotificationStreamComponent {
         return this.sync.instanceLaunching(affectedResourceIds.taleId, affectedResourceIds.instanceId);
       case 'wt_instance_running':
         return this.sync.instanceRunning(affectedResourceIds.taleId, affectedResourceIds.instanceId);
+      case 'wt_instance_error':
+        return this.sync.instanceError(affectedResourceIds.taleId, affectedResourceIds.instanceId);
       default:
-        this.logger.info('Unrecognized update event: ' + event);
+        this.logger.info('Unrecognized update event: ' + girderEvent.data);
         break;
     }
 

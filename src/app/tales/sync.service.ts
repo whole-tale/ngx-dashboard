@@ -19,6 +19,7 @@ export class SyncService {
 
   readonly instanceLaunchingSubject = new Subject<{ taleId: string; instanceId: string }>();
   readonly instanceRunningSubject = new Subject<{ taleId: string; instanceId: string }>();
+  readonly instanceErrorSubject = new Subject<{ taleId: string; instanceId: string }>();
 
   constructor(private readonly logger: LogService) {}
   taleCreated(taleId: string): void {
@@ -50,6 +51,10 @@ export class SyncService {
   instanceRunning(taleId: string, instanceId: string): void {
     this.logger.info('Updating Instance via SyncService: ', instanceId);
     this.delay(() => this.instanceRunningSubject.next({ taleId, instanceId }));
+  }
+  instanceError(taleId: string, instanceId: string): void {
+    this.logger.info('Updating Instance via SyncService: ', instanceId);
+    this.delay(() => this.instanceErrorSubject.next({ taleId, instanceId }));
   }
 
   // TODO: Indicate Tale import state in UI
