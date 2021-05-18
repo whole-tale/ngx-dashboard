@@ -194,7 +194,7 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
     $('#new-collab-access-dropdown').dropdown({ action: (text: string, value: any) => {
       $('#new-collab-access-dropdown').dropdown('hide');
       $('#new-collab-access-dropdown').dropdown('set selected', value);
-      this.newCollabAccess = value;
+      this.newCollabAccess = +value;
       this.ref.detectChanges();
     }});
 
