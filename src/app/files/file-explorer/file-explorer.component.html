@@ -56,7 +56,13 @@
         <th class="center aligned"><i class="fas fa-fw fa-2x {{ getIcon(ele) }}"></i></th>
         <td [title]="ele.name">{{ ele.name | truncate:100 }}</td>
         <td [title]="ele.updated">{{ ele.updated | date }}</td>
-        <td class="right aligned" [title]="ele.size">{{ ele.size | fileSize }}</td>
+        <td class="right aligned" [title]="ele.size">
+            <small *ngIf="ele.uploading">Uploading... {{ ele.uploadProgress | number }}%</small>
+            <div *ngIf="ele.uploading" [id]="'upload-' + ele._id" class="ui indicating progress" data-percent="0">
+                <div class="bar"></div>
+            </div>
+            {{ ele.size | fileSize }}
+        </td>
         <td class="center aligned">
           <div id="more-actions-{{ ele._id }}" class="ui inline file dropdown" (click)="openMenu($event, ele)" *ngIf="showContextMenu">
             <!--<div class="text">More</div>-->

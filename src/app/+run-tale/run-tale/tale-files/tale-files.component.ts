@@ -25,6 +25,9 @@ import { RegisterDataDialogComponent } from '../modals/register-data-dialog/regi
 import { SelectDataDialogComponent } from '../modals/select-data-dialog/select-data-dialog.component';
 import { TaleWorkspacesDialogComponent } from '../modals/tale-workspaces-dialog/tale-workspaces-dialog.component';
 
+// import * as $ from 'jquery';
+declare var $: any;
+
 const URL = window['webkitURL'] || window.URL;  // tslint:disable-line
 
 // TODO: Is there a better place to store these constants?
@@ -190,6 +193,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     const numChunks = Math.ceil(upload.size / chunkSize);
     this.logger.info(`Beginning upload of ${upload.name} (${upload.size} bytes in ${numChunks} chunks):`, upload);
 
+    const existing: FileElement = this.files.value.find(file => uploadId === file._id);
+
     for (let offset = 0; offset < upload.size; offset += (chunkSize + 1)) {
       // Upload the file blob one slice/chunk at a time
       const start = offset;
@@ -199,8 +204,12 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       this.logger.debug(`Uploading ${start} - ${end - 1} / ${upload.size} bytes (${start/(chunkSize + 1) + 1} / ${numChunks} chunks)`);
       const chunkResp = await this.uploadChunk(uploadId, offset, chunk);
       this.logger.info(`Uploaded ${chunkResp.received ? chunkResp.received : upload.size} / ${upload.size} bytes (${start/(chunkSize + 1) + 1} / ${numChunks} chunks):`, chunkResp);
-      // await this.delay(500);
-      // this.logger.info("Artificial delay (500ms)");
+
+      // Can't bind to [attr.data-percent].. use js to set total and update progress
+      const percent =  ((chunkResp.received ? +chunkResp.received : +upload.size) / +upload.size) * 100;
+      $('#upload-' + uploadId).progress('set percent', percent);
+      existing.uploadProgress = percent;
+      this.ref.detectChanges();
     }
   }
 
@@ -230,8 +239,13 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         // Add new file upload to the list
         // TODO: Progress updates / indicator
         const files = this.files.value;
+        initResp.uploadProgress = 0;
+        initResp.uploading = true;
         files.push(initResp);
         this.files.next(files);
+
+        // Can't bind to [attr.data-percent].. use js to set total and update progress
+        $('#upload-' + uploadId).progress('set percent', 0);
         this.ref.detectChanges();
 
         // This should be a blocking call
@@ -239,6 +253,11 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
         // Once all chunks are uploaded, then the upload is complete
         this.logger.info(`Upload complete: ${upload.name} (${upload.size})`, upload);
+
+        // Can't bind to [attr.data-percent].. use js to set total and update progress
+        $('#upload-' + uploadId).progress('set percent', 100);
+        initResp.uploading = false;
+        this.ref.detectChanges();
 
         // This is apparently not needed all the time? Files are weird...
         // this.fileService.fileFinalizeUpload(uploadId).subscribe(finalResp => {

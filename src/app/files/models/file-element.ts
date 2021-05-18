@@ -11,6 +11,10 @@ export interface FileElement extends BaseDocument {
   size: number;
   updated: Date;
 
+  // upload progress
+  uploadProgress: number;
+  uploading: boolean;
+
   // present only on folders, items, and datasets
   creatorId: string;
 
@@ -42,6 +46,10 @@ export class FileElement implements FileElement {
   name: string;
   size = 0;
   updated: Date = new Date();
+
+  // upload progress
+  uploadedBytes = 0;
+  uploading = false;
 
   // present only on folders, items, and datasets
   creatorId: string;
