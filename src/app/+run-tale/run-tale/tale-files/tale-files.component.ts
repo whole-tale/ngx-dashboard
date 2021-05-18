@@ -18,6 +18,7 @@ import { LogService } from '@framework/core/log.service';
 import { TruncatePipe } from '@framework/core/truncate.pipe';
 import { WindowService } from '@framework/core/window.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
+import { ErrorModalComponent } from '@shared/error-handler/error-modal/error-modal.component';
 import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
 
 import { RegisterDataDialogComponent } from '../modals/register-data-dialog/register-data-dialog.component';
@@ -534,11 +535,16 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
     this.folderService.folderCreateFolder(params)
                       .pipe(enterZone(this.zone))
-                      .subscribe(newFolder => {
-      const folders = this.folders.value;
-      folders.push(newFolder);
-      this.folders.next(folders);
-    });
+                      .subscribe(
+      newFolder => {
+        const folders = this.folders.value;
+        folders.push(newFolder);
+        this.folders.next(folders);
+      },
+      err => {
+        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
+      }
+    );
   }
 
   removeElement(element: FileElement): void {
