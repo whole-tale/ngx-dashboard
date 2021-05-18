@@ -41,6 +41,7 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
 
   instanceLaunchingSubscription: Subscription;
   instanceRunningSubscription: Subscription;
+  instanceDeletedSubscription: Subscription;
   instanceErrorSubscription: Subscription;
 
   AccessLevel: any = AccessLevel;
@@ -108,6 +109,10 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
     this.instanceRunningSubscription = this.syncService.instanceRunningSubject.subscribe((resource: { taleId: string, instanceId: string }) => {
       this.refresh();
     });
+    // TODO: Support InstanceDeleting?
+    this.instanceDeletedSubscription = this.syncService.instanceDeletedSubject.subscribe((resource: { taleId: string, instanceId: string }) => {
+      this.refresh();
+    });
     this.instanceErrorSubscription = this.syncService.instanceErrorSubject.subscribe((resource: { taleId: string, instanceId: string }) => {
       this.refresh();
     });
@@ -131,6 +136,7 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
 
     this.instanceLaunchingSubscription.unsubscribe();
     this.instanceRunningSubscription.unsubscribe();
+    this.instanceDeletedSubscription.unsubscribe();
     this.instanceErrorSubscription.unsubscribe();
   }
 

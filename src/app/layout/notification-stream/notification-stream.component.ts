@@ -95,6 +95,10 @@ export class NotificationStreamComponent {
         return this.sync.instanceLaunching(affectedResourceIds.taleId, affectedResourceIds.instanceId);
       case 'wt_instance_running':
         return this.sync.instanceRunning(affectedResourceIds.taleId, affectedResourceIds.instanceId);
+      case 'wt_instance_deleting':
+        return this.sync.instanceDeleting(affectedResourceIds.taleId, affectedResourceIds.instanceId);
+      case 'wt_instance_deleted':
+        return this.sync.instanceDeleted(affectedResourceIds.taleId, affectedResourceIds.instanceId);
       case 'wt_instance_error':
         return this.sync.instanceError(affectedResourceIds.taleId, affectedResourceIds.instanceId);
       default:

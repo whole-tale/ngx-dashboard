@@ -55,6 +55,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     taleUnsharedSubscription: Subscription;
     taleInstanceLaunchingSubscription: Subscription;
     taleInstanceRunningSubscription: Subscription;
+    taleInstanceDeletedSubscription: Subscription;
     taleInstanceErrorSubscription: Subscription;
 
     constructor(
@@ -226,12 +227,10 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         }
       });
 
-      this.taleInstanceErrorSubscription = this.syncService.instanceErrorSubject.subscribe((resource: {taleId: string, instanceId: string}) => {
+      this.taleInstanceDeletedSubscription = this.syncService.instanceDeletedSubject.subscribe((resource: {taleId: string, instanceId: string}) => {
         if (resource.taleId === this.taleId) {
-          this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
-            this.instance = instance;
-            this.ref.detectChanges();
-          });
+          this.instance = undefined;
+          this.ref.detectChanges();
         }
       });
 
@@ -321,6 +320,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       this.taleUnsharedSubscription.unsubscribe();
       this.taleInstanceLaunchingSubscription.unsubscribe();
       this.taleInstanceRunningSubscription.unsubscribe();
+      this.taleInstanceDeletedSubscription.unsubscribe();
       this.taleInstanceErrorSubscription.unsubscribe();
     }
 
