@@ -227,6 +227,15 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         }
       });
 
+      this.taleInstanceErrorSubscription = this.syncService.instanceErrorSubject.subscribe((resource: {taleId: string, instanceId: string}) => {
+        if (resource.taleId === this.taleId) {
+          this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
+            this.instance = instance;
+            this.ref.detectChanges();
+          });
+        }
+      });
+
       this.taleInstanceDeletedSubscription = this.syncService.instanceDeletedSubject.subscribe((resource: {taleId: string, instanceId: string}) => {
         if (resource.taleId === this.taleId) {
           this.instance = undefined;
