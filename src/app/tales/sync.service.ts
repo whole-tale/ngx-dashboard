@@ -19,9 +19,12 @@ export class SyncService {
 
   readonly instanceLaunchingSubject = new Subject<{ taleId: string; instanceId: string }>();
   readonly instanceRunningSubject = new Subject<{ taleId: string; instanceId: string }>();
+  readonly instanceDeletingSubject = new Subject<{ taleId: string; instanceId: string }>();
+  readonly instanceDeletedSubject = new Subject<{ taleId: string; instanceId: string }>();
   readonly instanceErrorSubject = new Subject<{ taleId: string; instanceId: string }>();
 
   constructor(private readonly logger: LogService) {}
+
   taleCreated(taleId: string): void {
     this.logger.info('Creating Tale via SyncService: ', taleId);
     this.delay(() => this.taleCreatedSubject.next(taleId));
@@ -51,6 +54,14 @@ export class SyncService {
   instanceRunning(taleId: string, instanceId: string): void {
     this.logger.info('Updating Instance via SyncService: ', instanceId);
     this.delay(() => this.instanceRunningSubject.next({ taleId, instanceId }));
+  }
+  instanceDeleting(taleId: string, instanceId: string): void {
+    this.logger.info('Deleting Instance via SyncService: ', instanceId);
+    this.delay(() => this.instanceDeletingSubject.next({ taleId, instanceId }));
+  }
+  instanceDeleted(taleId: string, instanceId: string): void {
+    this.logger.info('Deleted Instance via SyncService: ', instanceId);
+    this.delay(() => this.instanceDeletedSubject.next({ taleId, instanceId }));
   }
   instanceError(taleId: string, instanceId: string): void {
     this.logger.info('Updating Instance via SyncService: ', instanceId);
