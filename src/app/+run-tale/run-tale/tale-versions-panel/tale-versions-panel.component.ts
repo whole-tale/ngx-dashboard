@@ -12,7 +12,8 @@ import { WindowService } from '@framework/core/window.service';
 import { enterZone } from '@framework/ngrx/enter-zone.operator';
 import { NotificationService } from '@shared/error-handler/services/notification.service';
 import { TaleAuthor } from '@tales/models/tale-author';
-import { Observable } from 'rxjs';
+import { SyncService } from '@tales/sync.service';
+import { Subscription } from 'rxjs';
 
 import { CreateRenameVersionDialogComponent } from '../modals/create-rename-version-dialog/create-rename-version-dialog.component';
 import { TaleVersionInfoDialogComponent } from '../modals/tale-version-info-dialog/tale-version-info-dialog.component';
@@ -34,6 +35,8 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
 
   @Output() readonly taleVersionChanged = new EventEmitter<VersionUpdate>();
 
+  versionsSubscription: Subscription;
+
   // Tale Version timeline (sorted list)
   timeline: Array<any> = [];
   AccessLevel = AccessLevel;
@@ -47,13 +50,16 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
               private versionService: VersionService,
               private dialog: MatDialog,
               private notificationService: NotificationService,
-              private windowService: WindowService) {
+              private windowService: WindowService,
+              private syncService: SyncService) {
   }
 
   ngOnInit(): void {
-    this.versionService.versionListVersions({ taleId: this.tale._id }).subscribe((versions: Array<Version>) => {
-      this.timeline = versions.sort(this.sortByUpdatedDate);
-      this.ref.detectChanges();
+    this.refresh();
+    this.versionsSubscription = this.syncService.taleUpdatedSubject.subscribe((taleId) => {
+      if (taleId === this.tale._id) {
+        this.refresh();
+      }
     });
   }
 
@@ -61,6 +67,13 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
     setTimeout(() => {
       $('.ui.version.dropdown').dropdown({ context: 'body', keepOnScreen: true});
     }, 500);
+  }
+
+  refresh(): void {
+    this.versionService.versionListVersions({ taleId: this.tale._id }).subscribe((versions: Array<Version>) => {
+      this.timeline = versions.sort(this.sortByUpdatedDate);
+      this.ref.detectChanges();
+    });
   }
 
   /**
