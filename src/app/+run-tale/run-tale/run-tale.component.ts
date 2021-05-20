@@ -175,9 +175,8 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
         this.logger.info("Fetched tale:", tale);
         this.tale = tale;
-        if (this.tale._accessLevel >= AccessLevel.Admin) {
-          this.refreshCollaborators();
-        }
+        
+        this.refreshCollaborators();
 
         this.userService.userGetUser(this.tale.creatorId)
                       .subscribe(creator => {
