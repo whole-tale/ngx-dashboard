@@ -23,6 +23,24 @@ import { ConfirmationModalComponent } from '@shared/common/components/confirmati
 // import * as $ from 'jquery';
 declare var $: any;
 
+// FIXME: Duplicated code - see tale-sharing.component.ts
+interface CollaboratorList {
+  users: Array<Collaborator>;
+  groups: Array<Collaborator>;
+}
+
+// FIXME: Duplicated code - see tale-sharing.component.ts
+interface Collaborator {
+  id: string;
+  level: number;
+  login: string;
+  name: string;
+  flags?: Array<any>;
+  showAlert?: boolean;
+  gravatar_baseUrl?: string;
+  affiliation?: string;
+}
+
 interface TaleAuthorValidationError {
   index: number;
   message: string;
@@ -36,6 +54,7 @@ interface TaleAuthorValidationError {
 export class TaleMetadataComponent implements OnInit {
   @Input() tale: Tale;
   @Input() creator: User;
+  @Input() collaborators: CollaboratorList;
 
   licenses: Observable<Array<License>>;
   environments: Observable<Array<Image>>;
@@ -101,7 +120,7 @@ export class TaleMetadataComponent implements OnInit {
     this.syncService.taleUpdatedSubject.subscribe((taleId: string) => {
       if (taleId !== this.tale._id) {
         return;
-      } else if (this.editing && !this.confirmationModalShowing) {
+      } else if (this.editing && !this.confirmationModalShowing && (this.collaborators.groups.length >= 1 || this.collaborators.users.length > 1)) {
         this.confirmationModalShowing = true;
 
         // Prompt user that Tale state has changed, ask to refresh state
@@ -122,6 +141,8 @@ export class TaleMetadataComponent implements OnInit {
 
           if (result) {
             this.revertState();
+            this.cancelEdit();
+            this.ref.detectChanges();
           }
         });
       }
