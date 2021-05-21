@@ -7,7 +7,7 @@ export class FileSizePipe implements PipeTransform {
 
   transform(value: number): string {
     if (!value) {
-      return '';
+      return '0 B';
     }
 
     let val = JSON.parse(JSON.stringify(value));

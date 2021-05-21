@@ -30,6 +30,16 @@ mat-toolbar {
   overflow: hidden;
 }
 
+.ui.progress {
+  height: 4px;
+  margin: 0;
+  padding: 0;
+}
+
+.ui.progress > .bar {
+  height: 4px;
+}
+
 .file-or-folder-icon {
   width: 50px;
   height: 50px;
