@@ -1,5 +1,5 @@
 <div>
-  <button *ngIf="tale && tale.status === 1" class="right floated" [ngClass]="{ 'tale-button disabled': !isPrimary, 'tale-button-primary disabled': isPrimary }" disabled="true">
+  <button *ngIf="tale && tale.status === 0" class="right floated" [ngClass]="{ 'tale-button disabled': !isPrimary, 'tale-button-primary disabled': isPrimary }" disabled="true">
       <i class="fas fa-spinner fa-pulse"></i>
       Importing...
   </button>
@@ -7,7 +7,7 @@
       <i class="warning icon"></i>
       Import Failed
   </button>
-  <div *ngIf="tale && tale.status === 2">
+  <div *ngIf="tale && tale.status === 1">
       <button *ngIf="!instance" class="right floated" [ngClass]="{ 'tale-button': !isPrimary, 'tale-button-primary': isPrimary }" (click)="startTale()">
           <i class="play icon"></i>
           Run Tale
