@@ -138,6 +138,9 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     }
 
     refreshCollaborators(): Promise<any> {
+      if (!this.tale || this.tale._accessLevel < AccessLevel.Write) {
+        return new Promise(resolve => {});
+      }
       return this.taleService.taleGetTaleAccess(this.taleId).toPromise().then((resp: any) => {
         this.logger.info("Fetched collaborators:", resp);
         this.collaborators = resp;
