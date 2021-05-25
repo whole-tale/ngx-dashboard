@@ -115,6 +115,14 @@ export interface Tale {
   relatedIdentifiers?: Array<any>;
 
   /**
+   * Status of the Tale.
+   *   0 => PREPARING
+   *   1 => READY
+   *   2 => ERROR
+   */
+  status?: number;
+
+  /**
    * Title of the Tale
    */
   title?: string;

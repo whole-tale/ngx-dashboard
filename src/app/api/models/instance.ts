@@ -14,6 +14,14 @@ export interface Instance {
   _id: string;
   lastActivity: string;
   name?: string;
+
+  /**
+   * Status of the Instance.
+   *   0 => LAUNCHING
+   *   1 => RUNNING
+   *   2 => ERROR
+   *   3 => DELETING
+   */
   status: number;
   taleId?: string;
   url?: string;
