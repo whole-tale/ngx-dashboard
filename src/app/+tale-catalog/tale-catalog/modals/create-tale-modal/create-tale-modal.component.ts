@@ -18,6 +18,7 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
   datasetCitation: any;
   asTale = false;
   gitUrl = '';
+  baseUrl = '';
 
   showGit = false;
 
@@ -44,6 +45,7 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
       description: '### Provide a description for your Tale'
     };
     this.showGit = data.showGit;
+    this.baseUrl = (data && data.params && data.params.api) ? data.params.api : '';
   }
 
   ngOnInit(): void {
@@ -54,11 +56,11 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
     $('.ui.checkbox').checkbox();
   }
 
-  result(): { tale: Tale, asTale: boolean, url?: string } {
+  result(): { tale: Tale, asTale: boolean, url?: string, baseUrl?: string } {
     if (this.data.showGit) {
-      return { tale: this.newTale, asTale: this.asTale, url: this.gitUrl };
+      return { tale: this.newTale, asTale: this.asTale, baseUrl: this.baseUrl, url: this.gitUrl };
     } else {
-      return { tale: this.newTale, asTale: this.asTale };
+      return { tale: this.newTale, asTale: this.asTale, baseUrl: this.baseUrl };
     }
   }
 
