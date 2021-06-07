@@ -53,9 +53,10 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
               width: '600px',
               data: { params: queryParams }
             });
-            dialogRef.afterClosed().subscribe((result: {tale: Tale, asTale: boolean, url: string}) => {
+            dialogRef.afterClosed().subscribe((result: {tale: Tale, asTale: boolean, url: string, baseUrl: string}) => {
               const tale = result.tale;
               const asTale = result.asTale;
+              const baseUrl = result.baseUrl;
 
               // Short-circuit for 'Cancel' case
               if (!tale) { return; }
@@ -68,7 +69,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
                 git: result.url ? true : false,
                 spawn: false, // if true, immediately launch a Tale instance
                 taleKwargs: tale.title ? { title: tale.title } : {}, 
-                lookupKwargs: {},
+                lookupKwargs: baseUrl ? { base_url: baseUrl } : {},
               };
               this.taleService.taleCreateTaleFromUrl(params).subscribe((response: Tale) => {
                 this.logger.debug("Successfully submitted 'Analyze in WT' Job:", response);
@@ -89,9 +90,10 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
         data: { showGit }
       };
       const dialogRef = this.dialog.open(CreateTaleModalComponent, config);
-      dialogRef.afterClosed().subscribe((result: {tale: Tale, asTale: boolean, url?: string}) => {
+      dialogRef.afterClosed().subscribe((result: {tale: Tale, asTale: boolean, url?: string, baseUrl: string}) => {
         const tale = result.tale;
         const gitUrl = result.url;
+        const baseUrl = result.baseUrl;
 
         if (!tale) { return; }
 
@@ -106,7 +108,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
             git: gitUrl ? true : false,
             spawn: false, // if true, immediately launch a Tale instance
             taleKwargs: tale.title ? { title: tale.title } : {},
-            lookupKwargs: {},
+            lookupKwargs: baseUrl ? { base_url: baseUrl } : {},
           };
 
           this.taleService.taleCreateTaleFromUrl(params).subscribe((response: Tale) => {
