@@ -15,6 +15,7 @@ import { TaleAuthor } from '@tales/models/tale-author';
 import { SyncService } from '@tales/sync.service';
 import { Subscription } from 'rxjs';
 
+import { EditRunConfigsDialogComponent } from '../modals/edit-run-configs-dialog/edit-run-configs-dialog.component';
 import { CreateRenameVersionDialogComponent } from '../modals/create-rename-version-dialog/create-rename-version-dialog.component';
 import { TaleVersionInfoDialogComponent } from '../modals/tale-version-info-dialog/tale-version-info-dialog.component';
 
@@ -137,7 +138,9 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
   }
 
   editRunConfigurations(): void {
-    // TODO: What does this actually change? Design needed.
+    this.dialog.open(EditRunConfigsDialogComponent, {
+      data: { tale: this.tale }
+    });
   }
 
   performRecordedRun(): void {
