@@ -1,6 +1,9 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material';
 import { Tale } from '@api/models/tale';
 import { LogService }  from '@framework/core/log.service';
+
+import { ConfirmationModalComponent } from '@shared/common/components/confirmation-modal/confirmation-modal.component';
 
 // FIXME: Replace this with real models from Girder
 enum RunConfigType {
@@ -32,8 +35,37 @@ export class EditRunConfigsDialogComponent implements OnInit {
   selectedIndex: number;
   selectedConfig: TaleRunConfiguration;
 
+  selectedConfigIsDirty(): boolean {
+    const index = this.selectedIndex;
+    if (index === undefined || index === null) {
+      return false;
+    }
+
+    const oldConfig = this.configs[index];
+    if (this.selectedConfig.name !== oldConfig.name) { return true; }
+    if (this.selectedConfig.type !== oldConfig.type) { return true; }
+    if (this.selectedConfig.mainEntrypoint !== oldConfig.mainEntrypoint) { return true; }
+    if (this.selectedConfig.testsEnabled !== oldConfig.testsEnabled) { return true; }
+    if (this.selectedConfig.testEntrypoint !== oldConfig.testEntrypoint) { return true; }
+
+    return false;
+  }
+  selectedConfigIsValid(): boolean {
+    // Invalid if name or type are missing
+    if (!this.selectedConfig.name) { return false; }
+
+    // Invalid if no main entrypoint is specified
+    if (!this.selectedConfig.mainEntrypoint) { return false; }
+
+    // Invalid if tests are enabled and no test script specified
+    if (this.selectedConfig.testsEnabled && !this.selectedConfig.testEntrypoint) { return false; }
+
+    return true;
+  }
+
   constructor(private logger: LogService,
-              private ref: ChangeDetectorRef) {
+              private ref: ChangeDetectorRef,
+              private dialog: MatDialog) {
 
   }
 
@@ -67,11 +99,24 @@ export class EditRunConfigsDialogComponent implements OnInit {
   }
 
   removeSelectedConfig(): void {
-    if (this.selectedIndex || this.selectedIndex === 0) {
-      this.configs.splice(this.selectedIndex, 1);
-    }
+    // TODO: Ask for confirmation, if yes then
+    this.dialog.open(ConfirmationModalComponent, {
+      data: { content: [
+        "Are you sure you want to delete this configuration?",
+        "Warning: Deleted configurations are not recoverable."
+        ]
+      }
+    }).afterClosed().subscribe(result => {
+      if (!result) {
+        return;
+      }
 
-    this.selectConfig(undefined);
+      if (this.selectedIndex || this.selectedIndex === 0) {
+        this.configs.splice(this.selectedIndex, 1);
+      }
+
+      this.selectConfig(undefined);
+    });
   }
 
   copy(obj: any): any {
@@ -84,14 +129,9 @@ export class EditRunConfigsDialogComponent implements OnInit {
   }
 
   applySelectedConfig(): boolean {
-    // Invalid if name or type are missing
-    if (!this.selectedConfig.name) { return false; }
-
-    // Invalid if no main entrypoint is specified
-    if (!this.selectedConfig.mainEntrypoint) { return false; }
-
-    // Invalid if tests are enabled and no test script specified
-    if (this.selectedConfig.testsEnabled && !this.selectedConfig.testEntrypoint) { return false; }
+    if (this.selectedConfigIsValid()) {
+      return false;
+    }
 
     this.configs[this.selectedIndex] = this.selectedConfig;
     this.ref.detectChanges();
