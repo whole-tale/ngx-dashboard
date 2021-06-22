@@ -1,10 +1,11 @@
-<h1 mat-dialog-title>Run Configurations</h1>
+<h1 mat-dialog-title>Edit Run Configuration</h1>
 
 <mat-dialog-content>
   <p>Specify a configuration here to teach us how to "run" your Tale.</p>
   <div class="ui grid content">
     <div class="row">
-      <div class="six wide column">
+
+      <!-- div class="six wide column">
           <div class="ui top attached mini icon buttons">
               <button class="ui mini button" (click)="addNewConfig()"><i class="plus icon"></i></button>
               <button class="ui mini button" (click)="removeSelectedConfig()" [disabled]="!selectedConfig"><i class="minus icon"></i></button>
@@ -19,24 +20,24 @@
                   </div>
               </div>
           </div>
-      </div>
+      </div -->
 
-      <div class="ten wide column">
+      <div class="sixteen wide column">
 
-        <div class="ui segment" *ngIf="selectedIndex >= 0">
+        <div class="ui segment">
             <form class="ui form" #configEditor="ngForm">
                 <div class="field">
                     <label>Name</label>
                     <input type="text" required name="name" id="name" [(ngModel)]="selectedConfig.name" placeholder="Enter a Name..." />
                 </div>
-                <div class="field">
+                <!--div class="field">
                     <label>Type</label>
                     <select class="ui dropdown" name="type" id="type" [(ngModel)]="selectedConfig.type">
                         <option value="0">Local</option>
                         <option value="1">Container</option>
                         <option value="2">Tapis</option>
                     </select>
-                </div>
+                </div-->
 
                 <div class="field">
                     <label>Main Entrypoint</label>
@@ -62,5 +63,5 @@
 
 <mat-dialog-actions>
     <button class="ui right floated black deny button" mat-dialog-close>Close</button>
-    <button *ngIf="selectedIndex >= 0" class="ui right floated primary button" (click)="applySelectedConfig()" [disabled]="!selectedConfigIsDirty() || !selectedConfigIsValid()">Apply</button>
+    <button class="ui right floated primary button" [mat-dialog-close]="selectedConfig" [disabled]="!selectedConfigIsValid()">Apply</button>
 </mat-dialog-actions>

@@ -1,33 +1,20 @@
 <div id="timeline-column">
   <div class="ui vertical segment" *ngIf="tale._accessLevel >= AccessLevel.Write">
-    <button class="ui button fluid" (click)="saveNewVersion()">
-      <i class="fas fa-save icon"></i>Save Tale Version
-    </button>
 
-    <!-- TODO: Recorded Runs configurations -->
-    <div class="ui fluid selection version dropdown" tabindex="0">
-        <input type="hidden" name="Configuration">
-        <i class="dropdown icon"></i>
-        <div class="default text">Select recorded run configuration...</div>
-        <div class="menu" tabindex="-1">
-          <div class="item" data-value="1">Default</div>
-          <div class="item" data-value="0">My Custom Config</div>
-          <div class="divider"></div>
-          <div style="margin: .75rem .75rem .35rem">
-            <button class="ui button fluid" (click)="editRunConfigurations()">
-              Edit run configurations
-            </button>
-          </div>
-        </div>
-    </div>
+      <!-- Recorded Runs / configuration -->
+      <button style="margin-top: .25rem" class="ui primary button fluid" (click)="performRecordedRun()">
+          <i class="fas fa-check-circle icon"></i> Perform Recorded Run
+      </button>
 
-    <!-- TODO: Recorded Runs button -->
-    <div style="margin-top: .25rem" *ngIf="false">
-        <button class="ui button fluid primary" (click)="performRecordedRun()">
-          <i class="fas fa-check-circle icon"></i>
-          Recorded Run
-        </button>
-    </div>
+      <button style="margin-top: .25rem" class="ui button fluid" (click)="editRunConfiguration()">
+          <i class="fas fa-pencil-alt icon"></i> Edit run configuration
+      </button>
+
+    <hr />
+
+      <button class="ui button fluid" (click)="saveNewVersion()">
+          <i class="fas fa-save icon"></i> Save Tale Version
+      </button>
   </div>
   <h3>Tale History</h3>
   <div id="timeline" class="ui middle aligned divided list">
