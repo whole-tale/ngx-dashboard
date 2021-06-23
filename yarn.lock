@@ -2332,12 +2332,10 @@ angular-tslint-rules@~1.12.1:
   resolved "https://registry.yarnpkg.com/angular-tslint-rules/-/angular-tslint-rules-1.12.1.tgz#a21eb1848525fc8c5b4e4fe110f0b198504b2f23"
   integrity sha512-bcNwWoRd0/ePyfT02Id2E9nsU9Z/ONhlGYLCLmRgF1Pl5aQDYfnbioeDgvl8faRXAL1Xk+9a1PsgQ+22r5TrMw==
 
-angulartics2@~7.2.4:
-  version "7.2.4"
-  resolved "https://registry.yarnpkg.com/angulartics2/-/angulartics2-7.2.4.tgz#d0477b6ce4f3dc11bc02abc3a41100a29b24da9a"
-  integrity sha512-NfssYv0Amng1BnRk5L8ohyT5fJSb252WadjGh2Pj/dlHnoB+yxlYXmXajAB/WCUqUPfB34ZW54m/l4kWHal24Q==
-  dependencies:
-    tslib "^1.9.0"
+angulartics2@9.1.0:
+  version "9.1.0"
+  resolved "https://registry.yarnpkg.com/angulartics2/-/angulartics2-9.1.0.tgz#8120992f12ce0f67c0fbbf8b9de4f40f5ea31fbf"
+  integrity sha512-RAfHJSHyeRe834e5qCYLtp7fdFuKnz/myFTSVEUZV6nLp4cUotvX8XQhewUEpFv6gkrzJwcuY32JZxstDlNiXQ==
 
 ansi-colors@4.1.1:
   version "4.1.1"
