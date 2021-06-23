@@ -1,5 +1,5 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
 
 import { LocalConsoleService } from './local-console.service';
 import { Console } from './models/console';
@@ -7,7 +7,7 @@ import { LogLevel } from './models/log-level';
 
 @Injectable()
 export class RemoteConsoleService implements Console {
-  constructor(private readonly http: Http, private readonly logger: LocalConsoleService) {}
+  constructor(private readonly http: HttpClient, private readonly logger: LocalConsoleService) {}
 
   relayLogMessage(level: LogLevel, message: string, context: any): void {
     // TODO: Create an endpoint

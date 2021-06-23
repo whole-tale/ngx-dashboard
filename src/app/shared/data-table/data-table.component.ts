@@ -26,9 +26,9 @@ import { DataTableColumn } from './models/data-table-column';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DataTableComponent extends DataTableBaseComponent implements AfterViewInit, OnInit {
-  @ViewChild('filter') filter: ElementRef;
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild('filter', { static: false }) filter: ElementRef;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator;
   @ContentChildren(MenuGroupComponent) menuGroups: QueryList<MenuGroupComponent>;
 
   dataSource: MatTableDataSource<any>;

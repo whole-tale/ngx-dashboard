@@ -73,7 +73,7 @@ const FILE_TYPES = {
   styleUrls: ['./file-explorer.component.scss']
 })
 export class FileExplorerComponent implements OnInit {
-  @ViewChild('file') file: any;
+  @ViewChild('file', { static: false }) file: any;
 
   @Input() preventNavigation = false;
   @Input() readOnly = false;
