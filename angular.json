@@ -50,7 +50,8 @@
               "src/assets/data",
               "src/assets/i18n",
               "src/assets/config.local.json",
-              "src/assets/env.template.js"
+              "src/assets/env.template.js",
+              "src/assets/env.js"
             ],
             "styles": [
               "src/assets/sass/lib.scss",
