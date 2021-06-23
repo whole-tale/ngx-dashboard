@@ -1,4 +1,4 @@
-import { EventEmitter, Input, Output } from '@angular/core';
+import { Directive, EventEmitter, Input, Output } from '@angular/core';
 import { get } from 'lodash/fp';
 import { Observable } from 'rxjs';
 import { BaseComponent } from '~/app/framework/core';
@@ -9,6 +9,9 @@ import { DataTableColumn } from './models/data-table-column';
 import { DataTableOptions } from './models/data-table-options';
 import { DataTableRouteButton } from './models/data-table-route-button';
 
+@Directive({
+  selector: '[baseDataTable]'
+})
 export class DataTableBaseComponent extends BaseComponent {
   @Input() data: Observable<Array<any>> | Array<any>;
 

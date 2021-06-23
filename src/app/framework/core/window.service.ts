@@ -1,5 +1,8 @@
+import { Injectable } from '@angular/core';
+
 import { Window } from './models/window';
 
+@Injectable()
 export class WindowService implements Window {
   navigator: any = {};
   location: any = {};

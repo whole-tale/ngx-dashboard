@@ -46,7 +46,7 @@ import { MockWindow } from './mocks/window.mock';
   ]
 })
 export class CoreTestingModule {
-  static withOptions(options?: any): ModuleWithProviders {
+  static withOptions(options?: any): ModuleWithProviders<CoreTestingModule> {
     const platformProvider =
       options && options.platformId
         ? [

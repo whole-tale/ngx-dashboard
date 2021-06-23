@@ -19,7 +19,7 @@ import { AirUniversalStoreModule } from './air-universal';
   ]
 })
 export class StoreModule {
-  static forRoot(): ModuleWithProviders {
+  static forRoot(): ModuleWithProviders<StoreModule> {
     return {
       ngModule: StoreModule
     };

@@ -7,7 +7,7 @@ import { I18NStoreModule } from './i18n';
   imports: [CommonModule, I18NStoreModule]
 })
 export class StoreModule {
-  static forRoot(): ModuleWithProviders {
+  static forRoot(): ModuleWithProviders<StoreModule> {
     return {
       ngModule: StoreModule
     };

@@ -23,23 +23,23 @@ export const routes = [
     children: [
       {
         path: '',
-        loadChildren: './+tale-catalog/tale-catalog.module#TaleCatalogModule'
+        loadChildren: () => import('./+tale-catalog/tale-catalog.module').then(m => m.TaleCatalogModule)
       },
       {
         path: 'environments',
-        loadChildren: './+compute-environments/compute-environments.module#ComputeEnvironmentsModule'
+        loadChildren: () => import('./+compute-environments/compute-environments.module').then(m => m.ComputeEnvironmentsModule)
       },
       {
         path: 'datasets',
-        loadChildren: './+data-catalog/data-catalog.module#DataCatalogModule'
+        loadChildren: () => import('./+data-catalog/data-catalog.module').then(m => m.DataCatalogModule)
       },
       {
         path: 'run',
-        loadChildren: './+run-tale/run-tale.module#RunTaleModule'
+        loadChildren: () => import('./+run-tale/run-tale.module').then(m => m.RunTaleModule)
       },
       {
         path: 'settings',
-        loadChildren: './+user-settings/user-settings.module#UserSettingsModule'
+        loadChildren: () => import('./+user-settings/user-settings.module').then(m => m.UserSettingsModule)
       }
     ],
     canActivateChild: [MetaGuard, CustomAuthGuard], // AuthGuard

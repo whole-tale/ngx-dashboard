@@ -13,10 +13,10 @@
       "prefix": "app",
       "schematics": {
         "@schematics/angular:module": {
-          "spec": false
+          "skipTests": true
         },
         "@schematics/angular:component": {
-          "styleext": "scss"
+          "style": "scss"
         },
         "@ngrx/schematics:component": {
           "styleext": "scss"
