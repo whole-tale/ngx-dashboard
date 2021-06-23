@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FileElement } from '@files/models/file-element';
 import { LogService } from '@shared/core/log.service';
@@ -63,15 +63,15 @@ const FILE_TYPES = {
   do: 'file-code',
   tsv: 'file-csv',
   tab: 'file-csv',
-  json: 'file-alt'
+  json: 'file-alt',
 };
 
 @Component({
   selector: 'app-file-explorer',
   templateUrl: './file-explorer.component.html',
-  styleUrls: ['./file-explorer.component.scss']
+  styleUrls: ['./file-explorer.component.scss'],
 })
-export class FileExplorerComponent implements OnInit {
+export class FileExplorerComponent implements OnInit, OnChanges {
   @ViewChild('file') file: any;
 
   @Input() preventNavigation = false;
@@ -115,7 +115,17 @@ export class FileExplorerComponent implements OnInit {
   constructor(private readonly dialog: MatDialog, private readonly logger: LogService) {}
 
   ngOnInit(): void {
-    $('.ui.file.dropdown').dropdown({ action: 'hide' });
+    setTimeout(() => {
+      $('.ui.file.dropdown').dropdown({ action: 'hide' });
+    }, 1000);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.currentNav) {
+      setTimeout(() => {
+        $('.ui.file.dropdown').dropdown({ action: 'hide' });
+      }, 1000);
+    }
   }
 
   getIcon(element: FileElement): string {
@@ -202,7 +212,7 @@ export class FileExplorerComponent implements OnInit {
 
   openNewFolderDialog(): void {
     const dialogRef = this.dialog.open(NewFolderDialogComponent);
-    dialogRef.afterClosed().subscribe(res => {
+    dialogRef.afterClosed().subscribe((res) => {
       if (res) {
         this.logger.debug(`Folder added: ${res}`);
         this.folderAdded.emit({ name: res });
@@ -215,7 +225,7 @@ export class FileExplorerComponent implements OnInit {
     event.stopPropagation();
 
     const dialogRef = this.dialog.open(RenameDialogComponent);
-    dialogRef.afterClosed().subscribe(res => {
+    dialogRef.afterClosed().subscribe((res) => {
       if (res) {
         this.logger.debug(`Folder renamed: ${element.name} -> ${res}`);
         element.name = res;

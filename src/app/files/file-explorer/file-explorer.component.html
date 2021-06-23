@@ -64,10 +64,10 @@
             {{ ele.size | fileSize }}
         </td>
         <td class="center aligned">
-          <div id="more-actions-{{ ele._id }}" class="ui inline file dropdown" (click)="openMenu($event, ele)" *ngIf="showContextMenu">
+          <div id="more-actions-{{ ele._id }}" class="ui inline file dropdown more-actions" (click)="openMenu($event, ele)" *ngIf="showContextMenu">
             <!--<div class="text">More</div>-->
             <i class="dropdown icon"></i>
-            <div class="left menu" [ngStyle]="{ 'display': !showMore[ele._id] ? 'none' : 'block' }">
+            <div class="left menu">
               <div *ngIf="!readOnlyDropdown" class="item" (click)="renameElement(ele)"><i class="fas fa-edit"></i> Rename</div>
               <div *ngIf="!readOnlyDropdown" class="item" (click)="removeElement(ele)"><i class="fas fa-trash"></i> Remove</div>
               <div class="item" (click)="downloadElement(ele)"><i class="fas fa-download"></i> Download</div>
