@@ -46,7 +46,10 @@
 
                                         <div class="menu transition hidden" tabindex="-1">
                                             <div class="item" (click)="rebuildTale()" *ngIf="isTaleWritable()"><i class="fas fa-redo-alt"></i> Rebuild Tale</div>
-                                            <div class="item" (click)="restartTale()" *ngIf="isTaleWritable()"><i class="fas fa-sync-alt"></i> Restart Tale</div>
+                                            <div class="item" (click)="restartTale()" *ngIf="isTaleWritable() && instance && instance.status === -1">
+                                                <i class="fas fa-sync-alt"></i>
+                                                Restart Tale
+                                            </div>
 
                                             <div class="divider" *ngIf="isTaleWritable()"></div>
                                             <div class="item" (click)="saveTaleVersion()" *ngIf="isTaleWritable()"><i class="fas fa-save"></i> Save Tale Version</div>
