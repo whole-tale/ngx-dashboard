@@ -394,6 +394,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     this.currentRoot = undefined;
     this.currentPath = '';
     this.navigate();
+    this.ref.detectChanges();
   }
 
   isNavActive(nav: string): boolean {
@@ -446,6 +447,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       if (pathSuffix) {
         this.currentPath = this.truncatePathSegments(pathSuffix);
       }
+
+      this.ref.detectChanges();
     });
   }
 
@@ -485,6 +488,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       this.canNavigateUp = false;
       this.currentPath = '';
     }
+
+    this.ref.detectChanges();
   }
 
   get placeholderMessage(): string {

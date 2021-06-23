@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FileElement } from '@files/models/file-element';
 import { LogService } from '@shared/core/log.service';
@@ -71,7 +71,7 @@ const FILE_TYPES = {
   templateUrl: './file-explorer.component.html',
   styleUrls: ['./file-explorer.component.scss'],
 })
-export class FileExplorerComponent implements OnInit, OnChanges {
+export class FileExplorerComponent implements OnChanges {
   @ViewChild('file') file: any;
 
   @Input() preventNavigation = false;
@@ -113,12 +113,6 @@ export class FileExplorerComponent implements OnInit, OnChanges {
   showMore: any = {};
 
   constructor(private readonly dialog: MatDialog, private readonly logger: LogService) {}
-
-  ngOnInit(): void {
-    setTimeout(() => {
-      $('.ui.file.dropdown').dropdown({ action: 'hide' });
-    }, 1000);
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.currentNav) {
