@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AccessLevel } from '@api/models/access-level';
 import { Instance } from '@api/models/instance';
@@ -70,19 +70,17 @@ export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
         });
       }
     );
-    this.instanceErrorSubscription = this.syncService.instanceErrorSubject.subscribe(
-      (resource: { taleId: string; instanceId: string }) => {
-        // Ignore updates that aren't for this Tale
-        if (resource.taleId != this.tale._id) {
-          return;
-        }
-
-        this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
-          this.instance = instance;
-          this.ref.detectChanges();
-        });
+    this.instanceErrorSubscription = this.syncService.instanceErrorSubject.subscribe((resource: { taleId: string; instanceId: string }) => {
+      // Ignore updates that aren't for this Tale
+      if (resource.taleId != this.tale._id) {
+        return;
       }
-    );
+
+      this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
+        this.instance = instance;
+        this.ref.detectChanges();
+      });
+    });
   }
 
   ngOnChanges(): void {

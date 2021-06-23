@@ -7,7 +7,6 @@ import { REQUEST } from '@nguniversal/express-engine/tokens';
 import { AuthModule } from '@ngx-auth/core';
 import { CACHE } from '@ngx-cache/core';
 import { BrowserCacheModule, MemoryCacheService } from '@ngx-cache/platform-browser';
-import 'hammerjs';
 
 import { AppComponent } from './app.component';
 import { AppModule, REQ_KEY } from './app.module';

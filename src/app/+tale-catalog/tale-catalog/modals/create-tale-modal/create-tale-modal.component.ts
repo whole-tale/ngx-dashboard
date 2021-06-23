@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, Inject, NgZone, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Image } from '@api/models/image';
 import { Tale } from '@api/models/tale';
 import { ImageService } from '@api/services/image.service';
