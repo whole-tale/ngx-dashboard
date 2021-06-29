@@ -81,7 +81,7 @@ export class SyncService {
     this.delay(() => this.taleImportFailedSubject.next(taleId));
   }
 
-  private delay(fn: Function, delayMs = 1000): void {
+  delay(fn: Function, delayMs = 1000): void {
     setTimeout(fn, delayMs);
   }
 }
