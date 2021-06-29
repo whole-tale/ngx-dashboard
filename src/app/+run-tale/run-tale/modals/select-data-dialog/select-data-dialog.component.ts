@@ -1,13 +1,9 @@
 import { Component, Inject, NgZone, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Dataset } from '@api/models/dataset';
-import { Tale } from '@api/models/tale';
-import { DatasetService } from '@api/services/dataset.service';
-import { FolderService } from '@api/services/folder.service';
-import { ItemService } from '@api/services/item.service';
+import { Dataset, Tale } from '@api/models';
+import { DatasetService, FolderService, ItemService } from '@api/services';
 import { FileElement } from '@files/models/file-element';
-import { LogService }  from '@framework/core/log.service';
-import { enterZone } from '@framework/ngrx/enter-zone.operator';
+import { enterZone, LogService } from '@framework/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 enum ParentType {

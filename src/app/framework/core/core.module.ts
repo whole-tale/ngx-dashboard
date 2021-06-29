@@ -2,11 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { forwardRef, Injector, ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
-import { CacheModule } from '@ngx-cache/core';
-import { ConfigModule, ConfigService } from '@ngx-config/core';
-import { ConfigHttpLoader } from '@ngx-config/http-loader';
-import { MetaModule, MetaStaticLoader } from '@ngx-meta/core';
-import { TranslateService } from '@ngx-translate/core';
+// import { CacheModule } from '@ngx-cache/core';
+// import { ConfigModule, ConfigService } from '@ngx-config/core';
+// import { ConfigHttpLoader } from '@ngx-config/http-loader';
+// import { MetaModule, MetaStaticLoader } from '@ngx-meta/core';
+// import { TranslateService } from '@ngx-translate/core';
 
 import { BaseContainerComponent } from './base-container.component';
 import { BaseComponent } from './base.component';
@@ -15,8 +15,11 @@ import { LogService } from './log.service';
 import { RemoteConsoleService } from './remote-console.service';
 import { WindowService } from './window.service';
 
+import { enterZone } from './enter-zone.operator';
+
 const CORE_PROVIDERS: Array<any> = [RemoteConsoleService, LocalConsoleService, LogService, WindowService];
 
+/*
 export const configFactory = (injector: Injector) => {
   const http = forwardRef(() => injector.get(HttpClient)) as any;
 
@@ -44,8 +47,10 @@ export const metaFactory = (config: ConfigService, translate: TranslateService) 
     }
   });
 
+ */
+
 @NgModule({
-  imports: [StoreModule.forRoot({}), EffectsModule.forRoot([]), ConfigModule.forRoot(), CacheModule.forRoot(), MetaModule.forRoot()],
+  imports: [StoreModule.forRoot({}), EffectsModule.forRoot([]) /*, ConfigModule.forRoot(), CacheModule.forRoot(), MetaModule.forRoot() */],
   declarations: [BaseComponent, BaseContainerComponent],
   providers: [
     CORE_PROVIDERS

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Store } from '@ngrx/store';
+// import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { FrameworkState } from '~/app/framework/store';
+// import { FrameworkState } from '~/app/framework/store';
 
 import { BaseComponent } from './base.component';
 
@@ -13,7 +13,7 @@ export class BaseContainerComponent extends BaseComponent {
   error$: Observable<string>;
   isProcessing$: Observable<boolean>;
 
-  constructor(protected readonly store$: Store<FrameworkState>) {
+  constructor(/* protected readonly store$: Store<FrameworkState> */) {
     super();
   }
 }

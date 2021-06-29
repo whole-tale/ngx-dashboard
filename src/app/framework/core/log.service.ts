@@ -1,5 +1,5 @@
 import { forwardRef, Inject, Injectable } from '@angular/core';
-import { ConfigService } from '@ngx-config/core';
+// import { ConfigService } from '@ngx-config/core';
 
 import { LocalConsoleService } from './local-console.service';
 import { LogLevel } from './models/log-level';
@@ -11,16 +11,16 @@ export class LogService {
   readonly level: LogLevel;
 
   constructor(
-    private readonly config: ConfigService,
+    // private readonly config: ConfigService,
     @Inject(forwardRef(() => LocalConsoleService)) readonly logger: LocalConsoleService,
     @Inject(forwardRef(() => RemoteConsoleService)) readonly relay: RemoteConsoleService
   ) {
-    try {
+    this.level = LogService.DEFAULT_LOG_LEVEL;
+    /* try {
       this.level = this.config.getSettings('logging.level');
     } catch (e) {
-      this.level = LogService.DEFAULT_LOG_LEVEL;
       this.warn(`No logging.level configured - default is ${this.level}`);
-    }
+    } */
   }
 
   // debug (standard output)

@@ -6,8 +6,8 @@ import { TokenService } from '@api/token.service';
 import { BaseComponent } from '@framework/core';
 import { LogService } from '@framework/core/log.service';
 import { WindowService } from '@framework/core/window.service';
-import { AuthService } from '@ngx-auth/core';
-import { TranslateService } from '@ngx-translate/core';
+// import { AuthService } from '@ngx-auth/core';
+// import { TranslateService } from '@ngx-translate/core';
 import { CookieService } from 'ngx-cookie-service';
 import { from as observableFrom, Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -31,8 +31,8 @@ export class LoginComponent extends BaseComponent implements OnInit {
   isAuthenticated: boolean;
 
   constructor(
-    private readonly auth: AuthService,
-    private readonly translate: TranslateService,
+    // private readonly auth: AuthService,
+    // private readonly translate: TranslateService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
     private readonly logger: LogService,
@@ -48,7 +48,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
   ngOnInit(): void {
     $('.ui.accordion').accordion();
 
-    this.isAuthenticated = this.auth.isAuthenticated;
+    this.isAuthenticated = false; // this.auth.isAuthenticated;
 
     // Try to scrape token from query string param
     const token = this.route.snapshot.queryParams.token;
@@ -79,7 +79,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
           }
 
           this.logger.debug('Logging in as:', user);
-          this.login();
+          // this.login();
           this.router.navigate(pathSegments, { queryParams });
         },
         err => {
@@ -115,24 +115,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
     );
   }
 
-  login(): Observable<boolean> {
-    this.isProcessing = true;
-    this.note$ = this.translate.get('PUBLIC.LOGIN.NOTE');
-
-    const auth$ = this.auth.authenticate('valid', 'valid').pipe(takeUntil(this.ngUnsubscribe));
-
-    auth$.subscribe(() => {
-      this.isProcessing = false;
-
-      if (!this.auth.isAuthenticated) {
-        this.error$ = this.translate.get('PUBLIC.LOGIN.ERROR');
-      }
-    });
-
-    return auth$;
-  }
-
   get tosUrl(): string {
-    return this.window.env.rtdBaseUrl + "/tos";
+    return this.window.env.rtdBaseUrl + '/tos';
   }
 }

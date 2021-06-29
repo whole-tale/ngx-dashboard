@@ -1,23 +1,10 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnInit, Output } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AccessLevel } from '@api/models/access-level';
-import { Dataset } from '@api/models/dataset';
-import { Tale } from '@api/models/tale';
-import { User } from '@api/models/user';
-import { CollectionService } from '@api/services/collection.service';
-import { DatasetService } from '@api/services/dataset.service';
-import { FileService } from '@api/services/file.service';
-import { FolderService } from '@api/services/folder.service';
-import { ItemService } from '@api/services/item.service';
-import { ResourceService } from '@api/services/resource.service';
-import { TaleService } from '@api/services/tale.service';
-import { UserService } from '@api/services/user.service';
+import { AccessLevel, Dataset, Tale, User } from '@api/models';
+import { CollectionService, DatasetService, FileService, FolderService, ItemService, ResourceService, TaleService, UserService } from '@api/services';
 import { FileElement } from '@files/models/file-element';
-import { LogService } from '@framework/core/log.service';
-import { TruncatePipe } from '@framework/core/truncate.pipe';
-import { WindowService } from '@framework/core/window.service';
-import { enterZone } from '@framework/ngrx/enter-zone.operator';
+import { enterZone, LogService, TruncatePipe, WindowService } from '@framework/core';
 import { ErrorModalComponent } from '@shared/error-handler/error-modal/error-modal.component';
 import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
 

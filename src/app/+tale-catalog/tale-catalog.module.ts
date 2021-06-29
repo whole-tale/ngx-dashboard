@@ -5,7 +5,6 @@ import { RouterModule } from '@angular/router';
 import { SharedModule } from '@framework/core';
 import { MaterialModule } from '@framework/material';
 import { TalesModule } from '@tales/tales.module';
-import { TalesService } from '@tales/tales.service';
 
 import { routes } from './tale-catalog.routes';
 import { MyTalesComponent } from './tale-catalog/components/my-tales/my-tales.component';
@@ -24,7 +23,7 @@ import { TaleCatalogComponent } from './tale-catalog/tale-catalog.component';
 
 @NgModule({
   imports: [CommonModule, RouterModule.forChild(routes), SharedModule, MaterialModule, MatDialogModule, TalesModule],
-  providers: [TalesService],
+  providers: [],
   declarations: [
     TaleCatalogComponent,
     CreateTaleModalComponent,

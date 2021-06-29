@@ -15,9 +15,9 @@ import { ErrorService } from './services/error.service';
   imports: [MatSnackBarModule, MatDialogModule],
   providers: [
     ErrorService,
-    LogService,
-    //{ provide: ErrorHandler, useClass: GlobalErrorHandler },
-    { provide: HTTP_INTERCEPTORS, useClass: ServerErrorInterceptor, multi: true }
+    LogService
+    // { provide: ErrorHandler, useClass: GlobalErrorHandler },
+    // { provide: HTTP_INTERCEPTORS, useClass: ServerErrorInterceptor, multi: true }
   ],
   entryComponents: [ErrorModalComponent]
 })
