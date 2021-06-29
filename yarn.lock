@@ -1738,58 +1738,6 @@
     rxjs "6.5.4"
     webpack-sources "1.4.3"
 
-"@ngx-auth/core@~9.0.0":
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/@ngx-auth/core/-/core-9.0.0.tgz#5fb2eb2a87ab48d7b87ec4834bae47564c414c4c"
-  integrity sha512-o/aFh52MhKZMOBjXXqvojeGTwI8Z3YZP88db6pjwjStcb9ADq0PAGYNMhDaCldi//ZSltHPavn88NO9c/VisUw==
-
-"@ngx-cache/core@~9.0.0":
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/@ngx-cache/core/-/core-9.0.0.tgz#9c202c4af0ab55b32d1146ec2a85281075070773"
-  integrity sha512-GTLUVSAQrgTvzDnCU+qF7fARoQth7wJTqrIRxr8+WLLfTL2zpgFEMqvfxy1O3hxxk8bc6XMc5EcE4Q5c6n5h9g==
-
-"@ngx-cache/fs-storage@~9.0.0":
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/@ngx-cache/fs-storage/-/fs-storage-9.0.0.tgz#8972d440812cd9693deaff729676ce406c23fe1e"
-  integrity sha512-s4c3jTyRSLN3MT14SF2TRQxB++U0AXi7jECRb8tFnkDsZEgpWD61x8ybmBi9MvceoVbTctaiQlAyOr7SD499Sw==
-
-"@ngx-cache/platform-browser@~9.0.0":
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/@ngx-cache/platform-browser/-/platform-browser-9.0.0.tgz#f9e8c96aca6422efe0d7414e45aa3888817a0a8b"
-  integrity sha512-ZWYWwjNYrtn4r6LecS2CSXTm/pm5hvvtEaz0oKVLOMNTyFZNomJ+aox0F0+oelYeuhlrKbAUTZmcJXeKF/muLQ==
-
-"@ngx-cache/platform-server@~9.0.0":
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/@ngx-cache/platform-server/-/platform-server-9.0.0.tgz#c3f073feb995d905c5fa7e6a309027f30f0d1de8"
-  integrity sha512-lzxAp0Sfx5ZRkft6gxTz03+yGTiKrGxXk0eYBAhfKenltmxzvK3IjrWoTpA6K4ngAY9NsYXiIVgItKUzHv0K2Q==
-
-"@ngx-config/core@~9.0.0":
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/@ngx-config/core/-/core-9.0.0.tgz#52a0e31d3b4dd47e42357e9be5beeefd7d7f38ff"
-  integrity sha512-AvzYgdQsOkw0/McLo2yl6dE3PqFUyDw5/L2063fb7Xy7daK95gVB3Na88+sN1so6vVhzWCv/OqeF+FIcfRqOjA==
-
-"@ngx-config/http-loader@~9.0.0":
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/@ngx-config/http-loader/-/http-loader-9.0.0.tgz#4a6556ebed9f5375ffdffdb6b7a7aa1155079caa"
-  integrity sha512-KKC+3lAgJiQx67UjoW8+cbQX+wM4pHrVPqREUk8tV1glC1fnL9gx0oc8lmxy258t7I69LMHpyvDtOhGiLG/ppw==
-
-"@ngx-meta/core@~9.0.0":
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/@ngx-meta/core/-/core-9.0.0.tgz#2c3b27bd32d41f7aaf0712d4007e0afed8e5dd3f"
-  integrity sha512-WL/HyKM+4gJPS3TNTO0M+46LlIvGTSyofL//8hxoozAyRPsiMyR0xrwUvPBJkVqFyD6j0iI5FaNcQ9d0JCVJhg==
-
-"@ngx-translate/core@~12.0.0":
-  version "12.0.0"
-  resolved "https://registry.yarnpkg.com/@ngx-translate/core/-/core-12.0.0.tgz#d177b03ea84d37fb2d7d352246867ba533d93225"
-  integrity sha512-hxuaLEqxlZ3IWBupyAoRXAhMZHCmaCg58XpY5+vevJmDhMEFJUEKdQyWVOKcf3+6PkoIFcuKJCeHa5C3Hb65gA==
-  dependencies:
-    tslib "^1.9.0"
-
-"@ngx-translate/http-loader@~5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@ngx-translate/http-loader/-/http-loader-5.0.0.tgz#2aea7b5563c6d1afdcc428cabcc8b43ec0ec2d61"
-  integrity sha512-8+aV7N52qed+6t4LIu4Yru/PkeBX4TR2ioXGwXzQE5syqSLTj/8TgKQIi3i2Z61ZhPxQG1qrGbapUoGQzUDVeg==
-
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"
