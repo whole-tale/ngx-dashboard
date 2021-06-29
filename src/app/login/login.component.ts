@@ -5,7 +5,6 @@ import { UserService } from '@api/services/user.service';
 import { TokenService } from '@api/token.service';
 import { BaseComponent, LogService, WindowService } from '@shared/core';
 import { CookieService } from 'ngx-cookie-service';
-import { Observable } from 'rxjs';
 import { routeAnimation } from '~/app/shared';
 
 // import * as $ from 'jquery';
@@ -21,13 +20,11 @@ export class LoginComponent extends BaseComponent implements OnInit {
   username: string;
   password: string;
   isProcessing: boolean;
-  note$: Observable<string>;
-  error$: Observable<string>;
+  // note$: Observable<string>;
+  // error$: Observable<string>;
   isAuthenticated: boolean;
 
   constructor(
-    // private readonly auth: AuthService,
-    // private readonly translate: TranslateService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
     private readonly logger: LogService,
@@ -111,6 +108,6 @@ export class LoginComponent extends BaseComponent implements OnInit {
   }
 
   get tosUrl(): string {
-    return this.window.env.rtdBaseUrl + '/tos';
+    return `${this.window.env.rtdBaseUrl}/tos`;
   }
 }

@@ -7,8 +7,6 @@ import { Component } from '@angular/core';
 export class ConnectGitRepoDialogComponent {
   gitRepo = '';
 
-  constructor() {}
-
   valid(): boolean {
     if (!this.gitRepo || this.gitRepo === '') { return false; }
 

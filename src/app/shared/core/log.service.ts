@@ -15,12 +15,8 @@ export class LogService {
     @Inject(forwardRef(() => LocalConsoleService)) readonly logger: LocalConsoleService,
     @Inject(forwardRef(() => RemoteConsoleService)) readonly relay: RemoteConsoleService
   ) {
+    // TODO: Set this based on detected env?
     this.level = LogService.DEFAULT_LOG_LEVEL;
-    /* try {
-      this.level = this.config.getSettings('logging.level');
-    } catch (e) {
-      this.warn(`No logging.level configured - default is ${this.level}`);
-    } */
   }
 
   // debug (standard output)

@@ -63,6 +63,6 @@ export class RegisterDataDialogComponent {
   }
 
   get docUrl(): string {
-    return this.window.env.rtdBaseUrl + "/users_guide/manage.html#supported-data-repositories";
+    return `${this.window.env.rtdBaseUrl}/users_guide/manage.html#supported-data-repositories`;
   }
 }

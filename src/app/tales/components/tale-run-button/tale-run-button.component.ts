@@ -39,43 +39,9 @@ export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.instanceLaunchingSubscription = this.syncService.instanceLaunchingSubject.subscribe(
-      (resource: { taleId: string; instanceId: string }) => {
-        // Ignore updates that aren't for this Tale
-        if (resource.taleId != this.tale._id) {
-          return;
-        }
-
-        this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
-          this.instance = instance;
-          this.ref.detectChanges();
-        });
-      }
-    );
-    this.instanceRunningSubscription = this.syncService.instanceRunningSubject.subscribe(
-      (resource: { taleId: string; instanceId: string }) => {
-        // Ignore updates that aren't for this Tale
-        if (resource.taleId != this.tale._id) {
-          return;
-        }
-
-        this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
-          this.instance = instance;
-          this.ref.detectChanges();
-        });
-      }
-    );
-    this.instanceErrorSubscription = this.syncService.instanceErrorSubject.subscribe((resource: { taleId: string; instanceId: string }) => {
-      // Ignore updates that aren't for this Tale
-      if (resource.taleId != this.tale._id) {
-        return;
-      }
-
-      this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
-        this.instance = instance;
-        this.ref.detectChanges();
-      });
-    });
+    this.instanceLaunchingSubscription = this.syncService.instanceLaunchingSubject.subscribe(this.updateInstance);
+    this.instanceRunningSubscription = this.syncService.instanceRunningSubject.subscribe(this.updateInstance);
+    this.instanceErrorSubscription = this.syncService.instanceErrorSubject.subscribe(this.updateInstance);
   }
 
   ngOnChanges(): void {
@@ -88,6 +54,18 @@ export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
     this.instanceLaunchingSubscription.unsubscribe();
     this.instanceRunningSubscription.unsubscribe();
     this.instanceErrorSubscription.unsubscribe();
+  }
+
+  updateInstance(resource: { taleId: string; instanceId: string }): void {
+    // Ignore updates that aren't for this Tale
+    if (resource.taleId !== this.tale._id) {
+      return;
+    }
+
+    this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
+      this.instance = instance;
+      this.ref.detectChanges();
+    });
   }
 
   autoRefresh(): void {

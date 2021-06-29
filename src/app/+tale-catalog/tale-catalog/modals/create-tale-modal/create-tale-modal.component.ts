@@ -126,6 +126,6 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
   }
 
   get docUrl(): string {
-    return this.window.env.rtdBaseUrl + "/users_guide/compose.html";
+    return `${this.window.env.rtdBaseUrl}/users_guide/compose.html`;
   }
 }

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, Output, NgZone, OnChanges, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiConfiguration } from '@api/api-configuration';
 import { AccessLevel, Tale, Version } from '@api/models';

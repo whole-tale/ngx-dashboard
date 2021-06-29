@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, NgZone, OnChanges, OnDestroy, OnInit } from '@angular/core';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiConfiguration } from '@api/api-configuration';
 import { AccessLevel, Instance, Tale, User } from '@api/models';
@@ -128,11 +128,12 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       return this.currentTab === tab;
     }
 
-    refreshCollaborators(): Promise<any> {
+    refreshCollaborators(): void {
       if (!this.tale || this.tale._accessLevel < AccessLevel.Write) {
-        return new Promise(resolve => {});
+        return;
       }
-      return this.taleService.taleGetTaleAccess(this.taleId).toPromise().then((resp: any) => {
+
+      this.taleService.taleGetTaleAccess(this.taleId).subscribe((resp: any) => {
         this.logger.info("Fetched collaborators:", resp);
         this.collaborators = resp;
         this.ref.detectChanges();
@@ -202,32 +203,9 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       this.detectTaleId();
       this.detectCurrentTab();
 
-      this.taleInstanceLaunchingSubscription = this.syncService.instanceLaunchingSubject.subscribe((resource: {taleId: string, instanceId: string}) => {
-        if (resource.taleId === this.taleId) {
-          this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
-            this.instance = instance;
-            this.ref.detectChanges();
-          });
-        }
-      });
-
-      this.taleInstanceRunningSubscription = this.syncService.instanceRunningSubject.subscribe((resource: {taleId: string, instanceId: string}) => {
-        if (resource.taleId === this.taleId) {
-          this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
-            this.instance = instance;
-            this.ref.detectChanges();
-          });
-        }
-      });
-
-      this.taleInstanceErrorSubscription = this.syncService.instanceErrorSubject.subscribe((resource: {taleId: string, instanceId: string}) => {
-        if (resource.taleId === this.taleId) {
-          this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
-            this.instance = instance;
-            this.ref.detectChanges();
-          });
-        }
-      });
+      this.taleInstanceLaunchingSubscription = this.syncService.instanceLaunchingSubject.subscribe(this.updateInstance);
+      this.taleInstanceRunningSubscription = this.syncService.instanceRunningSubject.subscribe(this.updateInstance);
+      this.taleInstanceErrorSubscription = this.syncService.instanceErrorSubject.subscribe(this.updateInstance);
 
       this.taleInstanceDeletedSubscription = this.syncService.instanceDeletedSubject.subscribe((resource: {taleId: string, instanceId: string}) => {
         if (resource.taleId === this.taleId) {
@@ -326,6 +304,15 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       this.taleInstanceErrorSubscription.unsubscribe();
     }
 
+    updateInstance(resource: {taleId: string, instanceId: string}): void {
+      if (resource.taleId === this.taleId) {
+        this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
+          this.instance = instance;
+          this.ref.detectChanges();
+        });
+      }
+    }
+
     performRecordedRun(): void {
       this.logger.debug('Performing recorded run');
     }
@@ -338,7 +325,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     }
 
     openConnectGitRepoDialog(): void {
-      const config: MatDialogConfig = {
+      const config = {
         data: { tale: this.tale }
       };
       const dialogRef = this.dialog.open(ConnectGitRepoDialogComponent, config);
@@ -382,7 +369,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     // Expected parameter format:
     //    dataMap: [{"name":"Elevation per SASAP region and Hydrolic Unit (HUC8) boundary for Alaskan watersheds","dataId":"resource_map_doi:10.5063/F1Z60M87","repository":"DataONE","doi":"10.5063/F1Z60M87","size":10293583}]
     openPublishTaleDialog(event: Event): void {
-      const config: MatDialogConfig = {
+      const config = {
         data: { tale: this.tale }
       };
       const dialogRef = this.dialog.open(PublishTaleDialogComponent, config);
@@ -399,7 +386,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     }
 
     gotoDocs(): void {
-      this.windowService.open(this.windowService.env.rtdBaseUrl + '/users_guide/run.html', '_blank');
+      this.windowService.open(`${this.windowService.env.rtdBaseUrl}/users_guide/run.html`, '_blank');
     }
 
     exportTale(format: TaleExportFormat = TaleExportFormat.BagIt): void {

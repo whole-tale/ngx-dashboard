@@ -172,6 +172,6 @@ export class PublishTaleDialogComponent implements OnInit {
   }
 
   get docUrl(): string {
-    return this.window.env.rtdBaseUrl + "/users_guide/publishing.html";
+    return `${this.window.env.rtdBaseUrl}/users_guide/publishing.html`;
   }
 }

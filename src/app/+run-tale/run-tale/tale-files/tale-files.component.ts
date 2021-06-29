@@ -195,7 +195,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
       // Can't bind to [attr.data-percent].. use js to set total and update progress
       const percent =  ((chunkResp.received ? +chunkResp.received : +upload.size) / +upload.size) * 100;
-      $('#upload-' + uploadId).progress('set percent', percent);
+      $(`#upload-${uploadId}`).progress('set percent', percent);
       existing.uploadProgress = percent;
       this.ref.detectChanges();
     }
@@ -233,7 +233,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         this.files.next(files);
 
         // Can't bind to [attr.data-percent].. use js to set total and update progress
-        $('#upload-' + uploadId).progress('set percent', 0);
+        $(`#upload-${uploadId}`).progress('set percent', 0);
         this.ref.detectChanges();
 
         // This should be a blocking call
@@ -243,7 +243,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         this.logger.info(`Upload complete: ${upload.name} (${upload.size})`, upload);
 
         // Can't bind to [attr.data-percent].. use js to set total and update progress
-        $('#upload-' + uploadId).progress('set percent', 100);
+        $(`#upload-${uploadId}`).progress('set percent', 100);
         initResp.uploading = false;
         this.ref.detectChanges();
 
