@@ -3,7 +3,8 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { bootloader } from '@angularclass/bootloader';
 import { get } from 'lodash/fp';
 
-import { AppBrowserModule } from './app/app.browser.module';
+// import { AppBrowserModule } from './app/app.browser.module';
+import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
 import { hmrBootstrap } from './hmr';
 
@@ -11,7 +12,7 @@ if (environment.production) {
   enableProdMode();
 }
 
-const main = async () => platformBrowserDynamic().bootstrapModule(AppBrowserModule);
+/* const main = async () => platformBrowserDynamic().bootstrapModule(AppBrowserModule);
 
 // hmr support
 if (environment.hmr) {
@@ -22,7 +23,8 @@ if (environment.hmr) {
   }
 } else {
   bootloader(main);
-}
+} */
 
-// platformBrowserDynamic().bootstrapModule(AppModule)
-//   .catch(err => console.error(err));
+platformBrowserDynamic()
+  .bootstrapModule(AppModule)
+  .catch(err => console.error(err));

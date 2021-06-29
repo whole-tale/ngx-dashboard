@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { BaseComponent } from '@framework/core';
+import { Component } from '@angular/core';
+import { BaseComponent } from '@shared/core';
 import { routeAnimation } from '~/app/shared';
 
 @Component({

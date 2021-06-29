@@ -7,10 +7,7 @@ import { User } from '@api/models/user';
 import { GroupService } from '@api/services/group.service';
 import { TaleService } from '@api/services/tale.service';
 import { UserService } from '@api/services/user.service';
-import { BaseComponent } from '@framework/core';
-import { LogService } from '@framework/core/log.service';
-import { enterZone } from '@framework/ngrx/enter-zone.operator';
-import { BehaviorSubject } from 'rxjs';
+import { BaseComponent, LogService } from '@shared/core';
 
 // import * as $ from 'jquery';
 declare var $: any;

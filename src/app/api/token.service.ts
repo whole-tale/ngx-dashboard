@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { User } from '@api/models/user';
 import { UserService } from '@api/services/user.service';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { LogService } from '@framework/core/log.service';
+import { LogService } from '@shared/core/log.service';
 import { ReplaySubject } from 'rxjs';
 
 @Injectable()

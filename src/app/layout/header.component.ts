@@ -1,15 +1,10 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, NgZone, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, NgZone, OnInit, Output } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { EventData } from '@api/events/event-data';
 import { UserService } from '@api/services/user.service';
 import { TokenService } from '@api/token.service';
-import { BaseComponent, LogService, WindowService } from '@framework/core';
-import { select, Store } from '@ngrx/store';
-// import { AuthService } from '@ngx-auth/core';
-// import { ConfigService } from '@ngx-config/core';
+import { BaseComponent, LogService, WindowService } from '@shared/core';
 import { CookieService } from 'ngx-cookie-service';
-import { Observable } from 'rxjs';
-// import { Language, LanguageSelectors, State } from '~/app/store';
 
 import { NotificationStreamService } from './notification-stream/notification-stream.service';
 
@@ -39,10 +34,7 @@ export class HeaderComponent extends BaseComponent implements OnInit {
   constructor(
     private readonly zone: NgZone,
     private readonly ref: ChangeDetectorRef,
-    // private readonly store$: Store<State>,
     private readonly logger: LogService,
-    // private readonly config: ConfigService,
-    // private readonly auth: AuthService,
     private readonly router: Router,
     private readonly cookies: CookieService,
     private readonly users: UserService,
@@ -63,9 +55,6 @@ export class HeaderComponent extends BaseComponent implements OnInit {
   ngOnInit(): void {
     this.title = 'APP_NAME';
     this.subtitle = 'TALE';
-    // this.currentLanguage$ = this.store$.pipe(select(LanguageSelectors.getWorkingLanguage));
-    // this.availableLanguages = this.config.getSettings('i18n.availableLanguages');
-    // this.isAuthenticated = this.auth.isAuthenticated;
     this.user = this.tokenService.user;
 
     this.zone.runOutsideAngular(() => {
@@ -105,6 +94,6 @@ export class HeaderComponent extends BaseComponent implements OnInit {
   }
 
   get docUrl(): string {
-    return this.window.env.rtdBaseUrl + '/users_guide';
+    return `${this.window.env.rtdBaseUrl}/users_guide`;
   }
 }

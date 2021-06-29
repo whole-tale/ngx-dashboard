@@ -1,7 +1,7 @@
 /* tslint:disable */
 import { Injectable, OnDestroy } from '@angular/core';
 import { ApiConfiguration } from '@api/api-configuration';
-import { LogService } from '@framework/core/log.service';
+import { LogService } from '@shared/core';
 
 import { TokenService } from '@api/token.service';
 import { EventSourcePolyfill as EventSource } from 'ng-event-source';

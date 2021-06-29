@@ -3,8 +3,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Tale } from '@api/models/tale';
 import { TaleService } from '@api/services/tale.service';
-import { BaseComponent } from '@framework/core';
-import { LogService } from '@framework/core/log.service';
+import { BaseComponent, LogService } from '@shared/core';
 import { routeAnimation } from '~/app/shared';
 
 import { CreateTaleModalComponent } from './modals/create-tale-modal/create-tale-modal.component';

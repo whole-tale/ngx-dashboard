@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
-import { Tale } from '@api/models/tale';
-import { RepositoryService } from '@api/services/repository.service';
-import { LogService }  from '@framework/core/log.service';
-import { WindowService } from '@framework/core/window.service';
+import { RepositoryService } from '@api/services';
+import { LogService, WindowService } from '@shared/core';
 
 @Component({
   templateUrl: './register-data-dialog.component.html',

@@ -2,11 +2,9 @@ import { ChangeDetectorRef, Component, NgZone } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { EventData } from '@api/events/event-data';
 import { GirderEvent } from '@api/events/girder-event';
-import { Job } from '@api/models/job';
-import { LogService } from '@framework/core/log.service';
+import { LogService } from '@shared/core';
 import { SyncService } from '@tales/sync.service';
 import { EventSourcePolyfill as EventSource } from 'ng-event-source';
-import { BehaviorSubject } from 'rxjs';
 
 import { ViewLogsDialogComponent } from './modals/view-logs-dialog/view-logs-dialog.component';
 import { NotificationStreamService } from './notification-stream.service';

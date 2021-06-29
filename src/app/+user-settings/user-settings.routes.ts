@@ -1,5 +1,3 @@
-// import { AuthGuard } from '@ngx-auth/core';
-
 import { UserSettingsComponent } from './user-settings.component';
 
 export const routes = [

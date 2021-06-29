@@ -1,16 +1,8 @@
 import { Component, Inject, NgZone, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Account } from '@api/models/account';
-import { Job } from '@api/models/job';
-import { PublishInfo } from '@api/models/publish-info';
-import { Repository } from '@api/models/repository';
-import { Tale } from '@api/models/tale';
-import { JobService } from '@api/services/job.service';
-import { RepositoryService } from '@api/services/repository.service';
-import { TaleService } from '@api/services/tale.service';
-import { LogService } from '@framework/core/log.service';
-import { WindowService } from '@framework/core/window.service';
-
+import { Job, PublishInfo, Repository, Tale } from '@api/models';
+import { JobService, RepositoryService, TaleService,  } from '@api/services';
+import { LogService, WindowService } from '@shared/core';
 
 // import * as $ from 'jquery';
 declare var $: any;

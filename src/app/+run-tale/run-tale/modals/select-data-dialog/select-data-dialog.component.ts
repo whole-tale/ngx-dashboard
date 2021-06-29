@@ -3,7 +3,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Dataset, Tale } from '@api/models';
 import { DatasetService, FolderService, ItemService } from '@api/services';
 import { FileElement } from '@files/models/file-element';
-import { enterZone, LogService } from '@framework/core';
+import { enterZone, LogService } from '@shared/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 enum ParentType {
@@ -99,13 +99,13 @@ export class SelectDataDialogComponent implements OnInit {
         // Fetch folders in the given folder
       this.folderService.folderFind({ parentId: this.currentFolderId, parentType: ParentType.Folder, limit: 0 })
                         .pipe(enterZone(this.zone))
-                        .subscribe(folders => {
+                        .subscribe((folders: Array<FileElement>) => {
                           this.folders.next(folders);
                         });
         // Fetch items in the given folder
       this.itemService.itemFind({ folderId: this.currentFolderId, limit: 0 })
                       .pipe(enterZone(this.zone))
-                      .subscribe(items => {
+                      .subscribe((items: Array<FileElement>) => {
                         this.files.next(items);
                       });
 
@@ -123,14 +123,14 @@ export class SelectDataDialogComponent implements OnInit {
       // Fetch folders in the workspace
       this.folderService.folderFind({ parentId: this.currentFolderId, parentType: ParentType.Folder, limit: 0 })
                         .pipe(enterZone(this.zone))
-                        .subscribe(folders => {
+                        .subscribe((folders: Array<FileElement>) => {
                           this.folders.next(folders);
                         });
 
       // Fetch items in the workspace
       this.itemService.itemFind({ folderId: this.currentFolderId, limit: 0 })
                       .pipe(enterZone(this.zone))
-                      .subscribe(items => {
+                      .subscribe((items: Array<FileElement>) => {
                         this.files.next(items);
                       });
     }
@@ -143,7 +143,7 @@ export class SelectDataDialogComponent implements OnInit {
         case 'folder':
           this.folderService.folderGetFolder(resourceId)
                             .pipe(enterZone(this.zone))
-                            .subscribe(folder => {
+                            .subscribe((folder: FileElement) => {
             this.currentRoot = folder;
             this.currentFolderId = this.currentRoot._id;
             this.canNavigateUp = this.currentRoot ? true : false;

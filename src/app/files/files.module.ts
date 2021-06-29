@@ -9,8 +9,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { SharedModule } from '@framework/core';
-import { MaterialModule } from '@framework/material';
+import { MaterialModule } from '@shared/material';
+import { SharedModule } from '@shared/shared.module';
 import { TalesModule } from '@tales/tales.module';
 
 import { FileExplorerComponent } from './file-explorer/file-explorer.component';
@@ -38,7 +38,6 @@ import { FileSizePipe } from './filesize.pipe';
     MatButtonModule,
     FormsModule,
     TalesModule
-  ],
-  entryComponents: [NewFolderDialogComponent, RenameDialogComponent, MoveToDialogComponent]
+  ]
 })
 export class FilesModule {}

@@ -1,5 +1,5 @@
 import { Component, Inject, NgZone, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccessLevel } from '@api/models/access-level';
 import { SortDir } from '@api/models/sortdir';
@@ -13,18 +13,18 @@ import { ResourceService } from '@api/services/resource.service';
 import { TaleService } from '@api/services/tale.service';
 import { UserService } from '@api/services/user.service';
 import { FileElement } from '@files/models/file-element';
-import { enterZone, LogService } from '@framework/core';
+import { enterZone, LogService } from '@shared/core';
 import { TaleNamePipe } from '@tales/pipes/tale-name.pipe';
-import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
+import { BehaviorSubject, forkJoin } from 'rxjs';
 
 const URL = window['webkitURL'] || window.URL; // tslint:disable-line
 
 // TODO: Is there a better place to store these constants?
 const HOME_ROOT_NAME = 'Home';
-const DATA_ROOT_PATH = '/collection/WholeTale Catalog/WholeTale Catalog';
+// const DATA_ROOT_PATH = '/collection/WholeTale Catalog/WholeTale Catalog';
 const WORKSPACES_ROOT_PATH = '/collection/WholeTale Workspaces/WholeTale Workspaces';
 
-const MAX_PATH_SEGMENT_LENGTH = 15;
+// const MAX_PATH_SEGMENT_LENGTH = 15;
 
 const HOME_PATH_SEGMENT = 'Home';
 const TALE_WORKSPACES_PATH_SEGMENT = 'Tale Workspaces';

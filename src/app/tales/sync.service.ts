@@ -1,6 +1,5 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { LogService } from '@framework/core/log.service';
+import { LogService } from '@shared/core';
 import { Subject } from 'rxjs';
 
 @Injectable({

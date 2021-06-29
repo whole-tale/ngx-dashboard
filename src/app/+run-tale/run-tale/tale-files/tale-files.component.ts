@@ -1,12 +1,13 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnInit, Output } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AccessLevel, Dataset, Tale, User } from '@api/models';
+import { AccessLevel, Tale, User } from '@api/models';
 import { CollectionService, DatasetService, FileService, FolderService, ItemService, ResourceService, TaleService, UserService } from '@api/services';
 import { FileElement } from '@files/models/file-element';
-import { enterZone, LogService, TruncatePipe, WindowService } from '@framework/core';
+import { TruncatePipe } from '@shared/common/pipes/truncate.pipe';
+import { enterZone, LogService, WindowService } from '@shared/core';
 import { ErrorModalComponent } from '@shared/error-handler/error-modal/error-modal.component';
-import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
+import { BehaviorSubject, forkJoin } from 'rxjs';
 
 import { RegisterDataDialogComponent } from '../modals/register-data-dialog/register-data-dialog.component';
 import { SelectDataDialogComponent } from '../modals/select-data-dialog/select-data-dialog.component';

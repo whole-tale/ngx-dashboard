@@ -1,17 +1,12 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { AccessLevel } from '@api/models/access-level';
-import { Instance } from '@api/models/instance';
-import { Tale } from '@api/models/tale';
-import { InstanceService } from '@api/services/instance.service';
-import { TaleService } from '@api/services/tale.service';
-import { LogService } from '@framework/core/log.service';
-import { enterZone } from '@framework/ngrx/enter-zone.operator';
+import { AccessLevel, Instance, Tale } from '@api/models';
+import { InstanceService, TaleService } from '@api/services';
+import { LogService } from '@shared/core/log.service';
 import { ErrorModalComponent } from '@shared/error-handler/error-modal/error-modal.component';
 import { CopyOnLaunchModalComponent } from '@tales/components/modals/copy-on-launch-modal/copy-on-launch-modal.component';
 import { SyncService } from '@tales/sync.service';
-
 import { Subscription } from 'rxjs';
 
 @Component({

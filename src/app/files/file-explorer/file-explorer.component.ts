@@ -1,8 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Tale } from '@api/models/tale';
 import { FileElement } from '@files/models/file-element';
-import { LogService } from '@framework/core/log.service';
+import { LogService } from '@shared/core/log.service';
 
 import { MoveToDialogComponent } from './modals/move-to-dialog/move-to-dialog.component';
 import { NewFolderDialogComponent } from './modals/new-folder-dialog/new-folder-dialog.component';

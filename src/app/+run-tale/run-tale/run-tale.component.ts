@@ -2,27 +2,18 @@ import { ChangeDetectorRef, Component, NgZone, OnChanges, OnDestroy, OnInit } fr
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiConfiguration } from '@api/api-configuration';
-import { AccessLevel } from '@api/models/access-level';
-import { Instance } from '@api/models/instance';
-import { Tale } from '@api/models/tale';
-import { User } from '@api/models/user';
-import { InstanceService } from '@api/services/instance.service';
-import { TaleService } from '@api/services/tale.service';
-import { UserService } from '@api/services/user.service';
-import { VersionService } from '@api/services/version.service';
+import { AccessLevel, Instance, Tale, User } from '@api/models';
+import { InstanceService, TaleService, UserService, VersionService } from '@api/services';
 import { TokenService } from '@api/token.service';
-import { BaseComponent } from '@framework/core';
-import { LogService } from '@framework/core/log.service';
-import { WindowService } from '@framework/core/window.service';
-import { enterZone } from '@framework/ngrx/enter-zone.operator';
+import { AlertModalComponent } from '@shared/common/components/alert-modal/alert-modal.component';
+import { BaseComponent, LogService, WindowService } from '@shared/core';
 import { TaleAuthor } from '@tales/models/tale-author';
-import { routeAnimation } from '~/app/shared';
 import { SyncService } from '@tales/sync.service';
 import { Subscription } from 'rxjs';
+import { routeAnimation } from '~/app/shared';
 
 import { ConnectGitRepoDialogComponent } from './modals/connect-git-repo-dialog/connect-git-repo-dialog.component';
 import { PublishTaleDialogComponent } from './modals/publish-tale-dialog/publish-tale-dialog.component';
-import { AlertModalComponent } from '@shared/common/components/alert-modal/alert-modal.component';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -178,7 +169,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
         this.logger.info("Fetched tale:", tale);
         this.tale = tale;
-        
+
         this.refreshCollaborators();
 
         this.userService.userGetUser(this.tale.creatorId)

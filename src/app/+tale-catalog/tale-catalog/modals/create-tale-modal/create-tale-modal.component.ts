@@ -1,10 +1,8 @@
 import { AfterViewInit, Component, Inject, NgZone, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Image } from '@api/models/image';
-import { Tale } from '@api/models/tale';
-import { ImageService } from '@api/services/image.service';
-import { LogService } from '@framework/core/log.service';
-import { WindowService } from '@framework/core/window.service';
+import { Image, Tale } from '@api/models';
+import { ImageService } from '@api/services';
+import { LogService, WindowService } from '@shared/core';
 
 // import * as $ from 'jquery';
 declare var $: any;

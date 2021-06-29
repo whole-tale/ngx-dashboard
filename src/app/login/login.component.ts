@@ -3,14 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { OauthService } from '@api/services/oauth.service';
 import { UserService } from '@api/services/user.service';
 import { TokenService } from '@api/token.service';
-import { BaseComponent } from '@framework/core';
-import { LogService } from '@framework/core/log.service';
-import { WindowService } from '@framework/core/window.service';
-// import { AuthService } from '@ngx-auth/core';
-// import { TranslateService } from '@ngx-translate/core';
+import { BaseComponent, LogService, WindowService } from '@shared/core';
 import { CookieService } from 'ngx-cookie-service';
-import { from as observableFrom, Observable } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { routeAnimation } from '~/app/shared';
 
 // import * as $ from 'jquery';

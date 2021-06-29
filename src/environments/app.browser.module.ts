@@ -9,8 +9,8 @@ import { CoreModule, LocalConsoleService, WindowService } from '@framework/core'
 // import { BrowserCacheModule, MemoryCacheService } from '@ngx-cache/platform-browser';
 import 'hammerjs';
 
-import { AppComponent } from './app.component';
-import { AppModule, REQ_KEY } from './app.module';
+// import { AppComponent } from './app.component';
+// import { AppModule, REQ_KEY } from './app.module';
 
 @NgModule({
   imports: [
@@ -33,8 +33,8 @@ import { AppModule, REQ_KEY } from './app.module';
         provide: LocalConsoleService,
         useFactory: () => console
       }
-    ]),
-    AppModule
+    ])
+    // AppModule
   ],
   providers: [
     /* {
@@ -42,7 +42,7 @@ import { AppModule, REQ_KEY } from './app.module';
       useFactory: (transferState: TransferState) => transferState.get<any>(REQ_KEY, {}),
       deps: [TransferState]
     } */
-  ],
-  bootstrap: [AppComponent]
+  ]
+  // bootstrap: [AppComponent]
 })
 export class AppBrowserModule {}

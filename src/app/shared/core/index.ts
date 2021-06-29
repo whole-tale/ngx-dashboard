@@ -5,7 +5,4 @@ export * from './remote-console.service';
 export * from './log.service';
 export * from './window.service';
 export * from './core.module';
-export * from './shared.module';
-export * from './truncate.pipe';
-export * from './safe.pipe';
 export * from './enter-zone.operator';

@@ -1,7 +1,7 @@
 import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { BaseComponent } from '~/app/framework/core';
+import { BaseComponent } from '@shared/core';
 
 @Component({
   selector: 'app-main',
