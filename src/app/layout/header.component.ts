@@ -84,7 +84,7 @@ export class HeaderComponent extends BaseComponent implements OnInit {
     this.cookies.deleteAll();
     this.tokenService.clearToken();
 
-    return new Promise((resolve, reject) => resolve(true)); // this.auth.invalidate();
+    return this.router.navigateByUrl('/login'); // this.auth.invalidate();
   }
 
   toggleNotificationStream(): void {
