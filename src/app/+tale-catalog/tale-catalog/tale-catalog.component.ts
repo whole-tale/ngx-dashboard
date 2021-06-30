@@ -55,7 +55,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
             dialogRef.afterClosed().subscribe((result: {tale: Tale, asTale: boolean, url: string, baseUrl: string}) => {
               // Short-circuit for 'Cancel' case
               if (!result || !result.tale) { return; }
-              
+
               const tale = result.tale;
               const asTale = result.asTale;
               const baseUrl = result.baseUrl;
