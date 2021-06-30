@@ -53,12 +53,12 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
               data: { params: queryParams }
             });
             dialogRef.afterClosed().subscribe((result: {tale: Tale, asTale: boolean, url: string, baseUrl: string}) => {
+              // Short-circuit for 'Cancel' case
+              if (!result || !result.tale) { return; }
+              
               const tale = result.tale;
               const asTale = result.asTale;
               const baseUrl = result.baseUrl;
-
-              // Short-circuit for 'Cancel' case
-              if (!tale) { return; }
 
               // Import Tale from Dataset
               const params = {
@@ -67,7 +67,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
                 asTale: asTale ? asTale : false, // Pull from user input
                 git: result.url ? true : false,
                 spawn: false, // if true, immediately launch a Tale instance
-                taleKwargs: tale.title ? { title: tale.title } : {}, 
+                taleKwargs: tale.title ? { title: tale.title } : {},
                 lookupKwargs: baseUrl ? { base_url: baseUrl } : {},
               };
               this.taleService.taleCreateTaleFromUrl(params).subscribe((response: Tale) => {
