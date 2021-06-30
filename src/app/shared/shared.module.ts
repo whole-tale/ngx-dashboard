@@ -18,7 +18,7 @@ export const APP_LAYOUT_CONFIG = {
 };
 
 @NgModule({
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   providers: [
     {
       provide: LAYOUT_CONFIG,

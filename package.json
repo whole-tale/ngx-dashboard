@@ -40,7 +40,6 @@
     "@ngrx/effects": "~9.2.1",
     "@ngrx/entity": "~9.2.1",
     "@ngrx/store": "~9.2.1",
-    "angulartics2": "9.1.0",
     "compression": "~1.7.3",
     "core-js": "~3.3",
     "debug": "~4.1.1",

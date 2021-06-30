@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
 import { MaterialModule } from '@shared/material';
+import { SharedModule } from '@shared/shared.module';
 
 import { ConfigureAccountsComponent } from './configure-accounts/configure-accounts.component';
 import { ConnectApiKeyModalComponent } from './modals/connect-apikey-modal/connect-apikey-modal.component';
@@ -12,7 +13,7 @@ import { UserSettingsComponent } from './user-settings.component';
 import { routes } from './user-settings.routes';
 
 @NgModule({
-  imports: [CommonModule, HttpClientModule, RouterModule.forChild(routes), MatDialogModule, MaterialModule],
+  imports: [CommonModule, HttpClientModule, RouterModule.forChild(routes), MatDialogModule, MaterialModule, SharedModule],
   declarations: [
     UserSettingsComponent,
     ConfigureAccountsComponent,
