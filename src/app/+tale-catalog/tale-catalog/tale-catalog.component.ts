@@ -106,7 +106,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
             asTale: false, // Pull from user input
             git: gitUrl ? true : false,
             spawn: false, // if true, immediately launch a Tale instance
-            taleKwargs: tale.title ? { title: tale.title } : {},
+            taleKwargs: tale.title ? { title: tale.title } : {},
             lookupKwargs: baseUrl ? { base_url: baseUrl } : {},
           };
 
