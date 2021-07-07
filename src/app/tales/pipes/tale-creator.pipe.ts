@@ -1,6 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { Tale } from '@api/models/tale';
-import { User } from '@api/models/user';
 import { UserService } from '@api/services/user.service';
 import { EMPTY, Observable } from 'rxjs';
 

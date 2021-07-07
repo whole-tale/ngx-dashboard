@@ -1,3 +1,4 @@
+export { AccountService } from './services/account.service';
 export { ApiKeyService } from './services/api-key.service';
 export { AssetstoreService } from './services/assetstore.service';
 export { CollectionService } from './services/collection.service';

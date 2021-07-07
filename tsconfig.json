@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "module": "es2015",
+    "module": "esnext",
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -19,7 +19,6 @@
       "@api/*": ["./src/app/api/*"],
       "@login/*": ["./src/app/login/*"],
       "@shared/*": ["./src/app/shared/*"],
-      "@framework/*": ["./src/app/framework/*"],
       "@layout/*": ["./src/app/layout/*"]
     },
     "typeRoots": ["node_modules/@types"],

@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, Input, NgZone, OnChanges } from '@angular
 import { Instance } from '@api/models/instance';
 import { Tale } from '@api/models/tale';
 import { InstanceService } from '@api/services/instance.service';
-import { enterZone } from '@framework/ngrx/enter-zone.operator';
+import { enterZone } from '@shared/core';
 
 @Component({
   selector: 'app-tale-interact',

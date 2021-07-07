@@ -34,7 +34,7 @@
 
 <input #file multiple type="file" style="display: none" (change)="onUploadsAdded($event)" />
 
-<div class="container" fxFlex fxLayout="row" fxLayoutAlign="space-between stretch">
+<div class="container" fxFlex fxLayout="column" fxLayoutAlign="space-between stretch">
   <!-- Show placeholder if there are no fileElements to display -->
   <div class="ui message" *ngIf="!fileElements || !fileElements.length">
     {{ placeholderMessage }}

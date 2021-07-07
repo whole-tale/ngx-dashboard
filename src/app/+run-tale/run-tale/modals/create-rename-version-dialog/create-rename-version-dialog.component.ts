@@ -1,9 +1,7 @@
 import { ChangeDetectorRef, Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Tale } from '@api/models/tale';
-import { RepositoryService } from '@api/services/repository.service';
 import { VersionService } from '@api/services/version.service';
-import { LogService }  from '@framework/core/log.service';
+import { LogService }  from '@shared/core/log.service';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 

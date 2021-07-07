@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { BaseComponent } from '~/app/framework/core';
+import { BaseComponent } from '@shared/core';
 
 @Component({
   selector: 'app-footer',
@@ -8,8 +8,4 @@ import { BaseComponent } from '~/app/framework/core';
 })
 export class FooterComponent extends BaseComponent {
   commit = '{commit}';
-
-  constructor() {
-    super();
-  }
 }

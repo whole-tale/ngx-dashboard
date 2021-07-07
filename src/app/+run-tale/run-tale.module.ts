@@ -3,10 +3,10 @@ import { NgModule } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
 import { FilesModule } from '@files/files.module';
-import { SharedModule } from '@framework/core';
-import { SafePipe } from '@framework/core/safe.pipe';
-import { TruncatePipe } from '@framework/core/truncate.pipe';
-import { MaterialModule } from '@framework/material';
+import { SafePipe } from '@shared/common/pipes/safe.pipe';
+import { TruncatePipe } from '@shared/common/pipes/truncate.pipe';
+import { MaterialModule } from '@shared/material';
+import { SharedModule } from '@shared/shared.module';
 import { TaleCreatorPipe } from '@tales/pipes/tale-creator.pipe';
 import { TaleImagePipe } from '@tales/pipes/tale-image.pipe';
 import { TaleNamePipe } from '@tales/pipes/tale-name.pipe';
@@ -31,8 +31,8 @@ import { TaleVersionsPanelComponent } from './run-tale/tale-versions-panel/tale-
 
 
 @NgModule({
-  imports: [CommonModule, RouterModule.forChild(routes), SharedModule, MaterialModule, MatDialogModule, FilesModule, TalesModule, MarkdownModule.forRoot()],
-  providers: [TruncatePipe, SafePipe, TaleCreatorPipe, TaleImagePipe, TaleNamePipe],
+  imports: [CommonModule, RouterModule.forChild(routes), MaterialModule, MatDialogModule, FilesModule, TalesModule, MarkdownModule.forRoot(), SharedModule],
+  providers: [TaleCreatorPipe, TaleImagePipe, TaleNamePipe, TruncatePipe],
   exports: [TaleCreatorPipe, TaleImagePipe, TaleNamePipe ],
   declarations: [
     RunTaleComponent,
@@ -50,6 +50,5 @@ import { TaleVersionsPanelComponent } from './run-tale/tale-versions-panel/tale-
     TaleVersionInfoDialogComponent,
     EditRunConfigsDialogComponent,
   ],
-  entryComponents: [PublishTaleDialogComponent, SelectDataDialogComponent, RegisterDataDialogComponent, TaleWorkspacesDialogComponent, ConnectGitRepoDialogComponent, CreateRenameVersionDialogComponent, TaleVersionInfoDialogComponent, EditRunConfigsDialogComponent]
 })
 export class RunTaleModule {}

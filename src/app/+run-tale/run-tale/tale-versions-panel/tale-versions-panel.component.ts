@@ -1,19 +1,15 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiConfiguration } from '@api/api-configuration';
-import { AccessLevel } from '@api/models/access-level';
-import { Tale } from '@api/models/tale';
-import { Version } from '@api/models/version';
-import { TaleService } from '@api/services/tale.service';
-import { VersionService } from '@api/services/version.service';
+import { AccessLevel, Tale, Version } from '@api/models';
+import { TaleService, VersionService } from '@api/services';
 import { TokenService } from '@api/token.service';
-import { LogService } from '@framework/core/log.service';
-import { WindowService } from '@framework/core/window.service';
+import { LogService, WindowService } from '@shared/core';
 import { NotificationService } from '@shared/error-handler/services/notification.service';
 import { SyncService } from '@tales/sync.service';
 import { Subscription } from 'rxjs';
-import { CreateRenameVersionDialogComponent } from '../modals/create-rename-version-dialog/create-rename-version-dialog.component';
 
+import { CreateRenameVersionDialogComponent } from '../modals/create-rename-version-dialog/create-rename-version-dialog.component';
 // TODO: Use real models from Girder
 import {
   EditRunConfigsDialogComponent,

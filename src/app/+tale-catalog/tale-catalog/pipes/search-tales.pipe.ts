@@ -1,14 +1,12 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Tale } from '@api/models/tale';
-import { User } from '@api/models/user';
-import { TokenService } from '@api/token.service';
-import { LogService } from '@framework/core/log.service';
+import { Tale, User } from '@api/models';
+import { LogService } from '@shared/core';
 import { TaleAuthor } from '@tales/models/tale-author';
 
 // Given a list of tales, returns only tales that were created by the current user
 @Pipe({name: 'searchTales'})
 export class SearchTalesPipe implements PipeTransform {
-  constructor(private tokenService: TokenService, private logger: LogService) {  }
+  constructor(private logger: LogService) {  }
 
   transform(value: Array<Tale>, searchQuery: string, creators: Map<string, User>): Array<Tale> {
     // Short-circuit for null case(s)

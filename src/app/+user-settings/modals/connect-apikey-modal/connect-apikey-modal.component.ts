@@ -1,11 +1,8 @@
 import { Component, Inject, NgZone, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Account } from '@api/models/account';
-import { User } from '@api/models/user';
-import { AccountService } from '@api/services/account.service';
-import { UserService } from '@api/services/user.service';
-import { BaseComponent } from '@framework/core/base.component';
-import { enterZone } from '@framework/ngrx/enter-zone.operator';
+import { Account } from '@api/models';
+import { AccountService } from '@api/services';
+import { BaseComponent } from '@shared/core';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -40,7 +37,6 @@ export class ConnectApiKeyModalComponent extends BaseComponent implements OnInit
   constructor(
     private readonly zone: NgZone,
     private readonly accountService: AccountService,
-    private readonly userService: UserService,
     @Inject(MAT_DIALOG_DATA) public data: { provider: Account }
   ) {
       super();

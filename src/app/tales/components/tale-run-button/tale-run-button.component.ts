@@ -1,17 +1,12 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { AccessLevel } from '@api/models/access-level';
-import { Instance } from '@api/models/instance';
-import { Tale } from '@api/models/tale';
-import { InstanceService } from '@api/services/instance.service';
-import { TaleService } from '@api/services/tale.service';
-import { LogService } from '@framework/core/log.service';
-import { enterZone } from '@framework/ngrx/enter-zone.operator';
+import { AccessLevel, Instance, Tale } from '@api/models';
+import { InstanceService, TaleService } from '@api/services';
+import { LogService } from '@shared/core/log.service';
 import { ErrorModalComponent } from '@shared/error-handler/error-modal/error-modal.component';
 import { CopyOnLaunchModalComponent } from '@tales/components/modals/copy-on-launch-modal/copy-on-launch-modal.component';
 import { SyncService } from '@tales/sync.service';
-
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -44,45 +39,9 @@ export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.instanceLaunchingSubscription = this.syncService.instanceLaunchingSubject.subscribe(
-      (resource: { taleId: string; instanceId: string }) => {
-        // Ignore updates that aren't for this Tale
-        if (resource.taleId != this.tale._id) {
-          return;
-        }
-
-        this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
-          this.instance = instance;
-          this.ref.detectChanges();
-        });
-      }
-    );
-    this.instanceRunningSubscription = this.syncService.instanceRunningSubject.subscribe(
-      (resource: { taleId: string; instanceId: string }) => {
-        // Ignore updates that aren't for this Tale
-        if (resource.taleId != this.tale._id) {
-          return;
-        }
-
-        this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
-          this.instance = instance;
-          this.ref.detectChanges();
-        });
-      }
-    );
-    this.instanceErrorSubscription = this.syncService.instanceErrorSubject.subscribe(
-      (resource: { taleId: string; instanceId: string }) => {
-        // Ignore updates that aren't for this Tale
-        if (resource.taleId != this.tale._id) {
-          return;
-        }
-
-        this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
-          this.instance = instance;
-          this.ref.detectChanges();
-        });
-      }
-    );
+    this.instanceLaunchingSubscription = this.syncService.instanceLaunchingSubject.subscribe(this.updateInstance);
+    this.instanceRunningSubscription = this.syncService.instanceRunningSubject.subscribe(this.updateInstance);
+    this.instanceErrorSubscription = this.syncService.instanceErrorSubject.subscribe(this.updateInstance);
   }
 
   ngOnChanges(): void {
@@ -95,6 +54,18 @@ export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
     this.instanceLaunchingSubscription.unsubscribe();
     this.instanceRunningSubscription.unsubscribe();
     this.instanceErrorSubscription.unsubscribe();
+  }
+
+  updateInstance(resource: { taleId: string; instanceId: string }): void {
+    // Ignore updates that aren't for this Tale
+    if (resource.taleId !== this.tale._id) {
+      return;
+    }
+
+    this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
+      this.instance = instance;
+      this.ref.detectChanges();
+    });
   }
 
   autoRefresh(): void {
