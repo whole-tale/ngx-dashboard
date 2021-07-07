@@ -1,15 +1,9 @@
 import { Component, Inject, NgZone, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { AccessLevel } from '@api/models/access-level';
-import { Tale } from '@api/models/tale';
-import { FolderService } from '@api/services/folder.service';
-import { ItemService } from '@api/services/item.service';
-import { ResourceService } from '@api/services/resource.service';
-import { TaleService } from '@api/services/tale.service';
+import { AccessLevel, Tale } from '@api/models';
+import { FolderService, ItemService, TaleService } from '@api/services';
 import { FileElement } from '@files/models/file-element';
-import { LogService }  from '@framework/core/log.service';
-import { TruncatePipe } from '@framework/core/truncate.pipe';
-import { enterZone }  from '@framework/ngrx';
+import { enterZone, LogService }  from '@shared/core';
 import { BehaviorSubject } from 'rxjs';
 
 enum ParentType {
@@ -51,8 +45,6 @@ export class TaleWorkspacesDialogComponent implements OnInit {
     private taleService: TaleService,
     private itemService: ItemService,
     private folderService: FolderService,
-    private resourceService: ResourceService,
-    private truncate: TruncatePipe,
     @Inject(MAT_DIALOG_DATA) public data: { tale: Tale }) {
 
   }

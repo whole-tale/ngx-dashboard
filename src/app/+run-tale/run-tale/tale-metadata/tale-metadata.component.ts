@@ -1,24 +1,16 @@
 import { ChangeDetectorRef, Component, Input, NgZone, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiConfiguration } from '@api/api-configuration';
-import { AccessLevel } from '@api/models/access-level';
-import { Image } from '@api/models/image';
-import { License } from '@api/models/license';
-import { PublishInfo } from '@api/models/publish-info';
-import { Tale } from '@api/models/tale';
-import { User } from '@api/models/user';
-import { ImageService } from '@api/services/image.service';
-import { LicenseService } from '@api/services/license.service';
-import { TaleService } from '@api/services/tale.service';
-import { LogService } from '@framework/core/log.service';
-import { enterZone } from '@framework/ngrx/enter-zone.operator';
+import { AccessLevel, Image, License, PublishInfo, Tale, User } from '@api/models';
+import { ImageService, LicenseService, TaleService } from '@api/services';
+import { ConfirmationModalComponent } from '@shared/common/components/confirmation-modal/confirmation-modal.component';
+import { LogService } from '@shared/core';
 import { ErrorService } from '@shared/error-handler/services/error.service';
 import { NotificationService } from '@shared/error-handler/services/notification.service';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { SyncService } from '@tales/sync.service';
 import { Observable } from 'rxjs';
 
-import { ConfirmationModalComponent } from '@shared/common/components/confirmation-modal/confirmation-modal.component';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -59,7 +51,7 @@ export class TaleMetadataComponent implements OnInit {
   licenses: Observable<Array<License>>;
   environments: Observable<Array<Image>>;
 
-  confirmationModalShowing: boolean = false;
+  confirmationModalShowing = false;
   apiRoot: string;
 
   // Edit mode

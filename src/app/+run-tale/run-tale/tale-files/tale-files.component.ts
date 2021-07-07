@@ -1,25 +1,13 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnInit, Output } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AccessLevel } from '@api/models/access-level';
-import { Dataset } from '@api/models/dataset';
-import { Tale } from '@api/models/tale';
-import { User } from '@api/models/user';
-import { CollectionService } from '@api/services/collection.service';
-import { DatasetService } from '@api/services/dataset.service';
-import { FileService } from '@api/services/file.service';
-import { FolderService } from '@api/services/folder.service';
-import { ItemService } from '@api/services/item.service';
-import { ResourceService } from '@api/services/resource.service';
-import { TaleService } from '@api/services/tale.service';
-import { UserService } from '@api/services/user.service';
+import { AccessLevel, Tale, User } from '@api/models';
+import { CollectionService, DatasetService, FileService, FolderService, ItemService, ResourceService, TaleService, UserService } from '@api/services';
 import { FileElement } from '@files/models/file-element';
-import { LogService } from '@framework/core/log.service';
-import { TruncatePipe } from '@framework/core/truncate.pipe';
-import { WindowService } from '@framework/core/window.service';
-import { enterZone } from '@framework/ngrx/enter-zone.operator';
+import { TruncatePipe } from '@shared/common/pipes/truncate.pipe';
+import { enterZone, LogService, WindowService } from '@shared/core';
 import { ErrorModalComponent } from '@shared/error-handler/error-modal/error-modal.component';
-import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
+import { BehaviorSubject, forkJoin } from 'rxjs';
 
 import { RegisterDataDialogComponent } from '../modals/register-data-dialog/register-data-dialog.component';
 import { SelectDataDialogComponent } from '../modals/select-data-dialog/select-data-dialog.component';
@@ -207,7 +195,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
       // Can't bind to [attr.data-percent].. use js to set total and update progress
       const percent =  ((chunkResp.received ? +chunkResp.received : +upload.size) / +upload.size) * 100;
-      $('#upload-' + uploadId).progress('set percent', percent);
+      $(`#upload-${uploadId}`).progress('set percent', percent);
       existing.uploadProgress = percent;
       this.ref.detectChanges();
     }
@@ -245,7 +233,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         this.files.next(files);
 
         // Can't bind to [attr.data-percent].. use js to set total and update progress
-        $('#upload-' + uploadId).progress('set percent', 0);
+        $(`#upload-${uploadId}`).progress('set percent', 0);
         this.ref.detectChanges();
 
         // This should be a blocking call
@@ -255,7 +243,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         this.logger.info(`Upload complete: ${upload.name} (${upload.size})`, upload);
 
         // Can't bind to [attr.data-percent].. use js to set total and update progress
-        $('#upload-' + uploadId).progress('set percent', 100);
+        $(`#upload-${uploadId}`).progress('set percent', 100);
         initResp.uploading = false;
         this.ref.detectChanges();
 

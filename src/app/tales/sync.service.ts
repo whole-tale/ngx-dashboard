@@ -1,6 +1,5 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { LogService } from '@framework/core/log.service';
+import { LogService } from '@shared/core';
 import { Subject } from 'rxjs';
 
 @Injectable({
@@ -82,7 +81,7 @@ export class SyncService {
     this.delay(() => this.taleImportFailedSubject.next(taleId));
   }
 
-  private delay(fn: Function, delayMs = 1000): void {
+  delay(fn: Function, delayMs = 1000): void {
     setTimeout(fn, delayMs);
   }
 }

@@ -1,7 +1,6 @@
 import { Tale } from '@api/models/tale';
-import { BaseDocument } from '~/app/framework/ngrx';
 
-export interface FileElement extends BaseDocument {
+export interface FileElement {
   // present on all of folders, items, collections, and datasets
   _id: string;
   _modelType: string;

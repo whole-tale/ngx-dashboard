@@ -1,18 +1,11 @@
 import { ChangeDetectorRef, Component, Input, NgZone, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { AccessLevel } from '@api/models/access-level';
-import { Instance } from '@api/models/instance';
-import { Tale } from '@api/models/tale';
-import { User } from '@api/models/user';
-import { InstanceService } from '@api/services/instance.service';
-import { TaleService } from '@api/services/tale.service';
-import { UserService } from '@api/services/user.service';
-import { TokenService } from '@api/token.service';
-import { LogService } from '@framework/core/log.service';
+import { AccessLevel, Instance, Tale, User } from '@api/models';
+import { InstanceService, TaleService, UserService } from '@api/services';
+import { LogService } from '@shared/core/log.service';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { SyncService } from '@tales/sync.service';
-import { Observable, Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 import { DeleteTaleModalComponent } from '../../modals/delete-tale-modal/delete-tale-modal.component';
 

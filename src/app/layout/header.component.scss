@@ -1,9 +1,9 @@
 @import '~src/assets/sass/mixin/bem';
 
 .header {
-  @include el('logo') {
+  /*@include el('logo') {
     vertical-align: middle;
-  }
+  }*/
 }
 
 #event-notification-counter {

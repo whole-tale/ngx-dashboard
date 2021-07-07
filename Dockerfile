@@ -1,3 +1,4 @@
+
 # Docker image for WT production build.
 #
 # Build: docker build -t bodom0015/ng-dashboard:wt -f Dockerfile .
@@ -8,17 +9,19 @@
 #
 
 # Perform build in the "nodebuild" container
-FROM bodom0015/ng as nodebuild
+FROM node:fermium as nodebuild
 WORKDIR /srv/app/
+ARG NODE_OPTIONS=--max-old-space-size=4096
+ARG TIMEOUT=360000
 
 # Install dependencies
 COPY package.json yarn.lock ./
-RUN $YARN install --network-timeout=360000 && \
-    $YARN cache clean
+RUN yarn install --network-timeout=${TIMEOUT} && \
+    yarn cache clean
 
 # Perform an Angular production build
 COPY . ./
-RUN $NG build --prod
+RUN ./node_modules/@angular/cli/bin/ng build --prod --no-aot --build-optimizer false
 
 # Copy built artifacts from "nodebuild" to nginx
 FROM nginx:stable-alpine

@@ -1,10 +1,8 @@
 import { AfterViewInit, Component, Inject, NgZone, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
-import { Image } from '@api/models/image';
-import { Tale } from '@api/models/tale';
-import { ImageService } from '@api/services/image.service';
-import { LogService } from '@framework/core/log.service';
-import { WindowService } from '@framework/core/window.service';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Image, Tale } from '@api/models';
+import { ImageService } from '@api/services';
+import { LogService, WindowService } from '@shared/core';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -128,6 +126,6 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
   }
 
   get docUrl(): string {
-    return this.window.env.rtdBaseUrl + "/users_guide/compose.html";
+    return `${this.window.env.rtdBaseUrl}/users_guide/compose.html`;
   }
 }

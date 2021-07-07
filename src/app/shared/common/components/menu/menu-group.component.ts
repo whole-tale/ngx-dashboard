@@ -1,5 +1,5 @@
 import { Component, ContentChildren, Input, QueryList } from '@angular/core';
-import { BaseComponent } from '~/app/framework/core';
+import { BaseComponent } from '@shared/core';
 
 import { MenuItemComponent } from './menu-item.component';
 
