@@ -4,6 +4,11 @@
   cursor: pointer;
 }
 
+.tale-button.disabled,
+.tale-button-primary.disabled {
+  cursor: not-allowed !important;
+}
+
 .tale-button:hover {
   border: solid #2185d0 1px;
   border-radius: 5px;

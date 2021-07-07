@@ -1,22 +1,32 @@
 <div>
-  <button *ngIf="!instance" class="right floated" [ngClass]="{ 'tale-button': !isPrimary, 'tale-button-primary': isPrimary }" (click)="startTale()">
-      <i class="play icon"></i>
-      Run Tale
-  </button>
-  <button *ngIf="instance && instance.status === 0" class="right floated" [ngClass]="{ 'tale-button': !isPrimary, 'tale-button-primary': isPrimary }" (click)="startTale()">
+  <button *ngIf="tale && tale.status === 0" class="right floated" [ngClass]="{ 'tale-button disabled': !isPrimary, 'tale-button-primary disabled': isPrimary }" disabled="true">
       <i class="fas fa-spinner fa-pulse"></i>
-      Starting...
+      Importing...
   </button>
-  <button *ngIf="instance && instance.status === 1" class="right floated" [ngClass]="{ 'tale-button': !isPrimary, 'tale-button-primary': isPrimary }" (click)="stopTale()">
-      <i class="stop icon"></i>
-      Stop Tale
-  </button>
-  <button *ngIf="instance && instance.status === 2" class="right floated" [ngClass]="{ 'tale-button': !isPrimary, 'tale-button-primary': isPrimary }" (click)="stopTale()">
+  <button *ngIf="tale && tale.status === 2" class="right floated" [ngClass]="{ 'tale-button disabled': !isPrimary, 'tale-button-primary disabled': isPrimary }" disabled="true">
       <i class="warning icon"></i>
-      Error
+      Import Failed
   </button>
-  <button *ngIf="instance && instance.status === 3" class="right floated" [ngClass]="{ 'tale-button': !isPrimary, 'tale-button-primary': isPrimary }" (click)="stopTale()">
-      <i class="fas fa-spinner fa-pulse"></i>
-      Stopping...
-  </button>
+  <div *ngIf="tale && tale.status === 1">
+      <button *ngIf="!instance" class="right floated" [ngClass]="{ 'tale-button': !isPrimary, 'tale-button-primary': isPrimary }" (click)="startTale()">
+          <i class="play icon"></i>
+          Run Tale
+      </button>
+      <button *ngIf="instance && instance.status === 0" class="right floated" [ngClass]="{ 'tale-button': !isPrimary, 'tale-button-primary': isPrimary }" (click)="startTale()">
+          <i class="fas fa-spinner fa-pulse"></i>
+          Starting...
+      </button>
+      <button *ngIf="instance && instance.status === 1" class="right floated" [ngClass]="{ 'tale-button': !isPrimary, 'tale-button-primary': isPrimary }" (click)="stopTale()">
+          <i class="stop icon"></i>
+          Stop Tale
+      </button>
+      <button *ngIf="instance && instance.status === 2" class="right floated" [ngClass]="{ 'tale-button': !isPrimary, 'tale-button-primary': isPrimary }" (click)="stopTale()">
+          <i class="warning icon"></i>
+          Error
+      </button>
+      <button *ngIf="instance && instance.status === 3" class="right floated" [ngClass]="{ 'tale-button': !isPrimary, 'tale-button-primary': isPrimary }" (click)="stopTale()">
+          <i class="fas fa-spinner fa-pulse"></i>
+          Stopping...
+      </button>
+  </div>
 </div>
