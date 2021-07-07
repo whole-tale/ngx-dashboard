@@ -45,22 +45,26 @@
                                         <mat-icon fontSet="fa" fontIcon="fa-ellipsis-v"></mat-icon>
 
                                         <div class="menu transition hidden" tabindex="-1">
-                                            <div class="item" (click)="rebuildTale()" *ngIf="isTaleWritable()"><i class="fas fa-redo-alt"></i> Rebuild Tale</div>
-                                            <div class="item" (click)="restartTale()" *ngIf="isTaleWritable()"><i class="fas fa-sync-alt"></i> Restart Tale</div>
+                                            <div class="item" (click)="rebuildTale()" *ngIf="isTaleWritable()"><i class="fas fa-fw fa-redo-alt"></i> Rebuild Tale</div>
+                                            <div class="item" (click)="restartTale()" *ngIf="isTaleWritable() && instance && instance.status === 1">
+
+                                                <i class="fas fa-fw fa-sync-alt"></i>
+                                                Restart Tale
+                                            </div>
 
                                             <div class="divider" *ngIf="isTaleWritable()"></div>
-                                            <div class="item" (click)="saveTaleVersion()" *ngIf="isTaleWritable()"><i class="fas fa-save"></i> Save Tale Version</div>
+                                            <div class="item" (click)="saveTaleVersion()" *ngIf="isTaleWritable()"><i class="fas fa-fw fa-save"></i> Save Tale Version</div>
                                             <div class="divider" *ngIf="isTaleWritable()"></div>
 
-                                            <div class="item" (click)="copyTale()"><i class="fas fa-clone"></i> Duplicate Tale</div>
-                                            <div class="item" (click)="openPublishTaleDialog($event)" *ngIf="isTaleWritable()"><i class="fas fa-newspaper"></i> Publish Tale</div>
-                                            <div class="item" (click)="exportTale()"><i class="fas fa-file-archive"></i> Export Tale</div>
+                                            <div class="item" (click)="copyTale()"><i class="fas fa-fw fa-clone"></i> Duplicate Tale</div>
+                                            <div class="item" (click)="openPublishTaleDialog($event)" *ngIf="isTaleWritable()"><i class="fas fa-fw fa-newspaper"></i> Publish Tale</div>
+                                            <div class="item" (click)="exportTale()"><i class="fas fa-fw fa-file-archive"></i> Export Tale</div>
                                             <div class="divider" *ngIf="isTaleWritable()"></div>
-                                            <div class="item" (click)="openConnectGitRepoDialog()" *ngIf="isTaleWritable()"><i class="fab fa-git"></i> Connect to Git Repository...</div>
+                                            <div class="item" (click)="openConnectGitRepoDialog()" *ngIf="isTaleWritable()"><i class="fab fa-fw fa-git"></i> Connect to Git Repository...</div>
                                             <div class="divider"></div>
 
-                                            <div class="item" (click)="viewFullScreen()" *ngIf="isTaleWritable()"><i class="fas fa-expand"></i> View Fullscreen</div>
-                                            <div class="item" (click)="gotoDocs()"><i class="info circle icon"></i> Read the docs</div>
+                                            <div class="item" (click)="viewFullScreen()" *ngIf="isTaleWritable()"><i class="fas fa-fw fa-expand"></i> View Fullscreen</div>
+                                            <div class="item" (click)="gotoDocs()"><i class="fas fa-fw fa-question-circle"></i> Read the docs</div>
                                         </div>
                                     </div>
                                 </div>
