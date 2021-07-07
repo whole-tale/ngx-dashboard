@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { MoveToDialogComponent } from './move-to-dialog.component';
 
@@ -6,11 +6,13 @@ describe('MoveToDialogComponent', () => {
   let component: MoveToDialogComponent;
   let fixture: ComponentFixture<MoveToDialogComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [MoveToDialogComponent]
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [MoveToDialogComponent],
+      }).compileComponents();
+    })
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(MoveToDialogComponent);
