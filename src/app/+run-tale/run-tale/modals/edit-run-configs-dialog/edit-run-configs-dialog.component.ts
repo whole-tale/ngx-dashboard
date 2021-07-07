@@ -1,8 +1,7 @@
 import { ChangeDetectorRef, Component, Inject } from '@angular/core';
-import { MatDialog } from '@angular/material';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { Tale } from '@api/models/tale';
-import { LogService }  from '@framework/core/log.service';
+import { LogService }  from '@shared/core';
 
 // FIXME: Replace this with real models from Girder
 export enum RunConfigType {
