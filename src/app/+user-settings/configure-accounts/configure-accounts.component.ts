@@ -1,13 +1,9 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { Account } from '@api/models/account';
-import { Repository } from '@api/models/repository';
-import { User } from '@api/models/user';
-import { AccountService } from '@api/services/account.service';
-import { UserService } from '@api/services/user.service';
-import { BaseComponent } from '@framework/core/base.component';
-import { LogService } from '@framework/core/log.service';
+import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { Account, User } from '@api/models';
+import { AccountService, UserService } from '@api/services';
+import { BaseComponent, LogService } from '@shared/core';
 import { ErrorService } from '@shared/error-handler/services/error.service';
 
 import { ConnectApiKeyModalComponent } from '../modals/connect-apikey-modal/connect-apikey-modal.component';

@@ -1,12 +1,9 @@
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { ErrorHandler, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { LogService } from '@framework/core/log.service';
+import { LogService } from '@shared/core';
 
 import { ErrorModalComponent } from './error-modal/error-modal.component';
-import { GlobalErrorHandler } from './global-error.handler';
-import { ServerErrorInterceptor } from './server-error.interceptor';
 import { ErrorService } from './services/error.service';
 
 @NgModule({
@@ -15,10 +12,9 @@ import { ErrorService } from './services/error.service';
   imports: [MatSnackBarModule, MatDialogModule],
   providers: [
     ErrorService,
-    LogService,
-    //{ provide: ErrorHandler, useClass: GlobalErrorHandler },
-    { provide: HTTP_INTERCEPTORS, useClass: ServerErrorInterceptor, multi: true }
-  ],
-  entryComponents: [ErrorModalComponent]
+    LogService
+    // { provide: ErrorHandler, useClass: GlobalErrorHandler },
+    // { provide: HTTP_INTERCEPTORS, useClass: ServerErrorInterceptor, multi: true }
+  ]
 })
 export class ErrorHandlerModule {}

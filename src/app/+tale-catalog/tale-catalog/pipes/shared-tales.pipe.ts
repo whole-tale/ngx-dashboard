@@ -1,11 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { AccessLevel } from '@api/models/access-level';
-import { Tale } from '@api/models/tale';
+import { AccessLevel, Tale } from '@api/models';
 
 // Given a list of tales, returns only stopped tales
 @Pipe({name: 'sharedTales'})
 export class SharedTalesPipe implements PipeTransform {
-
   transform(value: Array<Tale>): Array<Tale> {
     if (!value) {
       return [];

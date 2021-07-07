@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { BaseComponent } from '~/app/framework/core';
+import { BaseComponent } from '@shared/core';
 
 @Component({
   selector: 'app-loading-overlay',

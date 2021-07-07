@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { BaseComponent } from '~/app/framework/core';
+import { BaseComponent } from '@shared/core';
 
 @Component({
   selector: 'app-menu-item',

@@ -1,10 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorHandler, Injectable, Injector } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { LogService } from '@framework/core/log.service';
+import { LogService } from '@shared/core';
 
-import { ErrorModalComponent } from './error-modal/error-modal.component';
 import { ErrorService } from './services/error.service';
 import { NotificationService } from './services/notification.service';
 

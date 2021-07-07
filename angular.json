@@ -13,10 +13,10 @@
       "prefix": "app",
       "schematics": {
         "@schematics/angular:module": {
-          "spec": false
+          "skipTests": true
         },
         "@schematics/angular:component": {
-          "styleext": "scss"
+          "style": "scss"
         },
         "@ngrx/schematics:component": {
           "styleext": "scss"
@@ -37,7 +37,7 @@
             },
             "outputPath": "dist/browser",
             "index": "src/index.html",
-            "main": "src/main-browser.ts",
+            "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.json",
             "assets": [
@@ -50,7 +50,8 @@
               "src/assets/data",
               "src/assets/i18n",
               "src/assets/config.local.json",
-              "src/assets/env.template.js"
+              "src/assets/env.template.js",
+              "src/assets/env.js"
             ],
             "styles": [
               "src/assets/sass/lib.scss",
@@ -90,23 +91,8 @@
             }
           }
         },
-        "server": {
-          "builder": "@angular-devkit/build-angular:server",
-          "options": {
-            "outputPath": "dist/server",
-            "main": "src/main-server.ts",
-            "tsConfig": "tsconfig.server.json",
-            "progress": true
-          },
-          "configurations": {
-            "production": {
-              "optimization": true,
-              "sourceMap": false
-            }
-          }
-        },
         "serve": {
-          "builder": "@angular-builders/dev-server:generic",
+          "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
             "browserTarget": "universal:build"
           },

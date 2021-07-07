@@ -30,6 +30,11 @@ export class TokenInterceptor implements HttpInterceptor {
       );
     }
 
+    // Ignore if request is asking for static JSON file
+    if (request.url.endsWith('.json')) {
+      return next.handle(request);
+    }
+
     // Ignore if this request isn't going to girder
     if (!request.url.startsWith(this.config.rootUrl)) {
       return next.handle(request);

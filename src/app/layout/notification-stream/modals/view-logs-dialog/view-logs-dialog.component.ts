@@ -1,10 +1,8 @@
 import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Job } from '@api/models/job';
-import { JobService } from '@api/services/job.service';
-import { LogService } from '@framework/core/log.service';
-import { BehaviorSubject, zip } from 'rxjs';
-import { TimeInterval } from 'rxjs/internal/operators/timeInterval';
+import { Job } from '@api/models';
+import { JobService } from '@api/services';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-view-logs-dialog',
@@ -21,7 +19,6 @@ export class ViewLogsDialogComponent implements OnInit, OnDestroy {
   constructor(
     private readonly ref: ChangeDetectorRef,
     private readonly jobService: JobService,
-    private readonly logger: LogService,
     @Inject(MAT_DIALOG_DATA) public data: { jobIds: Array<string> }
   ) {}
 

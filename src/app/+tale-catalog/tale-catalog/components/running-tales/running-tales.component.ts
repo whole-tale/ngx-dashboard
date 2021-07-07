@@ -1,9 +1,5 @@
 import { Component, Input, NgZone, Output } from '@angular/core';
-import { Instance } from '@api/models/instance';
-import { Tale } from '@api/models/tale';
-import { User } from '@api/models/user';
-import { TokenService } from '@api/token.service';
-import { Observable } from 'rxjs';
+import { Instance, Tale } from '@api/models';
 
 // import * as $ from 'jquery';
 declare var $: any;

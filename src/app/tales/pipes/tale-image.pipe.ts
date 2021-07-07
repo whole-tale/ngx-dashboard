@@ -1,5 +1,4 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Image } from '@api/models/image';
 import { Tale } from '@api/models/tale';
 import { ImageService } from '@api/services/image.service';
 import { EMPTY, Observable } from 'rxjs';

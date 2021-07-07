@@ -1,7 +1,4 @@
 import { AuthGuard as CustomAuthGuard } from '@api/auth-guard';
-import { AuthGuard } from '@ngx-auth/core';
-import { MetaGuard } from '@ngx-meta/core';
-import { ChangeLanguageComponent } from '~/app/framework/i18n';
 
 import { MainComponent } from './layout/main.component';
 import { LoginComponent } from './login/login.component';
@@ -10,7 +7,6 @@ export const routes = [
   {
     path: 'login',
     component: LoginComponent,
-    canActivate: [MetaGuard],
     data: {
       meta: {
         title: 'PUBLIC.LOGIN.PAGE_TITLE'
@@ -23,35 +19,23 @@ export const routes = [
     children: [
       {
         path: '',
-        loadChildren: './+tale-catalog/tale-catalog.module#TaleCatalogModule'
-      },
-      {
-        path: 'environments',
-        loadChildren: './+compute-environments/compute-environments.module#ComputeEnvironmentsModule'
-      },
-      {
-        path: 'datasets',
-        loadChildren: './+data-catalog/data-catalog.module#DataCatalogModule'
+        loadChildren: () => import('./+tale-catalog/tale-catalog.module').then(m => m.TaleCatalogModule)
       },
       {
         path: 'run',
-        loadChildren: './+run-tale/run-tale.module#RunTaleModule'
+        loadChildren: () => import('./+run-tale/run-tale.module').then(m => m.RunTaleModule)
       },
       {
         path: 'settings',
-        loadChildren: './+user-settings/user-settings.module#UserSettingsModule'
+        loadChildren: () => import('./+user-settings/user-settings.module').then(m => m.UserSettingsModule)
       }
     ],
-    canActivateChild: [MetaGuard, CustomAuthGuard], // AuthGuard
+    canActivateChild: [CustomAuthGuard],
     data: {
       i18n: {
         isRoot: true
       }
     }
-  },
-  {
-    path: 'change-language/:languageCode',
-    component: ChangeLanguageComponent
   },
   {
     path: '**',

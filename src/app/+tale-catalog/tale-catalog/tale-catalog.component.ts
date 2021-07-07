@@ -3,8 +3,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Tale } from '@api/models/tale';
 import { TaleService } from '@api/services/tale.service';
-import { BaseComponent } from '@framework/core';
-import { LogService } from '@framework/core/log.service';
+import { BaseComponent, LogService } from '@shared/core';
 import { routeAnimation } from '~/app/shared';
 
 import { CreateTaleModalComponent } from './modals/create-tale-modal/create-tale-modal.component';
@@ -54,12 +53,12 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
               data: { params: queryParams }
             });
             dialogRef.afterClosed().subscribe((result: {tale: Tale, asTale: boolean, url: string, baseUrl: string}) => {
+              // Short-circuit for 'Cancel' case
+              if (!result || !result.tale) { return; }
+
               const tale = result.tale;
               const asTale = result.asTale;
               const baseUrl = result.baseUrl;
-
-              // Short-circuit for 'Cancel' case
-              if (!tale) { return; }
 
               // Import Tale from Dataset
               const params = {
@@ -68,7 +67,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
                 asTale: asTale ? asTale : false, // Pull from user input
                 git: result.url ? true : false,
                 spawn: false, // if true, immediately launch a Tale instance
-                taleKwargs: tale.title ? { title: tale.title } : {}, 
+                taleKwargs: tale.title ? { title: tale.title } : {},
                 lookupKwargs: baseUrl ? { base_url: baseUrl } : {},
               };
               this.taleService.taleCreateTaleFromUrl(params).subscribe((response: Tale) => {
@@ -107,7 +106,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
             asTale: false, // Pull from user input
             git: gitUrl ? true : false,
             spawn: false, // if true, immediately launch a Tale instance
-            taleKwargs: tale.title ? { title: tale.title } : {},
+            taleKwargs: tale.title ? { title: tale.title } : {},
             lookupKwargs: baseUrl ? { base_url: baseUrl } : {},
           };
 

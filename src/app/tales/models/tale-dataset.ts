@@ -1,6 +1,6 @@
-import { BaseDocument } from '~/app/framework/ngrx';
+// import { BaseDocument } from '@shared/ngrx';
 
-export interface TaleDataset extends BaseDocument {
+export interface TaleDataset {
   _modelType: string;
   itemId: string;
   mountPath: string;
