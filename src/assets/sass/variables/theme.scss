@@ -1,4 +1,4 @@
-@import '~@angular/material/theming';
+@use '~@angular/material' as mat;
 
-$primary--light: mat-palette($mat-indigo, 300);
-$primary--dark: mat-palette($mat-indigo, 700);
+$primary--light: mat.define-palette(mat.$indigo-palette, 300);
+$primary--dark: mat.define-palette(mat.$indigo-palette, 700);

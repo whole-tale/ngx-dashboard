@@ -16,6 +16,9 @@
         "grouped-imports": true
       }
     ],
+    "deprecation": {
+      "severity": "warning"
+    },
     "no-bitwise": false,
     "templates-no-negated-async": false,
     "i18n": false,

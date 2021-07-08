@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { NotificationStreamComponent } from './notification-stream.component';
 
@@ -6,11 +6,13 @@ describe('NotificationStreamComponent', () => {
   let component: NotificationStreamComponent;
   let fixture: ComponentFixture<NotificationStreamComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [NotificationStreamComponent]
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [NotificationStreamComponent],
+      }).compileComponents();
+    })
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(NotificationStreamComponent);

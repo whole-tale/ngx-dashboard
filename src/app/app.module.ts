@@ -11,7 +11,7 @@ import { MaterialModule } from '@shared/material';
 import { SharedModule } from '@shared/shared.module';
 import { SyncService } from '@tales/sync.service';
 import { CookieService } from 'ngx-cookie-service';
-import { PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface, PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
+import { PerfectScrollbarConfigInterface, PerfectScrollbarModule, PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
 
 import { AppComponent } from './app.component';
 import { routes } from './app.routes';
@@ -27,7 +27,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = { supp
   imports: [
     BrowserModule.withServerTransition({ appId: 'my-app-id' }),
     // TransferHttpCacheModule,
-    RouterModule.forRoot(routes),
+    // TransferHttpCacheModule,
+    RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' }),
     PerfectScrollbarModule,
     ErrorHandlerModule,
     SharedModule,
@@ -36,19 +37,19 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = { supp
     FontAwesomeModule,
     ApiModule,
     NotificationStreamModule,
-    ErrorHandlerModule
+    ErrorHandlerModule,
   ],
   declarations: [HeaderComponent, FooterComponent, MainComponent, LoginComponent, AppComponent],
   providers: [
     {
       provide: PERFECT_SCROLLBAR_CONFIG,
-      useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG
+      useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG,
     },
     CookieService,
-    SyncService
+    SyncService,
   ],
   exports: [AppComponent],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {
   constructor() {

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ViewLogsDialogComponent } from './view-logs-dialog.component';
 
@@ -6,11 +6,13 @@ describe('ViewLogsDialogComponent', () => {
   let component: ViewLogsDialogComponent;
   let fixture: ComponentFixture<ViewLogsDialogComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ViewLogsDialogComponent]
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [ViewLogsDialogComponent],
+      }).compileComponents();
+    })
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ViewLogsDialogComponent);

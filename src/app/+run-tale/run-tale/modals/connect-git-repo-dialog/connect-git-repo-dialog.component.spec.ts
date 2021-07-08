@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ConnectGitRepoDialogComponent } from './connect-git-repo-dialog.component';
 
@@ -6,7 +6,7 @@ describe('ConnectGitRepoDialogComponent', () => {
   let component: ConnectGitRepoDialogComponent;
   let fixture: ComponentFixture<ConnectGitRepoDialogComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ConnectGitRepoDialogComponent]
     }).compileComponents();

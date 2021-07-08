@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ConnectApiKeyModalComponent } from './connect-apikey-modal.component';
 
@@ -6,7 +6,7 @@ describe('ConnectApiKeyModalComponent', () => {
   let component: ConnectApiKeyModalComponent;
   let fixture: ComponentFixture<ConnectApiKeyModalComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ConnectApiKeyModalComponent ]
     })

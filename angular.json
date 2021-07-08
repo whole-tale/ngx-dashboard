@@ -13,7 +13,6 @@
       "prefix": "app",
       "schematics": {
         "@schematics/angular:module": {
-          "skipTests": true
         },
         "@schematics/angular:component": {
           "style": "scss"

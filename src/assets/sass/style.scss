@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import '~@angular/material/theming';
 @import 'func/color';
 @import 'mixin/typography';
@@ -7,10 +8,10 @@
 @import 'shared/root';
 @import 'shared/splash-screen';
 
-@include mat-core;
-$theme: mat-light-theme($primary, $accent, $warn);
+@include mat.core;
+$theme: mat.define-light-theme($primary, $accent, $warn);
 
-@include angular-material-theme($theme);
+@include mat.all-component-themes($theme);
 
 body {
   @include font(#{$h4}/ 1.429 $font--preferred);
