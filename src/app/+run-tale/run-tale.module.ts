@@ -16,6 +16,7 @@ import { MarkdownModule } from 'ngx-markdown';
 import { routes } from './run-tale.routes';
 import { ConnectGitRepoDialogComponent } from './run-tale/modals/connect-git-repo-dialog/connect-git-repo-dialog.component';
 import { CreateRenameVersionDialogComponent } from './run-tale/modals/create-rename-version-dialog/create-rename-version-dialog.component';
+import { EditRunConfigsDialogComponent } from './run-tale/modals/edit-run-configs-dialog/edit-run-configs-dialog.component';
 import { PublishTaleDialogComponent } from './run-tale/modals/publish-tale-dialog/publish-tale-dialog.component';
 import { RegisterDataDialogComponent } from './run-tale/modals/register-data-dialog/register-data-dialog.component';
 import { SelectDataDialogComponent } from './run-tale/modals/select-data-dialog/select-data-dialog.component';
@@ -47,6 +48,7 @@ import { TaleVersionsPanelComponent } from './run-tale/tale-versions-panel/tale-
     ConnectGitRepoDialogComponent,
     CreateRenameVersionDialogComponent,
     TaleVersionInfoDialogComponent,
-  ]
+    EditRunConfigsDialogComponent,
+  ],
 })
 export class RunTaleModule {}

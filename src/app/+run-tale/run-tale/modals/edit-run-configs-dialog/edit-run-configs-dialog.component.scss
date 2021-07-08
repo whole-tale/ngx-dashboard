@@ -1,0 +1,25 @@
+.content {
+  overflow: hidden;
+}
+
+.ng-valid[required],
+.ng-valid.required {
+  border-left: 5px solid #42a948; /* green */
+}
+
+.ng-invalid:not(form) {
+  border-left: 5px solid #a94442; /* red */
+}
+
+.active {
+  font-weight: bold;
+}
+
+.item {
+  cursor: pointer;
+  padding: 5px;
+}
+
+.ui.list {
+  min-height: 45vh;
+}

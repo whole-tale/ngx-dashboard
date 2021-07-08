@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiConfiguration } from '@api/api-configuration';
 import { AccessLevel, Tale, Version } from '@api/models';
@@ -10,6 +10,12 @@ import { SyncService } from '@tales/sync.service';
 import { Subscription } from 'rxjs';
 
 import { CreateRenameVersionDialogComponent } from '../modals/create-rename-version-dialog/create-rename-version-dialog.component';
+// TODO: Use real models from Girder
+import {
+  EditRunConfigsDialogComponent,
+  RunConfigType,
+  TaleRunConfiguration
+} from '../modals/edit-run-configs-dialog/edit-run-configs-dialog.component';
 import { TaleVersionInfoDialogComponent } from '../modals/tale-version-info-dialog/tale-version-info-dialog.component';
 
 // import * as $ from 'jquery';
@@ -24,12 +30,14 @@ interface VersionUpdate {
   templateUrl: './tale-versions-panel.component.html',
   styleUrls: ['./tale-versions-panel.component.scss']
 })
-export class TaleVersionsPanelComponent implements OnInit, OnChanges {
+export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy {
   @Input() tale: Tale;
 
   @Output() readonly taleVersionChanged = new EventEmitter<VersionUpdate>();
 
   versionsSubscription: Subscription;
+
+  runConfig: TaleRunConfiguration = { name: '', mainEntrypoint: '', testEntrypoint: '', testsEnabled: false, type: RunConfigType.Local};
 
   // Tale Version timeline (sorted list)
   timeline: Array<any> = [];
@@ -45,6 +53,7 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
               private dialog: MatDialog,
               private notificationService: NotificationService,
               private windowService: WindowService,
+              // private runService: RunService,
               private syncService: SyncService) {
   }
 
@@ -61,6 +70,12 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
     setTimeout(() => {
       $('.ui.version.dropdown').dropdown({ context: 'body', keepOnScreen: true});
     }, 500);
+  }
+
+  ngOnDestroy(): void {
+    if (this.versionsSubscription) {
+      this.versionsSubscription.unsubscribe();
+    }
   }
 
   refresh(): void {
@@ -130,8 +145,15 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges {
       });
   }
 
-  editRunConfigurations(): void {
-    // TODO: What does this actually change? Design needed.
+  editRunConfiguration(): void {
+    const dialogRef = this.dialog.open(EditRunConfigsDialogComponent, {
+      data: { tale: this.tale, config: this.runConfig }
+    });
+    dialogRef.afterClosed().subscribe((result: any) => {
+      if (!result) { return; }
+
+      this.runConfig = result;
+    });
   }
 
   performRecordedRun(): void {
