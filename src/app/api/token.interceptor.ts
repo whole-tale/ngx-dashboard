@@ -5,17 +5,16 @@ import { ApiConfiguration } from '@api/api-configuration';
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 
-// FIXME: Circular dependency here: something odd with TokenService and the HTTP_INTERCEPTORS
 import { TokenService } from './token.service';
 
 // TODO: Tests
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
-  constructor(/*public tokenService: TokenService,*/ private readonly config: ApiConfiguration, private readonly router: Router) {}
+  constructor(public tokenService: TokenService, private readonly config: ApiConfiguration, private readonly router: Router) {}
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Ignore if we don't have a token
-    const token = localStorage.getItem('girderToken'); // this.tokenService.getToken();
+    const token = this.tokenService.getToken();
     if (!token) {
       return next.handle(request).pipe(
         retry(1),
