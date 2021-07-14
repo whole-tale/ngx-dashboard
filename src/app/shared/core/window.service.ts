@@ -14,6 +14,8 @@ export class WindowService implements Window {
   constructor(private readonly http: HttpClient) {
     this.http.get(ENV_URL).subscribe(env => {
       this.env = env;
+    }, err => {
+      this.logger.error("Failed to fetch env: ", err);
     });
   }
 
