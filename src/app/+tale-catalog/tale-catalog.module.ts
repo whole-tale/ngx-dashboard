@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
 import { MaterialModule } from '@shared/material';
 import { SharedModule } from '@shared/shared.module';
@@ -21,7 +22,7 @@ import { StoppedTalesPipe } from './tale-catalog/pipes/stopped-tales.pipe';
 import { TaleCatalogComponent } from './tale-catalog/tale-catalog.component';
 
 @NgModule({
-  imports: [CommonModule, RouterModule.forChild(routes), MaterialModule, TalesModule, SharedModule],
+  imports: [CommonModule, RouterModule.forChild(routes), MatDialogModule, MaterialModule, TalesModule, SharedModule],
   declarations: [
     TaleCatalogComponent,
     CreateTaleModalComponent,
