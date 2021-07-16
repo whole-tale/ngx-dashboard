@@ -52,7 +52,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let ele of fileElements; index as i; trackBy: trackById " (click)="navigate(ele)">
+      <tr *ngFor="let ele of fileElements; index as i; trackBy: trackById" (click)="navigate(ele)">
         <th class="center aligned"><i class="fas fa-fw fa-2x {{ getIcon(ele) }}"></i></th>
         <td [title]="ele.name">{{ ele.name | truncate:100 }}</td>
         <td [title]="ele.updated">{{ ele.updated | date }}</td>
