@@ -22,7 +22,7 @@ import { StoppedTalesPipe } from './tale-catalog/pipes/stopped-tales.pipe';
 import { TaleCatalogComponent } from './tale-catalog/tale-catalog.component';
 
 @NgModule({
-  imports: [CommonModule, RouterModule.forChild(routes), MaterialModule, MatDialogModule, TalesModule, SharedModule],
+  imports: [CommonModule, RouterModule.forChild(routes), MatDialogModule, MaterialModule, TalesModule, SharedModule],
   declarations: [
     TaleCatalogComponent,
     CreateTaleModalComponent,

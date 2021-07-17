@@ -48,6 +48,12 @@ export class LoginComponent extends BaseComponent implements OnInit {
       this.tokenService.setToken(token);
       this.users.userGetMe().subscribe(
         (user: any) => {
+          if (!user) {
+            this.logger.error('No user found with token.');
+
+            return;
+          }
+
           this.tokenService.user = user;
           const url = this.tokenService.getReturnRoute();
           const segments = url.split('?');
@@ -96,10 +102,10 @@ export class LoginComponent extends BaseComponent implements OnInit {
     const route = this.tokenService.getReturnRoute();
 
     // FIXME: is it ok to use window.location.origin here?
-    const params = { redirect: `${this.window.location.origin}/login?token={girderToken}&rd=${route}`, list: false };
+    const params = { redirect: `${window.location.origin}/login?token={girderToken}&rd=${route}`, list: false };
     this.oauth.oauthListProviders(params).subscribe(
       (providers: any) => {
-        this.window.location.href = providers[this.window.env.authProvider];
+        window.location.href = providers[this.window.env.authProvider];
       },
       err => {
         this.logger.error('Failed to GET /oauth/providers:', err);
