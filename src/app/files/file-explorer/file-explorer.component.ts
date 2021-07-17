@@ -115,7 +115,7 @@ export class FileExplorerComponent implements OnChanges {
   constructor(private readonly dialog: MatDialog, private readonly logger: LogService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.currentNav && changes.fileElements) {
+    if (changes.currentNav || changes.fileElements) {
       setTimeout(() => {
         $('.ui.file.dropdown').dropdown({ action: 'hide' });
       }, 1000);
