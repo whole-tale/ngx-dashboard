@@ -34,7 +34,6 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = { supp
     CoreModule.forRoot([]),
     MaterialModule,
     FontAwesomeModule,
-    ApiModule,
     NotificationStreamModule,
     ErrorHandlerModule
   ],
