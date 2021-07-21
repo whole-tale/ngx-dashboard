@@ -13,6 +13,7 @@
       "prefix": "app",
       "schematics": {
         "@schematics/angular:module": {
+          "skipTests": true
         },
         "@schematics/angular:component": {
           "style": "scss"
@@ -49,8 +50,8 @@
               "src/assets/data",
               "src/assets/i18n",
               "src/assets/config.local.json",
-              "src/assets/env.template.js",
-              "src/assets/env.js"
+              "src/assets/env.template.json",
+              "src/assets/env.json"
             ],
             "styles": [
               "src/assets/sass/lib.scss",

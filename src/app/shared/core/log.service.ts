@@ -7,7 +7,7 @@ import { RemoteConsoleService } from './remote-console.service';
 
 @Injectable()
 export class LogService {
-  static readonly DEFAULT_LOG_LEVEL: LogLevel = LogLevel.Info;
+  static readonly DEFAULT_LOG_LEVEL: LogLevel = LogLevel.Error;
   readonly level: LogLevel;
 
   constructor(

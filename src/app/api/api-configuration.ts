@@ -1,14 +1,6 @@
 /* tslint:disable */
 import { Injectable } from '@angular/core';
-
-function getWindow(): any {
-  return window;
-}
-
-function getWindowApiUrl(): string {
-  let window = getWindow();
-  return window.env.apiUrl;
-}
+import { WindowService } from '@shared/core';
 
 /**
  * Global configuration for Api services
@@ -17,7 +9,11 @@ function getWindowApiUrl(): string {
   providedIn: 'root'
 })
 export class ApiConfiguration {
-  rootUrl: string = getWindowApiUrl();
+  rootUrl: string;
+
+  constructor(private window: WindowService) {
+    this.rootUrl = this.window.env.apiUrl;
+  }
 }
 
 export interface ApiConfigurationInterface {
