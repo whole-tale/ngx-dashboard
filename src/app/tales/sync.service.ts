@@ -3,7 +3,7 @@ import { LogService } from '@shared/core';
 import { Subject } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SyncService {
   readonly taleCreatedSubject = new Subject<string>();
@@ -47,23 +47,23 @@ export class SyncService {
   }
 
   instanceLaunching(taleId: string, instanceId: string): void {
-    this.logger.info('Updating Instance via SyncService: ', instanceId);
+    this.logger.info('Updating Instance (Launching) via SyncService: ', instanceId);
     this.delay(() => this.instanceLaunchingSubject.next({ taleId, instanceId }));
   }
   instanceRunning(taleId: string, instanceId: string): void {
-    this.logger.info('Updating Instance via SyncService: ', instanceId);
+    this.logger.info('Updating Instance (Running) via SyncService: ', instanceId);
     this.delay(() => this.instanceRunningSubject.next({ taleId, instanceId }));
   }
   instanceDeleting(taleId: string, instanceId: string): void {
-    this.logger.info('Deleting Instance via SyncService: ', instanceId);
+    this.logger.info('Deleting Instance (Deleting) via SyncService: ', instanceId);
     this.delay(() => this.instanceDeletingSubject.next({ taleId, instanceId }));
   }
   instanceDeleted(taleId: string, instanceId: string): void {
-    this.logger.info('Deleted Instance via SyncService: ', instanceId);
+    this.logger.info('Deleted Instance (Deleted) via SyncService: ', instanceId);
     this.delay(() => this.instanceDeletedSubject.next({ taleId, instanceId }));
   }
   instanceError(taleId: string, instanceId: string): void {
-    this.logger.info('Updating Instance via SyncService: ', instanceId);
+    this.logger.info('Updating Instance (Error) via SyncService: ', instanceId);
     this.delay(() => this.instanceErrorSubject.next({ taleId, instanceId }));
   }
 
