@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-tale-run-button',
   templateUrl: './tale-run-button.component.html',
-  styleUrls: ['./tale-run-button.component.scss']
+  styleUrls: ['./tale-run-button.component.scss'],
 })
 export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
   @Input() instance: Instance;
@@ -26,6 +26,8 @@ export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
 
   instanceLaunchingSubscription: Subscription;
   instanceRunningSubscription: Subscription;
+  instanceDeletingSubscription: Subscription;
+  instanceDeletedSubscription: Subscription;
   instanceErrorSubscription: Subscription;
 
   constructor(
@@ -39,9 +41,21 @@ export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.instanceLaunchingSubscription = this.syncService.instanceLaunchingSubject.subscribe(this.updateInstance);
-    this.instanceRunningSubscription = this.syncService.instanceRunningSubject.subscribe(this.updateInstance);
-    this.instanceErrorSubscription = this.syncService.instanceErrorSubject.subscribe(this.updateInstance);
+    this.instanceLaunchingSubscription = this.syncService.instanceLaunchingSubject.subscribe((resource) => {
+      this.updateInstance(resource);
+    });
+    this.instanceRunningSubscription = this.syncService.instanceRunningSubject.subscribe((resource) => {
+      this.updateInstance(resource);
+    });
+    this.instanceDeletingSubscription = this.syncService.instanceDeletingSubject.subscribe((resource) => {
+      this.updateInstance(resource);
+    });
+    this.instanceDeletedSubscription = this.syncService.instanceDeletedSubject.subscribe((resource) => {
+      this.updateInstance(resource);
+    });
+    this.instanceErrorSubscription = this.syncService.instanceErrorSubject.subscribe((resource) => {
+      this.updateInstance(resource);
+    });
   }
 
   ngOnChanges(): void {
@@ -53,6 +67,8 @@ export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy(): void {
     this.instanceLaunchingSubscription.unsubscribe();
     this.instanceRunningSubscription.unsubscribe();
+    this.instanceDeletingSubscription.unsubscribe();
+    this.instanceDeletedSubscription.unsubscribe();
     this.instanceErrorSubscription.unsubscribe();
   }
 
@@ -65,6 +81,7 @@ export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
     this.instanceService.instanceGetInstance(resource.instanceId).subscribe((instance: Instance) => {
       this.instance = instance;
       this.ref.detectChanges();
+      this.taleInstanceStateChanged.emit(this);
     });
   }
 
@@ -101,7 +118,7 @@ export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
             stopPolling();
           }
         },
-        err => {
+        (err) => {
           if (err.error.message.startsWith('Invalid instance id')) {
             this.instance = undefined;
           } else {
@@ -171,7 +188,7 @@ export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
           this.autoRefresh();
           // });
         },
-        err => {
+        (err) => {
           this.logger.error('Failed to delete instance:', err);
           this.autoRefresh();
         }
@@ -196,7 +213,7 @@ export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
           // Navigate the UI to the new Tale copy
           this.router.navigate(['run', taleCopy._id]);
         },
-        err => {
+        (err) => {
           this.logger.error('Failed to copy Tale:', err);
         }
       );
