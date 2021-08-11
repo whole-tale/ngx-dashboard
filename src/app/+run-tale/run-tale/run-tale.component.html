@@ -17,9 +17,9 @@
                                 <div class="ten wide column">
                                     <div class="title-info">
                                         <div class="img-holder">
-                                            <img [src]="tale.illustration" *ngIf="tale.illustration">
+                                            <img alt="illustration" [src]="tale.illustration" *ngIf="tale.illustration">
                                         </div>
-                                        <img [src]="tale.icon" class="env" *ngIf="tale.icon">
+                                        <img alt="icon" [src]="tale.icon" class="env" *ngIf="tale.icon">
                                         <div class="title">{{ tale.title | truncate:100 }}</div>
                                         <div class="author">
                                             <span *ngFor="let author of tale.authors; index as i; trackBy: trackByAuthorOrcid">
@@ -34,9 +34,9 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="six wide column" style="text-align: right">
+                                <div class="six wide column" style="text-align: right;">
                                     <app-tale-run-button class="tale-run-button" [tale]="tale" [instance]="instance" isPrimary="true" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></app-tale-run-button>
-                                    <a [routerLink]="dashboardLink" routerLinkActive="active" class="ui button" style="margin-right: 10px">
+                                    <a [routerLink]="dashboardLink" routerLinkActive="active" class="ui button" style="margin-right: 10px;">
                                         Close
                                     </a>
 
@@ -71,7 +71,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="ui secondary pointing menu" style="margin-top: 0">
+                    <div class="ui secondary pointing menu" style="margin-top: 0;">
                         <a class="item" [ngClass]="{ 'active': isTabActive('interact') }" (click)="switchTab('interact')">
                           Interact
                         </a>
@@ -122,7 +122,7 @@
                                     </div>
                                 </div>
                                 <div class="four wide right floated column" *ngIf="isVersionsPanelShown()">
-                                    <app-tale-versions-panel [tale]="tale" (taleVersionChanged)="taleVersionChanged($event)"></app-tale-versions-panel>
+                                    <app-tale-versions-panel [tale]="tale" [collaborators]="collaborators" (taleVersionChanged)="taleVersionChanged($event)"></app-tale-versions-panel>
                                 </div>
                             </div>
                         </div>

@@ -4,7 +4,7 @@
   <div class="ui grid">
     <div class="row">
       <div class="sixteen wide column" style="min-height: 300px; min-width: 300px; padding: 20px 20px 40px 0;">
-        <pre style="height:100%;">{{ data.version | json }}</pre>
+        <app-rendered-tale-metadata [tale]="data.tale" [creator]="data.tale | taleCreator | async" [collaborators]="data.collaborators"></app-rendered-tale-metadata>
       </div>
     </div>
   </div>

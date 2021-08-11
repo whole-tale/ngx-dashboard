@@ -1,0 +1,90 @@
+
+<div class="ui list">
+  <div class="item">
+    <b>Title:</b>
+    <span>{{ tale.title }}</span>
+  </div>
+
+  <div class="item" *ngIf="creator">
+    <b>Created By:</b>
+    <span>{{ creator.firstName }} {{ creator.lastName }}</span>
+  </div>
+
+  <div class="item">
+    <b>Authors:</b>
+    <span *ngFor="let author of tale.authors; index as i; trackBy: trackById">
+              <span *ngIf="i > 0">, </span> <span [title]="author.orcid">{{ author.firstName }} {{ author.lastName }}</span>
+          </span>
+    <span *ngIf="!tale.authors.length && creator">{{ creator.firstName }} {{ creator.lastName }}</span>
+    <span *ngIf="!tale.authors.length && !creator">???</span>
+  </div>
+
+  <div class="item">
+    <b>Category:</b>
+    <span class="category">{{ tale.category }}</span>
+  </div>
+
+  <div class="item">
+    <b>Environment:</b>
+    <img *ngIf="tale.icon" class="ui image" [src]="tale.icon | safe:'url'" style="height:1.5em; margin:0 .4em; display: inline-block">
+    <span *ngIf="(tale | taleImage | async) as environment">{{ environment.name }}</span>
+  </div>
+
+  <div class="item">
+    <b>License:</b>
+    <span>{{ tale.licenseSPDX }}</span>
+  </div>
+
+  <div class="item">
+    <b>Description:</b>
+    <markdown ngPreserveWhitespaces [data]="tale.description"></markdown>
+  </div>
+
+  <!--
+              <div class="item">
+                  <b>Involatile Data:</b>
+                  <span *ngIf="!tale.dataSet.length">No citable data</span>
+                  <ul *ngIf="tale.dataSet.length">
+                  <li *ngFor="let dataset of tale.dataSet; index as i; trackBy: trackById">
+                      <a [href]="apiRoot + (dataset._modelType === 'folder' ? '/folder/' : '/item/') + dataset.itemId + '/download?contentDisposition=attachment'" target="_blank">{{ dataset.mountPath }}</a>
+                  </li>
+                  </ul>
+              </div>
+  -->
+  <div class="item">
+    <b>Datasets Used:</b>
+    <span *ngIf="!tale.dataSetCitation.length">No citable data</span>
+    <ul *ngIf="tale.dataSetCitation.length" style="max-width:60vw">
+      <li *ngFor="let citation of tale.dataSetCitation">
+        <a routerLink="/run/{{ tale._id }}" [queryParams]="{ tab: 'files', nav: 'external_data' }" routerLinkActive="active" queryParamsHandling="merge">
+          {{ citation }}
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="item" *ngIf="tale.relatedIdentifiers && tale.relatedIdentifiers.length">
+    <b>Related Identifiers:</b>
+    <ul>
+      <li *ngFor="let ident of tale.relatedIdentifiers; index as i; trackBy: trackById">
+        {{ ident.relation }} <a [href]="transformIdentifier(ident.identifier)" target="_blank">{{ ident.identifier }}</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="item">
+    <b>Published Location:</b>
+    <span *ngIf="latestPublish"><a [href]="latestPublish.uri">{{ latestPublish.pid }}</a></span>
+    <span *ngIf="!latestPublish">This Tale has not been published</span>
+  </div>
+
+
+  <div class="item">
+    <b>Date Created:</b>
+    <span>{{ tale.created | date }}</span>
+  </div>
+  <div class="item">
+    <b>Last Updated:</b>
+    <span>{{ tale.updated | date }}</span>
+  </div>
+</div>

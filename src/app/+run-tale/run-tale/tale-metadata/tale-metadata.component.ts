@@ -11,27 +11,10 @@ import { TaleAuthor } from '@tales/models/tale-author';
 import { SyncService } from '@tales/sync.service';
 import { Observable } from 'rxjs';
 
+import { Collaborator, CollaboratorList } from '@tales/components/rendered-tale-metadata/rendered-tale-metadata.component';
 
 // import * as $ from 'jquery';
 declare var $: any;
-
-// FIXME: Duplicated code - see tale-sharing.component.ts
-interface CollaboratorList {
-  users: Array<Collaborator>;
-  groups: Array<Collaborator>;
-}
-
-// FIXME: Duplicated code - see tale-sharing.component.ts
-interface Collaborator {
-  id: string;
-  level: number;
-  login: string;
-  name: string;
-  flags?: Array<any>;
-  showAlert?: boolean;
-  gravatar_baseUrl?: string;
-  affiliation?: string;
-}
 
 interface TaleAuthorValidationError {
   index: number;
