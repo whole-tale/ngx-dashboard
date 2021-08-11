@@ -1,5 +1,5 @@
 
-<div class="ui list">
+<div class="ui list" *ngIf="tale">
   <div class="item">
     <b>Title:</b>
     <span>{{ tale.title }}</span>
@@ -10,7 +10,7 @@
     <span>{{ creator.firstName }} {{ creator.lastName }}</span>
   </div>
 
-  <div class="item">
+  <div class="item" *ngIf="tale?.authors?.length">
     <b>Authors:</b>
     <span *ngFor="let author of tale.authors; index as i; trackBy: trackById">
               <span *ngIf="i > 0">, </span> <span [title]="author.orcid">{{ author.firstName }} {{ author.lastName }}</span>

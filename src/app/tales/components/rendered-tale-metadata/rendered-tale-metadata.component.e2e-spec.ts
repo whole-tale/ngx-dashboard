@@ -1,7 +1,7 @@
 import { baseUrl, browser } from 'e2e-config';
 import { e2e } from '~/app/framework/testing/e2e';
 
-e2e.describe('TaleRunButtonComponent', () => {
+e2e.describe('RenderedTaleMetadataComponent', () => {
   e2e.it('should redirect to login page', async () => {
     const page = browser.goto(`${baseUrl}/secure-page`);
 

@@ -33,7 +33,6 @@ export interface Collaborator {
 export class RenderedTaleMetadataComponent {
   @Input() tale: Tale;
   @Input() creator: User;
-  @Input() collaborators: CollaboratorList;
 
   // FIXME: Duplicated code (see publish-tale-dialog.component.ts)
   get latestPublish(): PublishInfo {
