@@ -27,7 +27,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = { supp
   imports: [
     BrowserModule.withServerTransition({ appId: 'my-app-id' }),
     // TransferHttpCacheModule,
-    RouterModule.forRoot(routes),
+    // TransferHttpCacheModule,
+    RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' }),
     PerfectScrollbarModule,
     ErrorHandlerModule,
     SharedModule,

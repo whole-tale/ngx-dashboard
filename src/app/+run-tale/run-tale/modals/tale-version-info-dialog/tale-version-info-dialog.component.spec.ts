@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { TaleVersionInfoDialogComponent } from './tale-version-info-dialog.component';
 
@@ -6,7 +6,7 @@ describe('TaleVersionInfoDialogComponent', () => {
   let component: TaleVersionInfoDialogComponent;
   let fixture: ComponentFixture<TaleVersionInfoDialogComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [TaleVersionInfoDialogComponent]
     }).compileComponents();

@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import '../func/color';
 @import '../mixin/spacing';
 @import '../mixin/typography';
@@ -70,11 +71,12 @@ p {
 
 /// links
 a {
-  color: mat-color($accent);
+  color: mat.get-color-from-palette($accent);
   text-decoration: none;
 
   &:not(.mat-button):not(.mat-raised-button):not(.mat-icon-button) {
-    &:hover, &:active {
+    &:hover,
+    &:active {
       text-decoration: underline;
     }
   }
@@ -94,7 +96,7 @@ code {
   &:not(.highlight) {
     @include soft--right(rem(0.2) rem(0.3));
 
-    color: mat-color($primary--light);
+    color: mat.get-color-from-palette($primary--light);
     background: rgba(0, 0, 0, 0.065);
     border-radius: rem(0.2);
   }
