@@ -18,12 +18,10 @@ class RunService extends __BaseService {
   static readonly runDeleteRunPath = '/run/{id}';
 
   static readonly runStartRunPath = '/run/{id}/start';
-  static readonly runFakeRunPath = '/run/{id}/fakeAnActualRun';
-
-  // TODO: Not implemented
   static readonly runGetRunStatusPath = '/run/{id}/status';
   static readonly runPutRunStatusPath = '/run/{id}/status';
-  static readonly runStreamRunPath = '/run/{id}/stream';
+
+  // TODO: Not implemented
   static readonly runExistsRunPath = '/run/{id}/exists';
 
   // Admin only function to remove all existing runs (use Swagger UI)
@@ -147,12 +145,12 @@ class RunService extends __BaseService {
     return this.runPutRenameRunResponse(id, name).pipe(__map((_r) => _r.body as null));
   }
 
-  runStartRunResponse(id: string, name: string): __Observable<__StrictHttpResponse<null>> {
+  runStartRunResponse(id: string): __Observable<__StrictHttpResponse<null>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     if (id != null) __params = __params.set('id', id.toString());
-    let req = new HttpRequest<any>('PUT', this.rootUrl + `/run/${id}/start`, __body, {
+    let req = new HttpRequest<any>('POST', this.rootUrl + `/run/${id}/start`, __body, {
       headers: __headers,
       params: __params,
       responseType: 'json',
@@ -165,33 +163,11 @@ class RunService extends __BaseService {
       })
     );
   }
-  runStartRun(id: string, name: string): __Observable<null> {
-    return this.runStartRunResponse(id, name).pipe(__map((_r) => _r.body as null));
+  runStartRun(id: string): __Observable<null> {
+    return this.runStartRunResponse(id).pipe(__map((_r) => _r.body as null));
   }
 
-  runMockStartRunResponse(id: string, name: string): __Observable<__StrictHttpResponse<null>> {
-    let __params = this.newParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    if (id != null) __params = __params.set('id', id.toString());
-    let req = new HttpRequest<any>('PUT', this.rootUrl + `/run/${id}/fakeAnActualRun`, __body, {
-      headers: __headers,
-      params: __params,
-      responseType: 'json',
-    });
-
-    return this.http.request<any>(req).pipe(
-      __filter((_r) => _r instanceof HttpResponse),
-      __map((_r) => {
-        return _r as __StrictHttpResponse<null>;
-      })
-    );
-  }
-  runMockStartRun(id: string, name: string): __Observable<null> {
-    return this.runMockStartRunResponse(id, name).pipe(__map((_r) => _r.body as null));
-  }
-
-  runGetRunStatusResponse(id: string, name: string): __Observable<__StrictHttpResponse<null>> {
+  runGetRunStatusResponse(id: string): __Observable<__StrictHttpResponse<null>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -209,16 +185,17 @@ class RunService extends __BaseService {
       })
     );
   }
-  runGetRunStatus(id: string, name: string): __Observable<null> {
-    return this.runGetRunStatusResponse(id, name).pipe(__map((_r) => _r.body as null));
+  runGetRunStatus(id: string): __Observable<null> {
+    return this.runGetRunStatusResponse(id).pipe(__map((_r) => _r.body as null));
   }
 
-  runPutRunStatusResponse(id: string, name: string): __Observable<__StrictHttpResponse<null>> {
+  runUpdateRunStatusResponse(id: string, status: number): __Observable<__StrictHttpResponse<null>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
+    if (id != null) __params = __params.set('status', status.toString());
     if (id != null) __params = __params.set('id', id.toString());
-    let req = new HttpRequest<any>('PUT', this.rootUrl + `/run/${id}/status`, __body, {
+    let req = new HttpRequest<any>('PATCH', this.rootUrl + `/run/${id}/status`, __body, {
       headers: __headers,
       params: __params,
       responseType: 'json',
@@ -231,8 +208,8 @@ class RunService extends __BaseService {
       })
     );
   }
-  runPutRunStatus(id: string, name: string): __Observable<null> {
-    return this.runPutRunStatusResponse(id, name).pipe(__map((_r) => _r.body as null));
+  runUpdateRunStatus(id: string, status: number): __Observable<null> {
+    return this.runUpdateRunStatusResponse(id, status).pipe(__map((_r) => _r.body as null));
   }
 }
 
