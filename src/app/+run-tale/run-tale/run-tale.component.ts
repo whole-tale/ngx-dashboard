@@ -42,8 +42,9 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     collaborators: { users: Array<User>, groups: Array<User> } = { users: [], groups: [] };
 
     removeSubscription:Subscription;
-    subscription: Subscription;
+    updateSubscription: Subscription;
     taleUnsharedSubscription: Subscription;
+    taleImportCompletedSubscription: Subscription;
     taleInstanceLaunchingSubscription: Subscription;
     taleInstanceRunningSubscription: Subscription;
     taleInstanceDeletedSubscription: Subscription;
@@ -276,12 +277,23 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         }
       });
 
-      this.subscription = this.syncService.taleUpdatedSubject.subscribe((taleId) => {
+      this.updateSubscription = this.syncService.taleUpdatedSubject.subscribe((taleId) => {
         this.logger.info("Tale update received from SyncService: ", taleId);
         if (taleId === this.taleId && !this.fetching) {
           this.fetching = true;
           setTimeout(() => {
             this.logger.info("Tale update applied via SyncService: ", taleId);
+            this.refresh();
+            this.fetching = false;
+          }, 1000);
+        }
+      });
+
+      this.taleImportCompletedSubscription = this.syncService.taleImportCompletedSubject.subscribe((taleId) => {
+        if (taleId === this.taleId && !this.fetching) {
+          this.fetching = true;
+          setTimeout(() => {
+            this.logger.info("Tale update applied after import via SyncService: ", taleId);
             this.refresh();
             this.fetching = false;
           }, 1000);
@@ -295,9 +307,10 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     }
 
     ngOnDestroy(): void {
-      this.subscription.unsubscribe();
+      this.updateSubscription.unsubscribe();
       this.removeSubscription.unsubscribe();
       this.taleUnsharedSubscription.unsubscribe();
+      this.taleImportCompletedSubscription.unsubscribe();
       this.taleInstanceLaunchingSubscription.unsubscribe();
       this.taleInstanceRunningSubscription.unsubscribe();
       this.taleInstanceDeletedSubscription.unsubscribe();

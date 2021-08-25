@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import '../func/color';
 @import '../func/depth';
 @import '../mixin/bem';
@@ -12,7 +13,7 @@
 
   z-index: z(splash_screen);
   display: block;
-  //background: mat-color($primary--dark);
+  //background: mat.get-color-from-palette($primary--dark);
   background: rgb(19, 47, 67);
 }
 

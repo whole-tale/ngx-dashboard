@@ -48,6 +48,15 @@ export interface Image {
   public?: boolean;
 
   /**
+   * Status of the Image.
+   *   0 => INVALID
+   *   1 => UNAVAILABLE
+   *   2 => BUILDING
+   *   3 => AVAILABLE
+   */
+  status?: number;
+
+  /**
    * A human readable identification of the environment.
    */
   tags: Array<string>;
