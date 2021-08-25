@@ -2,8 +2,8 @@ import { ChangeDetectorRef, Component, NgZone, OnChanges, OnDestroy, OnInit } fr
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiConfiguration } from '@api/api-configuration';
-import { AccessLevel, Instance, Tale, User } from '@api/models';
-import { InstanceService, TaleService, UserService, VersionService } from '@api/services';
+import { AccessLevel, Instance, Run, Tale, User, Version } from '@api/models';
+import { InstanceService, RunService, TaleService, UserService, VersionService } from '@api/services';
 import { TokenService } from '@api/token.service';
 import { AlertModalComponent } from '@shared/common/components/alert-modal/alert-modal.component';
 import { BaseComponent, LogService, WindowService } from '@shared/core';
@@ -62,6 +62,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       private userService: UserService,
       private tokenService: TokenService,
       private versionService: VersionService,
+      private runService: RunService,
       private syncService: SyncService,
       private config: ApiConfiguration,
       private dialog: MatDialog
@@ -326,8 +327,43 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       }
     }
 
-    performRecordedRun(): void {
-      this.logger.debug('Performing recorded run');
+    async performRecordedRun(): Promise<void> {
+      this.logger.debug('Creating recorded run');
+
+      const tale = this.tale;
+
+      // TODO: How to detect if currently-restored version has changed? Always offer to save new version?
+
+      let version: Version;
+      if (!tale.restoredFrom) {
+        // TODO: Prompt to save a new version?
+        // No version exists, save a new version
+        version = await this.versionService.versionCreateVersion({ taleId: tale._id }).toPromise();
+        this.logger.info("Version created: ", version);
+      } else {
+        // Fetch existing version and use that
+        version = await this.versionService.versionGetVersion(tale.restoredFrom).toPromise();
+      }
+
+      if (!version) {
+        this.logger.error("Something went wrong.. no version found!");
+
+        return new Promise<void>((resolve, reject) => reject(false));
+      } else {
+        // TODO: Prettier modal to prompt for name of new run
+        const name = prompt("Enter a name for this run");
+
+        if (name) {
+          const run: Run = await this.runService.runCreateRun({ versionId: version._id, name }).toPromise();
+          this.logger.info("Run created: ", run);
+
+          const started: Run = await this.runService.runStartRun(run._id).toPromise();
+          this.logger.info("Run started: ", started);
+        }
+      }
+
+
+
     }
 
     saveTaleVersion(): void {

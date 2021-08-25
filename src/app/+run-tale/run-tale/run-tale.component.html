@@ -123,7 +123,7 @@
                                     </div>
                                 </div>
                                 <div class="four wide right floated column" *ngIf="isVersionsPanelShown()">
-                                    <app-tale-versions-panel [tale]="tale" (taleVersionChanged)="taleVersionChanged($event)"></app-tale-versions-panel>
+                                    <app-tale-versions-panel [tale]="tale" (taleVersionChanged)="taleVersionChanged($event)" [performRecordedRun]="performRecordedRun.bind(this)"></app-tale-versions-panel>
                                 </div>
                             </div>
                         </div>

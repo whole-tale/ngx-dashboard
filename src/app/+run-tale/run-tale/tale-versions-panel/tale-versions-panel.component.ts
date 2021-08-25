@@ -32,6 +32,7 @@ interface VersionUpdate {
 })
 export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy {
   @Input() tale: Tale;
+  @Input() performRecordedRun: Function;
 
   @Output() readonly taleVersionChanged = new EventEmitter<VersionUpdate>();
 
@@ -53,7 +54,6 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
               private dialog: MatDialog,
               private notificationService: NotificationService,
               private windowService: WindowService,
-              // private runService: RunService,
               private syncService: SyncService) {
   }
 
@@ -154,11 +154,6 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
 
       this.runConfig = result;
     });
-  }
-
-  performRecordedRun(): void {
-    // TODO: Restore from previous version
-    // TODO: Execute autonomously
   }
 
   /** Per-version dropdown options */
