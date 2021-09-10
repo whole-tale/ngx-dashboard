@@ -361,9 +361,6 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
           this.logger.info("Run started: ", started);
         }
       }
-
-
-
     }
 
     saveTaleVersion(): void {

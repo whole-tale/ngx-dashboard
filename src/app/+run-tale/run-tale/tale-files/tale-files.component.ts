@@ -1,8 +1,19 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnInit, Output } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AccessLevel, Tale, User } from '@api/models';
-import { CollectionService, DatasetService, FileService, FolderService, ItemService, ResourceService, TaleService, UserService } from '@api/services';
+import { AccessLevel, Run, Tale, User, Version } from '@api/models';
+import {
+  CollectionService,
+  DatasetService,
+  FileService,
+  FolderService,
+  ItemService,
+  ResourceService,
+  RunService,
+  TaleService,
+  UserService,
+  VersionService
+} from '@api/services';
 import { FileElement } from '@files/models/file-element';
 import { TruncatePipe } from '@shared/common/pipes/truncate.pipe';
 import { enterZone, LogService, WindowService } from '@shared/core';
@@ -22,6 +33,8 @@ const URL = window['webkitURL'] || window.URL;  // tslint:disable-line
 const HOME_ROOT_NAME = 'Home';
 const DATA_ROOT_PATH = '/collection/WholeTale Catalog/WholeTale Catalog';
 const WORKSPACES_ROOT_PATH = '/collection/WholeTale Workspaces/WholeTale Workspaces';
+const VERSIONS_ROOT_PATH = '/collection/WholeTale Tale Versions/WholeTale Tale Versions';
+const RUNS_ROOT_PATH = '/collection/WholeTale Tale Runs/WholeTale Tale Runs';
 
 // TODO: Abstract/move enums to reuseable helper
 enum UploadType {
@@ -63,7 +76,6 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
   homeRoot: FileElement;
   dataRoot: FileElement;
-  wsRoot: FileElement;
 
   folders: BehaviorSubject<Array<FileElement>> = new BehaviorSubject<Array<FileElement>>([]);
   files: BehaviorSubject<Array<FileElement>> = new BehaviorSubject<Array<FileElement>>([]);
@@ -74,6 +86,9 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   canNavigateUp = false;
 
   currentNav = 'tale_workspace';
+
+  runs: BehaviorSubject<Array<Run>> = new BehaviorSubject<Array<Run>>([]);
+  versions: BehaviorSubject<Array<Version>> = new BehaviorSubject<Array<Version>>([]);
 
   constructor(
     private ref: ChangeDetectorRef,
@@ -89,6 +104,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     private userService: UserService,
     private taleService: TaleService,
     private resourceService: ResourceService,
+    private runService: RunService,
+    private versionService: VersionService,
     private window: WindowService,
     private truncate: TruncatePipe,
     private dialog: MatDialog
@@ -101,14 +118,12 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     this.userService.userGetMe().subscribe((user : User) => {
       const homeRootParams = { parentId: user._id, parentType: ParentType.User, text: HOME_ROOT_NAME };
       const dataRootParams = { test: false, path: DATA_ROOT_PATH };
-      const wsRootParams = { test: false, path: WORKSPACES_ROOT_PATH };
 
       const homeFind = this.folderService.folderFind(homeRootParams);
       const dataFind = this.resourceService.resourceLookup(dataRootParams);
-      const wsFind = this.resourceService.resourceLookup(wsRootParams);
 
       // Fetch all root folders before loading
-      forkJoin(homeFind, dataFind, wsFind).pipe(enterZone(this.zone)).subscribe((value: Array<any>) => {
+      forkJoin(homeFind, dataFind).pipe(enterZone(this.zone)).subscribe((value: Array<any>) => {
         if (value.length < 2) {
           this.logger.error("Error: Value mismatch when fetching root folders");
         }
@@ -120,7 +135,6 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         }
 
         this.dataRoot = value[1];
-        this.wsRoot = value[2];
 
         this.load();
       });
@@ -283,7 +297,33 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
       return;
     }
+    const sortByUpdated = (a: any, b: any) => {
+      if (a.updated > b.updated) {
+        return -1;
+      } else if (a.updated < b.updated) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }
+
     switch (this.currentNav) {
+      case 'recorded_runs':
+        this.runService.runListRuns({ taleId: this.taleId })
+                       .pipe(enterZone(this.zone))
+                       .subscribe((r: Array<Run>) => {
+                         this.folders.next(r.sort(sortByUpdated));
+                         this.ref.detectChanges();
+                       });
+        break;
+      case 'tale_versions':
+        this.versionService.versionListVersions({ taleId: this.taleId })
+                           .pipe(enterZone(this.zone))
+                           .subscribe((v: Array<Version>) => {
+                             this.folders.next(v.sort(sortByUpdated));
+                             this.ref.detectChanges();
+                           });
+        break;
       case 'home':
         if (!this.homeRoot) {
           this.logger.warn("Warning: Home root not detected. Delaying loading until it has been found:", this.homeRoot);
@@ -425,16 +465,18 @@ export class TaleFilesComponent implements OnInit, OnChanges {
             this.logger.error("Error: malformed resource path encountered... aborting:", resp);
           }
           break;
-        case 'tale_workspace':
-          if (resp.indexOf(this.taleId) !== -1) {
-            pathSuffix = resp.split(this.taleId)[1];
+        case 'home':
+          if (resp.indexOf(HOME_ROOT_NAME) !== -1) {
+            pathSuffix = resp.split(HOME_ROOT_NAME)[1];
           } else {
             this.logger.error("Error: malformed resource path encountered... aborting:", resp);
           }
           break;
-        case 'home':
-          if (resp.indexOf(HOME_ROOT_NAME) !== -1) {
-            pathSuffix = resp.split(HOME_ROOT_NAME)[1];
+        case 'recorded_runs':
+        case 'tale_versions':
+        case 'tale_workspace':
+          if (resp.indexOf(this.taleId) !== -1) {
+            pathSuffix = resp.split(this.taleId)[1];
           } else {
             this.logger.error("Error: malformed resource path encountered... aborting:", resp);
           }
@@ -507,10 +549,20 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       } else if (this.currentNav === 'tale_workspace') {
         // Set the placeholder to describe how to Create Folder or Upload File
         return 'This Tale\'s workspace is empty. Add a folder or file using the (+) button at the top-right.';
+      } else if (this.currentNav === 'tale_versions') {
+        // Set the placeholder to describe how to Create Folder or Upload File
+        return 'This Tale has no previous versions saved. Click the history button at the top-right of this panel to view and save versions.';
+      } else if (this.currentNav === 'recorded_runs') {
+        // Set the placeholder to describe how to Create Folder or Upload File
+        return 'This Tale has not yet recorded any runs. Click the history button at the top-right of this panel to save a version and record a run.';
       } else {
         // Set the placeholder to indicate an error
         return 'Something went horribly wrong.';
       }
+  }
+
+  trackById(model: any, index: number): string {
+    return model._id;
   }
 
   getName(folder: FileElement): string {
@@ -777,12 +829,11 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     const isDataRoot = this.currentRoot.parentId === this.dataRoot._id;
     const isTaleWorkspaceRoot = this.currentRoot.parentId === this.tale.workspaceId;
     const isHomeRoot = this.currentRoot.parentId === this.homeRoot._id;
-
-    // NOTE: This is currently unused, but may be needed
-    const isWorkspaceRoot = this.currentRoot.parentId === this.wsRoot._id;
+    const isVersionsRoot = this.currentRoot.parentId === this.tale.versionsRootId;
+    const isRunsRoot = this.currentRoot.parentId === this.tale.runsRootId;
 
     // If we find that our parentId matches our known root folders, then we have reached the root
-    if (this.currentRoot && (isDataRoot || isTaleWorkspaceRoot || isHomeRoot)) {
+    if (this.currentRoot && (isDataRoot || isTaleWorkspaceRoot || isHomeRoot || isVersionsRoot || isRunsRoot)) {
       this.currentRoot = undefined;
       this.currentFolderId = undefined;
       this.canNavigateUp = false;

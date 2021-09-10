@@ -6,8 +6,8 @@ export interface Run {
   _modelType: string;
 
   creatorId: string;
-  created: string;
-  updated: string;
+  created: Date;
+  updated: Date;
 
   // File-like properties
   baseParentId: string;

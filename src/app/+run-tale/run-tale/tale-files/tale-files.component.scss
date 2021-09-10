@@ -47,3 +47,15 @@
 .ui.grid {
   height: 100%;
 }
+
+.ui.vertical.menu > a > .fa {
+  float: right;
+}
+
+.ui.header {
+  margin: 10px 20px;
+}
+
+tr td i.fa.fa-folder {
+  margin-right: 4px;
+}
