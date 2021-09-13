@@ -2,12 +2,12 @@
   <mat-icon *ngIf="!preventNavigation && canNavigateUp" class="pointer" (click)="navigateUp()">
     arrow_back
   </mat-icon>
-  <span style="margin-left: 8px"> {{ path || currentNav ? (currentNav.replace('_', ' ') | titlecase) + '/' : '/' }} </span>
+  <span style="margin-left: 8px"> {{ (currentNav.replace('_', ' ') | titlecase) + (path || '/') }} </span>
   <span class="spacer"></span>
-  <button class="ui icon top right pointing primary file dropdown mini circular button" [disabled]="readOnly" [hidden]="!currentNav">
+  <button class="ui icon top right pointing primary file dropdown mini circular button" [disabled]="readOnly || currentNav === 'recorded_runs' || currentNav === 'tale_versions'" [hidden]="!currentNav">
     <i class="plus icon"></i>
     <div class="menu">
-      <div class="header">{{ currentNav | uppercase }} OPTIONS</div>
+      <div class="header">{{ currentNav.replace('_', ' ')  | uppercase }} OPTIONS</div>
       <div class="item" *ngIf="currentNav !== 'external_data'" (click)="openFileUploadDialog($event)">
         <i class="fas fa-fw fa-2x fa-upload"></i> Upload File...
       </div>
@@ -41,20 +41,30 @@
   </div>
 
   <!-- Show folders/files in table if any exist -->
-  <table class="ui basic selectable very compact striped blue table" *ngIf="fileElements && fileElements.length">
+  <table class="ui basic selectable very compact blue table" *ngIf="fileElements && fileElements.length">
     <thead>
       <tr>
         <th width="5%"></th>
-        <th width="55%">Name</th>
+        <th width="45%">Name</th>
+        <th *ngIf="currentNav==='recorded_runs' && !canNavigateUp" width="20%">Status</th>
         <th width="15%">Updated</th>
         <th width="10%" class="right aligned">Size</th>
         <th width="5%">More</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let ele of fileElements; index as i; trackBy: trackById" (click)="navigate(ele)">
+      <tr *ngFor="let ele of fileElements; index as i; trackBy: trackById" (click)="navigate(ele)"
+          [ngStyle]="{ 'cursor': getIcon(ele) === 'fa-folder' ? 'pointer' : 'inherit' }">
         <th class="center aligned"><i class="fas fa-fw fa-2x {{ getIcon(ele) }}"></i></th>
         <td [title]="ele.name">{{ ele.name | truncate:100 }}</td>
+        <td *ngIf="ele.runStatus !== undefined">
+          <span *ngIf="ele.runStatus === 0"><i class="fa fa-fw fa-question yellow"></i> UNKNOWN</span>
+          <span *ngIf="ele.runStatus === 1"><i class="fa fa-fw fa-spinner fa-pulse blue"></i> STARTING</span>
+          <span *ngIf="ele.runStatus === 2"><i class="fa fa-fw fa-refresh fa-spin blue"></i> RUNNING</span>
+          <span *ngIf="ele.runStatus === 3"><i class="fa fa-fw fa-check green"></i> COMPLETED</span>
+          <span *ngIf="ele.runStatus === 4"><i class="fa fa-fw fa-times red"></i> FAILED</span>
+          <span *ngIf="ele.runStatus === 5"><i class="fa fa-fw fa-ban red"></i> CANCELLED</span>
+        </td>
         <td [title]="ele.updated">{{ ele.updated | date }}</td>
         <td class="right aligned" [title]="ele.size">
             <small *ngIf="ele.uploading">Uploading... {{ ele.uploadProgress | number }}%</small>
@@ -68,11 +78,11 @@
             <!--<div class="text">More</div>-->
             <i class="dropdown icon"></i>
             <div class="left menu">
-              <div *ngIf="!readOnlyDropdown" class="item" (click)="renameElement(ele)"><i class="fas fa-edit"></i> Rename</div>
-              <div *ngIf="!readOnlyDropdown" class="item" (click)="removeElement(ele)"><i class="fas fa-trash"></i> Remove</div>
-              <div class="item" (click)="downloadElement(ele)"><i class="fas fa-download"></i> Download</div>
-              <div *ngIf="!readOnlyDropdown" class="item" (click)="openMoveToDialog(ele)"><i class="fas fa-exchange-alt"></i> Move To...</div>
-              <div *ngIf="!readOnlyDropdown" class="item" (click)="copyElement(ele)"><i class="fas fa-clone"></i> Copy</div>
+              <div *ngIf="!readOnlyDropdown && ((currentNav !== 'recorded_runs' && currentNav !== 'tale_versions') || !canNavigateUp)" class="item" (click)="renameElement(ele)"><i class="fas fa-fw fa-edit"></i> Rename</div>
+              <div *ngIf="!readOnlyDropdown && ((currentNav !== 'recorded_runs' && currentNav !== 'tale_versions') || !canNavigateUp)" class="item" (click)="removeElement(ele)"><i class="fas fa-fw fa-trash"></i> Remove</div>
+              <div class="item" (click)="downloadElement(ele)"><i class="fas fa-fw fa-download"></i> Download</div>
+              <div *ngIf="!readOnlyDropdown && ((currentNav !== 'recorded_runs' && currentNav !== 'tale_versions'))" class="item" (click)="openMoveToDialog(ele)"><i class="fas fa-fw fa-exchange-alt"></i> Move To...</div>
+              <div *ngIf="!readOnlyDropdown && ((currentNav !== 'recorded_runs' && currentNav !== 'tale_versions'))" class="item" (click)="copyElement(ele)"><i class="fas fa-fw fa-clone"></i> Copy</div>
             </div>
           </div>
         </td>

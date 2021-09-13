@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
 import { FilesModule } from '@files/files.module';
-import { SafePipe } from '@shared/common/pipes/safe.pipe';
 import { TruncatePipe } from '@shared/common/pipes/truncate.pipe';
 import { MaterialModule } from '@shared/material';
 import { SharedModule } from '@shared/shared.module';
@@ -33,7 +32,7 @@ import { TaleVersionsPanelComponent } from './run-tale/tale-versions-panel/tale-
 @NgModule({
   imports: [CommonModule, RouterModule.forChild(routes), MaterialModule, MatDialogModule, FilesModule, TalesModule, MarkdownModule.forRoot(), SharedModule],
   providers: [TaleCreatorPipe, TaleImagePipe, TaleNamePipe, TruncatePipe],
-  exports: [TaleCreatorPipe, TaleImagePipe, TaleNamePipe ],
+  exports: [TaleCreatorPipe, TaleImagePipe, TaleNamePipe],
   declarations: [
     RunTaleComponent,
     TaleFilesComponent,

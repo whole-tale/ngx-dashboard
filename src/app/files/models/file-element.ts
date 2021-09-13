@@ -34,6 +34,9 @@ export interface FileElement {
 
   // datasets only
   provider?: string;
+
+  // recorded runs only
+  runStatus?: number;
 }
 
 export class FileElement implements FileElement {

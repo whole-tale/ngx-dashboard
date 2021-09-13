@@ -145,6 +145,10 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     this.detectQueryString();
   }
 
+  readOnly(): boolean {
+    return this.tale._accessLevel <= AccessLevel.Read || (this.currentNav === 'recorded_runs' || this.currentNav === 'tale_versions') && this.canNavigateUp;
+  }
+
   detectQueryString(): void {
     this.route.queryParams.subscribe(params => {
       const fid = params.parentid || undefined;
@@ -614,6 +618,31 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   }
 
   removeElement(element: FileElement): void {
+    // Special handling for runs/versions
+    if (this.currentNav === 'recorded_runs') {
+      if (this.currentFolderId || this.canNavigateUp) {
+        // No-op: remove not allowed within a run
+        return;
+      }
+
+      this.runService.runDeleteRun(element._id).subscribe(resp => {
+        this.load();
+      });
+
+      return;
+    } else if (this.currentNav === 'tale_versions') {
+      if (this.currentFolderId || this.canNavigateUp) {
+        // No-op: remove not allowed within a version
+        return;
+      }
+
+      this.versionService.versionDeleteVersion(element._id).subscribe(resp => {
+        this.load();
+      });
+
+      return;
+    }
+
     if (element._modelType === 'folder') {
       // Element is a folder, delete it
       this.folderService.folderDeleteFolder({ id: element._id })
@@ -665,6 +694,32 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
   renameElement(element: FileElement): void {
     const params = { id: element._id, name: element.name };
+
+    // Special handling for runs/versions
+    if (this.currentNav === 'recorded_runs') {
+      if (this.canNavigateUp) {
+        // No-op: remove not allowed within a run
+        return;
+      }
+
+      this.runService.runPutRenameRun(params.id, params.name).subscribe(resp => {
+        this.load();
+      });
+
+      return;
+    } else if (this.currentNav === 'tale_versions') {
+      if (this.canNavigateUp) {
+        // No-op: remove not allowed within a version
+        return;
+      }
+
+      this.versionService.versionPutRenameVersion(params.id, params.name).subscribe(resp => {
+        this.load();
+      });
+
+      return;
+    }
+
     if (element._modelType === 'folder') {
       // Element is a folder, move it
       this.folderService.folderUpdateFolder(params)
