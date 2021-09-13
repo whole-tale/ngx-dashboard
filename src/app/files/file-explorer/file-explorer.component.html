@@ -2,7 +2,7 @@
   <mat-icon *ngIf="!preventNavigation && canNavigateUp" class="pointer" (click)="navigateUp()">
     arrow_back
   </mat-icon>
-  <span style="margin-left: 8px"> {{ path || '/' }} </span>
+  <span style="margin-left: 8px"> {{ path || currentNav ? (currentNav.replace('_', ' ') | titlecase) + '/' : '/' }} </span>
   <span class="spacer"></span>
   <button class="ui icon top right pointing primary file dropdown mini circular button" [disabled]="readOnly" [hidden]="!currentNav">
     <i class="plus icon"></i>
