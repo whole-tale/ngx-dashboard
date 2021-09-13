@@ -313,6 +313,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
                        .pipe(enterZone(this.zone))
                        .subscribe((r: Array<Run>) => {
                          this.folders.next(r.sort(sortByUpdated));
+                         this.files.next([]);
                          this.ref.detectChanges();
                        });
         break;
@@ -321,6 +322,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
                            .pipe(enterZone(this.zone))
                            .subscribe((v: Array<Version>) => {
                              this.folders.next(v.sort(sortByUpdated));
+                             this.files.next([]);
                              this.ref.detectChanges();
                            });
         break;
