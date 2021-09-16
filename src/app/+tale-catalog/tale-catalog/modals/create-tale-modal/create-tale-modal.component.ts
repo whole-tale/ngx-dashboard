@@ -34,7 +34,7 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
       title: (data && data.params) ? data.params.name : '',
       imageId: '',
       authors: [],
-      license: 'CC-BY-4.0',
+      licenseSPDX: 'CC-BY-4.0',
       category: 'science',
       publishInfo: [],
       dataSet: [],

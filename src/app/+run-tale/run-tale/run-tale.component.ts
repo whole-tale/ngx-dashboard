@@ -7,6 +7,7 @@ import { InstanceService, TaleService, UserService, VersionService } from '@api/
 import { TokenService } from '@api/token.service';
 import { AlertModalComponent } from '@shared/common/components/alert-modal/alert-modal.component';
 import { BaseComponent, LogService, WindowService } from '@shared/core';
+import { CollaboratorList } from '@tales/components/rendered-tale-metadata/rendered-tale-metadata.component';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { SyncService } from '@tales/sync.service';
 import { Subscription } from 'rxjs';
@@ -39,7 +40,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     showVersionsPanel = false;
     fetching = false;
 
-    collaborators: { users: Array<User>, groups: Array<User> } = { users: [], groups: [] };
+    collaborators: CollaboratorList = { users: [], groups: [] };
 
     removeSubscription:Subscription;
     updateSubscription: Subscription;

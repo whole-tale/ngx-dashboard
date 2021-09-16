@@ -1,0 +1,28 @@
+.tale-button {
+  padding: 10px;
+  color: #2185d0;
+  cursor: pointer;
+}
+
+.tale-button.disabled,
+.tale-button-primary.disabled {
+  cursor: not-allowed !important;
+}
+
+.tale-button:hover {
+  border: solid #2185d0 1px;
+  border-radius: 5px;
+}
+
+.tale-button-primary {
+  padding: 12px 24px 12px 24px;
+  border-radius: 5px;
+  background-color: #2185d0;
+  color: #eeeeee;
+  cursor: pointer;
+}
+
+.fas.fa-spinner.fa-pulse {
+  margin: 0 5px 0 0;
+  padding: 0;
+}

@@ -50,7 +50,8 @@ export interface Tale {
    * A unique identifier of the user that created the tale.
    */
   creatorId?: string;
-  dataSet: DataSet;
+  dataSet?: DataSet;
+  dataSetCitation?: Array<string>;
 
   /**
    * The description of the Tale (Markdown)
@@ -78,7 +79,7 @@ export interface Tale {
   authors: Array<TaleAuthor>;
 
   /**
-   * A URL to an image depicturing the content of the Tale
+   * A URL to an image depicting the content of the Tale
    */
   illustration?: string;
 
@@ -91,7 +92,7 @@ export interface Tale {
   /**
    * The license that the Tale is under
    */
-  license: string;
+  licenseSPDX?: string;
 
   /**
    * List of Girder Items containing Tale's narrative

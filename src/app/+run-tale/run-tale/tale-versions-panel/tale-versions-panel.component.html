@@ -42,7 +42,6 @@
               <div class="menu left transition hidden" tabindex="-1" style="display: block !important;">
                 <div class="item" (click)="viewVersionInfo(version)">View Info</div>
 
-                <!-- TODO: Restore Version button -->
                 <div class="item" (click)="restoreVersion(version)" *ngIf="tale._accessLevel >= AccessLevel.Write">Restore</div>
 
                 <!-- TODO: Compare Versions button -->
