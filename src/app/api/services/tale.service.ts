@@ -9,7 +9,7 @@ import { map as __map, filter as __filter } from 'rxjs/operators';
 
 import { Tale } from '../models/tale';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 class TaleService extends __BaseService {
   static readonly taleListTalesPath = '/tale';
@@ -66,12 +66,12 @@ class TaleService extends __BaseService {
     let req = new HttpRequest<any>('GET', this.rootUrl + `/tale`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
@@ -96,7 +96,7 @@ class TaleService extends __BaseService {
    * - `imageId`: The ID of the tale's image.
    */
   taleListTales(params: TaleService.TaleListTalesParams): __Observable<null> {
-    return this.taleListTalesResponse(params).pipe(__map(_r => _r.body as null));
+    return this.taleListTalesResponse(params).pipe(__map((_r) => _r.body as null));
   }
 
   /**
@@ -110,12 +110,12 @@ class TaleService extends __BaseService {
     let req = new HttpRequest<any>('POST', this.rootUrl + `/tale`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
@@ -124,7 +124,7 @@ class TaleService extends __BaseService {
    * @param tale A new tale
    */
   taleCreateTale(tale: Tale): __Observable<null> {
-    return this.taleCreateTaleResponse(tale).pipe(__map(_r => _r.body as null));
+    return this.taleCreateTaleResponse(tale).pipe(__map((_r) => _r.body as null));
   }
 
   /**
@@ -159,12 +159,12 @@ class TaleService extends __BaseService {
     let req = new HttpRequest<any>('POST', this.rootUrl + `/tale/import`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
@@ -188,7 +188,7 @@ class TaleService extends __BaseService {
    * - `asTale`: If True, assume that external dataset is a Tale.
    */
   taleCreateTaleFromUrl(params: TaleService.TaleCreateTaleFromUrlParams): __Observable<null> {
-    return this.taleCreateTaleFromUrlResponse(params).pipe(__map(_r => _r.body as null));
+    return this.taleCreateTaleFromUrlResponse(params).pipe(__map((_r) => _r.body as null));
   }
 
   /**
@@ -207,12 +207,12 @@ class TaleService extends __BaseService {
     let req = new HttpRequest<any>('DELETE', this.rootUrl + `/tale/${params.id}`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
@@ -225,7 +225,7 @@ class TaleService extends __BaseService {
    * - `progress`: Whether to record progress on this task.
    */
   taleDeleteTale(params: TaleService.TaleDeleteTaleParams): __Observable<null> {
-    return this.taleDeleteTaleResponse(params).pipe(__map(_r => _r.body as null));
+    return this.taleDeleteTaleResponse(params).pipe(__map((_r) => _r.body as null));
   }
 
   /**
@@ -239,12 +239,12 @@ class TaleService extends __BaseService {
     let req = new HttpRequest<any>('GET', this.rootUrl + `/tale/${id}`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
@@ -253,7 +253,7 @@ class TaleService extends __BaseService {
    * @param id The ID of the document.
    */
   taleGetTale(id: string): __Observable<null> {
-    return this.taleGetTaleResponse(id).pipe(__map(_r => _r.body as null));
+    return this.taleGetTaleResponse(id).pipe(__map((_r) => _r.body as null));
   }
 
   /**
@@ -272,12 +272,12 @@ class TaleService extends __BaseService {
     let req = new HttpRequest<any>('PUT', this.rootUrl + `/tale/${params.id}`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
@@ -290,7 +290,7 @@ class TaleService extends __BaseService {
    * - `id`: The ID of the document.
    */
   taleUpdateTale(params: TaleService.TaleUpdateTaleParams): __Observable<null> {
-    return this.taleUpdateTaleResponse(params).pipe(__map(_r => _r.body as null));
+    return this.taleUpdateTaleResponse(params).pipe(__map((_r) => _r.body as null));
   }
 
   /**
@@ -304,12 +304,12 @@ class TaleService extends __BaseService {
     let req = new HttpRequest<any>('GET', this.rootUrl + `/tale/${id}/access`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
@@ -318,7 +318,7 @@ class TaleService extends __BaseService {
    * @param id The ID of the document.
    */
   taleGetTaleAccess(id: string): __Observable<null> {
-    return this.taleGetTaleAccessResponse(id).pipe(__map(_r => _r.body as null));
+    return this.taleGetTaleAccessResponse(id).pipe(__map((_r) => _r.body as null));
   }
 
   /**
@@ -343,12 +343,12 @@ class TaleService extends __BaseService {
     let req = new HttpRequest<any>('PUT', this.rootUrl + `/tale/${params.id}/access`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
@@ -365,7 +365,7 @@ class TaleService extends __BaseService {
    * - `public`: Whether the tale should be publicly visible.
    */
   taleUpdateTaleAccess(params: TaleService.TaleUpdateTaleAccessParams): __Observable<null> {
-    return this.taleUpdateTaleAccessResponse(params).pipe(__map(_r => _r.body as null));
+    return this.taleUpdateTaleAccessResponse(params).pipe(__map((_r) => _r.body as null));
   }
 
   /**
@@ -384,12 +384,12 @@ class TaleService extends __BaseService {
     let req = new HttpRequest<any>('PUT', this.rootUrl + `/tale/${params.id}/build`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
@@ -402,7 +402,7 @@ class TaleService extends __BaseService {
    * - `force`: If true, force build regardless of workspace changes
    */
   taleBuildImage(params: TaleService.TaleBuildImageParams): __Observable<null> {
-    return this.taleBuildImageResponse(params).pipe(__map(_r => _r.body as null));
+    return this.taleBuildImageResponse(params).pipe(__map((_r) => _r.body as null));
   }
 
   /**
@@ -416,12 +416,12 @@ class TaleService extends __BaseService {
     let req = new HttpRequest<any>('POST', this.rootUrl + `/tale/${id}/copy`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
@@ -430,7 +430,7 @@ class TaleService extends __BaseService {
    * @param id The ID of the document.
    */
   taleCopyTale(id: string): __Observable<null> {
-    return this.taleCopyTaleResponse(id).pipe(__map(_r => _r.body as null));
+    return this.taleCopyTaleResponse(id).pipe(__map((_r) => _r.body as null));
   }
 
   /**
@@ -449,12 +449,12 @@ class TaleService extends __BaseService {
     let req = new HttpRequest<any>('GET', this.rootUrl + `/tale/${params.id}/export`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
@@ -467,7 +467,7 @@ class TaleService extends __BaseService {
    * - `taleFormat`: Format of the exported Tale
    */
   taleExportTale(params: TaleService.TaleExportTaleParams): __Observable<null> {
-    return this.taleExportTaleResponse(params).pipe(__map(_r => _r.body as null));
+    return this.taleExportTaleResponse(params).pipe(__map((_r) => _r.body as null));
   }
 
   /**
@@ -486,12 +486,12 @@ class TaleService extends __BaseService {
     let req = new HttpRequest<any>('GET', this.rootUrl + `/tale/${params.id}/manifest`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
@@ -504,7 +504,7 @@ class TaleService extends __BaseService {
    * - `expandFolders`: If True, folders in Tale's dataSet are recursively expanded to items in the 'aggregates' section
    */
   taleGenerateManifest(params: TaleService.TaleGenerateManifestParams): __Observable<null> {
-    return this.taleGenerateManifestResponse(params).pipe(__map(_r => _r.body as null));
+    return this.taleGenerateManifestResponse(params).pipe(__map((_r) => _r.body as null));
   }
 
   /**
@@ -524,12 +524,12 @@ class TaleService extends __BaseService {
     let req = new HttpRequest<any>('PUT', this.rootUrl + `/tale/${params.id}/publish`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
@@ -543,7 +543,7 @@ class TaleService extends __BaseService {
    * - `repository`: The repository URL of the publish destination.
    */
   talePublishTale(params: TaleService.TalePublishTaleParams): __Observable<null> {
-    return this.talePublishTaleResponse(params).pipe(__map(_r => _r.body as null));
+    return this.talePublishTaleResponse(params).pipe(__map((_r) => _r.body as null));
   }
 
   /**
@@ -560,12 +560,12 @@ class TaleService extends __BaseService {
     let req = new HttpRequest<any>('PUT', this.rootUrl + `/tale/${id}/git`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
@@ -577,7 +577,7 @@ class TaleService extends __BaseService {
    * - `url`: The URL of the Git repo to import.
    */
   taleUpdateGit(id: string, url: string): __Observable<null> {
-    return this.taleUpdateGitResponse(id, url).pipe(__map(_r => _r.body as null));
+    return this.taleUpdateGitResponse(id, url).pipe(__map((_r) => _r.body as null));
   }
 
   taleRestoreVersionResponse(id: string, versionId: string): __Observable<__StrictHttpResponse<null>> {
@@ -588,19 +588,40 @@ class TaleService extends __BaseService {
     let req = new HttpRequest<any>('PUT', this.rootUrl + `/tale/${id}/restore`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
   }
 
   taleRestoreVersion(id: string, versionId: string): __Observable<null> {
-    return this.taleRestoreVersionResponse(id, versionId).pipe(__map(_r => _r.body as null));
+    return this.taleRestoreVersionResponse(id, versionId).pipe(__map((_r) => _r.body as null));
+  }
+  taleViewRestoredVersionResponse(id: string, versionId: string): __Observable<__StrictHttpResponse<null>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    if (versionId != null) __params = __params.set('versionId', versionId.toString());
+    let req = new HttpRequest<any>('GET', this.rootUrl + `/tale/${id}/restore`, {
+      headers: __headers,
+      params: __params,
+      responseType: 'json',
+    });
+
+    return this.http.request<any>(req).pipe(
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<null>;
+      })
+    );
+  }
+
+  taleViewRestoredVersion(id: string, versionId: string): __Observable<null> {
+    return this.taleViewRestoredVersionResponse(id, versionId).pipe(__map((_r) => _r.body as null));
   }
 }
 

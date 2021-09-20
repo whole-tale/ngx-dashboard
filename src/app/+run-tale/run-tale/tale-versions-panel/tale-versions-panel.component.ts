@@ -6,6 +6,7 @@ import { TaleService, VersionService } from '@api/services';
 import { TokenService } from '@api/token.service';
 import { LogService, WindowService } from '@shared/core';
 import { NotificationService } from '@shared/error-handler/services/notification.service';
+import { CollaboratorList } from '@tales/components/rendered-tale-metadata/rendered-tale-metadata.component';
 import { SyncService } from '@tales/sync.service';
 import { Subscription } from 'rxjs';
 
@@ -33,6 +34,7 @@ interface VersionUpdate {
 export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy {
   @Input() tale: Tale;
   @Input() performRecordedRun: Function;
+  @Input() collaborators: CollaboratorList
 
   @Output() readonly taleVersionChanged = new EventEmitter<VersionUpdate>();
 
@@ -159,7 +161,7 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
   /** Per-version dropdown options */
   viewVersionInfo(version: Version): void {
     this.dialog.open(TaleVersionInfoDialogComponent, {
-      data: { version, tale: this.tale }
+      data: { version, tale: this.tale, collaborators: this.collaborators }
     });
   }
 
