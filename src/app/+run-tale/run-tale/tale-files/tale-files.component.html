@@ -62,6 +62,7 @@
         [canNavigateUp]="canNavigateUp"
         (folderAdded)="addFolder($event)"
         (fileUploadsAdded)="uploadFiles($event)"
+        (bagFileUploadAdded)="onBagFileUpload($event)"
         (navigatedUp)="navigateUp()"
         (navigatedDown)="navigateToFolder($event)"
         (elementRenamed)="renameElement($event)"

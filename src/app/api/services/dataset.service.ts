@@ -8,11 +8,12 @@ import { Observable as __Observable } from 'rxjs';
 import { map as __map, filter as __filter } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 class DatasetService extends __BaseService {
   static readonly datasetListDatasetsPath = '/dataset';
   static readonly datasetImportDataPath = '/dataset/register';
+  static readonly datasetImportBagDataPath = '/dataset/importBag';
   static readonly datasetDeleteUserDatasetPath = '/dataset/{id}';
   static readonly datasetGetDatasetPath = '/dataset/{id}';
 
@@ -48,12 +49,12 @@ class DatasetService extends __BaseService {
     let req = new HttpRequest<any>('GET', this.rootUrl + `/dataset`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
@@ -74,7 +75,57 @@ class DatasetService extends __BaseService {
    * - `identifiers`: Filter datasets by an identifier
    */
   datasetListDatasets(params: DatasetService.DatasetListDatasetsParams): __Observable<null> {
-    return this.datasetListDatasetsResponse(params).pipe(__map(_r => _r.body as null));
+    return this.datasetListDatasetsResponse(params).pipe(__map((_r) => _r.body as null));
+  }
+
+  /**
+   * Imports a BDBag-format file. Files that exist in the bag are imported directly, whereas references are only
+   * stored by reference and fetched on-demand.
+   * @param params The `DatasetService.DatasetImportBagDataParams` containing the following parameters:
+   *
+   * - `public`: Whether the folder should be publicly visible. Defaults to False.
+   *
+   * - `parentType`: Type of the folder's parent
+   *
+   * - `parentId`: Parent ID for the new parent of this folder.
+   *
+   * - `bagFile`: The file to upload
+   */
+  datasetImportBagDataResponse(params: DatasetService.DatasetImportBagDataParams): __Observable<__StrictHttpResponse<null>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = params.bagFile;
+    if (params.public != null) __params = __params.set('public', params.public.toString());
+    if (params.parentType != null) __params = __params.set('parentType', params.parentType.toString());
+    if (params.parentId != null) __params = __params.set('parentId', params.parentId.toString());
+    let req = new HttpRequest<any>('POST', this.rootUrl + DatasetService.datasetImportBagDataPath, __body, {
+      headers: __headers,
+      params: __params,
+      responseType: 'json',
+    });
+
+    return this.http.request<any>(req).pipe(
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<null>;
+      })
+    );
+  }
+  /**
+   * Imports a BDBag-format file. Files that exist in the bag are imported directly, whereas references are only
+   * stored by reference and fetched on-demand.
+   * @param params The `DatasetService.DatasetImportBagDataParams` containing the following parameters:
+   *
+   * - `public`: Whether the folder should be publicly visible. Defaults to False.
+   *
+   * - `parentType`: Type of the folder's parent
+   *
+   * - `parentId`: Parent ID for the new parent of this folder.
+   *
+   * - `bagFile`: The file to upload
+   */
+  datasetImportBagData(params: DatasetService.DatasetImportBagDataParams): __Observable<null> {
+    return this.datasetImportBagDataResponse(params).pipe(__map((_r) => _r.body as null));
   }
 
   /**
@@ -104,12 +155,12 @@ class DatasetService extends __BaseService {
     let req = new HttpRequest<any>('POST', this.rootUrl + `/dataset/register`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
@@ -130,7 +181,7 @@ class DatasetService extends __BaseService {
    * - `base_url`: The node endpoint url. This can be used to register datasets from custom networks, such as the DataONE development network. This can be passed in as an ordinary string. Examples include https://dev.nceas.ucsb.edu/knb/d1/mn/v2 and https://cn.dataone.org/cn/v2
    */
   datasetImportData(params: DatasetService.DatasetImportDataParams): __Observable<null> {
-    return this.datasetImportDataResponse(params).pipe(__map(_r => _r.body as null));
+    return this.datasetImportDataResponse(params).pipe(__map((_r) => _r.body as null));
   }
 
   /**
@@ -144,12 +195,12 @@ class DatasetService extends __BaseService {
     let req = new HttpRequest<any>('DELETE', this.rootUrl + `/dataset/${id}`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
@@ -158,7 +209,7 @@ class DatasetService extends __BaseService {
    * @param id The ID of the Dataset.
    */
   datasetDeleteUserDataset(id: string): __Observable<null> {
-    return this.datasetDeleteUserDatasetResponse(id).pipe(__map(_r => _r.body as null));
+    return this.datasetDeleteUserDatasetResponse(id).pipe(__map((_r) => _r.body as null));
   }
 
   /**
@@ -172,12 +223,12 @@ class DatasetService extends __BaseService {
     let req = new HttpRequest<any>('GET', this.rootUrl + `/dataset/${id}`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
@@ -186,7 +237,7 @@ class DatasetService extends __BaseService {
    * @param id The ID of the Dataset.
    */
   datasetGetDataset(id: string): __Observable<null> {
-    return this.datasetGetDatasetResponse(id).pipe(__map(_r => _r.body as null));
+    return this.datasetGetDatasetResponse(id).pipe(__map((_r) => _r.body as null));
   }
 }
 
@@ -224,6 +275,31 @@ module DatasetService {
      * Filter datasets by an identifier
      */
     identifiers?: string;
+  }
+
+  /**
+   * Parameters for datasetImportBagData
+   */
+  export interface DatasetImportBagDataParams {
+    /**
+     * Whether the folder should be publicly visible. Defaults to True.
+     */
+    public?: boolean;
+
+    /**
+     * Type of the folder's parent
+     */
+    parentType?: 'folder' | 'user' | 'collection';
+
+    /**
+     * Parent ID for the new parent of this folder.
+     */
+    parentId?: string;
+
+    /**
+     * Binary data chunk to upload as body.
+     */
+    bagFile: string | Blob | ArrayBuffer;
   }
 
   /**

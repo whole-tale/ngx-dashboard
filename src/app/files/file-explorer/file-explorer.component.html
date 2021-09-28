@@ -28,11 +28,15 @@
       <div class="item" *ngIf="currentNav === 'tale_workspace'" (click)="openTaleWorkspacesDialog($event)">
         <i class="fas fa-fw fa-2x fa-file-import"></i> Select Data...
       </div>
+      <div class="item" *ngIf="currentNav === 'external_data'" (click)="openBagUploadDialog($event)">
+        <i class="fas fa-fw fa-2x fa-file-upload"></i> Import BDBag
+      </div>
     </div>
   </button>
 </mat-toolbar>
 
 <input #file multiple type="file" style="display: none" (change)="onUploadsAdded($event)" />
+<input #bagFileUpload type="file" style="display: none" (change)="onBagFileAdded($event)" />
 
 <div class="container" fxFlex fxLayout="column" fxLayoutAlign="space-between stretch">
   <!-- Show placeholder if there are no fileElements to display -->
@@ -54,7 +58,7 @@
     </thead>
     <tbody>
       <tr *ngFor="let ele of fileElements; index as i; trackBy: trackById" (click)="navigate(ele)"
-          [ngStyle]="{ 'cursor': getIcon(ele) === 'fa-folder' ? 'pointer' : 'inherit' }">
+          [ngStyle]="{ 'cursor': currentNav !== 'external_data' && getIcon(ele) === 'fa-folder' ? 'pointer' : 'inherit' }">
         <th class="center aligned"><i class="fas fa-fw fa-2x {{ getIcon(ele) }}"></i></th>
         <td [title]="ele.name">{{ ele.name | truncate:100 }}</td>
         <td *ngIf="ele.runStatus !== undefined">

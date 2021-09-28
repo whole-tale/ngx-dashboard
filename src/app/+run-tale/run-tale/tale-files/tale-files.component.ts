@@ -1,4 +1,14 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  NgZone,
+  OnChanges,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccessLevel, Run, Tale, User, Version } from '@api/models';
@@ -19,6 +29,7 @@ import { TruncatePipe } from '@shared/common/pipes/truncate.pipe';
 import { enterZone, LogService, WindowService } from '@shared/core';
 import { ErrorModalComponent } from '@shared/error-handler/error-modal/error-modal.component';
 import { BehaviorSubject, forkJoin } from 'rxjs';
+import { ErrorService } from '~/app/shared/error-handler/services/error.service';
 
 import { RegisterDataDialogComponent } from '../modals/register-data-dialog/register-data-dialog.component';
 import { SelectDataDialogComponent } from '../modals/select-data-dialog/select-data-dialog.component';
@@ -102,6 +113,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     private datasetService: DatasetService,
     private fileService: FileService,
     private userService: UserService,
+    private errorService: ErrorService,
     private taleService: TaleService,
     private resourceService: ResourceService,
     private runService: RunService,
@@ -216,6 +228,27 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       $(`#upload-${uploadId}`).progress('set percent', percent);
       existing.uploadProgress = percent;
       this.ref.detectChanges();
+    }
+  }
+
+  onBagFileUpload(filesToUpload: { files: { [key: string]: File } }): void {
+    for (const key in filesToUpload) {
+      if (!isNaN(parseInt(key, 10))) {
+        const params: DatasetService.DatasetImportBagDataParams = {
+          parentId: this.getParentId(),
+          parentType: UploadType.Folder,
+          public: false,
+          bagFile: filesToUpload[key],
+        };
+
+        this.logger.info("Uploading bagit file: ", params);
+        this.datasetService.datasetImportBagData(params).subscribe(resp => {
+          this.logger.debug("BagIt uploaded: ", resp);
+          this.load();
+        }, err => {
+          this.errorService.showErrorModal("Upload Failed", "Failed to import BDBag. Please verify that the format is correct, and try again.")
+        });
+      }
     }
   }
 
@@ -590,8 +623,6 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     if (this.currentNav === 'external_data') {
       return;
     }
-
-    const now = new Date();
 
     // Upload to the current folder, if possible
     const parentId = this.getParentId();

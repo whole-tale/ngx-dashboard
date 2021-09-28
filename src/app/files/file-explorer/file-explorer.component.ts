@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { DatasetService } from '@api/services/dataset.service';
 import { FileElement } from '@files/models/file-element';
 import { LogService } from '@shared/core/log.service';
 
@@ -63,15 +64,16 @@ const FILE_TYPES = {
   do: 'file-code',
   tsv: 'file-csv',
   tab: 'file-csv',
-  json: 'file-alt'
+  json: 'file-alt',
 };
 
 @Component({
   selector: 'app-file-explorer',
   templateUrl: './file-explorer.component.html',
-  styleUrls: ['./file-explorer.component.scss']
+  styleUrls: ['./file-explorer.component.scss'],
 })
 export class FileExplorerComponent implements OnChanges {
+  @ViewChild('bagFileUpload') bagFileUpload: any;
   @ViewChild('file') file: any;
 
   @Input() preventNavigation = false;
@@ -102,6 +104,7 @@ export class FileExplorerComponent implements OnChanges {
   @Output() readonly openTaleWorkspacesModal = new EventEmitter();
   @Output() readonly folderAdded = new EventEmitter<{ name: string }>();
   @Output() readonly fileUploadsAdded = new EventEmitter<{ files: { [key: string]: File } }>();
+  @Output() readonly bagFileUploadAdded = new EventEmitter<{ files: { [key: string]: File } }>();
   @Output() readonly elementRemoved = new EventEmitter<FileElement>();
   @Output() readonly elementRenamed = new EventEmitter<FileElement>();
   @Output() readonly elementCopied = new EventEmitter<FileElement>();
@@ -149,6 +152,16 @@ export class FileExplorerComponent implements OnChanges {
   onUploadsAdded($event: any): void {
     const target = $event.target || $event.srcElement;
     this.fileUploadsAdded.emit(this.file.nativeElement.files);
+    target.value = '';
+  }
+
+  openBagUploadDialog(): void {
+    this.bagFileUpload.nativeElement.click();
+  }
+
+  onBagFileAdded($event: any): void {
+    const target = $event.target || $event.srcElement;
+    this.bagFileUploadAdded.emit(this.bagFileUpload.nativeElement.files);
     target.value = '';
   }
 
@@ -206,7 +219,7 @@ export class FileExplorerComponent implements OnChanges {
 
   openNewFolderDialog(): void {
     const dialogRef = this.dialog.open(NewFolderDialogComponent);
-    dialogRef.afterClosed().subscribe(res => {
+    dialogRef.afterClosed().subscribe((res) => {
       if (res) {
         this.logger.debug(`Folder added: ${res}`);
         this.folderAdded.emit({ name: res });
@@ -219,7 +232,7 @@ export class FileExplorerComponent implements OnChanges {
     event.stopPropagation();
 
     const dialogRef = this.dialog.open(RenameDialogComponent);
-    dialogRef.afterClosed().subscribe(res => {
+    dialogRef.afterClosed().subscribe((res) => {
       if (res) {
         this.logger.debug(`Folder renamed: ${element.name} -> ${res}`);
         element.name = res;
