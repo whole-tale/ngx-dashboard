@@ -122,8 +122,8 @@
                                         Select a tab to continue
                                     </div>
                                 </div>
-                                <div class="four wide right floated column" *ngIf="isVersionsPanelShown()">
-                                    <app-tale-versions-panel [tale]="tale" [collaborators]="collaborators" (taleVersionChanged)="taleVersionChanged($event)" [performRecordedRun]="performRecordedRun.bind(this)"></app-tale-versions-panel>
+                                <div class="four wide right floated column" [ngStyle]="{ 'display': !isVersionsPanelShown() ? 'none' : 'block' }">
+                                    <app-tale-versions-panel [tale]="tale" [collaborators]="collaborators" (taleVersionChanged)="taleVersionChanged($event)"></app-tale-versions-panel>
                                 </div>
                             </div>
                         </div>

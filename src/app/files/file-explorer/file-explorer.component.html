@@ -8,10 +8,10 @@
     <i class="plus icon"></i>
     <div class="menu">
       <div class="header">{{ currentNav.replace('_', ' ')  | uppercase }} OPTIONS</div>
-      <div class="item" *ngIf="currentNav !== 'external_data'" (click)="openFileUploadDialog($event)">
+      <div class="item" *ngIf="currentNav !== 'external_data'" (click)="openFileUploadDialog()">
         <i class="fas fa-fw fa-2x fa-upload"></i> Upload File...
       </div>
-      <div class="item" *ngIf="currentNav !== 'external_data'" (click)="openNewFolderDialog($event)">
+      <div class="item" *ngIf="currentNav !== 'external_data'" (click)="openNewFolderDialog()">
         <i class="fas fa-fw fa-2x fa-folder-plus"></i> Create Folder...
       </div>
       <div class="item" *ngIf="currentNav === 'external_data'" (click)="openSelectDataDialog($event)">
@@ -54,6 +54,7 @@
     </thead>
     <tbody>
       <tr *ngFor="let ele of fileElements; index as i; trackBy: trackById" (click)="navigate(ele)"
+          [ngClass]="{ 'active': this.highlighted === ele._id }"
           [ngStyle]="{ 'cursor': getIcon(ele) === 'fa-folder' ? 'pointer' : 'inherit' }">
         <th class="center aligned"><i class="fas fa-fw fa-2x {{ getIcon(ele) }}"></i></th>
         <td [title]="ele.name">{{ ele.name | truncate:100 }}</td>

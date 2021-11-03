@@ -1,53 +1,68 @@
 <div id="timeline-column">
   <div class="ui vertical segment" *ngIf="tale._accessLevel >= AccessLevel.Write">
 
-      <!-- Recorded Runs / configuration -->
-      <button style="margin-top: .25rem" class="ui primary button fluid" (click)="performRecordedRun()">
-          <i class="fas fa-check-circle icon"></i> Perform Recorded Run
-      </button>
-
-      <button style="margin-top: .25rem" class="ui button fluid" (click)="editRunConfiguration()">
-          <i class="fas fa-pencil-alt icon"></i> Edit run configuration
-      </button>
+    <button class="ui button fluid" (click)="saveNewVersion()">
+      <i class="fas fa-save icon"></i> Save Tale Version
+    </button>
 
     <hr />
 
-      <button class="ui button fluid" (click)="saveNewVersion()">
-          <i class="fas fa-save icon"></i> Save Tale Version
+    <!-- Recorded Runs / configuration -->
+    <div class="ui action fluid input">
+      <input type="text" #mainEntrypointInput name="mainEntrypointInput" required placeholder="Main Entrypoint..." [(ngModel)]="mainEntrypoint">
+
+      <button [disabled]="!mainEntrypoint" (click)="performRecordedRun()" class="ui primary right labeled icon button">
+        <i class="fas fa-check-circle icon"></i>
+        Perform Run
       </button>
+    </div>
   </div>
+
   <h3>Tale History</h3>
+
   <div id="timeline" class="ui middle aligned divided list">
     <div class="ui message" style="height:100%;" *ngIf="!timeline.length">
       No previous versions saved for Tale.
     </div>
-    <div class="item" *ngFor="let version of timeline; index as i; trackBy: trackById"
-            [ngClass]="{ 'selected-version': tale.restoredFrom === version._id }">
-        <div class="right floated content">
+    <div class="item" *ngFor="let res of timeline; index as i; trackBy: trackById"
+            [ngClass]="{ 'selected-version': tale.restoredFrom === res._id }">
+        <div class="right floated content" *ngIf="!res.runVersionId">
           <div class="ui floating version dropdown icon" tabindex="0">
               <i class="fas fa-ellipsis-v"></i>
               <div class="menu left transition hidden" tabindex="-1" style="display: block !important;">
-                <div class="item" (click)="viewVersionInfo(version)">View Info</div>
+                <div class="item" (click)="viewVersionInfo(res)">View Info</div>
 
-                <div class="item" (click)="restoreVersion(version)" *ngIf="tale._accessLevel >= AccessLevel.Write">Restore</div>
+                <div class="item" (click)="restoreVersion(res)" *ngIf="tale._accessLevel >= AccessLevel.Write">Restore</div>
 
                 <!-- TODO: Compare Versions button -->
                 <div class="item" *ngIf="false">Compare</div>
 
-                <div class="item" (click)="renameVersion(version)" *ngIf="tale._accessLevel >= AccessLevel.Write">Rename</div>
-                <div class="item" (click)="deleteVersion(version)" *ngIf="tale._accessLevel >= AccessLevel.Write">Delete</div>
-                <div class="item" (click)="exportVersion(version)" *ngIf="tale._accessLevel >= AccessLevel.Write">Export</div>
+                <div class="item" (click)="renameVersion(res)" *ngIf="tale._accessLevel >= AccessLevel.Write">Rename</div>
+                <div class="item" (click)="deleteVersion(res)" *ngIf="tale._accessLevel >= AccessLevel.Write">Delete</div>
+                <div class="item" (click)="exportVersion(res)" *ngIf="tale._accessLevel >= AccessLevel.Write">Export</div>
               </div>
           </div>
         </div>
         <div class="content">
-          <div class="date">{{ version.updated | date:'short' }}</div>
+          <div class="date">{{ res.updated | date:'short' }}</div>
           <div class="header">
-            <img class="ui avatar image" *ngIf="(version | taleCreator | async) as creator" [src]="creator.gravatar_baseUrl" title="{{ creator.firstName }} {{ creator.lastName }} ({{ creator.login }})" />
-            <span>Version saved:</span>
+            <img class="ui avatar image" *ngIf="(res | taleCreator | async) as creator" [src]="creator.gravatar_baseUrl" title="{{ creator.firstName }} {{ creator.lastName }} ({{ creator.login }})" />
+            <span *ngIf="!res.runVersionId">Version saved:</span>
+            <span *ngIf="res.runVersionId">Recorded run:</span>
           </div>
 
-          {{ version.name }}
+          {{ res.name }}
+
+          <p>
+            <small *ngIf="res.runVersionId">
+              Based on version:
+              <a href="#" [routerLink]="'/run/' + tale._id"
+                 [queryParams]="{ 'tab': 'files', 'nav': 'tale_versions', 'highlight': res.runVersionId }"
+                 routerLinkActive="active">
+                {{ res.runVersionId | versionName | async }}
+              </a>
+            </small>
+          </p>
         </div>
     </div>
   </div>

@@ -63,13 +63,13 @@ const FILE_TYPES = {
   do: 'file-code',
   tsv: 'file-csv',
   tab: 'file-csv',
-  json: 'file-alt'
+  json: 'file-alt',
 };
 
 @Component({
   selector: 'app-file-explorer',
   templateUrl: './file-explorer.component.html',
-  styleUrls: ['./file-explorer.component.scss']
+  styleUrls: ['./file-explorer.component.scss'],
 })
 export class FileExplorerComponent implements OnChanges {
   @ViewChild('file') file: any;
@@ -89,6 +89,9 @@ export class FileExplorerComponent implements OnChanges {
 
   // The path to the current directory
   @Input() path: string;
+
+  // An optional ID to highlight in the list
+  @Input() highlighted: string;
 
   // Current nav value (either 'external_data' or 'tale_workspaces')
   @Input() currentNav: string;
@@ -115,10 +118,10 @@ export class FileExplorerComponent implements OnChanges {
   constructor(private readonly dialog: MatDialog, private readonly logger: LogService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.currentNav || changes.fileElements) {
+    if (changes.path || changes.currentNav || changes.fileElements) {
       setTimeout(() => {
         $('.ui.file.dropdown').dropdown({ action: 'hide' });
-      }, 1000);
+      }, 500);
     }
   }
 
@@ -206,7 +209,7 @@ export class FileExplorerComponent implements OnChanges {
 
   openNewFolderDialog(): void {
     const dialogRef = this.dialog.open(NewFolderDialogComponent);
-    dialogRef.afterClosed().subscribe(res => {
+    dialogRef.afterClosed().subscribe((res) => {
       if (res) {
         this.logger.debug(`Folder added: ${res}`);
         this.folderAdded.emit({ name: res });
@@ -219,7 +222,7 @@ export class FileExplorerComponent implements OnChanges {
     event.stopPropagation();
 
     const dialogRef = this.dialog.open(RenameDialogComponent);
-    dialogRef.afterClosed().subscribe(res => {
+    dialogRef.afterClosed().subscribe((res) => {
       if (res) {
         this.logger.debug(`Folder renamed: ${element.name} -> ${res}`);
         element.name = res;

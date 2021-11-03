@@ -145,12 +145,14 @@ class RunService extends __BaseService {
     return this.runPutRenameRunResponse(id, name).pipe(__map((_r) => _r.body as null));
   }
 
-  runStartRunResponse(id: string): __Observable<__StrictHttpResponse<null>> {
+  runStartRunResponse(params: RunService.RunStartRunParams): __Observable<__StrictHttpResponse<null>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
-    if (id != null) __params = __params.set('id', id.toString());
-    let req = new HttpRequest<any>('POST', this.rootUrl + `/run/${id}/start`, __body, {
+    if (params.id != null) __params = __params.set('id', params.id.toString());
+    if (params.mainEntrypoint != null) __params = __params.set('entrypoint', params.mainEntrypoint.toString());
+
+    let req = new HttpRequest<any>('POST', this.rootUrl + `/run/${params.id}/start`, __body, {
       headers: __headers,
       params: __params,
       responseType: 'json',
@@ -163,8 +165,8 @@ class RunService extends __BaseService {
       })
     );
   }
-  runStartRun(id: string): __Observable<null> {
-    return this.runStartRunResponse(id).pipe(__map((_r) => _r.body as null));
+  runStartRun(params: RunService.RunStartRunParams): __Observable<null> {
+    return this.runStartRunResponse(params).pipe(__map((_r) => _r.body as null));
   }
 
   runGetRunStatusResponse(id: string): __Observable<__StrictHttpResponse<null>> {
@@ -214,6 +216,12 @@ class RunService extends __BaseService {
 }
 
 module RunService {
+  export interface RunStartRunParams {
+    id: string;
+    name?: string;
+    mainEntrypoint?: string;
+  }
+
   export interface RunCreateRunParams {
     versionId: string;
     name?: string;

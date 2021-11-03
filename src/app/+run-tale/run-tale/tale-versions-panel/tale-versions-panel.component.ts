@@ -1,14 +1,16 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiConfiguration } from '@api/api-configuration';
-import { AccessLevel, Tale, Version } from '@api/models';
-import { TaleService, VersionService } from '@api/services';
+import { AccessLevel, Run, Tale, Version } from '@api/models';
+import { RunService, TaleService, VersionService } from '@api/services';
 import { TokenService } from '@api/token.service';
 import { LogService, WindowService } from '@shared/core';
+import { ErrorModalComponent } from '@shared/error-handler/error-modal/error-modal.component';
 import { NotificationService } from '@shared/error-handler/services/notification.service';
 import { CollaboratorList } from '@tales/components/rendered-tale-metadata/rendered-tale-metadata.component';
 import { SyncService } from '@tales/sync.service';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import { CreateRenameVersionDialogComponent } from '../modals/create-rename-version-dialog/create-rename-version-dialog.component';
 // TODO: Use real models from Girder
@@ -33,18 +35,24 @@ interface VersionUpdate {
 })
 export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy {
   @Input() tale: Tale;
-  @Input() performRecordedRun: Function;
   @Input() collaborators: CollaboratorList
 
   @Output() readonly taleVersionChanged = new EventEmitter<VersionUpdate>();
 
   versionsSubscription: Subscription;
 
+  // TODO: Store as cookie?
+  mainEntrypoint = 'run.sh';
+
   runConfig: TaleRunConfiguration = { name: '', mainEntrypoint: '', testEntrypoint: '', testsEnabled: false, type: RunConfigType.Local};
 
   // Tale Version timeline (sorted list)
   timeline: Array<any> = [];
   AccessLevel = AccessLevel;
+
+  get latestVersion(): Observable<Version> {
+    return this.versionService.versionListVersions({ taleId: this.tale._id });
+  }
 
   constructor(private config: ApiConfiguration,
               private ref: ChangeDetectorRef,
@@ -53,6 +61,7 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
               private taleService: TaleService,
               private tokenService: TokenService,
               private versionService: VersionService,
+              private runService: RunService,
               private dialog: MatDialog,
               private notificationService: NotificationService,
               private windowService: WindowService,
@@ -82,9 +91,12 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
 
   refresh(): void {
     this.versionService.versionListVersions({ taleId: this.tale._id }).subscribe((versions: Array<Version>) => {
-      this.timeline = versions.sort(this.sortByUpdatedDate);
-      this.ref.detectChanges();
+      this.runService.runListRuns({ taleId: this.tale._id }).subscribe((runs: Array<Run>) => {
+        this.timeline = versions.concat(runs).sort(this.sortByUpdatedDate);
+        this.ref.detectChanges();
+      });
     });
+
   }
 
   /**
@@ -187,10 +199,9 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
         const idx = this.timeline.indexOf(version);
         this.timeline[idx].name = result.name;
         this.ref.detectChanges();
-      }, (err) => {
-        this.logger.error("Failed renaming Tale version:", err);
-        this.notificationService.showError("Error: something went wrong.");
-      });
+      },err => {
+          this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
+        });
     });
   }
 
@@ -207,6 +218,77 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
       const idx = this.timeline.indexOf(version);
       this.timeline.splice(idx, 1);
       this.ref.detectChanges();
+    },
+      err => {
+        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
+      });
+  }
+
+  getVersion(tale: Tale): Observable<Version> {
+    if (!tale.restoredFrom) {
+      // TODO: Prompt to save a new version?
+      // No version exists, save a new version
+      this.logger.debug("Creating version...");
+
+      return this.versionService.versionCreateVersion({ taleId: tale._id });
+    } else {
+      // Fetch existing version and use that
+      return this.versionService.versionGetVersion(tale.restoredFrom);
+    }
+  }
+
+  performRecordedRun(): void {
+    this.logger.debug('Creating recorded run');
+
+    // Validation
+    if (!this.mainEntrypoint) {
+      this.logger.error("Attempted to submit recorded run without main entrypoint script name: ", this.mainEntrypoint);
+
+      return;
+    }
+
+    const tale = this.tale;
+
+    const after = (version: Version) => {
+      // Update Tale to get "restoredFrom" (prevents 303 from POST /version)
+      this.taleVersionChanged.emit();
+      this.refresh();
+
+      if (!version) {
+        this.logger.error("Something went wrong.. no version found!");
+
+        return;
+      } else {
+        this.runService.runCreateRun({ versionId: version._id }).subscribe((run: Run) => {
+          this.logger.info("Run created: ", run);
+
+          const params = { id: run._id, mainEntrypoint: this.mainEntrypoint }
+          this.runService.runStartRun(params).subscribe((started: Run) => {
+            this.logger.info("Run started: ", started);
+            this.refresh();
+          }, err => {
+            this.logger.error("Failed to start run: ", err);
+          });
+        }, err => {
+          this.logger.error("Failed to create run: ", err);
+        });
+      }
+    }
+
+    // Always attempt to save a new version
+    this.versionService.versionCreateVersion({ taleId: tale._id }).subscribe((version: Version) => {
+      after(version);
+    }, createErr => {
+      this.logger.error("Failed to create version: ", createErr);
+
+      if (createErr.status === 303) {
+        this.versionService.versionListVersions({ taleId: tale._id }).subscribe((versions: Array<Version>) => {
+          const mostRecent = versions.sort(this.sortByUpdatedDate).shift();
+          after(mostRecent);
+        }, fetchErr => {
+          this.logger.error("Failed to fetch version: ", fetchErr);
+        });
+      }
     });
   }
 }
