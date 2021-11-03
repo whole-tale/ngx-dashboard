@@ -25,7 +25,7 @@
          <h3 class="ui header" style="margin-top:3rem">Tale Owner</h3>
          <div class="ui large relaxed list" *ngIf="creator"> <!--   -->
             <div class="item" id="tale-owner">
-               <img class="ui avatar image" src="{{ creator.gravatar_baseUrl }}">
+               <img class="ui avatar image" src="{{ creator.gravatar_baseUrl || defaultImageUrl }}">
                <div class="content">
                   <div class="header" *ngIf="creator.firstName">{{ creator.firstName }} {{ creator.lastName }}</div>
                   <div class="header" *ngIf="creator.name">{{ creator.name }}</div>
@@ -83,7 +83,7 @@
                         <i class="fas fa-fw fa-times"></i>
                     </button>
                   </div>
-                  <img class="ui avatar image" src="{{ collaborator.gravatar_baseUrl }}">
+                  <img class="ui avatar circular image" src="{{ collaborator.gravatar_baseUrl || defaultImageUrl }}">
                   <div class="content tale-collaborator">
                      <div class="header" *ngIf="collaborator.name">{{ collaborator.name }}</div>
                      {{ collaborator.login }}

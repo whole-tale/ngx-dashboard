@@ -41,6 +41,8 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
   @Output() readonly collaboratorsChange: EventEmitter<CollaboratorList> = new EventEmitter<CollaboratorList>();
   displayedCollaborators: Array<Collaborator> = [];
 
+  defaultImageUrl = 'https://avatars.githubusercontent.com/u/13108471?s=200&v=4';
+
   AccessLevel = AccessLevel;
   users: Array<any> = [];
 
@@ -125,21 +127,19 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
       minCharacters: 0,
       templates: {
         // Customize user search result template
-        userSearch: (response: any, fields: any) => {
+        standard: (response: any, fields: any) => {
           // this.users = response.results;
           // returns results html for custom results
           let template = `<div class="ui relaxed divided list" style="padding:10px;">`
-          response.results.forEach((result: User) => {
-            template +=  `<a class="item clickable result">
-                <div class="image">
-                  <img class="ui avatar image circular" src="${result[fields.image]}"></img>
-                </div>
-                <div class="content">
-                  <div class="title">${result[fields.title]}</div>
-                  <div class="description">${result[fields.description]}</div>
-                </div>
-              </a>`
-          })
+          response.results.forEach((result: User) => template += `
+            <a class="item clickable result">
+              <img class="ui avatar circular image" src="${result[fields.image] || this.defaultImageUrl}"
+                  style="float:left;height:2em;width:2em;margin-right:10px;" />
+              <div class="content">
+                <div class="title">${result[fields.title]}</div>
+                <div class="description">${result[fields.description]}</div>
+              </div>
+            </a>`)
           template += `</div>`
 
           return template;
