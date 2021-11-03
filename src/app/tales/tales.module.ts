@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
+import { RouterModule } from '@angular/router';
 import { MaterialModule } from '@shared/material';
 import { MarkdownModule } from 'ngx-markdown';
 import { SharedModule } from '~/app/shared';
@@ -11,6 +12,7 @@ import { TaleRunButtonComponent } from './components/tale-run-button/tale-run-bu
 import { TaleCreatorPipe } from './pipes/tale-creator.pipe';
 import { TaleImagePipe } from './pipes/tale-image.pipe';
 import { TaleNamePipe } from './pipes/tale-name.pipe';
+import { TaleVersionNamePipe } from './pipes/tale-version-name.pipe';
 
 @NgModule({
   declarations: [
@@ -20,6 +22,7 @@ import { TaleNamePipe } from './pipes/tale-name.pipe';
     TaleCreatorPipe,
     TaleImagePipe,
     TaleNamePipe,
+    TaleVersionNamePipe,
   ],
   exports: [
     TaleRunButtonComponent,
@@ -28,8 +31,9 @@ import { TaleNamePipe } from './pipes/tale-name.pipe';
     TaleCreatorPipe,
     TaleImagePipe,
     TaleNamePipe,
+    TaleVersionNamePipe,
   ],
   providers: [TaleNamePipe],
-  imports: [CommonModule, MaterialModule, MatDialogModule, SharedModule, MarkdownModule],
+  imports: [CommonModule, RouterModule, MaterialModule, MatDialogModule, SharedModule, MarkdownModule],
 })
 export class TalesModule {}

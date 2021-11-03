@@ -39,7 +39,7 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
 
   AccessLevel: any = AccessLevel;
 
-  protected truncateLength = 100;
+  truncateLength = 100;
 
   searchQuery = '';
 

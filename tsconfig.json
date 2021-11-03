@@ -24,5 +24,9 @@
     "typeRoots": ["node_modules/@types"],
     "lib": ["es2017", "dom"]
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "angularCompilerOptions": {
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true
+  }
 }
