@@ -35,7 +35,7 @@
                 <div class="item" *ngIf="false">Compare</div>
 
                 <div class="item" (click)="renameVersion(version)" *ngIf="tale._accessLevel >= AccessLevel.Write">Rename</div>
-                <div class="item" (click)="deleteVersion(version)" *ngIf="tale._accessLevel >= AccessLevel.Write">Delete</div>
+                <div class="item" (click)="deleteVersion(version)" *ngIf="tale._accessLevel >= AccessLevel.Admin">Delete</div>
                 <div class="item" (click)="exportVersion(version)" *ngIf="tale._accessLevel >= AccessLevel.Write">Export</div>
               </div>
           </div>
