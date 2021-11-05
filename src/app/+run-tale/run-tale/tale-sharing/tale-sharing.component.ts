@@ -241,9 +241,20 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
   }
 
   addCollaborator(): void {
+    var newAccessLevel = AccessLevel.None;
+    if (this.newCollabAccess === 0) {
+      newAccessLevel = AccessLevel.Read;
+    } else if (this.newCollabAccess === 1) {
+      newAccessLevel = AccessLevel.Write;
+    } else if (this.newCollabAccess === 2) {
+      newAccessLevel = AccessLevel.Admin;
+    } else {
+      this.logger.error(`Unknown Access Level: ${this.newCollabAccess}`);
+    }
+
     const collab: Collaborator = {
       id: this.newCollabUser._id,
-      level: this.newCollabAccess === 1 ? AccessLevel.Write : AccessLevel.Read,
+      level: newAccessLevel,
       login: this.newCollabUser.login,
       name: this.newCollabUser.name,
       showAlert: true,
