@@ -92,6 +92,9 @@ export class FileExplorerComponent implements OnChanges {
   // The path to the current directory
   @Input() path: string;
 
+  // An optional ID to highlight in the list
+  @Input() highlighted: string;
+
   // Current nav value (either 'external_data' or 'tale_workspaces')
   @Input() currentNav: string;
 
@@ -118,10 +121,10 @@ export class FileExplorerComponent implements OnChanges {
   constructor(private readonly dialog: MatDialog, private readonly logger: LogService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.currentNav || changes.fileElements) {
+    if (changes.path || changes.currentNav || changes.fileElements) {
       setTimeout(() => {
         $('.ui.file.dropdown').dropdown({ action: 'hide' });
-      }, 1000);
+      }, 500);
     }
   }
 

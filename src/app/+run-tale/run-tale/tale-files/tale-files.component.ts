@@ -97,6 +97,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   canNavigateUp = false;
 
   currentNav = 'tale_workspace';
+  highlighted = "";
 
   runs: BehaviorSubject<Array<Run>> = new BehaviorSubject<Array<Run>>([]);
   versions: BehaviorSubject<Array<Version>> = new BehaviorSubject<Array<Version>>([]);
@@ -135,7 +136,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       const dataFind = this.resourceService.resourceLookup(dataRootParams);
 
       // Fetch all root folders before loading
-      forkJoin(homeFind, dataFind).pipe(enterZone(this.zone)).subscribe((value: Array<any>) => {
+      forkJoin([homeFind, dataFind]).pipe(enterZone(this.zone)).subscribe((value: Array<any>) => {
         if (value.length < 2) {
           this.logger.error("Error: Value mismatch when fetching root folders");
         }
@@ -155,6 +156,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
   ngOnChanges(): void {
     this.detectQueryString();
+    this.load();
   }
 
   readOnly(): boolean {
@@ -173,6 +175,14 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       const nav = params.nav || undefined;
       if (nav && this.currentNav !== nav) {
         this.currentNav = nav;
+      }
+
+      const highlight = params.highlight || undefined;
+      if (highlight && this.highlighted !== highlight) {
+        this.highlighted = highlight;
+        setTimeout(() => {
+          this.router.navigate([], { relativeTo: this.route, queryParams: { highlight: undefined, nav: params.nav, tab: params.tab }, queryParamsHandling: 'merge' });
+        }, 2000);
       }
 
       this.load();
@@ -658,6 +668,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
       this.runService.runDeleteRun(element._id).subscribe(resp => {
         this.load();
+      }, err => {
+        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
       });
 
       return;
@@ -669,6 +681,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
       this.versionService.versionDeleteVersion(element._id).subscribe(resp => {
         this.load();
+      }, err => {
+        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
       });
 
       return;
@@ -684,6 +698,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         const index = folders.indexOf(element);
         folders.splice(index, 1);
         this.folders.next(folders);
+      }, err => {
+        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
       });
     } else if (element._modelType === 'item') {
       // Element is an item, delete it
@@ -695,6 +711,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         const index = files.indexOf(element);
         files.splice(index, 1);
         this.files.next(files);
+      }, err => {
+        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
       });
     }
   }
@@ -710,6 +728,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
                         .subscribe(resp => {
         this.logger.info("Folder moved successfully:", resp);
         this.load();
+      }, err => {
+        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
       });
     } else if (src._modelType === 'item') {
       const params = { id: src._id, folderId: dest._id, baseParentId: dest.baseParentId }
@@ -719,6 +739,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
                       .subscribe(resp => {
         this.logger.info("Item moved successfully:", resp);
         this.load();
+      }, err => {
+        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
       });
     }
   }
@@ -735,6 +757,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
       this.runService.runPutRenameRun(params.id, params.name).subscribe(resp => {
         this.load();
+      }, err => {
+        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
       });
 
       return;
@@ -746,6 +770,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
       this.versionService.versionPutRenameVersion(params.id, params.name).subscribe(resp => {
         this.load();
+      }, err => {
+        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
       });
 
       return;
@@ -761,6 +787,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         const index = folders.indexOf(element);
         folders[index] = resp;
         this.folders.next(folders);
+      }, err => {
+        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
       });
     } else if (element._modelType === 'item') {
       // Element is an item, move it
@@ -772,6 +800,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         const index = files.indexOf(element);
         files[index] = resp;
         this.files.next(files);
+      }, err => {
+        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
       });
     }
   }
@@ -914,11 +944,11 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   navigateUp(): void {
     // TODO: Allow user to navigate to root folders?
     // NOTE: we may need something like this for the Data Catalog, but doesn't need to be this same Component
-    const isDataRoot = this.currentRoot.parentId === this.dataRoot._id;
-    const isTaleWorkspaceRoot = this.currentRoot.parentId === this.tale.workspaceId;
-    const isHomeRoot = this.currentRoot.parentId === this.homeRoot._id;
-    const isVersionsRoot = this.currentRoot.parentId === this.tale.versionsRootId;
-    const isRunsRoot = this.currentRoot.parentId === this.tale.runsRootId;
+    const isDataRoot = this.currentNav === 'external_data' && this.currentRoot.parentId === this.dataRoot._id;
+    const isTaleWorkspaceRoot = this.currentNav === 'tale_workspace' && this.currentRoot.parentId === this.tale.workspaceId;
+    const isHomeRoot = this.currentNav === 'home' && this.currentRoot.parentId === this.homeRoot._id;
+    const isVersionsRoot = this.currentNav === 'tale_versions' && this.currentRoot.parentId === this.tale.versionsRootId;
+    const isRunsRoot = this.currentNav === 'recorded_runs' && this.currentRoot.parentId === this.tale.runsRootId;
 
     // If we find that our parentId matches our known root folders, then we have reached the root
     if (this.currentRoot && (isDataRoot || isTaleWorkspaceRoot || isHomeRoot || isVersionsRoot || isRunsRoot)) {

@@ -34,6 +34,8 @@ export class TaleMetadataComponent implements OnInit {
   licenses: Observable<Array<License>>;
   environments: Observable<Array<Image>>;
 
+  previewMarkdown = false;
+
   confirmationModalShowing = false;
   apiRoot: string;
 

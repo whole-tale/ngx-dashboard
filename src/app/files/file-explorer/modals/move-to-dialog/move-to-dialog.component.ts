@@ -32,12 +32,12 @@ const TALE_WORKSPACES_PATH_SEGMENT = 'Tale Workspaces';
 enum ParentType {
   Folder = 'folder',
   Collection = 'collection',
-  User = 'user'
+  User = 'user',
 }
 
 @Component({
   templateUrl: './move-to-dialog.component.html',
-  styleUrls: ['./move-to-dialog.component.scss']
+  styleUrls: ['./move-to-dialog.component.scss'],
 })
 export class MoveToDialogComponent implements OnInit {
   selectedFolder: FileElement;
@@ -97,7 +97,7 @@ export class MoveToDialogComponent implements OnInit {
 
   get placeholderMessage(): string {
     if (this.pathStack.length === 2 && this.pathStack[0] === this.wsRoot) {
-      return 'This Tale\'s Workspace is empty.'; // Empty Tale Workspace
+      return "This Tale's Workspace is empty."; // Empty Tale Workspace
     } else if (this.pathStack.length === 1 && this.pathStack[0] === this.wsRoot) {
       return 'You have not created any Tales.'; // Empty Tale Workspaces folder
     } else if (this.pathStack.length === 1 && this.pathStack[0] === this.homeRoot) {
@@ -133,7 +133,7 @@ export class MoveToDialogComponent implements OnInit {
       const wsFind = this.resourceService.resourceLookup(wsRootParams);
 
       // Fetch all root folders before loading
-      forkJoin(homeFind, wsFind)
+      forkJoin([homeFind, wsFind])
         .pipe(enterZone(this.zone))
         .subscribe((value: Array<any>) => {
           if (value.length < 2) {
@@ -153,6 +153,10 @@ export class MoveToDialogComponent implements OnInit {
     });
   }
 
+  trackById(index: number, element: FileElement): string {
+    return element._id;
+  }
+
   load(): void {
     if (!this.currentFolderId) {
       // Home folder actually works withthis same logic
@@ -164,13 +168,13 @@ export class MoveToDialogComponent implements OnInit {
       parentType: ParentType.Folder,
       limit: 0,
       sort: 'lowerName',
-      sortdir: SortDir.ASCENDING
+      sortdir: SortDir.ASCENDING,
     };
     if (this.currentFolderId === this.wsRoot._id) {
       this.taleService
         .taleListTales({ limit: 0, level: AccessLevel.Write, sortdir: SortDir.ASCENDING })
         .pipe(enterZone(this.zone))
-        .subscribe(tales => {
+        .subscribe((tales) => {
           this.folders.next(tales.map((tale: Tale) => new FileElement(tale, this.wsRoot)));
         });
     } else {
@@ -178,7 +182,7 @@ export class MoveToDialogComponent implements OnInit {
       this.folderService
         .folderFind(folderListParams)
         .pipe(enterZone(this.zone))
-        .subscribe(folders => {
+        .subscribe((folders) => {
           this.folders.next(folders);
         });
     }
@@ -186,7 +190,7 @@ export class MoveToDialogComponent implements OnInit {
     this.itemService
       .itemFind({ folderId: this.currentFolderId, limit: 0 })
       .pipe(enterZone(this.zone))
-      .subscribe(items => {
+      .subscribe((items) => {
         this.files.next(items);
       });
   }

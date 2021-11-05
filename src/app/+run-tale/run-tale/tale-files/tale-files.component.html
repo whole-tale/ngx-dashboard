@@ -51,6 +51,7 @@
       <app-file-explorer id="tale-files-browser"
         [fileElements]="(folders | async).concat(files | async)"
         [path]="currentPath"
+        [highlighted]="highlighted"
         [placeholderMessage]="placeholderMessage"
         [preventNavigation]="isNavActive('external_data')"
         [readOnly]="tale._accessLevel <= AccessLevel.Read"

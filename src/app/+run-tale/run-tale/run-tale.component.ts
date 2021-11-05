@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component, NgZone, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnChanges, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiConfiguration } from '@api/api-configuration';
@@ -11,6 +12,7 @@ import { CollaboratorList } from '@tales/components/rendered-tale-metadata/rende
 import { TaleAuthor } from '@tales/models/tale-author';
 import { SyncService } from '@tales/sync.service';
 import { Subscription } from 'rxjs';
+import { TaleVersionsPanelComponent } from '~/app/+run-tale/run-tale/tale-versions-panel/tale-versions-panel.component';
 import { routeAnimation } from '~/app/shared';
 
 import { ConnectGitRepoDialogComponent } from './modals/connect-git-repo-dialog/connect-git-repo-dialog.component';
@@ -30,6 +32,8 @@ enum TaleExportFormat {
     animations: [routeAnimation]
 })
 export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges, OnDestroy {
+    @ViewChild(TaleVersionsPanelComponent) versionsPanel: TaleVersionsPanelComponent;
+
     AccessLevel: any = AccessLevel;
 
     taleId: string;
@@ -328,40 +332,8 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       }
     }
 
-    async performRecordedRun(): Promise<void> {
-      this.logger.debug('Creating recorded run');
-
-      const tale = this.tale;
-
-      // TODO: How to detect if currently-restored version has changed? Always offer to save new version?
-
-      let version: Version;
-      if (!tale.restoredFrom) {
-        // TODO: Prompt to save a new version?
-        // No version exists, save a new version
-        version = await this.versionService.versionCreateVersion({ taleId: tale._id }).toPromise();
-        this.logger.info("Version created: ", version);
-      } else {
-        // Fetch existing version and use that
-        version = await this.versionService.versionGetVersion(tale.restoredFrom).toPromise();
-      }
-
-      if (!version) {
-        this.logger.error("Something went wrong.. no version found!");
-
-        return new Promise<void>((resolve, reject) => reject(false));
-      } else {
-        // TODO: Prettier modal to prompt for name of new run
-        const name = prompt("Enter a name for this run");
-
-        if (name) {
-          const run: Run = await this.runService.runCreateRun({ versionId: version._id, name }).toPromise();
-          this.logger.info("Run created: ", run);
-
-          const started: Run = await this.runService.runStartRun(run._id).toPromise();
-          this.logger.info("Run started: ", started);
-        }
-      }
+    performRecordedRun(): void {
+      return this.versionsPanel.performRecordedRun();
     }
 
     saveTaleVersion(): void {
