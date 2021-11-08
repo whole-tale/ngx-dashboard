@@ -286,9 +286,8 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
         // A client-side or network error occurred
         this.logger.error('An error occurred:', createErr.error.message);
       } else if (createErr.status === 303) {
-        const jsonStr = createErr.message;
-        const jsonBody: { extra: string; message: string; type: string; } = JSON.parse(jsonStr);
-        this.versionService.versionGetVersion(jsonBody.extra).subscribe((version: Version) => {
+        const json = createErr.error;
+        this.versionService.versionGetVersion(json.extra).subscribe((version: Version) => {
           after(version);
         }, fetchErr => {
           this.logger.error("Failed to fetch version: ", fetchErr);
