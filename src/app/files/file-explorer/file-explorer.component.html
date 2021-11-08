@@ -28,7 +28,7 @@
       <div class="item" *ngIf="currentNav === 'tale_workspace'" (click)="openTaleWorkspacesDialog($event)">
         <i class="fas fa-fw fa-2x fa-file-import"></i> Select Data...
       </div>
-      <div class="item" *ngIf="currentNav === 'external_data'" (click)="openBagUploadDialog($event)">
+      <div class="item" *ngIf="currentNav === 'external_data'" (click)="openBagUploadDialog()">
         <i class="fas fa-fw fa-2x fa-file-upload"></i> Import BDBag
       </div>
     </div>
