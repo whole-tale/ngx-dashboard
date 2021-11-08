@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -278,13 +279,17 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
     // Always attempt to save a new version
     this.versionService.versionCreateVersion({ taleId: tale._id }).subscribe((version: Version) => {
       after(version);
-    }, createErr => {
+    }, (createErr: HttpErrorResponse) => {
       this.logger.error("Failed to create version: ", createErr);
 
-      if (createErr.status === 303) {
-        this.versionService.versionListVersions({ taleId: tale._id }).subscribe((versions: Array<Version>) => {
-          const mostRecent = versions.sort(this.sortByUpdatedDate).shift();
-          after(mostRecent);
+      if (createErr.error instanceof ErrorEvent) {
+        // A client-side or network error occurred
+        this.logger.error('An error occurred:', createErr.error.message);
+      } else if (createErr.status === 303) {
+        const jsonStr = createErr.message;
+        const jsonBody: { extra: string; message: string; type: string; } = JSON.parse(jsonStr);
+        this.versionService.versionGetVersion(jsonBody.extra).subscribe((version: Version) => {
+          after(version);
         }, fetchErr => {
           this.logger.error("Failed to fetch version: ", fetchErr);
         });
