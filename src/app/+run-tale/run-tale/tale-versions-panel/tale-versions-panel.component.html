@@ -7,15 +7,11 @@
 
     <hr />
 
-    <!-- Recorded Runs / configuration -->
-    <div class="ui action fluid input">
-      <input type="text" #mainEntrypointInput name="mainEntrypointInput" required placeholder="Main Entrypoint..." [(ngModel)]="mainEntrypoint">
-
-      <button [disabled]="!mainEntrypoint" (click)="performRecordedRun()" class="ui primary right labeled icon button">
-        <i class="fas fa-check-circle icon"></i>
-        Perform Run
-      </button>
-    </div>
+    <!-- Recorded Runs -->
+    <button (click)="performRecordedRun()" class="ui primary fluid labeled icon button">
+      <i class="fas fa-check-circle icon"></i>
+      Perform Run
+    </button>
   </div>
 
   <h3>Tale History</h3>
@@ -37,10 +33,21 @@
                 <!-- TODO: Compare Versions button -->
                 <div class="item" *ngIf="false">Compare</div>
 
-                <div class="item" (click)="renameVersion(res)" *ngIf="tale._accessLevel >= AccessLevel.Write">Rename</div>
-                <div class="item" (click)="deleteVersion(res)" *ngIf="tale._accessLevel >= AccessLevel.Admin">Delete</div>
-                <div class="item" (click)="exportVersion(res)" *ngIf="tale._accessLevel >= AccessLevel.Write">Export</div>
+                <!-- Hide these options in the UI to make the Versions panel mostly read-only -->
+                <div class="item" (click)="renameVersion(res)" *ngIf="false && tale._accessLevel >= AccessLevel.Write">Rename</div>
+                <div class="item" (click)="deleteVersion(res)" *ngIf="false && tale._accessLevel >= AccessLevel.Admin">Delete</div>
+                <div class="item" (click)="exportVersion(res)" *ngIf="false && tale._accessLevel >= AccessLevel.Write">Export</div>
               </div>
+          </div>
+        </div>
+
+        <!-- Dropdown for Runs -->
+        <div class="right floated content" *ngIf="res.runVersionId">
+          <div class="ui floating version dropdown icon" tabindex="0">
+            <i class="fas fa-ellipsis-v"></i>
+            <div class="menu left transition hidden" tabindex="-1" style="display: block !important;">
+              <div class="item" (click)="viewRecordedRunInfo(res)">View Info</div>
+            </div>
           </div>
         </div>
         <div class="content">

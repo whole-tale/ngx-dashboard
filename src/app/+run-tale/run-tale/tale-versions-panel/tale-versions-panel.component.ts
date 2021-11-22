@@ -6,12 +6,18 @@ import { ApiConfiguration } from '@api/api-configuration';
 import { AccessLevel, Run, Tale, Version } from '@api/models';
 import { RunService, TaleService, VersionService } from '@api/services';
 import { TokenService } from '@api/token.service';
+import { ViewLogsDialogComponent } from '@layout/notification-stream/modals/view-logs-dialog/view-logs-dialog.component';
 import { LogService, WindowService } from '@shared/core';
 import { ErrorModalComponent } from '@shared/error-handler/error-modal/error-modal.component';
 import { NotificationService } from '@shared/error-handler/services/notification.service';
 import { CollaboratorList } from '@tales/components/rendered-tale-metadata/rendered-tale-metadata.component';
 import { SyncService } from '@tales/sync.service';
 import { Observable, Subscription } from 'rxjs';
+import { RecordedRunInfoDialogComponent } from '~/app/+run-tale/run-tale/modals/recorded-run-info-dialog/recorded-run-info-dialog.component';
+import {
+  MAIN_ENTRYPOINT_STORAGE_KEY,
+  RunEntrypointDialogComponent
+} from '~/app/+run-tale/run-tale/modals/run-entrypoint-dialog/run-entrypoint-dialog.component';
 
 import { CreateRenameVersionDialogComponent } from '../modals/create-rename-version-dialog/create-rename-version-dialog.component';
 // TODO: Use real models from Girder
@@ -41,9 +47,6 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
   @Output() readonly taleVersionChanged = new EventEmitter<VersionUpdate>();
 
   versionsSubscription: Subscription;
-
-  // TODO: Store as cookie?
-  mainEntrypoint = 'run.sh';
 
   runConfig: TaleRunConfiguration = { name: '', mainEntrypoint: '', testEntrypoint: '', testsEnabled: false, type: RunConfigType.Local};
 
@@ -171,6 +174,20 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
     });
   }
 
+
+  /** Per-run dropdown options */
+  viewRecordedRunInfo(run: Run): void {
+    // TODO: Would be nice to also show the Run logs, but we don't know the Job ID
+    this.versionService.versionGetVersion(run.runVersionId).subscribe((version: Version) => {
+      this.dialog.open(RecordedRunInfoDialogComponent, {
+        data: { run, version, tale: this.tale }
+      });
+    },err => {
+      this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
+    });
+  }
+
+
   /** Per-version dropdown options */
   viewVersionInfo(version: Version): void {
     this.dialog.open(TaleVersionInfoDialogComponent, {
@@ -238,61 +255,67 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
     }
   }
 
+  createAndStartRecordedRun(version: Version, mainEntrypoint: string): void {
+    // Update Tale to get "restoredFrom" (prevents 303 from POST /version)
+    this.taleVersionChanged.emit();
+    this.refresh();
+
+    if (!version) {
+      this.logger.error("Something went wrong.. no version found!");
+
+      return;
+    } else {
+      this.runService.runCreateRun({ versionId: version._id }).subscribe((run: Run) => {
+        this.logger.info("Run created: ", run);
+
+        const params = { id: run._id, mainEntrypoint }
+        this.runService.runStartRun(params).subscribe((started: Run) => {
+          this.logger.info("Run started: ", started);
+          this.refresh();
+        }, err => {
+          this.logger.error("Failed to start run: ", err);
+        });
+      }, err => {
+        this.logger.error("Failed to create run: ", err);
+      });
+    }
+  }
+
   performRecordedRun(): void {
     this.logger.debug('Creating recorded run');
 
-    // Validation
-    if (!this.mainEntrypoint) {
-      this.logger.error("Attempted to submit recorded run without main entrypoint script name: ", this.mainEntrypoint);
+    // TODO: Validation?
+    // FIXME: refactor this to abstract single-input-modal?
+    const config = { data: { taleId: this.tale._id } };
+    const dialogRef = this.dialog.open(RunEntrypointDialogComponent, config);
+    dialogRef.afterClosed().subscribe((result: string) => {
+      if (!result) {
+        return this.logger.error("Attempted to submit recorded run without main entrypoint script name: ", result);
+      }
 
-      return;
-    }
+      const mainEntrypoint = result;
 
-    const tale = this.tale;
+      localStorage.setItem(MAIN_ENTRYPOINT_STORAGE_KEY, mainEntrypoint);
+      const tale = this.tale;
 
-    const after = (version: Version) => {
-      // Update Tale to get "restoredFrom" (prevents 303 from POST /version)
-      this.taleVersionChanged.emit();
-      this.refresh();
+      // Always attempt to save a new version
+      this.versionService.versionCreateVersion({ taleId: tale._id }).subscribe((version: Version) => {
+        this.createAndStartRecordedRun(version, mainEntrypoint);
+      }, (createErr: HttpErrorResponse) => {
+        this.logger.error("Failed to create version: ", createErr);
 
-      if (!version) {
-        this.logger.error("Something went wrong.. no version found!");
-
-        return;
-      } else {
-        this.runService.runCreateRun({ versionId: version._id }).subscribe((run: Run) => {
-          this.logger.info("Run created: ", run);
-
-          const params = { id: run._id, mainEntrypoint: this.mainEntrypoint }
-          this.runService.runStartRun(params).subscribe((started: Run) => {
-            this.logger.info("Run started: ", started);
-            this.refresh();
-          }, err => {
-            this.logger.error("Failed to start run: ", err);
+        if (createErr.error instanceof ErrorEvent) {
+          // A client-side or network error occurred
+          this.logger.error('An error occurred:', createErr.error.message);
+        } else if (createErr.status === 303) {
+          const json = createErr.error;
+          this.versionService.versionGetVersion(json.extra).subscribe((version: Version) => {
+            this.createAndStartRecordedRun(version, mainEntrypoint);
+          }, fetchErr => {
+            this.logger.error("Failed to fetch version: ", fetchErr);
           });
-        }, err => {
-          this.logger.error("Failed to create run: ", err);
-        });
-      }
-    }
-
-    // Always attempt to save a new version
-    this.versionService.versionCreateVersion({ taleId: tale._id }).subscribe((version: Version) => {
-      after(version);
-    }, (createErr: HttpErrorResponse) => {
-      this.logger.error("Failed to create version: ", createErr);
-
-      if (createErr.error instanceof ErrorEvent) {
-        // A client-side or network error occurred
-        this.logger.error('An error occurred:', createErr.error.message);
-      } else if (createErr.status === 303) {
-        const json = createErr.error;
-        this.versionService.versionGetVersion(json.extra).subscribe((version: Version) => {
-          after(version);
-        }, fetchErr => {
-          this.logger.error("Failed to fetch version: ", fetchErr);
-        });
-      }
+        }
+      });
     });
   }
 }
