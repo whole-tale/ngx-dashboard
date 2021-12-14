@@ -1,0 +1,22 @@
+<h1 mat-dialog-title>{{ data.title || 'Input Required' }}</h1>
+
+<mat-dialog-content>
+  <div class="ui grid content">
+    <div class="row">
+      <div class="sixteen wide column">
+        <p *ngIf="data?.content">{{ data?.content }}</p>
+        <div class="ui fluid input">
+          <input type="url" required [(ngModel)]="userInput" [placeholder]="data?.placeholder || 'Value is required'">
+        </div>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button class="ui black deny button" mat-dialog-close>No</button>
+  <button class="ui positive right labeled icon button" [mat-dialog-close]="userInput">
+    Yes
+    <i class="play icon"></i>
+  </button>
+</mat-dialog-actions>

@@ -7,6 +7,7 @@ import { AccessLevel, Instance, Run, Tale, User, Version } from '@api/models';
 import { InstanceService, RunService, TaleService, UserService, VersionService } from '@api/services';
 import { TokenService } from '@api/token.service';
 import { AlertModalComponent } from '@shared/common/components/alert-modal/alert-modal.component';
+import { SingleInputModalComponent } from '@shared/common/components/single-input-modal/single-input-modal.component';
 import { BaseComponent, LogService, WindowService } from '@shared/core';
 import { CollaboratorList } from '@tales/components/rendered-tale-metadata/rendered-tale-metadata.component';
 import { TaleAuthor } from '@tales/models/tale-author';
@@ -344,10 +345,13 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     }
 
     openConnectGitRepoDialog(): void {
-      const config = {
-        data: { tale: this.tale }
-      };
-      const dialogRef = this.dialog.open(ConnectGitRepoDialogComponent, config);
+      const config = { data: {
+          content: "Connect Tale workspace to an existing Git repository.",
+          title: "Connect to Git Repository",
+          placeholder: "URL of a public Git repository...",
+          default: ""
+      } };
+      const dialogRef = this.dialog.open(SingleInputModalComponent, config);
       dialogRef.afterClosed().subscribe((gitRepo: string) => {
         if (!gitRepo) { return; }
 

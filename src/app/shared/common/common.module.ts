@@ -9,14 +9,22 @@ import { ConfirmationModalComponent } from './components/confirmation-modal/conf
 import { LoadingOverlayComponent } from './components/loading-overlay/loading-overlay.component';
 import { MenuGroupComponent } from './components/menu/menu-group.component';
 import { MenuItemComponent } from './components/menu/menu-item.component';
+import { SingleInputModalComponent } from './components/single-input-modal/single-input-modal.component';
 import { SafePipe } from './pipes/safe.pipe';
 import { TruncatePipe } from './pipes/truncate.pipe';
 
-const COMPONENTS = [LoadingOverlayComponent, MenuGroupComponent, MenuItemComponent, ConfirmationModalComponent, AlertModalComponent];
+const COMPONENTS = [
+  LoadingOverlayComponent,
+  MenuGroupComponent,
+  MenuItemComponent,
+  ConfirmationModalComponent,
+  AlertModalComponent,
+  SingleInputModalComponent,
+];
 
 @NgModule({
   imports: [CommonAngularModule, FormsModule, MaterialModule, MatDialogModule],
   declarations: [COMPONENTS, SafePipe, TruncatePipe],
-  exports: [CommonAngularModule, COMPONENTS, SafePipe, TruncatePipe]
+  exports: [CommonAngularModule, COMPONENTS, SafePipe, TruncatePipe],
 })
 export class CommonModule {}
