@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { DatasetService } from '@api/services/dataset.service';
 import { FileElement } from '@files/models/file-element';
 import { LogService } from '@shared/core/log.service';
 
@@ -72,6 +73,7 @@ const FILE_TYPES = {
   styleUrls: ['./file-explorer.component.scss'],
 })
 export class FileExplorerComponent implements OnChanges {
+  @ViewChild('bagFileUpload') bagFileUpload: any;
   @ViewChild('file') file: any;
 
   @Input() preventNavigation = false;
@@ -105,6 +107,7 @@ export class FileExplorerComponent implements OnChanges {
   @Output() readonly openTaleWorkspacesModal = new EventEmitter();
   @Output() readonly folderAdded = new EventEmitter<{ name: string }>();
   @Output() readonly fileUploadsAdded = new EventEmitter<{ files: { [key: string]: File } }>();
+  @Output() readonly bagFileUploadAdded = new EventEmitter<{ files: { [key: string]: File } }>();
   @Output() readonly elementRemoved = new EventEmitter<FileElement>();
   @Output() readonly elementRenamed = new EventEmitter<FileElement>();
   @Output() readonly elementCopied = new EventEmitter<FileElement>();
@@ -152,6 +155,16 @@ export class FileExplorerComponent implements OnChanges {
   onUploadsAdded($event: any): void {
     const target = $event.target || $event.srcElement;
     this.fileUploadsAdded.emit(this.file.nativeElement.files);
+    target.value = '';
+  }
+
+  openBagUploadDialog(): void {
+    this.bagFileUpload.nativeElement.click();
+  }
+
+  onBagFileAdded($event: any): void {
+    const target = $event.target || $event.srcElement;
+    this.bagFileUploadAdded.emit(this.bagFileUpload.nativeElement.files);
     target.value = '';
   }
 
