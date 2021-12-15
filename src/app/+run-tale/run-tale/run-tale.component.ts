@@ -1,9 +1,10 @@
-import { ChangeDetectorRef, Component, NgZone, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnChanges, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiConfiguration } from '@api/api-configuration';
-import { AccessLevel, Instance, Tale, User } from '@api/models';
-import { InstanceService, TaleService, UserService, VersionService } from '@api/services';
+import { AccessLevel, Instance, Run, Tale, User, Version } from '@api/models';
+import { InstanceService, RunService, TaleService, UserService, VersionService } from '@api/services';
 import { TokenService } from '@api/token.service';
 import { AlertModalComponent } from '@shared/common/components/alert-modal/alert-modal.component';
 import { BaseComponent, LogService, WindowService } from '@shared/core';
@@ -11,6 +12,7 @@ import { CollaboratorList } from '@tales/components/rendered-tale-metadata/rende
 import { TaleAuthor } from '@tales/models/tale-author';
 import { SyncService } from '@tales/sync.service';
 import { Subscription } from 'rxjs';
+import { TaleVersionsPanelComponent } from '~/app/+run-tale/run-tale/tale-versions-panel/tale-versions-panel.component';
 import { routeAnimation } from '~/app/shared';
 
 import { ConnectGitRepoDialogComponent } from './modals/connect-git-repo-dialog/connect-git-repo-dialog.component';
@@ -30,6 +32,8 @@ enum TaleExportFormat {
     animations: [routeAnimation]
 })
 export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges, OnDestroy {
+    @ViewChild(TaleVersionsPanelComponent) versionsPanel: TaleVersionsPanelComponent;
+
     AccessLevel: any = AccessLevel;
 
     taleId: string;
@@ -63,6 +67,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       private userService: UserService,
       private tokenService: TokenService,
       private versionService: VersionService,
+      private runService: RunService,
       private syncService: SyncService,
       private config: ApiConfiguration,
       private dialog: MatDialog
@@ -328,7 +333,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     }
 
     performRecordedRun(): void {
-      this.logger.debug('Performing recorded run');
+      return this.versionsPanel.performRecordedRun();
     }
 
     saveTaleVersion(): void {

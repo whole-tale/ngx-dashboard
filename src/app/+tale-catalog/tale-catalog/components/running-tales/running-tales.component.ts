@@ -1,5 +1,6 @@
 import { Component, Input, NgZone, Output } from '@angular/core';
 import { Instance, Tale } from '@api/models';
+import { TaleAuthor } from '@tales/models/tale-author';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -17,12 +18,21 @@ export class RunningTalesComponent {
 
   @Input() creators: Map<string, Instance>; // = new Map<string, Instance> ();
 
+  truncateLength = 100;
+
   constructor(private readonly zone: NgZone) {  }
 
   get instanceCount(): number {
     return Object.keys(this.instances).length;
   }
 
+  trackByAuthorOrcid(index: number, author: TaleAuthor): string {
+    return author.orcid;
+  }
+
+  trackById(index: number, tale: Tale): string {
+    return tale._id;
+  }
 
   showDimmer(tale: Tale): void {
     this.zone.runOutsideAngular(() => {

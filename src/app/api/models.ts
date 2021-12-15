@@ -19,6 +19,7 @@ export * from './models/job';
 export * from './models/license';
 export * from './models/publish-info';
 export * from './models/repository';
+export * from './models/run';
 export * from './models/setting';
 export * from './models/sortdir';
 export * from './models/tale';

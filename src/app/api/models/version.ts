@@ -28,25 +28,25 @@
  */
 export interface Version {
   // Context-specific access levels
-  _accessLevel?: number;
+  _accessLevel: number;
   access?: any;
 
   // ID / modelType are standard on all Girder models
-  _id?: string;
-  _modelType?: string;
+  _id: string;
+  _modelType: string;
 
   // Inherited from Folder model
-  baseParentId?: string;
-  baseParentType?: string;
-  created?: string;
-  creatorId?: string;
-  description?: string;
-  name?: string;
-  parentCollection?: string;
-  parentId?: string;
-  public?: boolean;
-  size?: number;
-  updated?: string;
+  baseParentId: string;
+  baseParentType: string;
+  created: Date;
+  creatorId: string;
+  description: string;
+  name: string;
+  parentCollection: string;
+  parentId: string;
+  public: boolean;
+  size: number;
+  updated: Date;
 
   // TODO: What is this?
   isMapping?: boolean;

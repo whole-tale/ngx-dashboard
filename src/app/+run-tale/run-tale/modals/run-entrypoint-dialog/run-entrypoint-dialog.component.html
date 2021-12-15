@@ -1,0 +1,22 @@
+<h1 mat-dialog-title>Recorded Run</h1>
+
+<mat-dialog-content>
+  <div class="ui grid content">
+    <div class="row">
+      <div class="sixteen wide column">
+        <p>Enter the path to the entrypoint for your code:</p>
+        <div class="ui fluid input">
+            <input type="text" [(ngModel)]="mainEntrypoint" placeholder="Main Entrypoint...">
+        </div>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button class="ui black deny button" mat-dialog-close>Cancel</button>
+  <button class="ui primary right labeled icon button" [disabled]="!valid()" [mat-dialog-close]="mainEntrypoint">
+    Perform Recorded Run
+    <i class="checkmark icon"></i>
+  </button>
+</mat-dialog-actions>

@@ -11,8 +11,8 @@ export interface FileElement {
   updated: Date;
 
   // upload progress
-  uploadProgress: number;
-  uploading: boolean;
+  uploadProgress?: number;
+  uploading?: boolean;
 
   // present only on folders, items, and datasets
   creatorId: string;
@@ -30,10 +30,13 @@ export interface FileElement {
   parentId?: string;
 
   // items only
-  folderId: string;
+  folderId?: string;
 
   // datasets only
-  provider: string;
+  provider?: string;
+
+  // recorded runs only
+  runStatus?: number;
 }
 
 export class FileElement implements FileElement {
@@ -47,8 +50,8 @@ export class FileElement implements FileElement {
   updated: Date = new Date();
 
   // upload progress
-  uploadedBytes = 0;
-  uploading = false;
+  uploadedBytes?: number | undefined = 0;
+  uploading?: boolean | undefined = false;
 
   // present only on folders, items, and datasets
   creatorId: string;
@@ -66,10 +69,10 @@ export class FileElement implements FileElement {
   parentId?: string;
 
   // items only
-  folderId: string;
+  folderId?: string;
 
   // datasets only
-  provider: string;
+  provider?: string;
 
   constructor(tale?: Tale, root?: FileElement) {
     // allow to construct Workspace folder with a Tale name from Tale object

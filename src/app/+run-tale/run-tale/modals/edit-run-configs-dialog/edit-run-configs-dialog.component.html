@@ -1,0 +1,67 @@
+<h1 mat-dialog-title>Edit Run Configuration</h1>
+
+<mat-dialog-content>
+  <p>Specify a configuration here to teach us how to "run" your Tale.</p>
+  <div class="ui grid content">
+    <div class="row">
+
+      <!-- div class="six wide column">
+          <div class="ui top attached mini icon buttons">
+              <button class="ui mini button" (click)="addNewConfig()"><i class="plus icon"></i></button>
+              <button class="ui mini button" (click)="removeSelectedConfig()" [disabled]="!selectedConfig"><i class="minus icon"></i></button>
+              <button class="ui mini button" (click)="cloneSelectedConfig()" [disabled]="!selectedConfig"><i class="clone icon"></i></button>
+          </div>
+
+          <div class="ui attached segment">
+              <div class="ui relaxed divided list">
+                  <div class="item" [ngClass]="{ 'item active': this.selectedIndex === $index, 'item': this.selectedIndex !== $index }"
+                            *ngFor="let cfg of configs; index as $index" (click)="selectConfig($index)">
+                      {{ cfg.name }}
+                  </div>
+              </div>
+          </div>
+      </div -->
+
+      <div class="sixteen wide column">
+
+        <div class="ui segment">
+            <form class="ui form" #configEditor="ngForm">
+                <div class="field">
+                    <label>Name</label>
+                    <input type="text" required name="name" id="name" [(ngModel)]="selectedConfig.name" placeholder="Enter a Name..." />
+                </div>
+                <!--div class="field">
+                    <label>Type</label>
+                    <select class="ui dropdown" name="type" id="type" [(ngModel)]="selectedConfig.type">
+                        <option value="0">Local</option>
+                        <option value="1">Container</option>
+                        <option value="2">Tapis</option>
+                    </select>
+                </div-->
+
+                <div class="field">
+                    <label>Main Entrypoint</label>
+                    <input type="text" required name="main-entrypoint" id="main-entrypoint" [(ngModel)]="selectedConfig.mainEntrypoint" />
+                </div>
+                <div class="field">
+                    <div class="ui checkbox" (click)="toggleTestsEnabled()">
+                        <input type="checkbox" tabindex="0" class="hidden" [checked]="selectedConfig.testsEnabled">
+                        <label>Tests Enabled?</label>
+                    </div>
+                </div>
+                <div class="field" *ngIf="selectedConfig.testsEnabled">
+                    <label>Test Entrypoint</label>
+                    <input type="text" name="test-entrypoint" id="test-entrypoint" [(ngModel)]="selectedConfig.testEntrypoint"  />
+                </div>
+
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button class="ui right floated black deny button" mat-dialog-close>Close</button>
+    <button class="ui right floated primary button" [mat-dialog-close]="selectedConfig" [disabled]="!selectedConfigIsValid()">Apply</button>
+</mat-dialog-actions>

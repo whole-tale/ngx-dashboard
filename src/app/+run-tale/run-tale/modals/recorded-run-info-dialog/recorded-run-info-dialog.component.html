@@ -1,0 +1,23 @@
+<mat-dialog-content>
+  <div class="ui grid content">
+    <div class="row" style="min-height: 300px;">
+
+      <div class="five wide column">
+        <h4>Run Info</h4>
+        <pre style="height:100%;">{{ data.run | json }}</pre>
+      </div>
+      <div class="five wide column">
+        <h4>Version Info</h4>
+        <pre style="height:100%;">{{ data.version | json }}</pre>
+      </div>
+      <div class="five wide column">
+        <h4>Tale Info</h4>
+        <pre style="height:100%;">{{ data.tale | json }}</pre>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button class="ui black deny button" mat-dialog-close>Close</button>
+</mat-dialog-actions>

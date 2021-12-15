@@ -19,6 +19,7 @@ export { OauthService } from './services/oauth.service';
 export { PublishService } from './services/publish.service';
 export { RepositoryService } from './services/repository.service';
 export { ResourceService } from './services/resource.service';
+export { RunService } from './services/run.service';
 export { SystemService } from './services/system.service';
 export { TaleService } from './services/tale.service';
 export { TokenService } from './services/token.service';
