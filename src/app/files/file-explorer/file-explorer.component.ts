@@ -119,11 +119,12 @@ export class FileExplorerComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (
-      changes?.path?.currentValue !== changes?.path?.previousValue || // if path changes
-      changes?.currentNav?.currentValue !== changes?.currentNav?.previousValue || // if selected nav changes
+      // if path or selected nav changes
+      changes?.path?.currentValue !== changes?.path?.previousValue ||
+      changes?.currentNav?.currentValue !== changes?.currentNav?.previousValue || 
+      // if a new file is uploaded
       changes?.fileElements?.currentValue?.length !== changes?.fileElements?.previousValue?.length
     ) {
-      // if a new file is uploaded
       setTimeout(() => {
         $('.ui.file.dropdown').dropdown({ action: 'hide' });
       }, 500);
