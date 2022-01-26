@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { ApiConfiguration } from '@api/api-configuration';
 import { LogService } from '@shared/core/log.service';
 
 import { Window } from './models/window';
@@ -12,26 +13,27 @@ export class WindowService implements Window {
   location: any = {};
   env: any = {};
 
-  constructor(private readonly http: HttpClient, private readonly logger: LogService) {
+  constructor(private readonly http: HttpClient, private readonly config: ApiConfiguration, private readonly logger: LogService) {
     this.http.get(ENV_URL).subscribe(
-      env => {
+      (env: any) => {
         this.env = env;
+        this.config.rootUrl = env.apiUrl;
       },
-      err => {
+      (err) => {
         this.logger.error('Failed to fetch env: ', err);
       }
     );
   }
 
   open(url: string, target?: string): void {
-    return;
+    window.open(url, target);
   }
 
   alert(msg: string): void {
-    return;
+    window.alert(msg);
   }
 
   confirm(msg: string): void {
-    return;
+    window.confirm(msg);
   }
 }
