@@ -159,9 +159,16 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
         'lastName',
         'description',
       ],
-      onSelect: (result: any, response: any): boolean => {
-        this.logger.debug('Selected:', result);
+      onSelect: (multi: boolean, selections: Array<any>): boolean => {
+        this.logger.debug('Selected:', selections);
 
+        if (selections.length === 0) {
+          this.logger.warn('Warning: No selected user');
+        } else if (selections.length > 1) {
+          this.logger.warn('Warning: Multiple selected users');
+        }
+
+        const result = selections.shift()
         const displayName = result.login;
         $('#userSearch').search('set value', displayName);
         // $('#userSearch').find('input').val(displayName);
