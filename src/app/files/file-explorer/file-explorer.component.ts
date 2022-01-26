@@ -118,7 +118,12 @@ export class FileExplorerComponent implements OnChanges {
   constructor(private readonly dialog: MatDialog, private readonly logger: LogService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.path || changes.currentNav || changes.fileElements) {
+    if (
+      changes?.path?.currentValue !== changes?.path?.previousValue || // if path changes
+      changes?.currentNav?.currentValue !== changes?.currentNav?.previousValue || // if selected nav changes
+      changes?.fileElements?.currentValue?.length !== changes?.fileElements?.previousValue?.length
+    ) {
+      // if a new file is uploaded
       setTimeout(() => {
         $('.ui.file.dropdown').dropdown({ action: 'hide' });
       }, 500);
