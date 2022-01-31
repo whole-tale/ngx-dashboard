@@ -71,7 +71,7 @@
               <a href="#" [routerLink]="'/run/' + tale._id"
                  [queryParams]="{ 'tab': 'files', 'nav': 'tale_versions', 'highlight': res.runVersionId }"
                  routerLinkActive="active">
-                {{ res.runVersionId | versionName | async }}
+                {{ res.runVersionId | versionName:timeline }}
               </a>
             </small>
           </p>
