@@ -79,6 +79,12 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
         this.refresh();
       }
     });
+
+    this.versionsSubscription = this.syncService.taleUpdatedSubject.subscribe((taleId) => {
+      if (taleId === this.tale._id) {
+        this.refresh();
+      }
+    });
   }
 
   ngOnChanges(): void {
@@ -96,7 +102,7 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
   refresh(): void {
     this.versionService.versionListVersions({ taleId: this.tale._id }).subscribe((versions: Array<Version>) => {
       this.runService.runListRuns({ taleId: this.tale._id }).subscribe((runs: Array<Run>) => {
-        this.timeline = versions.concat(runs).sort(this.sortByUpdatedDate);
+        this.timeline = versions.concat(runs).sort(this.sortByCreatedDate);
         this.ref.detectChanges();
       });
     });
@@ -113,9 +119,9 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
    * @param a First version to compare
    * @param b Second version to compare
    */
-  sortByUpdatedDate(a: Version, b: Version): number {
-    const dateA = new Date(a.updated);
-    const dateB = new Date(b.updated);
+  sortByCreatedDate(a: Version, b: Version): number {
+    const dateA = new Date(a.created);
+    const dateB = new Date(b.created);
     if (dateA < dateB) {
       return 1;
     } else if (dateA > dateB) {
