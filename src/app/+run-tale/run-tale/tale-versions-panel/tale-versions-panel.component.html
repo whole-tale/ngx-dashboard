@@ -51,14 +51,19 @@
           </div>
         </div>
         <div class="content">
-          <div class="date">{{ res.updated | date:'short' }}</div>
+          <div class="date">{{ res.created | date:'short' }}</div>
           <div class="header">
             <img class="ui avatar image" *ngIf="(res | taleCreator | async) as creator" [src]="creator.gravatar_baseUrl" title="{{ creator.firstName }} {{ creator.lastName }} ({{ creator.login }})" />
+
             <span *ngIf="!res.runVersionId">Version saved:</span>
             <span *ngIf="res.runVersionId">Recorded run:</span>
           </div>
 
-          {{ res.name }}
+          <a href="#" [routerLink]="'/run/' + tale._id"
+             [queryParams]="{ 'tab': 'files', 'nav': res.runVersionId ? 'recorded_runs' : 'tale_versions', 'highlight': res._id }"
+             routerLinkActive="active">
+            {{ res.name }}
+          </a>
 
           <p>
             <small *ngIf="res.runVersionId">
@@ -66,7 +71,7 @@
               <a href="#" [routerLink]="'/run/' + tale._id"
                  [queryParams]="{ 'tab': 'files', 'nav': 'tale_versions', 'highlight': res.runVersionId }"
                  routerLinkActive="active">
-                {{ res.runVersionId | versionName | async }}
+                {{ res.runVersionId | versionName:timeline }}
               </a>
             </small>
           </p>
