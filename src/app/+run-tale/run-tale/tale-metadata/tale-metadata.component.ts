@@ -46,6 +46,8 @@ export class TaleMetadataComponent implements OnInit {
   get canEdit(): boolean {
     if (!this.tale) {
       return false;
+    } else if (this.editing) {
+      return false;
     }
 
     return this.tale._accessLevel >= AccessLevel.Write;

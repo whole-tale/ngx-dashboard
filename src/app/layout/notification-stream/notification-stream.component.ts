@@ -15,7 +15,7 @@ declare var $: any;
 @Component({
   selector: 'app-notification-stream',
   templateUrl: './notification-stream.component.html',
-  styleUrls: ['./notification-stream.component.scss']
+  styleUrls: ['./notification-stream.component.scss'],
 })
 export class NotificationStreamComponent {
   constructor(
@@ -115,7 +115,7 @@ export class NotificationStreamComponent {
 
     this.zone.run(() => {
       // Check for existing notifications matching this one
-      const existing = this.events.find(evt => eventData._id === evt._id);
+      const existing = this.events.find((evt) => eventData._id === evt._id);
       if (!existing) {
         // If we haven't seen one like this, then display it
         this.notificationStream.events.push(eventData);
@@ -134,9 +134,14 @@ export class NotificationStreamComponent {
       this.zone.runOutsideAngular(() => {
         $(`#event-progress-${eventData._id}`).progress({
           total: eventData.data.total,
-          value: eventData.data.current
+          value: eventData.data.current,
         });
       });
+    }
+
+    // If task has related resources, attempt to update them too
+    if (eventData.data.resource.type === 'wt_recorded_run') {
+      return this.sync.taleUpdated(eventData.data.resource.tale_id);
     }
 
     this.ref.detectChanges();
@@ -152,7 +157,7 @@ export class NotificationStreamComponent {
     // Grab first (build) jobId
     const jobIds = event.data.resource.jobs;
     const config: MatDialogConfig = {
-      data: { jobIds }
+      data: { jobIds },
     };
 
     const dialogRef = this.dialog.open(ViewLogsDialogComponent, config);

@@ -119,25 +119,28 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
     // Initialize the user search
     $('#userSearch').search({
       source: filteredUsers,
-      type: 'standard',
-      fullTextSearch: 'true',
+      fullTextSearch: true,
       searchOnFocus: true,
       debug: false,
       verbose: false,
       minCharacters: 0,
+      type: 'standard',
       templates: {
         // Customize user search result template
         standard: (response: any, fields: any) => {
-          // this.users = response.results;
           // returns results html for custom results
           let template = `<div class="ui relaxed divided list" style="padding:10px;">`
           response.results.forEach((result: User) => template += `
             <a class="item clickable result">
-              <img class="ui avatar circular image" src="${result[fields.image] || this.defaultImageUrl}"
-                  style="float:left;height:2em;width:2em;margin-right:10px;" />
-              <div class="content">
-                <div class="title">${result[fields.title]}</div>
-                <div class="description">${result[fields.description]}</div>
+              <div class="row">
+                <div class="six wide column">
+                  <img class="ui avatar circular image" src="${result[fields.image] || this.defaultImageUrl}"
+                      style="float:left;height:2em;width:2em;margin-right:10px;" />
+                </div>
+                <div class="ten wide column">
+                  <div class="title">${result[fields.title]}</div>
+                  <div class="description">${result[fields.description]}</div>
+                </div>
               </div>
             </a>`)
           template += `</div>`
@@ -159,23 +162,27 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
         'lastName',
         'description',
       ],
-      onSelect: (result: any, response: any): boolean => {
-        this.logger.debug('Selected:', result);
-
-        const displayName = result.login;
-        $('#userSearch').search('set value', displayName);
-        // $('#userSearch').find('input').val(displayName);
+      onSelect: (result: any, response: Array<any>): boolean => {
         $('#userSearch').search('hide results');
-        $('#userSearchInput').val(displayName);
 
-        this.newCollabUser = result;
-        this.ref.detectChanges();
+        // Async callback looks up displayName from the input to set the user
+        setTimeout(() => {
+          const displayName: string = $('#userSearch').search('get value');
+          const displayResult: User = filteredUsers.find(u => u.name === displayName);
 
+          if (displayResult) {
+            this.newCollabUser = displayResult;
+          } else {
+            this.logger.error('Failed to select search result: ', displayName)
+          }
+
+          this.ref.detectChanges();
+        }, 300);
+
+        // Must return true here to set selected name as the input value
         return true;
       }
     });
-
-    this.ref.detectChanges();
   }
 
   ngOnChanges(): void {

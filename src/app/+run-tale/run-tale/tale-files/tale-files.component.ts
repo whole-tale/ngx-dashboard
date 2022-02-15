@@ -18,7 +18,8 @@ import { FileElement } from '@files/models/file-element';
 import { TruncatePipe } from '@shared/common/pipes/truncate.pipe';
 import { enterZone, LogService, WindowService } from '@shared/core';
 import { ErrorModalComponent } from '@shared/error-handler/error-modal/error-modal.component';
-import { BehaviorSubject, forkJoin } from 'rxjs';
+import { SyncService } from '@tales/sync.service';
+import { BehaviorSubject, forkJoin, Subscription } from 'rxjs';
 
 import { RegisterDataDialogComponent } from '../modals/register-data-dialog/register-data-dialog.component';
 import { SelectDataDialogComponent } from '../modals/select-data-dialog/select-data-dialog.component';
@@ -91,6 +92,9 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   runs: BehaviorSubject<Array<Run>> = new BehaviorSubject<Array<Run>>([]);
   versions: BehaviorSubject<Array<Version>> = new BehaviorSubject<Array<Version>>([]);
 
+  updateSubscription: Subscription;
+  fetching = false;
+
   constructor(
     private ref: ChangeDetectorRef,
     private zone: NgZone,
@@ -98,6 +102,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     private route: ActivatedRoute,
     private logger: LogService,
     private folderService: FolderService,
+    private syncService: SyncService,
     private collectionService: CollectionService,
     private itemService: ItemService,
     private datasetService: DatasetService,
@@ -114,6 +119,18 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.detectQueryString();
+
+    this.updateSubscription = this.syncService.taleUpdatedSubject.subscribe((taleId) => {
+      this.logger.info("Updating Tale Files from SyncService: ", taleId);
+      if (taleId === this.taleId && !this.fetching) {
+        this.fetching = true;
+        setTimeout(() => {
+          this.logger.info("Tale Files update applied via SyncService: ", taleId);
+          this.load();
+          this.fetching = false;
+        }, 1000);
+      }
+    });
 
     // Fetch Home root
     this.userService.userGetMe().subscribe((user : User) => {
