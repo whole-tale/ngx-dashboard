@@ -744,6 +744,9 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       this.runService.runPutRenameRun(params.id, params.name).subscribe(resp => {
         this.load();
       }, err => {
+        // Rename failed, roll-back the change
+        element.name = element.prevName;
+        this.ref.detectChanges();
         this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
       });
 
@@ -757,6 +760,9 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       this.versionService.versionPutRenameVersion(params.id, params.name).subscribe(resp => {
         this.load();
       }, err => {
+        // Rename failed, roll-back the change
+        element.name = element.prevName;
+        this.ref.detectChanges();
         this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
       });
 
@@ -774,6 +780,9 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         folders[index] = resp;
         this.folders.next(folders);
       }, err => {
+        // Rename failed, roll-back the change
+        element.name = element.prevName;
+        this.ref.detectChanges();
         this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
       });
     } else if (element._modelType === 'item') {
@@ -787,6 +796,9 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         files[index] = resp;
         this.files.next(files);
       }, err => {
+        // Rename failed, roll-back the change
+        element.name = element.prevName;
+        this.ref.detectChanges();
         this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
       });
     }

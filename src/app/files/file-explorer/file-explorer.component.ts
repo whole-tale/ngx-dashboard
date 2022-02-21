@@ -121,7 +121,7 @@ export class FileExplorerComponent implements OnChanges {
     if (
       // if path or selected nav changes
       changes?.path?.currentValue !== changes?.path?.previousValue ||
-      changes?.currentNav?.currentValue !== changes?.currentNav?.previousValue || 
+      changes?.currentNav?.currentValue !== changes?.currentNav?.previousValue ||
       // if a new file is uploaded
       changes?.fileElements?.currentValue?.length !== changes?.fileElements?.previousValue?.length
     ) {
@@ -231,6 +231,7 @@ export class FileExplorerComponent implements OnChanges {
     dialogRef.afterClosed().subscribe((res) => {
       if (res) {
         this.logger.debug(`Folder renamed: ${element.name} -> ${res}`);
+        element.prevName = element.name;
         element.name = res;
         this.elementRenamed.emit(element);
       }
