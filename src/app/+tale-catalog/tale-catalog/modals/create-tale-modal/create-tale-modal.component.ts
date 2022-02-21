@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, Inject, NgZone, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Image, Tale } from '@api/models';
 import { ImageService } from '@api/services';
 import { LogService, WindowService } from '@shared/core';
@@ -31,7 +31,7 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
       private readonly window: WindowService
     ) {
     this.newTale = {
-      title: (data && data.params) ? data.params.name : '',
+      title: (data && data.params) ? decodeURIComponent(data.params.name) : '',
       imageId: '',
       authors: [],
       licenseSPDX: 'CC-BY-4.0',
@@ -43,7 +43,7 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
       description: '### Provide a description for your Tale'
     };
     this.showGit = data.showGit;
-    this.baseUrl = (data && data.params && data.params.api) ? data.params.api : '';
+    this.baseUrl = (data && data.params && data.params.api) ? decodeURIComponent(data.params.api) : '';
   }
 
   ngOnInit(): void {
@@ -71,7 +71,7 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
     if (this.data && this.data.params && this.data.params.uri) {
       this.zone.run(() => {
         // TODO: Fetch / display data citation from datacite?
-        this.datasetCitation = { doi: this.data.params.uri };
+        this.datasetCitation = { doi: decodeURIComponent(this.data.params.uri) };
       });
 
       // Set read/write radio buttons using asTale value
@@ -91,7 +91,7 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
         // If user specified an environment as a parameter, select it by default
         if (this.data && this.data.params && this.data.params.environment) {
           // Search for matching name
-          const match = this.environments.find(env => env.name === this.data.params.environment);
+          const match = this.environments.find(env => env.name === decodeURIComponent(this.data.params.environment));
           if (match) {
             // If found, select it in the dropdown
             this.newTale.imageId = match._id;
@@ -106,7 +106,7 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
   }
 
   enableReadOnly(evt: any): void {
-    this.logger.info("Enabling read only on this Tale...");
+    this.logger.debug("Enabling read only on this Tale...");
     const target = evt.target;
     if (target.checked) {
       this.asTale = false;
@@ -114,7 +114,7 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
   }
 
   enableReadWrite(evt: any): void {
-    this.logger.info("Enabling read/write on this Tale...");
+    this.logger.debug("Enabling read/write on this Tale...");
     const target = evt.target;
     if (target.checked) {
       this.asTale = true;
