@@ -87,11 +87,11 @@
                         </a>
 
                         <div class="right menu">
-                            <a *ngIf="instance && instance.status === 1 && currentTab === 'interact'" id="popout-link" class="item" [href]="instance.url" target="_blank">
+                            <a *ngIf="instance && instance.status === 1" id="popout-link" class="item" [href]="instance.url" target="_blank" matTooltip="Open in separate tab or window">
                                 <i class="fas fa-fw fa-external-link-alt"></i>
                             </a>
 
-                            <a class="item" *ngIf="tale._accessLevel >= AccessLevel.Read" (click)="toggleVersionsPanel()">
+                            <a class="item" *ngIf="tale._accessLevel >= AccessLevel.Read" (click)="toggleVersionsPanel()" matTooltip="Show or hide Tale history">
                                 <i class="fas fa-history lighter"></i>
                             </a>
                         </div>
