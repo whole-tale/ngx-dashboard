@@ -18,6 +18,7 @@ export interface Run {
 
   // Unique properties
   name: string;
+  prevName: string; // for rolling back failed rename
   description: string;
   isMapping: boolean;
   public: boolean;
