@@ -18,7 +18,8 @@ export const APP_LAYOUT_CONFIG = {
   useColumnBasisZero: false,
 };
 
-const ROOT_URL = window.env.apiUrl;
+// tslint:disable-next-line:no-string-literal
+const ROOT_URL = window['env']['apiUrl'];
 
 @NgModule({
   imports: [CommonModule, FormsModule, ApiModule.forRoot({ rootUrl: ROOT_URL })],
