@@ -248,7 +248,7 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
   }
 
   addCollaborator(): void {
-    var newAccessLevel = AccessLevel.None;
+    let newAccessLevel = AccessLevel.None;
     if (this.newCollabAccess === 0) {
       newAccessLevel = AccessLevel.Read;
     } else if (this.newCollabAccess === 1) {

@@ -45,12 +45,12 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
 
   user: User;
 
+  instances: Map<string, Instance> = new Map<string, Instance> ();
+  creators: Map<string, User> = new Map<string, User> ();
+
   get instanceCount(): number {
     return Object.keys(this.instances).length;
   }
-
-  instances: Map<string, Instance> = new Map<string, Instance> ();
-  creators: Map<string, User> = new Map<string, User> ();
 
   constructor(
     protected zone: NgZone,
