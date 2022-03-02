@@ -171,7 +171,6 @@ export class PublishTaleDialogComponent implements OnInit {
   }
 
   get docUrl(): string {
-    // tslint:disable-next-line:no-string-literal
-    return `${window['env']['rtdBaseUrl']}/users_guide/publishing.html`;
+    return `${window.env.rtdBaseUrl}/users_guide/publishing.html`;
   }
 }

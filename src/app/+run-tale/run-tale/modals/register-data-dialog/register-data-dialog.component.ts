@@ -23,8 +23,7 @@ export class RegisterDataDialogComponent {
   ) {}
 
   dataONERepositoryBaseUrl(): string {
-    // tslint:disable-next-line:no-string-literal
-    return window['env']['dataONEBaseUrl'];
+    return window.env.dataONEBaseUrl;
   }
 
   searchDatasetUrl(): void {
@@ -63,8 +62,7 @@ export class RegisterDataDialogComponent {
   }
 
   get docUrl(): string {
-    // tslint:disable-next-line:no-string-literal
-    return `${window['env']['rtdBaseUrl']}/users_guide/manage.html#supported-data-repositories`;
+    return `${window.env.rtdBaseUrl}/users_guide/manage.html#supported-data-repositories`;
   }
 
   onSelectedResultChanged(event: any): void {

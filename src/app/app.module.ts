@@ -23,6 +23,23 @@ import { LoginComponent } from './login/login.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = { suppressScrollX: true };
 
+declare global {
+  interface Window {
+    readonly navigator: Navigator;
+    location: Location;
+    env: {
+      apiUrl: string;
+      dataONEBaseUrl: string;
+      authProvider: string;
+      rtdBaseUrl: string;
+    };
+
+    alert(msg: string): void;
+    open(url: string, target?: string): void;
+    confirm(msg: string): void;
+  }
+}
+
 @NgModule({
   imports: [
     BrowserModule.withServerTransition({ appId: 'my-app-id' }),

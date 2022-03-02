@@ -404,8 +404,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     }
 
     gotoDocs(): void {
-      // tslint:disable-next-line:no-string-literal
-      window.open(`${window['env']['rtdBaseUrl']}/users_guide/run.html`, '_blank');
+      window.open(`${window.env.rtdBaseUrl}/users_guide/run.html`, '_blank');
     }
 
     exportTale(format: TaleExportFormat = TaleExportFormat.BagIt): void {

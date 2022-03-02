@@ -11,8 +11,7 @@ export class ApiConfiguration {
   rootUrl: string;
 
   constructor() {
-    // tslint:disable-next-line:no-string-literal
-    this.rootUrl = window['env']['apiUrl'];
+    this.rootUrl = window.env.apiUrl;
   }
 }
 

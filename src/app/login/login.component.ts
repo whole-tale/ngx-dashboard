@@ -104,8 +104,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
     const params = { redirect: `${window.location.origin}/login?token={girderToken}&rd=${route}`, list: false };
     this.oauth.oauthListProviders(params).subscribe(
       (providers: any) => {
-        // tslint:disable-next-line:no-string-literal
-        window.location.href = providers[window['env']['authProvider']];
+        window.location.href = providers[window.env.authProvider];
       },
       (err) => {
         this.logger.error('Failed to GET /oauth/providers:', err);
@@ -114,7 +113,6 @@ export class LoginComponent extends BaseComponent implements OnInit {
   }
 
   get tosUrl(): string {
-    // tslint:disable-next-line:no-string-literal
-    return `${window['env']['rtdBaseUrl']}/tos`;
+    return `${window.env.rtdBaseUrl}/tos`;
   }
 }

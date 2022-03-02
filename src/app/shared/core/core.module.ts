@@ -8,20 +8,19 @@ import { BaseComponent } from './base.component';
 import { LocalConsoleService } from './local-console.service';
 import { LogService } from './log.service';
 import { RemoteConsoleService } from './remote-console.service';
-import { WindowService } from './window.service';
 
-const CORE_PROVIDERS: Array<any> = [RemoteConsoleService, LocalConsoleService, LogService, WindowService];
+const CORE_PROVIDERS: Array<any> = [RemoteConsoleService, LocalConsoleService, LogService];
 
 @NgModule({
   imports: [StoreModule.forRoot({}), EffectsModule.forRoot([]), BrowserAnimationsModule],
   declarations: [BaseComponent, BaseContainerComponent],
-  providers: [CORE_PROVIDERS]
+  providers: [CORE_PROVIDERS],
 })
 export class CoreModule {
   static forRoot(configuredProviders: Array<any>): ModuleWithProviders<CoreModule> {
     return {
       ngModule: CoreModule,
-      providers: configuredProviders
+      providers: configuredProviders,
     };
   }
 

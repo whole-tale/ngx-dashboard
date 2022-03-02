@@ -126,7 +126,6 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
   }
 
   get docUrl(): string {
-    // tslint:disable-next-line:no-string-literal
-    return `${window['env']['rtdBaseUrl']}/users_guide/compose.html`;
+    return `${window.env.rtdBaseUrl}/users_guide/compose.html`;
   }
 }
