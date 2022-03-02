@@ -3,7 +3,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { EventData } from '@api/events/event-data';
 import { UserService } from '@api/services/user.service';
 import { TokenService } from '@api/token.service';
-import { BaseComponent, LogService, WindowService } from '@shared/core';
+import { BaseComponent, LogService } from '@shared/core';
 import { CookieService } from 'ngx-cookie-service';
 
 import { NotificationStreamService } from './notification-stream/notification-stream.service';
@@ -14,7 +14,7 @@ declare var $: any;
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['header.component.scss']
+  styleUrls: ['header.component.scss'],
   // TODO: maintain immutability
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -39,12 +39,11 @@ export class HeaderComponent extends BaseComponent implements OnInit {
     private readonly cookies: CookieService,
     private readonly users: UserService,
     private readonly tokenService: TokenService,
-    private readonly notificationStream: NotificationStreamService,
-    private readonly window: WindowService
+    private readonly notificationStream: NotificationStreamService
   ) {
     super();
 
-    this.router.events.subscribe(value => {
+    this.router.events.subscribe((value) => {
       if (value instanceof NavigationEnd) {
         this.currentRoute = value.url;
         // this.logger.debug(`Route is now: ${value.url}`);
@@ -94,6 +93,7 @@ export class HeaderComponent extends BaseComponent implements OnInit {
   }
 
   get docUrl(): string {
-    return `${this.window.env.rtdBaseUrl}/users_guide`;
+    // tslint:disable-next-line:no-string-literal
+    return `${window['env']['rtdBaseUrl']}/users_guide`;
   }
 }

@@ -7,7 +7,7 @@ import { AccessLevel, Instance, Run, Tale, User, Version } from '@api/models';
 import { InstanceService, RunService, TaleService, UserService, VersionService } from '@api/services';
 import { TokenService } from '@api/token.service';
 import { AlertModalComponent } from '@shared/common/components/alert-modal/alert-modal.component';
-import { BaseComponent, LogService, WindowService } from '@shared/core';
+import { BaseComponent, LogService } from '@shared/core';
 import { CollaboratorList } from '@tales/components/rendered-tale-metadata/rendered-tale-metadata.component';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { SyncService } from '@tales/sync.service';
@@ -60,7 +60,6 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       private zone: NgZone,
       private route: ActivatedRoute,
       private router: Router,
-      private windowService: WindowService,
       private logger: LogService,
       private taleService: TaleService,
       private instanceService: InstanceService,
@@ -405,12 +404,13 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     }
 
     gotoDocs(): void {
-      this.windowService.open(`${this.windowService.env.rtdBaseUrl}/users_guide/run.html`, '_blank');
+      // tslint:disable-next-line:no-string-literal
+      window.open(`${window['env']['rtdBaseUrl']}/users_guide/run.html`, '_blank');
     }
 
     exportTale(format: TaleExportFormat = TaleExportFormat.BagIt): void {
       const token = this.tokenService.getToken();
       const url = `${this.config.rootUrl}/tale/${this.tale._id}/export?token=${token}&taleFormat=${format}`;
-      this.windowService.open(url, '_blank');
+      window.open(url, '_blank');
     }
 }

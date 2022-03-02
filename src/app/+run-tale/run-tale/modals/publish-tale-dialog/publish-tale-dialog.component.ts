@@ -2,7 +2,7 @@ import { Component, Inject, NgZone, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Job, PublishInfo, Repository, Tale } from '@api/models';
 import { JobService, RepositoryService, TaleService,  } from '@api/services';
-import { LogService, WindowService } from '@shared/core';
+import { LogService } from '@shared/core';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -17,12 +17,6 @@ export class PublishTaleDialogComponent implements OnInit {
   repositories: Array<Repository> = [];
   selectedRepository: string;
 
-  get selectedRepositoryName(): string {
-     const repo = this.repositories.find(r => r.repository === this.selectedRepository);
-
-     return repo ? repo.name : '';
-  }
-
   publishStatus = 'init';
   lastMessage: string = DEFAULT_PUBLISHING_MESSAGE;
   progressTotal: number;
@@ -31,13 +25,18 @@ export class PublishTaleDialogComponent implements OnInit {
 
   interval: any;
 
+  get selectedRepositoryName(): string {
+     const repo = this.repositories.find(r => r.repository === this.selectedRepository);
+
+     return repo ? repo.name : '';
+  }
+
   constructor(
     private readonly zone: NgZone,
     private readonly repositoryService: RepositoryService,
     private readonly taleService: TaleService,
     private readonly jobService: JobService,
     private readonly logger: LogService,
-    private readonly window: WindowService,
     @Inject(MAT_DIALOG_DATA) public data: { tale: Tale }) {
 
   }
@@ -172,6 +171,7 @@ export class PublishTaleDialogComponent implements OnInit {
   }
 
   get docUrl(): string {
-    return `${this.window.env.rtdBaseUrl}/users_guide/publishing.html`;
+    // tslint:disable-next-line:no-string-literal
+    return `${window['env']['rtdBaseUrl']}/users_guide/publishing.html`;
   }
 }

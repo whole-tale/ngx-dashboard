@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { OauthService } from '@api/services/oauth.service';
 import { UserService } from '@api/services/user.service';
 import { TokenService } from '@api/token.service';
-import { BaseComponent, LogService, WindowService } from '@shared/core';
+import { BaseComponent, LogService } from '@shared/core';
 import { CookieService } from 'ngx-cookie-service';
 import { routeAnimation } from '~/app/shared';
 
@@ -14,7 +14,7 @@ declare var $: any;
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
   animations: [routeAnimation],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent extends BaseComponent implements OnInit {
   username: string;
@@ -29,7 +29,6 @@ export class LoginComponent extends BaseComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly logger: LogService,
     private readonly oauth: OauthService,
-    private readonly window: WindowService,
     private readonly cookies: CookieService,
     private readonly users: UserService,
     private readonly tokenService: TokenService
@@ -80,7 +79,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
           // this.login();
           this.router.navigate(pathSegments, { queryParams });
         },
-        err => {
+        (err) => {
           this.logger.error('Error fetching user:', err);
         }
       );
@@ -95,7 +94,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
   }
 
   gotoHref(href: string): void {
-    this.window.location.href = href;
+    window.location.href = href;
   }
 
   loginWithGlobus(): void {
@@ -105,15 +104,17 @@ export class LoginComponent extends BaseComponent implements OnInit {
     const params = { redirect: `${window.location.origin}/login?token={girderToken}&rd=${route}`, list: false };
     this.oauth.oauthListProviders(params).subscribe(
       (providers: any) => {
-        window.location.href = providers[this.window.env.authProvider];
+        // tslint:disable-next-line:no-string-literal
+        window.location.href = providers[window['env']['authProvider']];
       },
-      err => {
+      (err) => {
         this.logger.error('Failed to GET /oauth/providers:', err);
       }
     );
   }
 
   get tosUrl(): string {
-    return `${this.window.env.rtdBaseUrl}/tos`;
+    // tslint:disable-next-line:no-string-literal
+    return `${window['env']['rtdBaseUrl']}/tos`;
   }
 }

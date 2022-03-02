@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 
 import { Window } from './models/window';
 
+/**
+ * DEPRECATED: use built-in window.env, window.open, etc instead
+ */
 @Injectable()
 export class WindowService implements Window {
   navigator: any = {};
