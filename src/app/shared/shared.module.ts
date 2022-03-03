@@ -15,19 +15,19 @@ export const APP_LAYOUT_CONFIG = {
   disableDefaultBps: false,
   disableVendorPrefixes: false,
   serverLoaded: false,
-  useColumnBasisZero: false
+  useColumnBasisZero: false,
 };
 
-const DEFAULT_ROOT_URL = 'https://girder.local.wholetale.org/api/v1';
+const ROOT_URL = window.env.apiUrl;
 
 @NgModule({
-  imports: [CommonModule, FormsModule, ApiModule.forRoot({ rootUrl: DEFAULT_ROOT_URL })],
+  imports: [CommonModule, FormsModule, ApiModule.forRoot({ rootUrl: ROOT_URL })],
   providers: [
     {
       provide: LAYOUT_CONFIG,
-      useValue: APP_LAYOUT_CONFIG
-    }
+      useValue: APP_LAYOUT_CONFIG,
+    },
   ],
-  exports: [CommonModule, ErrorHandlerModule, FlexLayoutModule, FormsModule, MaterialModule, SafePipe, TruncatePipe]
+  exports: [CommonModule, ErrorHandlerModule, FlexLayoutModule, FormsModule, MaterialModule, SafePipe, TruncatePipe],
 })
 export class SharedModule {}

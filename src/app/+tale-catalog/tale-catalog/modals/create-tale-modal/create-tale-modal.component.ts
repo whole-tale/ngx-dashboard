@@ -2,7 +2,7 @@ import { AfterViewInit, Component, Inject, NgZone, OnInit } from '@angular/core'
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Image, Tale } from '@api/models';
 import { ImageService } from '@api/services';
-import { LogService, WindowService } from '@shared/core';
+import { LogService } from '@shared/core';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -28,7 +28,6 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
       @Inject(MAT_DIALOG_DATA) public data: { params: any, showGit: boolean },
       private imageService: ImageService,
       private logger: LogService,
-      private readonly window: WindowService
     ) {
     this.newTale = {
       title: (data && data.params) ? decodeURIComponent(data.params.name) : '',
@@ -126,6 +125,6 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
   }
 
   get docUrl(): string {
-    return `${this.window.env.rtdBaseUrl}/users_guide/compose.html`;
+    return `${window.env.rtdBaseUrl}/users_guide/compose.html`;
   }
 }

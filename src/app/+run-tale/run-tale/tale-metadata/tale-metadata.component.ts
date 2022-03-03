@@ -7,11 +7,10 @@ import { ConfirmationModalComponent } from '@shared/common/components/confirmati
 import { LogService } from '@shared/core';
 import { ErrorService } from '@shared/error-handler/services/error.service';
 import { NotificationService } from '@shared/error-handler/services/notification.service';
+import { Collaborator, CollaboratorList } from '@tales/components/rendered-tale-metadata/rendered-tale-metadata.component';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { SyncService } from '@tales/sync.service';
 import { Observable } from 'rxjs';
-
-import { Collaborator, CollaboratorList } from '@tales/components/rendered-tale-metadata/rendered-tale-metadata.component';
 
 // import * as $ from 'jquery';
 declare var $: any;

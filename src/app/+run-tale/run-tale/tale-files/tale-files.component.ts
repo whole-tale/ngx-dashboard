@@ -16,7 +16,7 @@ import {
 } from '@api/services';
 import { FileElement } from '@files/models/file-element';
 import { TruncatePipe } from '@shared/common/pipes/truncate.pipe';
-import { enterZone, LogService, WindowService } from '@shared/core';
+import { enterZone, LogService } from '@shared/core';
 import { ErrorModalComponent } from '@shared/error-handler/error-modal/error-modal.component';
 import { SyncService } from '@tales/sync.service';
 import { BehaviorSubject, forkJoin, Subscription } from 'rxjs';
@@ -112,7 +112,6 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     private resourceService: ResourceService,
     private runService: RunService,
     private versionService: VersionService,
-    private window: WindowService,
     private truncate: TruncatePipe,
     private dialog: MatDialog
   ) {}

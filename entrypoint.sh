@@ -1,2 +1,2 @@
 #!/bin/sh
-envsubst < /usr/share/nginx/html/assets/env.template.json > /usr/share/nginx/html/assets/env.json && exec nginx -g 'daemon off;'
+envsubst < /usr/share/nginx/html/assets/env.template.js > /usr/share/nginx/html/assets/env.js && exec nginx -g 'daemon off;'

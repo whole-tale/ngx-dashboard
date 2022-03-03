@@ -3,7 +3,6 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Tale, Version } from '@api/models';
 import { TaleService } from '@api/services';
 import { LogService } from '@shared/core';
-
 import { Collaborator, CollaboratorList } from '@tales/components/rendered-tale-metadata/rendered-tale-metadata.component';
 
 @Component({

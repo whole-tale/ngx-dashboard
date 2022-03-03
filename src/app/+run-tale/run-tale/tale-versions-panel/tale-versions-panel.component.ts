@@ -7,7 +7,7 @@ import { AccessLevel, Run, Tale, Version } from '@api/models';
 import { RunService, TaleService, VersionService } from '@api/services';
 import { TokenService } from '@api/token.service';
 import { ViewLogsDialogComponent } from '@layout/notification-stream/modals/view-logs-dialog/view-logs-dialog.component';
-import { LogService, WindowService } from '@shared/core';
+import { LogService } from '@shared/core';
 import { ErrorModalComponent } from '@shared/error-handler/error-modal/error-modal.component';
 import { NotificationService } from '@shared/error-handler/services/notification.service';
 import { CollaboratorList } from '@tales/components/rendered-tale-metadata/rendered-tale-metadata.component';
@@ -68,7 +68,6 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
               private runService: RunService,
               private dialog: MatDialog,
               private notificationService: NotificationService,
-              private windowService: WindowService,
               private syncService: SyncService) {
   }
 
@@ -232,7 +231,7 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
   exportVersion(version: Version): void {
     const token = this.tokenService.getToken();
     const url = `${this.config.rootUrl}/tale/${this.tale._id}/export?token=${token}&taleFormat=bagit&versionId=${version._id}`;
-    this.windowService.open(url, '_blank');
+    window.open(url, '_blank');
   }
 
   deleteVersion(version: Version): void {

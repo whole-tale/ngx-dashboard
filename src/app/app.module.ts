@@ -11,7 +11,7 @@ import { MaterialModule } from '@shared/material';
 import { SharedModule } from '@shared/shared.module';
 import { SyncService } from '@tales/sync.service';
 import { CookieService } from 'ngx-cookie-service';
-import { PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface, PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
+import { PerfectScrollbarConfigInterface, PerfectScrollbarModule, PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
 
 import { AppComponent } from './app.component';
 import { routes } from './app.routes';
@@ -22,6 +22,23 @@ import { NotificationStreamModule } from './layout/notification-stream/notificat
 import { LoginComponent } from './login/login.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = { suppressScrollX: true };
+
+declare global {
+  interface Window {
+    readonly navigator: Navigator;
+    location: Location;
+    env: {
+      apiUrl: string;
+      dataONEBaseUrl: string;
+      authProvider: string;
+      rtdBaseUrl: string;
+    };
+
+    alert(msg: string): void;
+    open(url: string, target?: string): void;
+    confirm(msg: string): void;
+  }
+}
 
 @NgModule({
   imports: [
@@ -36,19 +53,19 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = { supp
     MaterialModule,
     FontAwesomeModule,
     NotificationStreamModule,
-    ErrorHandlerModule
+    ErrorHandlerModule,
   ],
   declarations: [HeaderComponent, FooterComponent, MainComponent, LoginComponent, AppComponent],
   providers: [
     {
       provide: PERFECT_SCROLLBAR_CONFIG,
-      useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG
+      useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG,
     },
     CookieService,
-    SyncService
+    SyncService,
   ],
   exports: [AppComponent],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {
   constructor() {
