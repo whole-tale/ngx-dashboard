@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccessLevel, Run, Tale, User, Version } from '@api/models';
@@ -65,8 +65,10 @@ interface Selectable {
   templateUrl: './tale-files.component.html',
   styleUrls: ['./tale-files.component.scss']
 })
-export class TaleFilesComponent implements OnInit, OnChanges {
+export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
   uploadQueue: Set<File> = new Set();
+
+  loading = false;
 
   AccessLevel: any = AccessLevel;
 
@@ -88,9 +90,6 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
   currentNav = 'tale_workspace';
   highlighted = "";
-
-  runs: BehaviorSubject<Array<Run>> = new BehaviorSubject<Array<Run>>([]);
-  versions: BehaviorSubject<Array<Version>> = new BehaviorSubject<Array<Version>>([]);
 
   updateSubscription: Subscription;
   fetching = false;
@@ -161,6 +160,13 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   ngOnChanges(): void {
     this.detectQueryString();
     this.load();
+  }
+
+  ngOnDestroy(): void {
+    this.updateSubscription?.unsubscribe();
+
+    this.folders.unsubscribe();
+    this.files.unsubscribe();
   }
 
   readOnly(): boolean {
@@ -311,19 +317,25 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   }
 
   load(): void {
+    // Already loading, short-circuit
+    if (this.loading) { return; }
+
+    this.loading = true;
+
     if (this.currentFolderId) {
         // Fetch folders in the given folder
-      this.folderService.folderFind({ parentId: this.currentFolderId, parentType: ParentType.Folder, limit: 0 })
-                        .pipe(enterZone(this.zone))
-                        .subscribe(folders => {
-                          this.folders.next(folders);
-                        });
+      const foldersFetch = this.folderService.folderFind({ parentId: this.currentFolderId, parentType: ParentType.Folder, limit: 0 });
+
         // Fetch items in the given folder
-      this.itemService.itemFind({ folderId: this.currentFolderId, limit: 0 })
-                      .pipe(enterZone(this.zone))
-                      .subscribe(items => {
-                        this.files.next(items);
-                      });
+      const itemsFetch = this.itemService.itemFind({ folderId: this.currentFolderId, limit: 0 });
+
+      forkJoin([foldersFetch, itemsFetch]).pipe(enterZone(this.zone))
+                                                  .subscribe((values: Array<any>) => {
+                                                    this.folders.next(values[0]);
+                                                    this.files.next(values[1]);
+                                                    this.loading = false;
+                                                    this.ref.detectChanges();
+                                                  });
 
       return;
     }
@@ -345,6 +357,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
                          if (this.currentNav === 'recorded_runs') {
                            this.folders.next(r.sort(sortByUpdated));
                            this.files.next([]);
+                           this.loading = false;
                            this.ref.detectChanges();
                          }
                        });
@@ -356,6 +369,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
                              if (this.currentNav === 'tale_versions') {
                                this.folders.next(v.sort(sortByUpdated));
                                this.files.next([]);
+                               this.loading = false;
                                this.ref.detectChanges();
                              }
                            });
@@ -363,6 +377,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       case 'home':
         if (!this.homeRoot) {
           this.logger.warn("Warning: Home root not detected. Delaying loading until it has been found:", this.homeRoot);
+          this.loading = false;
 
           return;
         }
@@ -377,6 +392,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
           if (this.currentNav === 'home') {
             this.folders.next(values[0]);
             this.files.next(values[1]);
+            this.loading = false;
             this.ref.detectChanges();
           }
         });
@@ -384,41 +400,29 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       case 'external_data':
         if (!this.dataRoot) {
           this.logger.warn("Warning: Data root not detected. Delaying loading until it has been found:", this.dataRoot);
+          this.loading = false;
 
           return;
         }
 
         // Fetch registered datasets
-        const promises: Array<Promise<any>> = [];
-
-        const folderMatches: Array<FileElement> = [];
-        const itemMatches: Array<FileElement> = [];
-
-        // Map registered Datasets to the dataSet mounts on this Tale
-        this.tale.dataSet.forEach(mount => {
-          let promise;
+        const sources = this.tale.dataSet.map(mount => {
           if (mount._modelType === 'folder') {
-            promise = this.folderService.folderGetFolder(mount.itemId).toPromise().then((folder) => {
-              folderMatches.push(folder);
-            });
-            promises.push(promise);
-          } else if (mount._modelType === 'item') {
-            promise = this.itemService.itemGetItem(mount.itemId).toPromise().then((item) => {
-              itemMatches.push(item);
-            });
-            promises.push(promise);
+            return this.folderService.folderGetFolder(mount.itemId);
           } else {
-            this.logger.error('Unrecognized modelType', mount._modelType);
+            return this.itemService.itemGetItem(mount.itemId);
           }
         });
 
-        Promise.all(promises).then(() => {
+        forkJoin(sources).pipe(enterZone(this.zone)).subscribe((values: Array<FileElement>) => {
           if (this.currentNav === 'external_data') {
-            this.zone.run(() => {
-              this.folders.next(folderMatches);
-              this.files.next(itemMatches);
-              this.ref.detectChanges();
-            });
+            const folderMatches = values.filter(element => element._modelType === 'folder');
+            const itemMatches = values.filter(element => element._modelType === 'item');
+
+            this.folders.next(folderMatches);
+            this.files.next(itemMatches);
+            this.loading = false;
+            this.ref.detectChanges();
           }
         });
 
@@ -431,6 +435,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       case 'tale_workspace':
         if (!this.tale || !this.tale.workspaceId) {
           this.logger.warn("Warning: Tale or Tale workspace root not detected. Delaying loading until it has been found:", this.tale);
+          this.loading = false;
 
           return;
         }
@@ -448,6 +453,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
           if (this.currentNav === 'tale_workspace') {
             this.folders.next(values[0]);
             this.files.next(values[1]);
+            this.loading = false;
             this.ref.detectChanges();
           }
         });
@@ -460,6 +466,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         break;
       default:
         this.logger.warn("Unrecognized nav encountered:", this.currentNav);
+        this.loading = false;
 
         break;
     }
