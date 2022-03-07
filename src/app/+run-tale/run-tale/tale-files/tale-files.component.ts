@@ -342,18 +342,22 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         this.runService.runListRuns({ taleId: this.taleId })
                        .pipe(enterZone(this.zone))
                        .subscribe((r: Array<Run>) => {
-                         this.folders.next(r.sort(sortByUpdated));
-                         this.files.next([]);
-                         this.ref.detectChanges();
+                         if (this.currentNav === 'recorded_runs') {
+                           this.folders.next(r.sort(sortByUpdated));
+                           this.files.next([]);
+                           this.ref.detectChanges();
+                         }
                        });
         break;
       case 'tale_versions':
         this.versionService.versionListVersions({ taleId: this.taleId })
                            .pipe(enterZone(this.zone))
                            .subscribe((v: Array<Version>) => {
-                             this.folders.next(v.sort(sortByUpdated));
-                             this.files.next([]);
-                             this.ref.detectChanges();
+                             if (this.currentNav === 'tale_versions') {
+                               this.folders.next(v.sort(sortByUpdated));
+                               this.files.next([]);
+                               this.ref.detectChanges();
+                             }
                            });
         break;
       case 'home':
@@ -364,18 +368,18 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         }
 
         // Fetch folders in the home folder
-        this.folderService.folderFind({ parentId: this.homeRoot._id, parentType: ParentType.Folder, limit: 0 })
-                        .pipe(enterZone(this.zone))
-                        .subscribe(folders => {
-                          this.folders.next(folders);
-                        });
+        const homeFoldersFetch = this.folderService.folderFind({ parentId: this.homeRoot._id, parentType: ParentType.Folder, limit: 0 });
 
         // Fetch items in the home folder
-        this.itemService.itemFind({ folderId: this.homeRoot._id, limit: 0 })
-                        .pipe(enterZone(this.zone))
-                        .subscribe(items => {
-                          this.files.next(items);
-                        });
+        const homeItemsFetch = this.itemService.itemFind({ folderId: this.homeRoot._id, limit: 0 });
+
+        forkJoin([homeFoldersFetch, homeItemsFetch]).pipe(enterZone(this.zone)).subscribe((values: Array<any>) => {
+          if (this.currentNav === 'home') {
+            this.folders.next(values[0]);
+            this.files.next(values[1]);
+            this.ref.detectChanges();
+          }
+        });
         break;
       case 'external_data':
         if (!this.dataRoot) {
@@ -409,10 +413,13 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         });
 
         Promise.all(promises).then(() => {
-          this.zone.run(() => {
-            this.folders.next(folderMatches);
-            this.files.next(itemMatches);
-          });
+          if (this.currentNav === 'external_data') {
+            this.zone.run(() => {
+              this.folders.next(folderMatches);
+              this.files.next(itemMatches);
+              this.ref.detectChanges();
+            });
+          }
         });
 
         this.currentRoot = undefined;
@@ -428,29 +435,27 @@ export class TaleFilesComponent implements OnInit, OnChanges {
           return;
         }
 
-        // Short-circuit for if we haven't loaded the tale yet
-        // FIXME: Can we avoid this race condition in a more elegant way?
-        if (this.tale.workspaceId) {
-          // Load folder with id=tale.workspaceId
-          this.currentFolderId = this.tale.workspaceId;
+        // Load folder with id=tale.workspaceId
+        this.currentFolderId = this.tale.workspaceId;
 
-          // Fetch folders in the workspace
-          this.folderService.folderFind({ parentId: this.currentFolderId, parentType: ParentType.Folder, limit: 0 })
-                            .subscribe(folders => {
-                              this.zone.run(() => { this.folders.next(folders); });
-                            });
+        // Fetch folders in the workspace
+        const workspaceFoldersFetch = this.folderService.folderFind({ parentId: this.currentFolderId, parentType: ParentType.Folder, limit: 0 });
 
-          // Fetch items in the workspace
-          this.itemService.itemFind({ folderId: this.currentFolderId, limit: 0 })
-                          .subscribe(items => {
-                            this.zone.run(() => { this.files.next(items); });
-                          });
+        // Fetch items in the workspace
+        const workspaceItemsFetch = this.itemService.itemFind({ folderId: this.currentFolderId, limit: 0 });
 
-          this.currentRoot = undefined;
-          this.currentFolderId = undefined;
-          this.canNavigateUp = false;
-          this.currentPath = '';
-        }
+        forkJoin([workspaceFoldersFetch, workspaceItemsFetch]).pipe(enterZone(this.zone)).subscribe((values: Array<any>) => {
+          if (this.currentNav === 'tale_workspace') {
+            this.folders.next(values[0]);
+            this.files.next(values[1]);
+            this.ref.detectChanges();
+          }
+        });
+
+        this.currentRoot = undefined;
+        this.currentFolderId = undefined;
+        this.canNavigateUp = false;
+        this.currentPath = '';
 
         break;
       default:
