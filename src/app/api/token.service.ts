@@ -5,7 +5,7 @@ import { User } from '@api/models/user';
 import { UserService } from '@api/services/user.service';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { LogService } from '@shared/core/log.service';
-import { ReplaySubject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable()
 export class TokenService {
@@ -15,7 +15,7 @@ export class TokenService {
   returnRoute: string;
 
   // Cache the user that this token represents (for display)
-  user: ReplaySubject<User> = new ReplaySubject<User>();
+  user: BehaviorSubject<User> = new BehaviorSubject<User>(undefined);
 
   constructor(private readonly userService: UserService, private readonly logger: LogService) {}
 
@@ -57,11 +57,11 @@ export class TokenService {
     if (!isExpired) {
       this.logger.debug(`Token not yet expired - checking Girder for validity`);
       this.userService.userGetMe().subscribe(
-        user => {
+        (user) => {
           this.logger.debug('Fetched user:', user);
           this.user = user;
         },
-        err => {
+        (err) => {
           this.logger.error(`Failed to fetch the currently logged-in user`);
         }
       );

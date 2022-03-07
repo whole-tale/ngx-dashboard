@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, NgZone, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiConfiguration } from '@api/api-configuration';
 import { AccessLevel, Image, License, PublishInfo, Tale, User } from '@api/models';
@@ -10,7 +10,7 @@ import { NotificationService } from '@shared/error-handler/services/notification
 import { Collaborator, CollaboratorList } from '@tales/components/rendered-tale-metadata/rendered-tale-metadata.component';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { SyncService } from '@tales/sync.service';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -25,7 +25,7 @@ interface TaleAuthorValidationError {
   templateUrl: './tale-metadata.component.html',
   styleUrls: ['./tale-metadata.component.scss']
 })
-export class TaleMetadataComponent implements OnInit {
+export class TaleMetadataComponent implements OnInit, OnDestroy {
   @Input() tale: Tale;
   @Input() creator: User;
   @Input() collaborators: CollaboratorList;
@@ -41,6 +41,8 @@ export class TaleMetadataComponent implements OnInit {
   // Edit mode
   editing: Boolean = false;
   _editState: Tale;
+
+  updateSubscription: Subscription;
 
   get canEdit(): boolean {
     if (!this.tale) {
@@ -95,7 +97,7 @@ export class TaleMetadataComponent implements OnInit {
     }, 800);
 
     // Special handling for syncing data while editing
-    this.syncService.taleUpdatedSubject.subscribe((taleId: string) => {
+    this.updateSubscription = this.syncService.taleUpdatedSubject.subscribe((taleId: string) => {
       if (taleId !== this.tale._id) {
         return;
       } else if (this.editing && !this.confirmationModalShowing && (this.collaborators.groups.length >= 1 || this.collaborators.users.length > 1)) {
@@ -125,6 +127,10 @@ export class TaleMetadataComponent implements OnInit {
         });
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.updateSubscription.unsubscribe();
   }
 
   canDeactivate(): boolean {

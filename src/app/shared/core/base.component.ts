@@ -1,15 +1,15 @@
 import { Component, OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
-  template: ''
+  template: '',
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BaseComponent implements OnDestroy {
-  protected ngUnsubscribe: Subject<void>;
+  protected ngUnsubscribe: BehaviorSubject<void>;
 
   constructor() {
-    this.ngUnsubscribe = new Subject<void>();
+    this.ngUnsubscribe = new BehaviorSubject<void>(undefined);
   }
 
   ngOnDestroy(): void {
