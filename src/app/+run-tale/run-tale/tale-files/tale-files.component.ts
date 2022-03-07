@@ -289,6 +289,10 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         // Can't bind to [attr.data-percent].. use js to set total and update progress
         $(`#upload-${uploadId}`).progress('set percent', 100);
         initResp.uploading = false;
+
+        setTimeout(() => {
+          $('.ui.file.dropdown').dropdown({ action: 'hide' });
+        }, 500);
         this.ref.detectChanges();
 
         // This is apparently not needed all the time? Files are weird...
@@ -778,6 +782,10 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         const index = folders.indexOf(element);
         folders[index] = resp;
         this.folders.next(folders);
+        
+        setTimeout(() => {
+          $('.ui.file.dropdown').dropdown({ action: 'hide' });
+        }, 500);
       }, err => {
         // Rename failed, roll-back the change
         element.name = element.prevName;
@@ -794,6 +802,10 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         const index = files.indexOf(element);
         files[index] = resp;
         this.files.next(files);
+
+        setTimeout(() => {
+          $('.ui.file.dropdown').dropdown({ action: 'hide' });
+        }, 500);
       }, err => {
         // Rename failed, roll-back the change
         element.name = element.prevName;
