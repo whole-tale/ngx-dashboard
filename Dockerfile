@@ -21,7 +21,7 @@ RUN yarn install --network-timeout=${TIMEOUT} && \
 
 # Perform an Angular production build
 COPY . ./
-RUN ./node_modules/@angular/cli/bin/ng build --prod --no-aot --build-optimizer false
+RUN ./node_modules/@angular/cli/bin/ng build --configuration production --no-aot --build-optimizer false
 
 # Copy built artifacts from "nodebuild" to nginx
 FROM nginx:stable-alpine

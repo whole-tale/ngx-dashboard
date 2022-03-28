@@ -49,7 +49,7 @@
 
 
       <app-file-explorer id="tale-files-browser"
-        [fileElements]="folders.value.concat(files.value)"
+        [fileElements]="folders?.value?.concat(files?.value)"
         [path]="currentPath"
         [highlighted]="highlighted"
         [placeholderMessage]="placeholderMessage"

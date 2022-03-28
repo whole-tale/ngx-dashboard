@@ -94,6 +94,11 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
   updateSubscription: Subscription;
   fetching = false;
 
+  currentFolderForkJoinSub: Subscription;
+  homeFolderForkJoinSub: Subscription;
+  dataFolderForkJoinSub: Subscription;
+  workspaceFolderForkJoinSub: Subscription;
+
   constructor(
     private ref: ChangeDetectorRef,
     private zone: NgZone,
@@ -165,8 +170,15 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy(): void {
     this.updateSubscription?.unsubscribe();
 
-    this.folders.unsubscribe();
-    this.files.unsubscribe();
+    this.folders.complete();
+    this.files.complete();
+
+    // RXjS docs say that this isn't necessary, but
+    // without it we're getting multiple subscriptions firing
+    this.currentFolderForkJoinSub?.unsubscribe();
+    this.homeFolderForkJoinSub?.unsubscribe();
+    this.dataFolderForkJoinSub?.unsubscribe();
+    this.workspaceFolderForkJoinSub?.unsubscribe();
   }
 
   readOnly(): boolean {
@@ -329,7 +341,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
         // Fetch items in the given folder
       const itemsFetch = this.itemService.itemFind({ folderId: this.currentFolderId, limit: 0 });
 
-      forkJoin([foldersFetch, itemsFetch]).pipe(enterZone(this.zone))
+      this.currentFolderForkJoinSub = forkJoin([foldersFetch, itemsFetch]).pipe(enterZone(this.zone))
                                                   .subscribe((values: Array<any>) => {
                                                     this.folders.next(values[0]);
                                                     this.files.next(values[1]);
@@ -388,7 +400,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
         // Fetch items in the home folder
         const homeItemsFetch = this.itemService.itemFind({ folderId: this.homeRoot._id, limit: 0 });
 
-        forkJoin([homeFoldersFetch, homeItemsFetch]).pipe(enterZone(this.zone)).subscribe((values: Array<any>) => {
+        this.homeFolderForkJoinSub = forkJoin([homeFoldersFetch, homeItemsFetch]).pipe(enterZone(this.zone)).subscribe((values: Array<any>) => {
           if (this.currentNav === 'home') {
             this.folders.next(values[0]);
             this.files.next(values[1]);
@@ -414,7 +426,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
           }
         });
 
-        forkJoin(sources).pipe(enterZone(this.zone)).subscribe((values: Array<FileElement>) => {
+        this.dataFolderForkJoinSub = forkJoin(sources).pipe(enterZone(this.zone)).subscribe((values: Array<FileElement>) => {
           if (this.currentNav === 'external_data') {
             const folderMatches = values.filter(element => element._modelType === 'folder');
             const itemMatches = values.filter(element => element._modelType === 'item');
@@ -449,7 +461,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
         // Fetch items in the workspace
         const workspaceItemsFetch = this.itemService.itemFind({ folderId: this.currentFolderId, limit: 0 });
 
-        forkJoin([workspaceFoldersFetch, workspaceItemsFetch]).pipe(enterZone(this.zone)).subscribe((values: Array<any>) => {
+        this.workspaceFolderForkJoinSub = forkJoin([workspaceFoldersFetch, workspaceItemsFetch]).pipe(enterZone(this.zone)).subscribe((values: Array<any>) => {
           if (this.currentNav === 'tale_workspace') {
             this.folders.next(values[0]);
             this.files.next(values[1]);
