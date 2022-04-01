@@ -73,6 +73,7 @@ const FILE_TYPES = {
 })
 export class FileExplorerComponent implements OnChanges {
   @ViewChild('file') file: any;
+  @ViewChild('folder') folder: any;
 
   @Input() preventNavigation = false;
   @Input() readOnly = false;
@@ -105,6 +106,7 @@ export class FileExplorerComponent implements OnChanges {
   @Output() readonly openTaleWorkspacesModal = new EventEmitter();
   @Output() readonly folderAdded = new EventEmitter<{ name: string }>();
   @Output() readonly fileUploadsAdded = new EventEmitter<{ files: { [key: string]: File } }>();
+  @Output() readonly folderUploadAdded = new EventEmitter<{ files: { [key: string]: File } }>();
   @Output() readonly elementRemoved = new EventEmitter<FileElement>();
   @Output() readonly elementRenamed = new EventEmitter<FileElement>();
   @Output() readonly elementCopied = new EventEmitter<FileElement>();
@@ -155,9 +157,19 @@ export class FileExplorerComponent implements OnChanges {
     this.file.nativeElement.click();
   }
 
+  openFolderUploadDialog(): void {
+    this.folder.nativeElement.click();
+  }
+
   onUploadsAdded($event: any): void {
     const target = $event.target || $event.srcElement;
     this.fileUploadsAdded.emit(this.file.nativeElement.files);
+    target.value = '';
+  }
+
+  onFolderUploadAdded($event: any): void {
+    const target = $event.target || $event.srcElement;
+    this.folderUploadAdded.emit(this.folder.nativeElement.files);
     target.value = '';
   }
 

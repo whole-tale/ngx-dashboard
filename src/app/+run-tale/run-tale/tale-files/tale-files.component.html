@@ -62,6 +62,7 @@
         [currentNav]="currentNav"
         [canNavigateUp]="canNavigateUp"
         (folderAdded)="addFolder($event)"
+        (folderUploadAdded)="uploadFolder($event)"
         (fileUploadsAdded)="uploadFiles($event)"
         (navigatedUp)="navigateUp()"
         (navigatedDown)="navigateToFolder($event)"

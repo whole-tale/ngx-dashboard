@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnInit, Output } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AccessLevel, Run, Tale, User, Version } from '@api/models';
+import { AccessLevel, Folder, Run, Tale, User, Version } from '@api/models';
 import {
   CollectionService,
   DatasetService,
@@ -245,17 +245,86 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     }
   }
 
-  uploadFiles(filesToUpload: { [key: string]: File }): void {
+  uploadFolder(filesToUpload: { [key: string]: File }): void {
+    // FIXME: annoying scope issue doesn't allow us to use this parameter value in the rxjs callback
+    // FIXME: create a copy instead for now
+    const filesQueue: { [key: string]: File } = {};
     for (const key in filesToUpload) {
       if (!isNaN(parseInt(key, 10))) {
-        this.uploadQueue.add(filesToUpload[key]);
+        filesQueue[key] = filesToUpload[key];
+      }
+    }
+    // KK: Create a target folder. The assumption is that it's gonna live inside a
+    // virtual resource. Returned _id will follow the convention: wtlocal:<..>
+    // do something along the lines:
+    //   payload = folder._id.split(":")[1]
+    //   path_and_root = atob(payload)  // base64 decode
+    //   path = path_and_root.split("|")[0]
+    //   rootId = path_and_root.split("|")[1]
+    // During upload reverse the above with updated path:
+    //  fullPath = path + / + file.webkitRelativePath // note that 'name' shouldn't be the part of fullPath
+    //  newpath_and_root = btoa( fullPath + "|" + rootId )
+    // POST /file with parentId = wtlocal:<newpath_and_root>
+
+    // Search to find base folder name
+    for (const key in filesToUpload) {
+      if (!isNaN(parseInt(key, 10))) {
+        const file = filesToUpload[key];
+        // tslint:disable-next-line:no-string-literal
+        const relPath = file['webkitRelativePath'];
+        const folderName = relPath.split('/')[0];
+
+        // NOTE: Relative path is only set for folder uploads
+        if (relPath) {
+          // Create top-level folder
+          const params = { name: folderName, parentId: this.getParentId() };
+          this.logger.error("Creating folder: ", folderName);
+          this.folderService.folderCreateFolder(params).subscribe((folder: Folder) => {
+            this.logger.error(`Folder created, starting upload...`);
+            this.uploadFiles(filesQueue, folder);
+          });
+          break;
+        } else {
+          this.logger.error("Received request for directory upload without a relPath: ", file);
+        }
+      }
+    }
+  }
+
+  getVirtualParentId(folder: Folder, relPath: string): string {
+    const payload = folder._id.split(":")[1];
+    this.logger.error("Decoding old path: ", payload)
+    const pathWithRoot = atob(payload);    // base64 decode
+    const segments = pathWithRoot.split("|");
+    const path = segments[0];
+    const rootId = segments[1];
+    const newPath = `${path}/${relPath}`.replace(`${folder.name}/${folder.name}`, `${folder.name}`);
+    this.logger.error("Decoded new/full path: ", newPath)
+    const newPathWithRoot = btoa(`${newPath}|${rootId}`);
+
+    return `wtlocal:${newPathWithRoot}`;
+  }
+
+  // Optionally takes a folder to upload to (Folder uploads ONLY)
+  uploadFiles(filesToUpload: { [key: string]: File }, folder?: Folder): void {
+    this.logger.error(`Uploading files now...`);
+
+    for (const key in filesToUpload) {
+      if (!isNaN(parseInt(key, 10))) {
+        const file = filesToUpload[key];
+        // tslint:disable-next-line:no-string-literal
+        this.logger.error(`Uploading ${file['webkitRelativePath']}...`);
+        this.uploadQueue.add(file);
       }
     }
     this.logger.debug(`${filesToUpload.length} files added... upload queue contents:`, this.uploadQueue);
 
     this.uploadQueue.forEach(upload => {
-      // Upload to the current folder, if possible
-      const parentId = this.getParentId();
+      // If we're given a relPath and a folder, then this is a directory upload
+      // Otherwise, we upload to the current folder
+      // tslint:disable-next-line:no-string-literal
+      const relPath = upload['webkitRelativePath'];
+      const parentId = folder ? this.getVirtualParentId(folder, relPath) : this.getParentId();
 
       const initUploadParams = {
         parentId,
@@ -264,6 +333,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         size: upload.size,
         // chunk: contents
       };
+
+      this.logger.error(`Uploading ${relPath} to: `, parentId);
 
       this.fileService.fileInitUpload(initUploadParams).subscribe(async (initResp: any) => {
         const uploadId = initResp._id;
@@ -782,7 +853,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         const index = folders.indexOf(element);
         folders[index] = resp;
         this.folders.next(folders);
-        
+
         setTimeout(() => {
           $('.ui.file.dropdown').dropdown({ action: 'hide' });
         }, 500);

@@ -9,7 +9,13 @@
     <div class="menu">
       <div class="header">{{ currentNav.replace('_', ' ')  | uppercase }} OPTIONS</div>
       <div class="item" *ngIf="currentNav !== 'external_data'" (click)="openFileUploadDialog()">
-        <i class="fas fa-fw fa-2x fa-upload"></i> Upload File...
+        <i class="fas fa-fw fa-2x fa-upload"></i> Upload Files...
+      </div>
+      <div class="item" *ngIf="currentNav !== 'external_data'" (click)="openFolderUploadDialog()">
+        <span class="fas fa-fw fa-stack">
+          <i class="fas fa-folder fa-stack-2x"></i>
+          <i class="fas fa-arrow-up fa-stack-1x fa-inverse"></i>
+        </span> Upload Folder...
       </div>
       <div class="item" *ngIf="currentNav !== 'external_data'" (click)="openNewFolderDialog()">
         <i class="fas fa-fw fa-2x fa-folder-plus"></i> Create Folder...
@@ -31,6 +37,8 @@
     </div>
   </button>
 </mat-toolbar>
+
+<input #folder multiple type="file" style="display: none" directory webkitdirectory mozdirectory (change)="onFolderUploadAdded($event)" />
 
 <input #file multiple type="file" style="display: none" (change)="onUploadsAdded($event)" />
 
