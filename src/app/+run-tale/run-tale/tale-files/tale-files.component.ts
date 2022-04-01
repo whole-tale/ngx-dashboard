@@ -291,14 +291,14 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     }
   }
 
-  getVirtualParentId(folder: Folder, relPath: string): string {
+  getVirtualParentId(file: File, folder: Folder, relPath: string): string {
     const payload = folder._id.split(":")[1];
     this.logger.error("Decoding old path: ", payload)
     const pathWithRoot = atob(payload);    // base64 decode
     const segments = pathWithRoot.split("|");
     const path = segments[0];
     const rootId = segments[1];
-    const newPath = `${path}/${relPath}`.replace(`${folder.name}/${folder.name}`, `${folder.name}`);
+    const newPath = `${path}/${relPath}`.replace(`${folder.name}/${folder.name}`, `${folder.name}`).replace(`/${file.name}`, '');
     this.logger.error("Decoded new/full path: ", newPath)
     const newPathWithRoot = btoa(`${newPath}|${rootId}`);
 
@@ -324,7 +324,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       // Otherwise, we upload to the current folder
       // tslint:disable-next-line:no-string-literal
       const relPath = upload['webkitRelativePath'];
-      const parentId = folder ? this.getVirtualParentId(folder, relPath) : this.getParentId();
+      const parentId = folder ? this.getVirtualParentId(upload, folder, relPath) : this.getParentId();
 
       const initUploadParams = {
         parentId,
