@@ -298,9 +298,14 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     const segments = pathWithRoot.split("|");
     const path = segments[0];
     const rootId = segments[1];
-    const newPath = `${path}/${relPath}`.replace(`${folder.name}/${folder.name}`, `${folder.name}`).replace(`/${file.name}`, '');
-    this.logger.error("Decoded new/full path: ", newPath)
-    const newPathWithRoot = btoa(`${newPath}|${rootId}`);
+    
+    // repair overlapping/duplicated folder name within new path
+    const newPath = `${path}/${relPath}`.replace(`${folder.name}/${folder.name}`, `${folder.name}`);
+    const newVirtualParentSegments = newPath.split('/');
+    newVirtualParentSegments.pop();  // remove filename from end of new path
+    const newVirtualParent = newVirtualParentSegments.join('/');
+    this.logger.error("Decoded new/full path: ", newVirtualParent);
+    const newPathWithRoot = btoa(`${newVirtualParent}|${rootId}`);
 
     return `wtlocal:${newPathWithRoot}`;
   }
