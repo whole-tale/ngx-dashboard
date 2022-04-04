@@ -86,7 +86,7 @@ export class FileExplorerComponent implements OnChanges {
   @Input() fileElements: Array<FileElement>;
 
   // True if we are not at the root
-  @Input() canNavigateUp: string;
+  @Input() canNavigateUp: boolean;
 
   // The path to the current directory
   @Input() path: string;

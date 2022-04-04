@@ -28,14 +28,9 @@ import { TaleWorkspacesDialogComponent } from '../modals/tale-workspaces-dialog/
 // import * as $ from 'jquery';
 declare var $: any;
 
-const URL = window['webkitURL'] || window.URL;  // tslint:disable-line
-
 // TODO: Is there a better place to store these constants?
 const HOME_ROOT_NAME = 'Home';
 const DATA_ROOT_PATH = '/collection/WholeTale Catalog/WholeTale Catalog';
-const WORKSPACES_ROOT_PATH = '/collection/WholeTale Workspaces/WholeTale Workspaces';
-const VERSIONS_ROOT_PATH = '/collection/WholeTale Tale Versions/WholeTale Tale Versions';
-const RUNS_ROOT_PATH = '/collection/WholeTale Tale Runs/WholeTale Tale Runs';
 
 // TODO: Abstract/move enums to reuseable helper
 enum UploadType {
@@ -49,16 +44,13 @@ enum ParentType {
     User = "user"
 }
 
-enum ContentDisposition {
-    Attachment = "attachment",
-    Inline = "inline"
-}
-
 interface Selectable {
   _modelType: string;
   _id: string;
   name: string;
 }
+
+const sortByUpdated = (a: any, b: any) => (a.updated > b.updated) ? -1 : (a.updated < b.updated) ? 1 : 0;
 
 @Component({
   selector: 'app-tale-files',
@@ -88,9 +80,6 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
   currentNav = 'tale_workspace';
   highlighted = "";
-
-  runs: BehaviorSubject<Array<Run>> = new BehaviorSubject<Array<Run>>([]);
-  versions: BehaviorSubject<Array<Version>> = new BehaviorSubject<Array<Version>>([]);
 
   updateSubscription: Subscription;
   fetching = false;
@@ -254,17 +243,6 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         filesQueue[key] = filesToUpload[key];
       }
     }
-    // KK: Create a target folder. The assumption is that it's gonna live inside a
-    // virtual resource. Returned _id will follow the convention: wtlocal:<..>
-    // do something along the lines:
-    //   payload = folder._id.split(":")[1]
-    //   path_and_root = atob(payload)  // base64 decode
-    //   path = path_and_root.split("|")[0]
-    //   rootId = path_and_root.split("|")[1]
-    // During upload reverse the above with updated path:
-    //  fullPath = path + / + file.webkitRelativePath // note that 'name' shouldn't be the part of fullPath
-    //  newpath_and_root = btoa( fullPath + "|" + rootId )
-    // POST /file with parentId = wtlocal:<newpath_and_root>
 
     // Search to find base folder name
     for (const key in filesToUpload) {
@@ -276,11 +254,9 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
         // NOTE: Relative path is only set for folder uploads
         if (relPath) {
-          // Create top-level folder
+          // Create a target folder - the assumption is that it's gonna live inside a virtual resource
           const params = { name: folderName, parentId: this.getParentId() };
-          this.logger.error("Creating folder: ", folderName);
           this.folderService.folderCreateFolder(params).subscribe((folder: Folder) => {
-            this.logger.error(`Folder created, starting upload...`);
             this.uploadFiles(filesQueue, folder);
           });
           break;
@@ -291,23 +267,32 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     }
   }
 
-  getVirtualParentId(file: File, folder: Folder, relPath: string): string {
-    const payload = folder._id.split(":")[1];
-    this.logger.error("Decoding old path: ", payload)
-    const pathWithRoot = atob(payload);    // base64 decode
-    const segments = pathWithRoot.split("|");
-    const path = segments[0];
-    const rootId = segments[1];
-    
-    // repair overlapping/duplicated folder name within new path
-    const newPath = `${path}/${relPath}`.replace(`${folder.name}/${folder.name}`, `${folder.name}`);
-    const newVirtualParentSegments = newPath.split('/');
-    newVirtualParentSegments.pop();  // remove filename from end of new path
-    const newVirtualParent = newVirtualParentSegments.join('/');
-    this.logger.error("Decoded new/full path: ", newVirtualParent);
-    const newPathWithRoot = btoa(`${newVirtualParent}|${rootId}`);
+  splitPath(path: string): string {
+    return path.split('/').slice(-1).join("/");
+  }
 
-    return `wtlocal:${newPathWithRoot}`;
+  // Returned _id will follow the convention: wtlocal:<..>
+  // do something along the lines:
+  //   payload = folder._id.split(":")[1]
+  //   path_and_root = atob(payload)  // base64 decode
+  //   path = path_and_root.split("|")[0]
+  //   rootId = path_and_root.split("|")[1]
+  // During upload reverse the above with updated path:
+  //  fullPath = path + / + file.webkitRelativePath // note that 'name' shouldn't be the part of fullPath
+  //  newpath_and_root = btoa( fullPath + "|" + rootId )
+  buildVirtualParentId(file: File, folder: Folder, relPath: string): string {
+    const payload = folder._id.split(":")[1];
+    this.logger.debug("Decoding old path: ", payload)
+    const [path, rootId] = atob(payload).split("|");   // base64 decode
+
+    // repair overlapping/duplicated folder name within new path
+    //    path=/path/in/girder/data/subdir
+    //    relPath=subdir/path/to/file
+    const newPath = `${this.splitPath(path)}/${relPath}`;  // remove parent folder from end of top path
+    const newVirtualParent = this.splitPath(newPath);  // remove filename from end of new path
+    this.logger.debug("Decoded new/full path: ", newVirtualParent);
+
+    return `wtlocal:${btoa(`${newVirtualParent}|${rootId}`)}`;
   }
 
   // Optionally takes a folder to upload to (Folder uploads ONLY)
@@ -317,8 +302,6 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     for (const key in filesToUpload) {
       if (!isNaN(parseInt(key, 10))) {
         const file = filesToUpload[key];
-        // tslint:disable-next-line:no-string-literal
-        this.logger.error(`Uploading ${file['webkitRelativePath']}...`);
         this.uploadQueue.add(file);
       }
     }
@@ -329,17 +312,15 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       // Otherwise, we upload to the current folder
       // tslint:disable-next-line:no-string-literal
       const relPath = upload['webkitRelativePath'];
-      const parentId = folder ? this.getVirtualParentId(upload, folder, relPath) : this.getParentId();
 
+      // POST /file with parentId = wtlocal:<newpath_and_root>, or else to current folder
       const initUploadParams = {
-        parentId,
+        parentId: folder ? this.buildVirtualParentId(upload, folder, relPath) : this.getParentId(),
         parentType: UploadType.Folder,
         name: upload.name,
         size: upload.size,
         // chunk: contents
       };
-
-      this.logger.error(`Uploading ${relPath} to: `, parentId);
 
       this.fileService.fileInitUpload(initUploadParams).subscribe(async (initResp: any) => {
         const uploadId = initResp._id;
@@ -390,6 +371,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     });
   }
 
+
   load(): void {
     if (this.currentFolderId) {
         // Fetch folders in the given folder
@@ -406,15 +388,6 @@ export class TaleFilesComponent implements OnInit, OnChanges {
                       });
 
       return;
-    }
-    const sortByUpdated = (a: any, b: any) => {
-      if (a.updated > b.updated) {
-        return -1;
-      } else if (a.updated < b.updated) {
-        return 1;
-      } else {
-        return 0;
-      }
     }
 
     switch (this.currentNav) {
@@ -542,8 +515,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
   switchNav(nav: string): void {
     this.currentNav = nav;
-    this.currentFolderId = undefined;
-    this.currentRoot = undefined;
+    this.currentFolderId = this.currentRoot = undefined;
     this.currentPath = '';
     this.navigate();
     this.ref.detectChanges();
@@ -554,12 +526,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   }
 
   truncatePathSegments(path: string): string {
-    const truncatedSegments: Array<string> = [];
-    path.split('/').forEach((s: string) => {
-      truncatedSegments.push(this.truncate.transform(s, 30));
-    });
-
-    return truncatedSegments.join('/');
+    return path.split('/').map((s: string) => this.truncate.transform(s, 30)).join("/");
   }
 
   setCurrentPath(): void {
@@ -607,38 +574,34 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   }
 
   setCurrentRoot(resourceId: string, modelType = 'folder'): void {
+    const setParams = (result: any) => {
+      this.currentRoot = result;
+      this.currentFolderId = this.currentRoot._id;
+      this.canNavigateUp = !!this.currentRoot;
+      this.logger.debug(`currentRoot is now: ${this.currentRoot.name}`);
+      this.setCurrentPath();
+      this.ref.detectChanges();
+    }
+
     // Lookup and set our root node
     if (resourceId) {
       switch (modelType) {
         case 'folder':
           this.folderService.folderGetFolder(resourceId)
                             .pipe(enterZone(this.zone))
-                            .subscribe(folder => {
-            this.currentRoot = folder;
-            this.currentFolderId = this.currentRoot._id;
-            this.canNavigateUp = this.currentRoot ? true : false;
-            this.logger.debug(`currentRoot is now: ${this.currentRoot.name}`);
-            this.setCurrentPath();
-          });
+                            .subscribe(setParams.bind(this));
           break;
         case 'collection':
           this.collectionService.collectionGetCollection(resourceId)
                                 .pipe(enterZone(this.zone))
-                                .subscribe(collection => {
-            this.currentRoot = collection;
-            this.currentFolderId = this.currentRoot._id;
-            this.canNavigateUp = this.currentRoot ? true : false;
-            this.logger.debug(`currentRoot is now: ${this.currentRoot.name}`);
-            this.setCurrentPath();
-          });
+                                .subscribe(setParams.bind(this));
           break;
         default:
           this.logger.error("Unrecognized model type encountered:", modelType);
           break;
       }
     } else {
-      this.currentRoot = undefined;
-      this.currentFolderId = undefined;
+      this.currentRoot = this.currentFolderId = undefined;
       this.canNavigateUp = false;
       this.currentPath = '';
     }
@@ -682,29 +645,20 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   }
 
   getParentId(): string {
-
     // Upload to the current folder, if possible
-    const parentId = this.currentFolderId ? this.currentFolderId :
+    return this.currentFolderId ? this.currentFolderId :
       // Otherwise upload to "workspace" if we're on the Workspaces nav and have no currentFolderId, else upload to "Home" folder
       this.currentNav === 'tale_workspace' ? this.tale.workspaceId : this.homeRoot._id;
-
-      return parentId;
   }
 
   addFolder(folder: { name: string }): void {
     // Datasets are immutable - prevent modifying them directly
-    if (this.currentNav === 'external_data') {
-      return;
-    }
+    if (this.currentNav === 'external_data') { return; }
 
-    const now = new Date();
-
-    // Upload to the current folder, if possible
-    const parentId = this.getParentId();
-
+    // Create in the current folder, if possible
     const params = {
       parentType: ParentType.Folder,
-      parentId,
+      parentId: this.getParentId(),
       name: folder.name,
       description: ""
     };
@@ -726,11 +680,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   removeElement(element: FileElement): void {
     // Special handling for runs/versions
     if (this.currentNav === 'recorded_runs') {
-      if (this.currentFolderId || this.canNavigateUp) {
-        // No-op: remove not allowed within a run
-        return;
-      }
-
+      // No-op: remove not allowed within a run
+      if (this.currentFolderId || this.canNavigateUp) { return; }
       this.runService.runDeleteRun(element._id).subscribe(resp => {
         this.load();
       }, err => {
@@ -739,11 +690,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
       return;
     } else if (this.currentNav === 'tale_versions') {
-      if (this.currentFolderId || this.canNavigateUp) {
-        // No-op: remove not allowed within a version
-        return;
-      }
-
+      // No-op: remove not allowed within a version
+      if (this.currentFolderId || this.canNavigateUp) { return; }
       this.versionService.versionDeleteVersion(element._id).subscribe(resp => {
         this.load();
       }, err => {
@@ -784,7 +732,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
   moveElement(event: { element: FileElement; moveTo: FileElement }): void {
     const src = event.element;
-    const dest = event.moveTo;;
+    const dest = event.moveTo;
     if (src._modelType === 'folder') {
       const params = { id: src._id, parentId: dest._id, parentType: ParentType.Folder, baseParentId: dest.baseParentId }
       // Element is a folder, move it
@@ -815,11 +763,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
     // Special handling for runs/versions
     if (this.currentNav === 'recorded_runs') {
-      if (this.canNavigateUp) {
-        // No-op: remove not allowed within a run
-        return;
-      }
-
+      // No-op: remove not allowed within a run
+      if (this.canNavigateUp) { return; }
       this.runService.runPutRenameRun(params.id, params.name).subscribe(resp => {
         this.load();
       }, err => {
@@ -831,11 +776,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
       return;
     } else if (this.currentNav === 'tale_versions') {
-      if (this.canNavigateUp) {
-        // No-op: remove not allowed within a version
-        return;
-      }
-
+      // No-op: remove not allowed within a version
+      if (this.canNavigateUp) { return; }
       this.versionService.versionPutRenameVersion(params.id, params.name).subscribe(resp => {
         this.load();
       }, err => {
@@ -928,7 +870,6 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     }
   }
 
-
   // Expected parameter format:
   //    dataMap: [{"name":"Elevation per SASAP region and Hydrolic Unit (HUC8) boundary for Alaskan watersheds","dataId":"resource_map_doi:10.5063/F1Z60M87","repository":"DataONE","doi":"10.5063/F1Z60M87","size":10293583}]
   openRegisterDataModal(event: Event): void {
@@ -936,18 +877,14 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     dialogRef.afterClosed().subscribe((selectedResult: any) => {
       if (!selectedResult) { return; }
       const dataMap = JSON.stringify([selectedResult]);
-      const params = { dataMap };
-      this.datasetService.datasetImportData(params).subscribe(resp => {
+      this.datasetService.datasetImportData({ dataMap }).subscribe(resp => {
         this.logger.info("Dataset registered:", resp);
       });
     });
   }
 
   openSelectDataModal(event: Event): void {
-    const config: MatDialogConfig = {
-      data: { tale: this.tale }
-    };
-    const dialogRef = this.dialog.open(SelectDataDialogComponent, config);
+    const dialogRef = this.dialog.open(SelectDataDialogComponent, { data: { tale: this.tale } });
     dialogRef.afterClosed().subscribe((datasets: Array<Selectable>) => {
       if (!datasets) { return; }
 
@@ -966,10 +903,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   }
 
   openTaleWorkspacesModal(event: Event): void {
-    const config: MatDialogConfig = {
-      data: { tale: this.tale }
-    };
-    const dialogRef = this.dialog.open(TaleWorkspacesDialogComponent, config);
+    const dialogRef = this.dialog.open(TaleWorkspacesDialogComponent, { data: { tale: this.tale } });
     dialogRef.afterClosed().subscribe((result: { action: string, selected: Array<Selectable> }) => {
       if (!result) { return; }
 
@@ -1022,7 +956,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         parentid: this.currentFolderId ? this.currentFolderId : undefined,
       }
     });
-    this.canNavigateUp = this.currentFolderId ? true : false;
+    this.canNavigateUp = !!this.currentFolderId;
   }
 
   // TODO: Parameterize to make path clickable?
