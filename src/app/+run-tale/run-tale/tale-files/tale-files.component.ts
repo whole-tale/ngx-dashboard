@@ -297,8 +297,6 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
   // Optionally takes a folder to upload to (Folder uploads ONLY)
   uploadFiles(filesToUpload: { [key: string]: File }, folder?: Folder): void {
-    this.logger.error(`Uploading files now...`);
-
     for (const key in filesToUpload) {
       if (!isNaN(parseInt(key, 10))) {
         const file = filesToUpload[key];
@@ -638,10 +636,6 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
   trackById(model: any, index: number): string {
     return model._id;
-  }
-
-  getName(folder: FileElement): string {
-    return folder.name;
   }
 
   getParentId(): string {
