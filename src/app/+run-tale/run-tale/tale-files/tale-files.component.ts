@@ -268,7 +268,7 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   }
 
   splitPath(path: string): string {
-    return path.split('/').slice(-1).join("/");
+    return path.split('/').slice(0, -1).join("/");
   }
 
   // Returned _id will follow the convention: wtlocal:<..>
@@ -282,7 +282,6 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   //  newpath_and_root = btoa( fullPath + "|" + rootId )
   buildVirtualParentId(file: File, folder: Folder, relPath: string): string {
     const payload = folder._id.split(":")[1];
-    this.logger.debug("Decoding old path: ", payload)
     const [path, rootId] = atob(payload).split("|");   // base64 decode
 
     // repair overlapping/duplicated folder name within new path
@@ -290,7 +289,6 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     //    relPath=subdir/path/to/file
     const newPath = `${this.splitPath(path)}/${relPath}`;  // remove parent folder from end of top path
     const newVirtualParent = this.splitPath(newPath);  // remove filename from end of new path
-    this.logger.debug("Decoded new/full path: ", newVirtualParent);
 
     return `wtlocal:${btoa(`${newVirtualParent}|${rootId}`)}`;
   }
