@@ -58,7 +58,7 @@ const sortByUpdated = (a: any, b: any) => (a.updated > b.updated) ? -1 : (a.upda
   styleUrls: ['./tale-files.component.scss']
 })
 export class TaleFilesComponent implements OnInit, OnChanges {
-  uploadQueue: Set<File> = new Set();
+  uploadQueue: Set<File> = new Set<File>();
 
   AccessLevel: any = AccessLevel;
 
@@ -234,37 +234,31 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     }
   }
 
-  uploadFolder(filesToUpload: { [key: string]: File }): void {
-    // FIXME: annoying scope issue doesn't allow us to use this parameter value in the rxjs callback
-    // FIXME: create a copy instead for now
-    const filesQueue: { [key: string]: File } = {};
-    for (const key in filesToUpload) {
-      if (!isNaN(parseInt(key, 10))) {
-        filesQueue[key] = filesToUpload[key];
-      }
-    }
+  convertToArray(files: FileList): Array<File> {
+    return Array.from(files);
+  }
 
+  uploadFolder(files: Array<File>): void {
     // Search to find base folder name
-    for (const key in filesToUpload) {
-      if (!isNaN(parseInt(key, 10))) {
-        const file = filesToUpload[key];
-        // tslint:disable-next-line:no-string-literal
-        const relPath = file['webkitRelativePath'];
-        const folderName = relPath.split('/')[0];
+    files.some((file: File) => {
+      // tslint:disable-next-line:no-string-literal
+      const relPath = file['webkitRelativePath'];
 
-        // NOTE: Relative path is only set for folder uploads
-        if (relPath) {
-          // Create a target folder - the assumption is that it's gonna live inside a virtual resource
-          const params = { name: folderName, parentId: this.getParentId() };
-          this.folderService.folderCreateFolder(params).subscribe((folder: Folder) => {
-            this.uploadFiles(filesQueue, folder);
-          });
-          break;
-        } else {
-          this.logger.error("Received request for directory upload without a relPath: ", file);
-        }
+      // NOTE: Relative path is only set for folder uploads
+      if (relPath) {
+        // Create a target folder - the assumption is that it's gonna live inside a virtual resource
+        const folderName = relPath.split('/')[0];
+        const params = { name: folderName, parentId: this.getParentId() };
+        this.folderService.folderCreateFolder(params).subscribe((folder: Folder) => {
+          this.uploadFiles(files, folder);
+          this.ref.detectChanges();
+        });
+
+        return true;
+      } else {
+        this.logger.error("Received request for directory upload without a relPath: ", file);
       }
-    }
+    })
   }
 
   splitPath(path: string): string {
@@ -293,15 +287,10 @@ export class TaleFilesComponent implements OnInit, OnChanges {
     return `wtlocal:${btoa(`${newVirtualParent}|${rootId}`)}`;
   }
 
-  // Optionally takes a folder to upload to (Folder uploads ONLY)
-  uploadFiles(filesToUpload: { [key: string]: File }, folder?: Folder): void {
-    for (const key in filesToUpload) {
-      if (!isNaN(parseInt(key, 10))) {
-        const file = filesToUpload[key];
-        this.uploadQueue.add(file);
-      }
-    }
-    this.logger.debug(`${filesToUpload.length} files added... upload queue contents:`, this.uploadQueue);
+  // Optionally takes a folder to upload to (for folder uploads ONLY)
+  uploadFiles(files: Array<File>, folder?: Folder): void {
+    files.forEach(f => this.uploadQueue.add(f));
+    this.logger.debug(`${files.length} files added... upload queue contents:`, this.uploadQueue);
 
     this.uploadQueue.forEach(upload => {
       // If we're given a relPath and a folder, then this is a directory upload
@@ -362,8 +351,6 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         // Update UI with final uploaded item (logo, size, etc)
         this.load();
       });
-
-      this.uploadQueue.delete(upload);
     });
   }
 
