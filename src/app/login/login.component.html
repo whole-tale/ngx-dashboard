@@ -1,11 +1,13 @@
 <!-- Fake navbar (yuck) -->
-<div class="ui inverted menu wt top">
-  <div class="header item wt brand"><img src="../../assets/img/wholetale_logo_sm.png">WHOLE<span>TALE</span> <span> Dashboard</span></div>
+
+<div class="ui inverted menu wt top" role="heading">
+  <a href="/login#start-of-content" class="show-on-focus js-skip-to-content">Skip to content</a>
+  <div class="header item wt brand"><img src="../../assets/img/wholetale_logo_sm.png" alt="Whole Tale Logo">WHOLE<span>TALE</span> <span> Dashboard</span></div>
 </div>
 
 <!-- Styled login area -->
 <div class="login area">
-  <div class="login banner">
+  <div class="login banner" role="banner">
     <div class="ui huge white header">Reproducibility Simplified</div>
 
     <div class="ui white header">
@@ -13,15 +15,27 @@
         <p class="nomargin">reproducible computational research. <a href="https://wholetale.org" style="color:white;"><u>Learn more...</u></a></p>
     </div>
   </div>
+  <div id="start-of-content" class="show-on-focus"></div>
+  <div role="main">
+    <div style="margin-top: 10vh; margin-bottom: 2vh; color: black;">
+      <h1>
+        Sign in to Whole Tale
+      </h1>
+    </div>
 
-  <a class="ui large blue button" (click)="loginWithGlobus()">
-    <div class="access-wholetale">Access</div>
-    <img src="../../assets/img/whole_tale_logo_text_long_light_large.png" width="200px" style="width:200px">
-  </a>
+    <a class="ui github-button button" (click)="loginWithGirder('GitHub')" (keydown.enter)="loginWithGirder('GitHub')" role="button" tabindex="0">
+      <i class="github icon github-button-icon"></i>
+      Sign in with GitHub
+    </a>
+    <a class="ui globus-button button" (click)="loginWithGirder('Globus')" (keydown.enter)="loginWithGirder('Globus')" role="button" tabindex="0">
+      <i class="fa-globe icon globus-button-icon"></i>
+      Sign in with Globus
+    </a>
 
-  <p style="botmargin" style="margin: 10px; color:black;">By accessing Whole Tale, you agree to our
-    <a [href]="tosUrl" style="color:black" target="_blank"><u>Terms of Use</u></a>.
-  </p>
+    <p style="botmargin" style="margin: 10px; color:black;">By accessing Whole Tale, you agree to our
+      <a [href]="tosUrl" style="color:black" target="_blank"><u>Terms of Use</u></a>.
+    </p>
+  </div>
 
   <div style="color:black">
     <p class="nomargin" style="margin-top: 50px; font-size: 12pt;">Whole Tale is supported by the National Science Foundation under Grant No. OAC-1541450.</p>
@@ -31,7 +45,7 @@
 </div>
 
 <!-- Fake footer -->
-<div class="ui centered footer grid">
+<div class="ui centered footer grid" role="contentInfo">
   <div class="ui inverted basic blue segment row">
     <div class="three wide column"></div>
 
