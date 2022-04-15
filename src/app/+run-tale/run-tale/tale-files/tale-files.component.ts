@@ -417,6 +417,15 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
           return;
         }
 
+        if (this.tale.dataSet.length === 0) {
+          this.folders.next([]);
+          this.files.next([]);
+          this.loading = false;
+          this.ref.detectChanges();
+
+          return;
+        }
+
         // Fetch registered datasets
         const sources = this.tale.dataSet.map(mount => {
           if (mount._modelType === 'folder') {
