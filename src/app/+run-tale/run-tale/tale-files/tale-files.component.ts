@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnInit, Output } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AccessLevel, Folder, Run, Tale, User, Version } from '@api/models';
+import { AccessLevel, Folder, Run, Tale, Upload, User, Version } from '@api/models';
 import {
   CollectionService,
   DatasetService,
@@ -58,7 +58,8 @@ const sortByUpdated = (a: any, b: any) => (a.updated > b.updated) ? -1 : (a.upda
   styleUrls: ['./tale-files.component.scss']
 })
 export class TaleFilesComponent implements OnInit, OnChanges {
-  uploadQueue: Set<File> = new Set<File>();
+  filesToUpload: Array<File> = new Array<File>();
+  currentUpload: FileElement;
 
   AccessLevel: any = AccessLevel;
 
@@ -229,7 +230,9 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       // Can't bind to [attr.data-percent].. use js to set total and update progress
       const percent =  ((chunkResp.received ? +chunkResp.received : +upload.size) / +upload.size) * 100;
       $(`#upload-${uploadId}`).progress('set percent', percent);
-      existing.uploadProgress = percent;
+      if (existing) {
+        existing.uploadProgress = percent;
+      }
       this.ref.detectChanges();
     }
   }
@@ -249,7 +252,8 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         // Create a target folder - the assumption is that it's gonna live inside a virtual resource
         const folderName = relPath.split('/')[0];
         const params = { name: folderName, parentId: this.getParentId() };
-        this.folderService.folderCreateFolder(params).subscribe((folder: Folder) => {
+        this.folderService.folderCreateFolder(params).subscribe(async (folder: Folder) => {
+          await this.load();
           this.uploadFiles(files, folder);
           this.ref.detectChanges();
         });
@@ -289,52 +293,59 @@ export class TaleFilesComponent implements OnInit, OnChanges {
 
   // Optionally takes a folder to upload to (for folder uploads ONLY)
   uploadFiles(files: Array<File>, folder?: Folder): void {
-    files.forEach(f => this.uploadQueue.add(f));
-    this.logger.debug(`${files.length} files added... upload queue contents:`, this.uploadQueue);
+    files.forEach(f => this.filesToUpload.push(f));
+    this.logger.debug(`${files.length} files added... upload queue contents:`, this.filesToUpload);
 
-    this.uploadQueue.forEach(upload => {
-      // If we're given a relPath and a folder, then this is a directory upload
-      // Otherwise, we upload to the current folder
-      // tslint:disable-next-line:no-string-literal
-      const relPath = upload['webkitRelativePath'];
+    (async () => {
+      while (this.filesToUpload.length > 0) {
+        // Grab next upload off the queue
+        this.currentUpload = undefined;
+        const currentFile = this.filesToUpload.shift();
 
-      // POST /file with parentId = wtlocal:<newpath_and_root>, or else to current folder
-      const initUploadParams = {
-        parentId: folder ? this.buildVirtualParentId(upload, folder, relPath) : this.getParentId(),
-        parentType: UploadType.Folder,
-        name: upload.name,
-        size: upload.size,
-        // chunk: contents
-      };
+        // If we're given a relPath and a folder, then this is a directory upload
+        // Otherwise, we upload to the current folder
+        // tslint:disable-next-line:no-string-literal
+        const relPath = currentFile['webkitRelativePath'];
+        const parentId = folder ? this.buildVirtualParentId(currentFile, folder, relPath) : this.getParentId();
 
-      this.fileService.fileInitUpload(initUploadParams).subscribe(async (initResp: any) => {
-        const uploadId = initResp._id;
+        // POST /file with parentId = wtlocal:<newpath_and_root>, or else to current folder
+        const initUploadParams = {
+          parentId,
+          parentType: UploadType.Folder,
+          name: currentFile.name,
+          size: currentFile.size,
+          // chunk: contents
+        };
+
+        this.currentUpload = await this.fileService.fileInitUpload(initUploadParams).toPromise();
 
         // Add new file upload to the list
         // TODO: Progress updates / indicator
-        const files = this.files.value;
-        initResp.uploadProgress = 0;
-        initResp.uploading = true;
-        files.push(initResp);
-        this.files.next(files);
+        const filesVal = this.files.value;
+        this.currentUpload.uploadProgress = 0;
+        this.currentUpload.uploading = true;
+
+        if (parentId === this.getParentId()) {
+          filesVal.push(this.currentUpload);
+          this.files.next(filesVal);
+        }
 
         // Can't bind to [attr.data-percent].. use js to set total and update progress
-        $(`#upload-${uploadId}`).progress('set percent', 0);
+        $(`#upload-${this.currentUpload?._id}`).progress('set percent', 1);
+        this.currentUpload.uploadProgress = 1;
         this.ref.detectChanges();
 
         // This should be a blocking call
-        await this.uploadChunks(uploadId, upload);
+        await this.uploadChunks(this.currentUpload?._id, currentFile);
 
         // Once all chunks are uploaded, then the upload is complete
-        this.logger.info(`Upload complete: ${upload.name} (${upload.size})`, upload);
+        this.logger.info(`Upload complete: ${currentFile.name} (${currentFile.size})`, currentFile);
 
         // Can't bind to [attr.data-percent].. use js to set total and update progress
-        $(`#upload-${uploadId}`).progress('set percent', 100);
-        initResp.uploading = false;
+        $(`#upload-${this.currentUpload?._id}`).progress('set percent', 100);
+        this.currentUpload.uploadProgress = 100;
+        this.currentUpload.uploading = false;
 
-        setTimeout(() => {
-          $('.ui.file.dropdown').dropdown({ action: 'hide' });
-        }, 500);
         this.ref.detectChanges();
 
         // This is apparently not needed all the time? Files are weird...
@@ -348,10 +359,14 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         //   this.ref.detectChanges();
         // })
 
+        setTimeout(() => {
+          $('.ui.file.dropdown').dropdown({ action: 'hide' });
+          this.load();
+        }, 500);
+
         // Update UI with final uploaded item (logo, size, etc)
-        this.load();
-      });
-    });
+      }
+    })();
   }
 
 

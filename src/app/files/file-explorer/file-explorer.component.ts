@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Upload } from '@api/models/upload';
 import { FileElement } from '@files/models/file-element';
 import { LogService } from '@shared/core/log.service';
 
@@ -75,6 +76,8 @@ export class FileExplorerComponent implements OnChanges {
   @ViewChild('file') file: any;
   @ViewChild('folder') folder: any;
 
+  @Input() currentUpload: FileElement;
+
   @Input() preventNavigation = false;
   @Input() readOnly = false;
   @Input() readOnlyDropdown = false;
@@ -131,6 +134,10 @@ export class FileExplorerComponent implements OnChanges {
         $('.ui.file.dropdown').dropdown({ action: 'hide' });
       }, 500);
     }
+  }
+
+  isFileUploading(file: FileElement): boolean {
+    return this.currentUpload?._id === file._id;
   }
 
   getIcon(element: FileElement): string {

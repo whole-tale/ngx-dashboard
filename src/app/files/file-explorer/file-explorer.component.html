@@ -48,6 +48,7 @@
     {{ placeholderMessage }}
   </div>
 
+
   <!-- Show folders/files in table if any exist -->
   <table class="ui basic selectable very compact blue table" *ngIf="fileElements && fileElements.length">
     <thead>
@@ -66,6 +67,7 @@
           [ngStyle]="{ 'cursor': getIcon(ele) === 'fa-folder' ? 'pointer' : 'inherit' }">
         <th class="center aligned"><i class="fas fa-fw fa-2x {{ getIcon(ele) }}"></i></th>
         <td [title]="ele.name">{{ ele.name | truncate:100 }}</td>
+
         <td *ngIf="ele.runStatus !== undefined">
           <span *ngIf="ele.runStatus === 0"><i class="fa fa-fw fa-question yellow"></i> UNKNOWN</span>
           <span *ngIf="ele.runStatus === 1"><i class="fa fa-fw fa-spinner fa-pulse yellow"></i> STARTING</span>
@@ -76,11 +78,12 @@
         </td>
         <td [title]="ele.updated">{{ ele.updated | date }}</td>
         <td class="right aligned" [title]="ele.size">
-            <small *ngIf="ele.uploading">Uploading... {{ ele.uploadProgress | number }}%</small>
-            <div *ngIf="ele.uploading" [id]="'upload-' + ele._id" class="ui indicating progress" data-percent="0">
-                <div class="bar"></div>
-            </div>
-            {{ ele.size | fileSize }}
+          <span *ngIf="ele.size">{{ ele.size | fileSize }}</span>
+          <small *ngIf="!ele.size && ele._id !== currentUpload?._id">Upload Pending</small>
+          <small *ngIf="!ele.size && ele._id === currentUpload?._id">Uploading... {{ currentUpload.uploadProgress | number }}%</small>
+          <div *ngIf="!ele.size && ele._id === currentUpload?._id" [id]="'upload-' + ele._id" class="ui indicating progress" data-percent="0">
+              <div class="bar"></div>
+          </div>
         </td>
         <td class="center aligned">
           <div id="more-actions-{{ ele._id }}" class="ui inline file dropdown more-actions" (click)="openMenu($event, ele)" *ngIf="showContextMenu">
