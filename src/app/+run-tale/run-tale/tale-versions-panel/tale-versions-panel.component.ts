@@ -78,12 +78,6 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
         this.refresh();
       }
     });
-
-    this.versionsSubscription = this.syncService.taleUpdatedSubject.subscribe((taleId) => {
-      if (taleId === this.tale._id) {
-        this.refresh();
-      }
-    });
   }
 
   ngOnChanges(): void {
@@ -93,9 +87,7 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   ngOnDestroy(): void {
-    if (this.versionsSubscription) {
-      this.versionsSubscription.unsubscribe();
-    }
+    this.versionsSubscription?.unsubscribe();
   }
 
   refresh(): void {

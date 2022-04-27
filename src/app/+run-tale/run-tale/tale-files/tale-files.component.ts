@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccessLevel, Run, Tale, User, Version } from '@api/models';
@@ -65,8 +65,10 @@ interface Selectable {
   templateUrl: './tale-files.component.html',
   styleUrls: ['./tale-files.component.scss']
 })
-export class TaleFilesComponent implements OnInit, OnChanges {
+export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
   uploadQueue: Set<File> = new Set();
+
+  loading = false;
 
   AccessLevel: any = AccessLevel;
 
@@ -89,11 +91,13 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   currentNav = 'tale_workspace';
   highlighted = "";
 
-  runs: BehaviorSubject<Array<Run>> = new BehaviorSubject<Array<Run>>([]);
-  versions: BehaviorSubject<Array<Version>> = new BehaviorSubject<Array<Version>>([]);
-
   updateSubscription: Subscription;
   fetching = false;
+
+  currentFolderForkJoinSub: Subscription;
+  homeFolderForkJoinSub: Subscription;
+  dataFolderForkJoinSub: Subscription;
+  workspaceFolderForkJoinSub: Subscription;
 
   constructor(
     private ref: ChangeDetectorRef,
@@ -161,6 +165,20 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   ngOnChanges(): void {
     this.detectQueryString();
     this.load();
+  }
+
+  ngOnDestroy(): void {
+    this.updateSubscription?.unsubscribe();
+
+    this.folders.complete();
+    this.files.complete();
+
+    // RXjS docs say that this isn't necessary, but
+    // without it we're getting multiple subscriptions firing
+    this.currentFolderForkJoinSub?.unsubscribe();
+    this.homeFolderForkJoinSub?.unsubscribe();
+    this.dataFolderForkJoinSub?.unsubscribe();
+    this.workspaceFolderForkJoinSub?.unsubscribe();
   }
 
   readOnly(): boolean {
@@ -315,19 +333,25 @@ export class TaleFilesComponent implements OnInit, OnChanges {
   }
 
   load(): void {
+    // Already loading, short-circuit
+    if (this.loading) { return; }
+
+    this.loading = true;
+
     if (this.currentFolderId) {
         // Fetch folders in the given folder
-      this.folderService.folderFind({ parentId: this.currentFolderId, parentType: ParentType.Folder, limit: 0 })
-                        .pipe(enterZone(this.zone))
-                        .subscribe(folders => {
-                          this.folders.next(folders);
-                        });
+      const foldersFetch = this.folderService.folderFind({ parentId: this.currentFolderId, parentType: ParentType.Folder, limit: 0 });
+
         // Fetch items in the given folder
-      this.itemService.itemFind({ folderId: this.currentFolderId, limit: 0 })
-                      .pipe(enterZone(this.zone))
-                      .subscribe(items => {
-                        this.files.next(items);
-                      });
+      const itemsFetch = this.itemService.itemFind({ folderId: this.currentFolderId, limit: 0 });
+
+      this.currentFolderForkJoinSub = forkJoin([foldersFetch, itemsFetch]).pipe(enterZone(this.zone))
+                                                  .subscribe((values: Array<any>) => {
+                                                    this.folders.next(values[0]);
+                                                    this.files.next(values[1]);
+                                                    this.loading = false;
+                                                    this.ref.detectChanges();
+                                                  });
 
       return;
     }
@@ -346,77 +370,85 @@ export class TaleFilesComponent implements OnInit, OnChanges {
         this.runService.runListRuns({ taleId: this.taleId })
                        .pipe(enterZone(this.zone))
                        .subscribe((r: Array<Run>) => {
-                         this.folders.next(r.sort(sortByUpdated));
-                         this.files.next([]);
-                         this.ref.detectChanges();
+                         if (this.currentNav === 'recorded_runs') {
+                           this.folders.next(r.sort(sortByUpdated));
+                           this.files.next([]);
+                           this.loading = false;
+                           this.ref.detectChanges();
+                         }
                        });
         break;
       case 'tale_versions':
         this.versionService.versionListVersions({ taleId: this.taleId })
                            .pipe(enterZone(this.zone))
                            .subscribe((v: Array<Version>) => {
-                             this.folders.next(v.sort(sortByUpdated));
-                             this.files.next([]);
-                             this.ref.detectChanges();
+                             if (this.currentNav === 'tale_versions') {
+                               this.folders.next(v.sort(sortByUpdated));
+                               this.files.next([]);
+                               this.loading = false;
+                               this.ref.detectChanges();
+                             }
                            });
         break;
       case 'home':
         if (!this.homeRoot) {
           this.logger.warn("Warning: Home root not detected. Delaying loading until it has been found:", this.homeRoot);
+          this.loading = false;
 
           return;
         }
 
         // Fetch folders in the home folder
-        this.folderService.folderFind({ parentId: this.homeRoot._id, parentType: ParentType.Folder, limit: 0 })
-                        .pipe(enterZone(this.zone))
-                        .subscribe(folders => {
-                          this.folders.next(folders);
-                        });
+        const homeFoldersFetch = this.folderService.folderFind({ parentId: this.homeRoot._id, parentType: ParentType.Folder, limit: 0 });
 
         // Fetch items in the home folder
-        this.itemService.itemFind({ folderId: this.homeRoot._id, limit: 0 })
-                        .pipe(enterZone(this.zone))
-                        .subscribe(items => {
-                          this.files.next(items);
-                        });
+        const homeItemsFetch = this.itemService.itemFind({ folderId: this.homeRoot._id, limit: 0 });
+
+        this.homeFolderForkJoinSub = forkJoin([homeFoldersFetch, homeItemsFetch]).pipe(enterZone(this.zone)).subscribe((values: Array<any>) => {
+          if (this.currentNav === 'home') {
+            this.folders.next(values[0]);
+            this.files.next(values[1]);
+            this.loading = false;
+            this.ref.detectChanges();
+          }
+        });
         break;
       case 'external_data':
         if (!this.dataRoot) {
           this.logger.warn("Warning: Data root not detected. Delaying loading until it has been found:", this.dataRoot);
+          this.loading = false;
+
+          return;
+        }
+
+        if (this.tale.dataSet.length === 0) {
+          this.folders.next([]);
+          this.files.next([]);
+          this.loading = false;
+          this.ref.detectChanges();
 
           return;
         }
 
         // Fetch registered datasets
-        const promises: Array<Promise<any>> = [];
-
-        const folderMatches: Array<FileElement> = [];
-        const itemMatches: Array<FileElement> = [];
-
-        // Map registered Datasets to the dataSet mounts on this Tale
-        this.tale.dataSet.forEach(mount => {
-          let promise;
+        const sources = this.tale.dataSet.map(mount => {
           if (mount._modelType === 'folder') {
-            promise = this.folderService.folderGetFolder(mount.itemId).toPromise().then((folder) => {
-              folderMatches.push(folder);
-            });
-            promises.push(promise);
-          } else if (mount._modelType === 'item') {
-            promise = this.itemService.itemGetItem(mount.itemId).toPromise().then((item) => {
-              itemMatches.push(item);
-            });
-            promises.push(promise);
+            return this.folderService.folderGetFolder(mount.itemId);
           } else {
-            this.logger.error('Unrecognized modelType', mount._modelType);
+            return this.itemService.itemGetItem(mount.itemId);
           }
         });
 
-        Promise.all(promises).then(() => {
-          this.zone.run(() => {
+        this.dataFolderForkJoinSub = forkJoin(sources).pipe(enterZone(this.zone)).subscribe((values: Array<FileElement>) => {
+          if (this.currentNav === 'external_data') {
+            const folderMatches = values.filter(element => element._modelType === 'folder');
+            const itemMatches = values.filter(element => element._modelType === 'item');
+
             this.folders.next(folderMatches);
             this.files.next(itemMatches);
-          });
+            this.loading = false;
+            this.ref.detectChanges();
+          }
         });
 
         this.currentRoot = undefined;
@@ -428,37 +460,38 @@ export class TaleFilesComponent implements OnInit, OnChanges {
       case 'tale_workspace':
         if (!this.tale || !this.tale.workspaceId) {
           this.logger.warn("Warning: Tale or Tale workspace root not detected. Delaying loading until it has been found:", this.tale);
+          this.loading = false;
 
           return;
         }
 
-        // Short-circuit for if we haven't loaded the tale yet
-        // FIXME: Can we avoid this race condition in a more elegant way?
-        if (this.tale.workspaceId) {
-          // Load folder with id=tale.workspaceId
-          this.currentFolderId = this.tale.workspaceId;
+        // Load folder with id=tale.workspaceId
+        this.currentFolderId = this.tale.workspaceId;
 
-          // Fetch folders in the workspace
-          this.folderService.folderFind({ parentId: this.currentFolderId, parentType: ParentType.Folder, limit: 0 })
-                            .subscribe(folders => {
-                              this.zone.run(() => { this.folders.next(folders); });
-                            });
+        // Fetch folders in the workspace
+        const workspaceFoldersFetch = this.folderService.folderFind({ parentId: this.currentFolderId, parentType: ParentType.Folder, limit: 0 });
 
-          // Fetch items in the workspace
-          this.itemService.itemFind({ folderId: this.currentFolderId, limit: 0 })
-                          .subscribe(items => {
-                            this.zone.run(() => { this.files.next(items); });
-                          });
+        // Fetch items in the workspace
+        const workspaceItemsFetch = this.itemService.itemFind({ folderId: this.currentFolderId, limit: 0 });
 
-          this.currentRoot = undefined;
-          this.currentFolderId = undefined;
-          this.canNavigateUp = false;
-          this.currentPath = '';
-        }
+        this.workspaceFolderForkJoinSub = forkJoin([workspaceFoldersFetch, workspaceItemsFetch]).pipe(enterZone(this.zone)).subscribe((values: Array<any>) => {
+          if (this.currentNav === 'tale_workspace') {
+            this.folders.next(values[0]);
+            this.files.next(values[1]);
+            this.loading = false;
+            this.ref.detectChanges();
+          }
+        });
+
+        this.currentRoot = undefined;
+        this.currentFolderId = undefined;
+        this.canNavigateUp = false;
+        this.currentPath = '';
 
         break;
       default:
         this.logger.warn("Unrecognized nav encountered:", this.currentNav);
+        this.loading = false;
 
         break;
     }
