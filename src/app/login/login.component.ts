@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OauthService } from '@api/services/oauth.service';
 import { UserService } from '@api/services/user.service';
@@ -31,9 +32,16 @@ export class LoginComponent extends BaseComponent implements OnInit {
     private readonly oauth: OauthService,
     private readonly cookies: CookieService,
     private readonly users: UserService,
-    private readonly tokenService: TokenService
+    private readonly tokenService: TokenService,
+    private readonly titleService: Title,
+    private readonly metaService: Meta
   ) {
     super();
+    this.titleService.setTitle('Sign in to WholeTale');
+    this.metaService.updateTag({
+      name: 'description',
+      content: 'Whole Tale, an open source platform for reproducible computational research.',
+    });
   }
 
   ngOnInit(): void {
@@ -97,14 +105,14 @@ export class LoginComponent extends BaseComponent implements OnInit {
     window.location.href = href;
   }
 
-  loginWithGlobus(): void {
+  loginWithGirder(provider: string): void {
     const route = this.tokenService.getReturnRoute();
 
     // FIXME: is it ok to use window.location.origin here?
     const params = { redirect: `${window.location.origin}/login?token={girderToken}&rd=${route}`, list: false };
     this.oauth.oauthListProviders(params).subscribe(
       (providers: any) => {
-        window.location.href = providers[window.env.authProvider];
+        window.location.href = providers[provider];
       },
       (err) => {
         this.logger.error('Failed to GET /oauth/providers:', err);
