@@ -192,12 +192,12 @@ export class TaleMetadataComponent implements OnInit, OnDestroy {
   }
 
   saveEdit(): void {
+    this.editing = false;
+
     // Update the Tale in Girder, then in Angular
     this.updateTale().then((res) => {
       // Overwrite our backup of the Tale's state in memory with a new one
       this.saveState();
-
-      this.editing = false;
       this.scrollToTop();
     });
   }
