@@ -10,7 +10,8 @@ import { NotificationService } from '@shared/error-handler/services/notification
 import { Collaborator, CollaboratorList } from '@tales/components/rendered-tale-metadata/rendered-tale-metadata.component';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { SyncService } from '@tales/sync.service';
-import { Observable, Subscription } from 'rxjs';
+import { from, Observable, Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -42,6 +43,11 @@ export class TaleMetadataComponent implements OnInit, OnDestroy {
   editing: Boolean = false;
   _editState: Tale;
 
+  // Editing advanced Tale configuration
+  configModel = '{}';
+  configModelChanged = new Subject<string>();
+  configError = '';
+
   updateSubscription: Subscription;
 
   get canEdit(): boolean {
@@ -52,6 +58,24 @@ export class TaleMetadataComponent implements OnInit, OnDestroy {
     }
 
     return this.tale._accessLevel >= AccessLevel.Write;
+  }
+
+  configChanged(): void {
+    this.configModelChanged.next();
+  }
+
+  validateConfig(event?: Event): any {
+    try {
+      const config = JSON.parse(this.configModel);
+      this.configError = '';
+
+      return this._editState.config = config;
+    } catch (e) {
+      this.configError = 'Tale configuration is invalid - please check your JSON format and try again.' ; //  e;
+
+      return false;
+      // Failed to parse: display validation error
+    }
   }
 
   // FIXME: Duplicated code (see publish-tale-dialog.component.ts)
@@ -84,6 +108,13 @@ export class TaleMetadataComponent implements OnInit, OnDestroy {
               private syncService: SyncService,
               private dialog: MatDialog) {
     this.apiRoot = this.config.rootUrl;
+    this.configModelChanged
+      .pipe(
+        debounceTime(300))
+      .subscribe(() => {
+        this.validateConfig();
+        this.ref.detectChanges();
+      })
   }
 
   ngOnInit(): void {
@@ -154,15 +185,19 @@ export class TaleMetadataComponent implements OnInit, OnDestroy {
     // Save a backup of the Tale's state in memory
     this.revertState();
     this.editing = true;
+
+    setTimeout(() => {
+      $('.ui.accordion').accordion();
+    }, 400);
   }
 
   saveEdit(): void {
-    // Overwrite our backup of the Tale's state in memory with a new one
-    this.editing = false;
-
     // Update the Tale in Girder, then in Angular
     this.updateTale().then((res) => {
+      // Overwrite our backup of the Tale's state in memory with a new one
       this.saveState();
+
+      this.editing = false;
       this.scrollToTop();
     });
   }
@@ -176,11 +211,13 @@ export class TaleMetadataComponent implements OnInit, OnDestroy {
   }
 
   saveState(): void {
+    this._editState.config = JSON.parse(this.configModel);
     this.tale = this.copy(this._editState);
   }
 
   revertState(): void {
     this._editState = this.copy(this.tale);
+    this.configModel = JSON.stringify(this._editState.config);
   }
 
   copy(obj: any): Tale {
@@ -211,6 +248,16 @@ export class TaleMetadataComponent implements OnInit, OnDestroy {
     const errors = this.validateAuthors();
     if (errors && errors.length > 0) {
       this.notificationService.showError(`Failed to save: ${errors[0].message}`);
+
+      return new Promise(() => { this.logger.debug('Noop') });
+    }
+
+    if (this.configModel === '') {
+      this.configModel = '{}';
+    }
+
+    if (!this.validateConfig()) {
+      this.notificationService.showError(`Failed to save: ${this.configError}`);
 
       return new Promise(() => { this.logger.debug('Noop') });
     }

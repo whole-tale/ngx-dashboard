@@ -155,6 +155,18 @@ Fields Names / Order:
           </div>
         </div>
 
+        <div class="ui accordion field" style="margin-left:10vw">
+          <div class="title">
+            <i class="icon dropdown"></i>
+            Advanced
+          </div>
+          <div class="content field">
+            <label class="transition visible">Tale Configuration</label>
+            <textarea style="width:60%" [(ngModel)]="configModel" (ngModelChange)="configChanged()"></textarea>
+          </div>
+          <span style="color:white;background:#d95c5c;" *ngIf="configError">ERROR: {{ configError }}</span>
+        </div>
+
 <!--
         <div class="inline fields ui grid">
           <label class="two wide column right aligned">Published location</label>
