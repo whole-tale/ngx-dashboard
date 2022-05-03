@@ -737,10 +737,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
                         .pipe(enterZone(this.zone))
                         .subscribe(resp => {
         this.logger.debug("Folder deleted successfully:", resp);
-        const folders = this.folders.value;
-        const index = folders.indexOf(element);
-        folders.splice(index, 1);
-        this.folders.next(folders);
+        this.load();
       }, err => {
         this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
       });
@@ -750,10 +747,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
                       .pipe(enterZone(this.zone))
                       .subscribe(resp => {
         this.logger.debug("Item deleted successfully:", resp);
-        const files = this.files.value;
-        const index = files.indexOf(element);
-        files.splice(index, 1);
-        this.files.next(files);
+        this.load();
       }, err => {
         this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
       });
