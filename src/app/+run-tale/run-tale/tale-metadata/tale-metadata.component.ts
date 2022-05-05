@@ -1,3 +1,4 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ChangeDetectorRef, Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiConfiguration } from '@api/api-configuration';
@@ -10,6 +11,7 @@ import { NotificationService } from '@shared/error-handler/services/notification
 import { Collaborator, CollaboratorList } from '@tales/components/rendered-tale-metadata/rendered-tale-metadata.component';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { SyncService } from '@tales/sync.service';
+import Ajv, {ValidateFunction} from 'ajv';
 import { from, Observable, Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
@@ -47,8 +49,10 @@ export class TaleMetadataComponent implements OnInit, OnDestroy {
   configModel = '{}';
   configModelChanged = new Subject<string>();
   configError = '';
+  configValidator: ValidateFunction<any>;
 
   updateSubscription: Subscription;
+  ajv = new Ajv();
 
   get canEdit(): boolean {
     if (!this.tale) {
@@ -68,6 +72,12 @@ export class TaleMetadataComponent implements OnInit, OnDestroy {
     try {
       const config = JSON.parse(this.configModel);
       this.configError = '';
+      const valid = this.configValidator(config);
+      if (!valid) {
+        this.configError = this.ajv.errorsText(this.configValidator.errors);
+
+        return false;
+      }
 
       return this._editState.config = config;
     } catch (e) {
@@ -106,6 +116,7 @@ export class TaleMetadataComponent implements OnInit, OnDestroy {
               private errorHandler: ErrorService,
               private imageService: ImageService,
               private syncService: SyncService,
+              private http: HttpClient,
               private dialog: MatDialog) {
     this.apiRoot = this.config.rootUrl;
     this.configModelChanged
@@ -121,6 +132,19 @@ export class TaleMetadataComponent implements OnInit, OnDestroy {
     const params = {};
     this.environments = this.imageService.imageListImages(params);
     this.licenses = this.licenseService.licenseGetLicenses();
+    const httpOptions = {
+      withCredentials: true,
+      responseType: 'text' as 'json',
+      headers: new HttpHeaders({'Content-Type': 'application/json'})
+    };
+
+    this.http.get(`${this.apiRoot}/describe`, httpOptions).subscribe((resp: string) => {
+      const schemas = JSON.parse(resp);
+      delete schemas.definitions.containerConfig.$schema;
+      this.configValidator = this.ajv.compile(schemas.definitions.containerConfig);
+    }, (err: any) => {
+      this.logger.error("Failed to fetch WT Schemas:", err);
+    });
     setTimeout(() => {
       $('#environmentDropdown:parent').dropdown().css('width', '100%');
       $('#licenseDropdown:parent').dropdown().css('width', '100%');
