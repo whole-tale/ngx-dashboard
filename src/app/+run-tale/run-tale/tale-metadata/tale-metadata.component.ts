@@ -49,7 +49,7 @@ export class TaleMetadataComponent implements OnInit, OnDestroy {
   configModel = '{}';
   configModelChanged = new Subject<string>();
   configError = '';
-  configValidator: ValidateFunction<any>;
+  configValidator: ValidateFunction;
 
   updateSubscription: Subscription;
   ajv = new Ajv();
