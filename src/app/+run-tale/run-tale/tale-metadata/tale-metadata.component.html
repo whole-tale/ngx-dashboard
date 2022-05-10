@@ -164,7 +164,7 @@ Fields Names / Order:
             <label class="transition visible">Tale Configuration</label>
             <textarea style="width:60%" [(ngModel)]="configModel" (ngModelChange)="configChanged()"></textarea>
           </div>
-          <span style="color:white;background:#d95c5c;" *ngIf="configError">ERROR: {{ configError }}</span>
+          <p style="color:#a94442;" *ngIf="configError">ERROR: {{ configError }}</p>
         </div>
 
 <!--
