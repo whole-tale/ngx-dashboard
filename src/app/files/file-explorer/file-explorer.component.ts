@@ -76,6 +76,8 @@ export class FileExplorerComponent implements OnChanges {
   @ViewChild('file') file: any;
   @ViewChild('folder') folder: any;
 
+  @Input() sanitizeId: Function;
+
   @Input() currentUpload: FileElement;
 
   @Input() preventNavigation = false;

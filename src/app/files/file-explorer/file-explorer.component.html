@@ -77,15 +77,15 @@
           <span *ngIf="ele.runStatus === 5"><i class="fa fa-fw fa-ban red"></i> CANCELLED</span>
         </td>
         <td [title]="ele.updated">{{ ele.updated | date }}</td>
-        <td class="right aligned" [title]="ele.size">
+        <td class="right aligned" [title]="ele.folderId === currentUpload?.parentId && ele.name === currentUpload?.name ? (currentUpload.uploadProgress | number) + '%' : ele.size">
           <span *ngIf="ele.folderId !== currentUpload?.parentId || ele.name !== currentUpload?.name">{{ ele.size | fileSize }}</span>
-          <small *ngIf="ele.folderId === currentUpload?.parentId && ele.name === currentUpload?.name">Uploading... {{ currentUpload.uploadProgress | number }}%</small>
-          <div *ngIf="ele.folderId === currentUpload?.parentId && ele.name === currentUpload?.name" [id]="'upload-' + ele._id" class="ui indicating progress" data-percent="0">
+          <small *ngIf="ele.folderId === currentUpload?.parentId && ele.name === currentUpload?.name"><i id="in-progress-upload-icon" class="fas fa-fw fa-spinner fa-pulse"></i> Uploading... {{ currentUpload.uploadProgress | number }}%</small>
+          <div *ngIf="ele.folderId === currentUpload?.parentId && ele.name === currentUpload?.name" id="in-progress-upload-bar" class="ui indicating progress" [attr.data-percent]="currentUpload.uploadProgress | number">
               <div class="bar"></div>
           </div>
         </td>
         <td class="center aligned">
-          <div id="more-actions-{{ ele._id }}" class="ui inline file dropdown more-actions" (click)="openMenu($event, ele)" *ngIf="showContextMenu">
+          <div [id]="sanitizeId('more-actions-' + ele._id)" class="ui inline file dropdown more-actions" (click)="openMenu($event, ele)" *ngIf="showContextMenu">
             <!--<div class="text">More</div>-->
             <i class="dropdown icon"></i>
             <div class="left menu">

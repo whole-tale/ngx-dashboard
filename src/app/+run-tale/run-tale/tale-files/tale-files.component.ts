@@ -204,6 +204,10 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+  sanitizeId(virtualId: string): string {
+    return virtualId.replace(/=/g, '')
+  }
+
   uploadChunk(uploadId: string, offset: number, chunk: Blob): Promise<any> {
     const chunkParams = { uploadId, offset, chunk };
     const chunkResp = this.fileService.fileReadChunk(chunkParams).toPromise();
@@ -249,8 +253,8 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
       this.logger.info(`Uploaded ${chunkResp.received ? chunkResp.received : upload.size} / ${upload.size} bytes (${start/(chunkSize + 1) + 1} / ${numChunks} chunks):`, chunkResp);
 
       // Can't bind to [attr.data-percent].. use js to set total and update progress
-      const percent =  ((chunkResp.received ? +chunkResp.received : +upload.size) / +upload.size) * 100;
-      $(`#upload-${uploadId}`).progress('set percent', percent);
+      const percent = ((chunkResp.received ? +chunkResp.received : +upload.size) / +upload.size) * 100;
+      $('#in-progress-upload-bar').progress('set percent', percent);
       if (existing) {
         existing.uploadProgress = percent;
       }
@@ -351,9 +355,11 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
           this.files.next(filesVal);
         }
 
+        const selector = '#in-progress-upload-bar';
+
         // Can't bind to [attr.data-percent].. use js to set total and update progress
-        $(`#upload-${this.currentUpload?._id}`).progress('set percent', 1);
-        this.currentUpload.uploadProgress = 1;
+        $(selector).progress('set percent', 0);
+        this.currentUpload.uploadProgress = 0;
         this.ref.detectChanges();
 
         // This should be a blocking call
@@ -363,7 +369,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
         this.logger.info(`Upload complete: ${currentFile.name} (${currentFile.size})`, currentFile);
 
         // Can't bind to [attr.data-percent].. use js to set total and update progress
-        $(`#upload-${this.currentUpload?._id}`).progress('set percent', 100);
+        $(selector).progress('set percent', 100);
         this.currentUpload.uploadProgress = 100;
         this.currentUpload.uploading = false;
 

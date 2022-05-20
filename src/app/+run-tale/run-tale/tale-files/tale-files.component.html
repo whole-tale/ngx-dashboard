@@ -50,6 +50,7 @@
 
       <app-file-explorer id="tale-files-browser"
         [fileElements]="folders?.value?.concat(files?.value)"
+        [sanitizeId]="sanitizeId"
         [path]="currentPath"
         [highlighted]="highlighted"
         [placeholderMessage]="placeholderMessage"
