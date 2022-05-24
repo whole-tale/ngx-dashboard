@@ -11,6 +11,7 @@ import { TaleImagePipe } from '@tales/pipes/tale-image.pipe';
 import { TaleNamePipe } from '@tales/pipes/tale-name.pipe';
 import { TalesModule } from '@tales/tales.module';
 import { MarkdownModule } from 'ngx-markdown';
+import { RecordedRunInfoDialogComponent } from '~/app/+run-tale/run-tale/modals/recorded-run-info-dialog/recorded-run-info-dialog.component';
 
 import { routes } from './run-tale.routes';
 import { ConnectGitRepoDialogComponent } from './run-tale/modals/connect-git-repo-dialog/connect-git-repo-dialog.component';
@@ -18,6 +19,7 @@ import { CreateRenameVersionDialogComponent } from './run-tale/modals/create-ren
 import { EditRunConfigsDialogComponent } from './run-tale/modals/edit-run-configs-dialog/edit-run-configs-dialog.component';
 import { PublishTaleDialogComponent } from './run-tale/modals/publish-tale-dialog/publish-tale-dialog.component';
 import { RegisterDataDialogComponent } from './run-tale/modals/register-data-dialog/register-data-dialog.component';
+import { RunEntrypointDialogComponent } from './run-tale/modals/run-entrypoint-dialog/run-entrypoint-dialog.component';
 import { SelectDataDialogComponent } from './run-tale/modals/select-data-dialog/select-data-dialog.component';
 import { TaleVersionInfoDialogComponent } from './run-tale/modals/tale-version-info-dialog/tale-version-info-dialog.component';
 import { TaleWorkspacesDialogComponent } from './run-tale/modals/tale-workspaces-dialog/tale-workspaces-dialog.component';
@@ -48,6 +50,8 @@ import { TaleVersionsPanelComponent } from './run-tale/tale-versions-panel/tale-
     CreateRenameVersionDialogComponent,
     TaleVersionInfoDialogComponent,
     EditRunConfigsDialogComponent,
+    RunEntrypointDialogComponent,
+    RecordedRunInfoDialogComponent
   ],
 })
 export class RunTaleModule {}

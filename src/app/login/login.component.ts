@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OauthService } from '@api/services/oauth.service';
 import { UserService } from '@api/services/user.service';
 import { TokenService } from '@api/token.service';
-import { BaseComponent, LogService, WindowService } from '@shared/core';
+import { BaseComponent, LogService } from '@shared/core';
 import { CookieService } from 'ngx-cookie-service';
 import { routeAnimation } from '~/app/shared';
 
@@ -14,7 +15,7 @@ declare var $: any;
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
   animations: [routeAnimation],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent extends BaseComponent implements OnInit {
   username: string;
@@ -29,12 +30,18 @@ export class LoginComponent extends BaseComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly logger: LogService,
     private readonly oauth: OauthService,
-    private readonly window: WindowService,
     private readonly cookies: CookieService,
     private readonly users: UserService,
-    private readonly tokenService: TokenService
+    private readonly tokenService: TokenService,
+    private readonly titleService: Title,
+    private readonly metaService: Meta
   ) {
     super();
+    this.titleService.setTitle('Sign in to WholeTale');
+    this.metaService.updateTag({
+      name: 'description',
+      content: 'Whole Tale, an open source platform for reproducible computational research.',
+    });
   }
 
   ngOnInit(): void {
@@ -80,7 +87,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
           // this.login();
           this.router.navigate(pathSegments, { queryParams });
         },
-        err => {
+        (err) => {
           this.logger.error('Error fetching user:', err);
         }
       );
@@ -95,25 +102,25 @@ export class LoginComponent extends BaseComponent implements OnInit {
   }
 
   gotoHref(href: string): void {
-    this.window.location.href = href;
+    window.location.href = href;
   }
 
-  loginWithGlobus(): void {
+  loginWithGirder(provider: string): void {
     const route = this.tokenService.getReturnRoute();
 
     // FIXME: is it ok to use window.location.origin here?
     const params = { redirect: `${window.location.origin}/login?token={girderToken}&rd=${route}`, list: false };
     this.oauth.oauthListProviders(params).subscribe(
       (providers: any) => {
-        window.location.href = providers[this.window.env.authProvider];
+        window.location.href = providers[provider];
       },
-      err => {
+      (err) => {
         this.logger.error('Failed to GET /oauth/providers:', err);
       }
     );
   }
 
   get tosUrl(): string {
-    return `${this.window.env.rtdBaseUrl}/tos`;
+    return `${window.env.rtdBaseUrl}/tos`;
   }
 }

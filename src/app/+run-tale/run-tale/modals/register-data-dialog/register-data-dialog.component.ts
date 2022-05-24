@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RepositoryService } from '@api/services';
-import { LogService, WindowService } from '@shared/core';
+import { LogService } from '@shared/core';
 
 @Component({
   templateUrl: './register-data-dialog.component.html',
@@ -19,12 +19,11 @@ export class RegisterDataDialogComponent {
 
   constructor(
     private logger: LogService,
-    private repositoryService: RepositoryService,
-    private window: WindowService
+    private repositoryService: RepositoryService
   ) {}
 
   dataONERepositoryBaseUrl(): string {
-    return this.window.env.dataONEBaseUrl;
+    return window.env.dataONEBaseUrl;
   }
 
   searchDatasetUrl(): void {
@@ -63,7 +62,7 @@ export class RegisterDataDialogComponent {
   }
 
   get docUrl(): string {
-    return `${this.window.env.rtdBaseUrl}/users_guide/manage.html#supported-data-repositories`;
+    return `${window.env.rtdBaseUrl}/users_guide/manage.html#supported-data-repositories`;
   }
 
   onSelectedResultChanged(event: any): void {

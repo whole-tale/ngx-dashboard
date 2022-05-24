@@ -9,6 +9,7 @@ export interface FileElement {
   name: string;
   size: number;
   updated: Date;
+  prevName: string;
 
   // upload progress
   uploadProgress?: number;
@@ -46,6 +47,7 @@ export class FileElement implements FileElement {
   created: Date = new Date();
   description = '';
   name: string;
+  prevName = ''; // for rolling back failed rename
   size = 0;
   updated: Date = new Date();
 

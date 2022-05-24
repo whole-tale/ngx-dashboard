@@ -62,7 +62,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
 
               // Import Tale from Dataset
               const params = {
-                url: queryParams.uri ? queryParams.uri : (result.url ? result.url : ''), // Pull from querystring/form
+                url: queryParams.uri ? decodeURIComponent(queryParams.uri) : (result.url ? result.url : ''), // Pull from querystring/form
                 imageId: tale.imageId, // Pull from user input
                 asTale: asTale ? asTale : false, // Pull from user input
                 git: result.url ? true : false,

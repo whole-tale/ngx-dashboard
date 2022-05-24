@@ -121,7 +121,13 @@ export class FileExplorerComponent implements OnChanges {
   constructor(private readonly dialog: MatDialog, private readonly logger: LogService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.path || changes.currentNav || changes.fileElements) {
+    if (
+      // if path or selected nav changes
+      changes?.path?.currentValue !== changes?.path?.previousValue ||
+      changes?.currentNav?.currentValue !== changes?.currentNav?.previousValue ||
+      // if a new file is uploaded
+      changes?.fileElements?.currentValue?.length !== changes?.fileElements?.previousValue?.length
+    ) {
       setTimeout(() => {
         $('.ui.file.dropdown').dropdown({ action: 'hide' });
       }, 500);
@@ -238,6 +244,7 @@ export class FileExplorerComponent implements OnChanges {
     dialogRef.afterClosed().subscribe((res) => {
       if (res) {
         this.logger.debug(`Folder renamed: ${element.name} -> ${res}`);
+        element.prevName = element.name;
         element.name = res;
         this.elementRenamed.emit(element);
       }

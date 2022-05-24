@@ -41,6 +41,8 @@ export interface Version {
   created: Date;
   creatorId: string;
   description: string;
+
+  prevName: string; // for rolling back failed rename
   name: string;
   parentCollection: string;
   parentId: string;

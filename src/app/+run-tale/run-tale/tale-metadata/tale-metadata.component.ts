@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component, Input, NgZone, OnInit } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { ChangeDetectorRef, Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiConfiguration } from '@api/api-configuration';
 import { AccessLevel, Image, License, PublishInfo, Tale, User } from '@api/models';
@@ -7,11 +8,12 @@ import { ConfirmationModalComponent } from '@shared/common/components/confirmati
 import { LogService } from '@shared/core';
 import { ErrorService } from '@shared/error-handler/services/error.service';
 import { NotificationService } from '@shared/error-handler/services/notification.service';
+import { Collaborator, CollaboratorList } from '@tales/components/rendered-tale-metadata/rendered-tale-metadata.component';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { SyncService } from '@tales/sync.service';
-import { Observable } from 'rxjs';
-
-import { Collaborator, CollaboratorList } from '@tales/components/rendered-tale-metadata/rendered-tale-metadata.component';
+import Ajv, {ValidateFunction} from 'ajv';
+import { from, Observable, Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -26,7 +28,7 @@ interface TaleAuthorValidationError {
   templateUrl: './tale-metadata.component.html',
   styleUrls: ['./tale-metadata.component.scss']
 })
-export class TaleMetadataComponent implements OnInit {
+export class TaleMetadataComponent implements OnInit, OnDestroy {
   @Input() tale: Tale;
   @Input() creator: User;
   @Input() collaborators: CollaboratorList;
@@ -43,12 +45,47 @@ export class TaleMetadataComponent implements OnInit {
   editing: Boolean = false;
   _editState: Tale;
 
+  // Editing advanced Tale configuration
+  configModel = '{}';
+  configModelChanged = new Subject<string>();
+  configError = '';
+  configValidator: ValidateFunction;
+
+  updateSubscription: Subscription;
+  ajv = new Ajv();
+
   get canEdit(): boolean {
     if (!this.tale) {
+      return false;
+    } else if (this.editing) {
       return false;
     }
 
     return this.tale._accessLevel >= AccessLevel.Write;
+  }
+
+  configChanged(): void {
+    this.configModelChanged.next();
+  }
+
+  validateConfig(event?: Event): any {
+    try {
+      const config = JSON.parse(this.configModel);
+      this.configError = '';
+      const valid = this.configValidator(config);
+      if (!valid) {
+        this.configError = this.ajv.errorsText(this.configValidator.errors);
+
+        return false;
+      }
+
+      return this._editState.config = config;
+    } catch (e) {
+      this.configError = 'Tale configuration is invalid - please check your JSON format and try again.' ; //  e;
+
+      return false;
+      // Failed to parse: display validation error
+    }
   }
 
   // FIXME: Duplicated code (see publish-tale-dialog.component.ts)
@@ -79,14 +116,35 @@ export class TaleMetadataComponent implements OnInit {
               private errorHandler: ErrorService,
               private imageService: ImageService,
               private syncService: SyncService,
+              private http: HttpClient,
               private dialog: MatDialog) {
     this.apiRoot = this.config.rootUrl;
+    this.configModelChanged
+      .pipe(
+        debounceTime(300))
+      .subscribe(() => {
+        this.validateConfig();
+        this.ref.detectChanges();
+      })
   }
 
   ngOnInit(): void {
     const params = {};
     this.environments = this.imageService.imageListImages(params);
     this.licenses = this.licenseService.licenseGetLicenses();
+    const httpOptions = {
+      withCredentials: true,
+      responseType: 'text' as 'json',
+      headers: new HttpHeaders({'Content-Type': 'application/json'})
+    };
+
+    this.http.get(`${this.apiRoot}/describe`, httpOptions).subscribe((resp: string) => {
+      const schemas = JSON.parse(resp);
+      delete schemas.definitions.containerConfig.$schema;
+      this.configValidator = this.ajv.compile(schemas.definitions.containerConfig);
+    }, (err: any) => {
+      this.logger.error("Failed to fetch WT Schemas:", err);
+    });
     setTimeout(() => {
       $('#environmentDropdown:parent').dropdown().css('width', '100%');
       $('#licenseDropdown:parent').dropdown().css('width', '100%');
@@ -94,7 +152,7 @@ export class TaleMetadataComponent implements OnInit {
     }, 800);
 
     // Special handling for syncing data while editing
-    this.syncService.taleUpdatedSubject.subscribe((taleId: string) => {
+    this.updateSubscription = this.syncService.taleUpdatedSubject.subscribe((taleId: string) => {
       if (taleId !== this.tale._id) {
         return;
       } else if (this.editing && !this.confirmationModalShowing && (this.collaborators.groups.length >= 1 || this.collaborators.users.length > 1)) {
@@ -126,6 +184,10 @@ export class TaleMetadataComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.updateSubscription.unsubscribe();
+  }
+
   canDeactivate(): boolean {
     // TODO: Revert to last known _editState
     // TODO: Ask for confirmation, if yes then
@@ -147,14 +209,18 @@ export class TaleMetadataComponent implements OnInit {
     // Save a backup of the Tale's state in memory
     this.revertState();
     this.editing = true;
+
+    setTimeout(() => {
+      $('.ui.accordion').accordion();
+    }, 400);
   }
 
   saveEdit(): void {
-    // Overwrite our backup of the Tale's state in memory with a new one
     this.editing = false;
 
     // Update the Tale in Girder, then in Angular
     this.updateTale().then((res) => {
+      // Overwrite our backup of the Tale's state in memory with a new one
       this.saveState();
       this.scrollToTop();
     });
@@ -169,11 +235,13 @@ export class TaleMetadataComponent implements OnInit {
   }
 
   saveState(): void {
+    this._editState.config = JSON.parse(this.configModel);
     this.tale = this.copy(this._editState);
   }
 
   revertState(): void {
     this._editState = this.copy(this.tale);
+    this.configModel = JSON.stringify(this._editState.config);
   }
 
   copy(obj: any): Tale {
@@ -204,6 +272,16 @@ export class TaleMetadataComponent implements OnInit {
     const errors = this.validateAuthors();
     if (errors && errors.length > 0) {
       this.notificationService.showError(`Failed to save: ${errors[0].message}`);
+
+      return new Promise(() => { this.logger.debug('Noop') });
+    }
+
+    if (this.configModel === '') {
+      this.configModel = '{}';
+    }
+
+    if (!this.validateConfig()) {
+      this.notificationService.showError(`Failed to save: ${this.configError}`);
 
       return new Promise(() => { this.logger.debug('Noop') });
     }

@@ -3,3 +3,6 @@
 LICENSE
 Dockerfile*
 node_modules/
+dist/
+
+src/assets/env.js

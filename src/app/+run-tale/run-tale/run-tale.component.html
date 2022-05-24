@@ -59,7 +59,7 @@
 
                                             <div class="item" (click)="copyTale()"><i class="fas fa-fw fa-clone"></i> Duplicate Tale</div>
                                             <div class="item" (click)="openPublishTaleDialog($event)" *ngIf="isTaleWritable()"><i class="fas fa-fw fa-newspaper"></i> Publish Tale</div>
-                                            <div class="item" (click)="exportTale()"><i class="fas fa-fw fa-file-archive"></i> Export Tale</div>
+                                            <div class="item" (click)="exportTale()" *ngIf="isTaleWritable()"><i class="fas fa-fw fa-file-archive"></i> Export Tale</div>
                                             <div class="divider" *ngIf="isTaleWritable()"></div>
                                             <div class="item" (click)="openConnectGitRepoDialog()" *ngIf="isTaleWritable()"><i class="fab fa-fw fa-git"></i> Connect to Git Repository...</div>
                                             <div class="divider"></div>
@@ -87,11 +87,11 @@
                         </a>
 
                         <div class="right menu">
-                            <a *ngIf="instance && instance.status === 1 && currentTab === 'interact'" id="popout-link" class="item" [href]="instance.url" target="_blank">
+                            <a *ngIf="instance && instance.status === 1" id="popout-link" class="item" [href]="instance.url" target="_blank" matTooltip="Open in separate tab or window">
                                 <i class="fas fa-fw fa-external-link-alt"></i>
                             </a>
 
-                            <a class="item" *ngIf="tale._accessLevel >= AccessLevel.Read" (click)="toggleVersionsPanel()">
+                            <a class="item" *ngIf="tale._accessLevel >= AccessLevel.Read" (click)="toggleVersionsPanel()" matTooltip="Show or hide Tale history">
                                 <i class="fas fa-history lighter"></i>
                             </a>
                         </div>

@@ -54,4 +54,4 @@ package-lock.json
 Thumbs.db
 
 
-src/assets/env.json
+src/assets/env.js

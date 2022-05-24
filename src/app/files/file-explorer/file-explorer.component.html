@@ -2,7 +2,7 @@
   <mat-icon *ngIf="!preventNavigation && canNavigateUp" class="pointer" (click)="navigateUp()">
     arrow_back
   </mat-icon>
-  <span style="margin-left: 8px"> {{ (currentNav.replace('_', ' ') | titlecase) + (path || '/') }} </span>
+  <span style="margin-left: 8px;"> {{ (currentNav.replace('_', ' ') | titlecase) + (path || '/') }} </span>
   <span class="spacer"></span>
   <button class="ui icon top right pointing primary file dropdown mini circular button" [disabled]="readOnly || currentNav === 'recorded_runs' || currentNav === 'tale_versions'" [hidden]="!currentNav">
     <i class="plus icon"></i>
@@ -37,8 +37,8 @@
   </button>
 </mat-toolbar>
 
-<input #file multiple type="file" style="display: none" (change)="onUploadsAdded($event)" />
-<input #bagFileUpload type="file" style="display: none" (change)="onBagFileAdded($event)" />
+<input #file multiple type="file" style="display: none;" (change)="onUploadsAdded($event)" />
+<input #bagFileUpload type="file" style="display: none;" (change)="onBagFileAdded($event)" />
 
 <div class="container" fxFlex fxLayout="column" fxLayoutAlign="space-between stretch">
   <!-- Show placeholder if there are no fileElements to display -->
@@ -66,8 +66,8 @@
         <td [title]="ele.name">{{ ele.name | truncate:100 }}</td>
         <td *ngIf="ele.runStatus !== undefined">
           <span *ngIf="ele.runStatus === 0"><i class="fa fa-fw fa-question yellow"></i> UNKNOWN</span>
-          <span *ngIf="ele.runStatus === 1"><i class="fa fa-fw fa-spinner fa-pulse blue"></i> STARTING</span>
-          <span *ngIf="ele.runStatus === 2"><i class="fa fa-fw fa-refresh fa-spin blue"></i> RUNNING</span>
+          <span *ngIf="ele.runStatus === 1"><i class="fa fa-fw fa-spinner fa-pulse yellow"></i> STARTING</span>
+          <span *ngIf="ele.runStatus === 2"><i class="fa fa-fw fa-sync-alt fa-spin blue"></i> RUNNING</span>
           <span *ngIf="ele.runStatus === 3"><i class="fa fa-fw fa-check green"></i> COMPLETED</span>
           <span *ngIf="ele.runStatus === 4"><i class="fa fa-fw fa-times red"></i> FAILED</span>
           <span *ngIf="ele.runStatus === 5"><i class="fa fa-fw fa-ban red"></i> CANCELLED</span>
