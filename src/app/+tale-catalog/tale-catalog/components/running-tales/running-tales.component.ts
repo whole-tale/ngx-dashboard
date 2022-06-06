@@ -1,5 +1,5 @@
 import { Component, Input, NgZone, Output } from '@angular/core';
-import { Instance, Tale } from '@api/models';
+import { Instance, Tale, User } from '@api/models';
 import { TaleAuthor } from '@tales/models/tale-author';
 
 // import * as $ from 'jquery';
@@ -16,7 +16,7 @@ export class RunningTalesComponent {
 
   @Input() instances: Map<string, Instance>; // = new Map<string, Instance> ();
 
-  @Input() creators: Map<string, Instance>; // = new Map<string, Instance> ();
+  @Input() creators: Map<string, User>; // = new Map<string, User> ();
 
   truncateLength = 100;
 

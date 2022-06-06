@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, Input, NgZone, OnChanges, OnDestroy, OnIn
 import { MatDialog } from '@angular/material/dialog';
 import { AccessLevel, Instance, Tale, User } from '@api/models';
 import { InstanceService, TaleService, UserService } from '@api/services';
+import { TokenService } from '@api/token.service';
 import { LogService } from '@shared/core/log.service';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { SyncService } from '@tales/sync.service';
@@ -59,17 +60,13 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
     private logger: LogService,
     private taleService: TaleService,
     private instanceService: InstanceService,
+    private tokenService: TokenService,
     private userService: UserService,
     private syncService: SyncService
   ) { }
 
   ngOnInit(): void {
-    this.refresh();
-    this.userService.userGetMe().subscribe(user => {
-      this.user = user;
-    }, err => {
-      this.user = undefined;
-    });
+    this.user = this.tokenService.user.value;
     this.refresh();
     this.taleCreatedSubscription = this.syncService.taleCreatedSubject.subscribe((taleId: string) => {
       this.refresh();

@@ -44,6 +44,8 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     showVersionsPanel = false;
     fetching = false;
 
+    user: User;
+
     collaborators: CollaboratorList = { users: [], groups: [] };
 
     removeSubscription:Subscription;
@@ -156,20 +158,24 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         return;
       }
 
-      const params = { taleId: this.taleId };
-      this.instanceService.instanceListInstances(params).subscribe((instances: Array<Instance>) => {
-        const running = instances.filter(i => i.status !== 3);
-        if (running.length > 0) {
-          this.instance = running[0];
-        }
-      });
+      this.user = this.tokenService.user.value;
+
+      if (this.user) {
+        const params = { taleId: this.taleId };
+        this.instanceService.instanceListInstances(params).subscribe((instances: Array<Instance>) => {
+          const running = instances.filter(i => i.status !== 3);
+          if (running.length > 0) {
+            this.instance = running[0];
+          }
+        });
+      }
 
       this.logger.debug(`Fetching tale with _id=${this.taleId}`);
       this.taleService.taleGetTale(this.taleId)
                       .subscribe((tale: Tale) => {
         if (!tale) {
           this.logger.error("Tale is null, something went horribly wrong");
-          this.router.navigate(['mine']);
+          this.router.navigate(['public']);
 
           return;
         }
@@ -193,8 +199,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
           });
         });
       }, err => {
-        this.logger.error("Failed to fetch tale:", err);
-        this.router.navigate(['mine']);
+        this.logger.error("Failed to fetch creator user:", err);
       });
     }
 

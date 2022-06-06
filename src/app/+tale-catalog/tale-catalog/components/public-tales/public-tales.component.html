@@ -13,7 +13,7 @@
     </div>
 
   <!-- Running Tales -->
-  <app-running-tales [instances]="instances" [creators]="creators" [taleList]="tales"></app-running-tales>
+  <app-running-tales *ngIf="user" [instances]="instances" [creators]="creators" [taleList]="tales"></app-running-tales>
 
   <div class="row" style="margin-top:40px;margin-bottom:30px;" *ngIf="(tales | publicTales) as allPublicTales">
     <div class="sixteen wide column" *ngIf="(tales | searchTales:searchQuery:creators | publicTales) as filteredPublicTales">
@@ -75,7 +75,7 @@
             <span style="text-transform:uppercase">
                 {{ tale.public ? 'public' : 'private' }}
             </span>
-            <app-tale-run-button [tale]="tale" [instance]="instances[tale._id]" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></app-tale-run-button>
+            <app-tale-run-button *ngIf="user" [tale]="tale" [instance]="instances[tale._id]" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></app-tale-run-button>
           </div>
         </div>
       </div>

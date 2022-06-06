@@ -159,6 +159,15 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
 
         this.load();
       });
+    }, err => {
+      const dataRootParams = { test: false, path: DATA_ROOT_PATH };
+
+      // Fetch all root folders before loading
+      this.resourceService.resourceLookup(dataRootParams).pipe(enterZone(this.zone)).subscribe(dataRoot => {
+        this.dataRoot = dataRoot;
+
+        this.load();
+      });
     });
   }
 
@@ -815,7 +824,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
         const index = folders.indexOf(element);
         folders[index] = resp;
         this.folders.next(folders);
-        
+
         setTimeout(() => {
           $('.ui.file.dropdown').dropdown({ action: 'hide' });
         }, 500);

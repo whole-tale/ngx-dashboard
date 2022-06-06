@@ -35,7 +35,13 @@
                                     </div>
                                 </div>
                                 <div class="six wide column" style="text-align: right;">
-                                    <app-tale-run-button class="tale-run-button" [tale]="tale" [instance]="instance" isPrimary="true" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></app-tale-run-button>
+                                    <app-tale-run-button class="tale-run-button" *ngIf="user" [tale]="tale" [instance]="instance" isPrimary="true" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></app-tale-run-button>
+                                    <span title="You must log in to run this Tale." *ngIf="!user">
+                                        <button class="ui disabled primary button">
+                                            <i class="play icon"></i>
+                                            Run Tale
+                                        </button>
+                                    </span>
                                     <a [routerLink]="dashboardLink" routerLinkActive="active" class="ui button" style="margin-right: 10px;">
                                         Close
                                     </a>
@@ -57,12 +63,12 @@
                                             <div class="item" (click)="performRecordedRun()" *ngIf="isTaleWritable()"><i class="fas fa-fw fa-check-circle"></i> Recorded Run</div>
                                             <div class="divider" *ngIf="isTaleWritable()"></div>
 
-                                            <div class="item" (click)="copyTale()"><i class="fas fa-fw fa-clone"></i> Duplicate Tale</div>
+                                            <div class="item" (click)="copyTale()" *ngIf="user"><i class="fas fa-fw fa-clone"></i> Duplicate Tale</div>
                                             <div class="item" (click)="openPublishTaleDialog($event)" *ngIf="isTaleWritable()"><i class="fas fa-fw fa-newspaper"></i> Publish Tale</div>
                                             <div class="item" (click)="exportTale()" *ngIf="isTaleWritable()"><i class="fas fa-fw fa-file-archive"></i> Export Tale</div>
                                             <div class="divider" *ngIf="isTaleWritable()"></div>
                                             <div class="item" (click)="openConnectGitRepoDialog()" *ngIf="isTaleWritable()"><i class="fab fa-fw fa-git"></i> Connect to Git Repository...</div>
-                                            <div class="divider"></div>
+                                            <div class="divider" *ngIf="user"></div>
 
                                             <div class="item" (click)="viewFullScreen()" *ngIf="isTaleWritable()"><i class="fas fa-fw fa-expand"></i> View Fullscreen</div>
                                             <div class="item" (click)="gotoDocs()"><i class="fas fa-fw fa-question-circle"></i> Read the docs</div>
@@ -73,7 +79,7 @@
                         </div>
                     </div>
                     <div class="ui secondary pointing menu" style="margin-top: 0;">
-                        <a class="item" [ngClass]="{ 'active': isTabActive('interact') }" (click)="switchTab('interact')">
+                        <a class="item" [ngClass]="{ 'active': isTabActive('interact') }" (click)="switchTab('interact')" *ngIf="user">
                           Interact
                         </a>
                         <a class="item" [ngClass]="{ 'active': isTabActive('files') }" (click)="switchTab('files')">

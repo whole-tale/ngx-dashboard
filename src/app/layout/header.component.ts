@@ -60,11 +60,18 @@ export class HeaderComponent extends BaseComponent implements OnInit {
       $('.ui.account.dropdown').dropdown({ action: 'hide' });
     });
 
-    this.users.userGetMe().subscribe((user: any) => {
-      this.logger.debug('Logged in as:', user);
-      this.user = this.tokenService.user = user;
-      this.ref.detectChanges();
-    });
+    this.users.userGetMe().subscribe(
+      (user: any) => {
+        this.logger.debug('Logged in as:', user);
+        this.user = this.tokenService.user = user;
+        this.ref.detectChanges();
+      },
+      (err) => {
+        this.logger.debug('Logged in as Anonymous');
+        this.user = undefined;
+        this.ref.detectChanges();
+      }
+    );
   }
 
   async logout(): Promise<boolean> {

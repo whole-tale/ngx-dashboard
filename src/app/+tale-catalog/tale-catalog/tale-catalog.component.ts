@@ -1,8 +1,10 @@
-import { AfterViewInit, Component, EventEmitter, NgZone, Output} from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, NgZone, OnInit, Output } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Tale } from '@api/models/tale';
+import { User } from '@api/models/user';
 import { TaleService } from '@api/services/tale.service';
+import { UserService } from '@api/services/user.service';
 import { BaseComponent, LogService } from '@shared/core';
 import { routeAnimation } from '~/app/shared';
 
@@ -16,8 +18,9 @@ declare var $: any;
     styleUrls: ['tale-catalog.component.scss'],
     animations: [routeAnimation]
 })
-export class TaleCatalogComponent extends BaseComponent implements AfterViewInit {
+export class TaleCatalogComponent extends BaseComponent implements AfterViewInit, OnInit {
     currentPath = "tales";
+    user: User = undefined;
 
     @Output() readonly taleCreated = new EventEmitter<Tale>();
 
@@ -26,10 +29,19 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
       private router: Router,
       private logger: LogService,
       private taleService: TaleService,
+      private userService: UserService,
       private route: ActivatedRoute,
       public dialog: MatDialog
     ) {
         super();
+    }
+
+    ngOnInit(): void {
+      this.userService.userGetMe().subscribe(user => {
+        this.user = user;
+      }, err => {
+        this.user = undefined;
+      });
     }
 
     ngAfterViewInit(): void {
