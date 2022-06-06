@@ -67,6 +67,8 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
     this.refresh();
     this.userService.userGetMe().subscribe(user => {
       this.user = user;
+    }, err => {
+      this.user = undefined;
     });
     this.refresh();
     this.taleCreatedSubscription = this.syncService.taleCreatedSubject.subscribe((taleId: string) => {
@@ -161,17 +163,19 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
   refresh(): void {
     this.ref.detectChanges();
 
-    // Fetch a map of taleId => instance
-    const listInstancesParams = {};
-    this.instanceService.instanceListInstances(listInstancesParams).subscribe((instances: Array<Instance>) => {
-      this.zone.run(() => {
-        // Convert array to map of taleId -> instance
-        // Filter deleting instances
-        this.instances = Object.assign({}, ...instances.filter(i => i.status !== 3).map(i => ({[i.taleId]: i})));
+    if (this.user) {
+      // Fetch a map of taleId => instance
+      const listInstancesParams = {};
+      this.instanceService.instanceListInstances(listInstancesParams).subscribe((instances: Array<Instance>) => {
+        this.zone.run(() => {
+          // Convert array to map of taleId -> instance
+          // Filter deleting instances
+          this.instances = Object.assign({}, ...instances.filter(i => i.status !== 3).map(i => ({ [i.taleId]: i })));
+        });
+      }, (err: any) => {
+        this.logger.error("Failed to GET /instance:", err);
       });
-    }, (err: any) => {
-      this.logger.error("Failed to GET /instance:", err);
-    });
+    }
 
     // Fetch the list of public tales
     const listTalesParams = { limit: 0 };

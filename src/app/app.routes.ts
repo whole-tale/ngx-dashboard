@@ -9,9 +9,9 @@ export const routes = [
     component: LoginComponent,
     data: {
       meta: {
-        title: 'PUBLIC.LOGIN.PAGE_TITLE'
-      }
-    }
+        title: 'PUBLIC.LOGIN.PAGE_TITLE',
+      },
+    },
   },
   {
     path: '',
@@ -19,27 +19,28 @@ export const routes = [
     children: [
       {
         path: '',
-        loadChildren: () => import('./+tale-catalog/tale-catalog.module').then(m => m.TaleCatalogModule)
+        loadChildren: () => import('./+tale-catalog/tale-catalog.module').then((m) => m.TaleCatalogModule),
       },
       {
         path: 'run',
-        loadChildren: () => import('./+run-tale/run-tale.module').then(m => m.RunTaleModule)
+        loadChildren: () => import('./+run-tale/run-tale.module').then((m) => m.RunTaleModule),
       },
       {
         path: 'settings',
-        loadChildren: () => import('./+user-settings/user-settings.module').then(m => m.UserSettingsModule)
-      }
+        loadChildren: () => import('./+user-settings/user-settings.module').then((m) => m.UserSettingsModule),
+        canActivateChild: [CustomAuthGuard],
+      },
     ],
-    canActivateChild: [CustomAuthGuard],
+    // canActivateChild: [CustomAuthGuard],
     data: {
       i18n: {
-        isRoot: true
-      }
-    }
+        isRoot: true,
+      },
+    },
   },
   {
     path: '**',
     redirectTo: '',
-    pathMatch: 'full'
-  }
+    pathMatch: 'full',
+  },
 ];

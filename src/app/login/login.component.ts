@@ -120,6 +120,10 @@ export class LoginComponent extends BaseComponent implements OnInit {
     );
   }
 
+  loginAsAnonymous(): void {
+    this.router.navigateByUrl('/public');
+  }
+
   get tosUrl(): string {
     return `${window.env.rtdBaseUrl}/tos`;
   }

@@ -31,6 +31,10 @@
       <i class="fa-globe icon globus-button-icon"></i>
       Sign in with Globus
     </a>
+    <a class="ui preview-button button" (click)="loginAsAnonymous()" (keydown.enter)="loginAsAnonymous()" role="button" tabindex="0">
+      <i class="fa-user icon user-button-icon"></i>
+      Preview WholeTale
+    </a>
 
     <p style="botmargin" style="margin: 10px; color:black;">By accessing Whole Tale, you agree to our
       <a [href]="tosUrl" style="color:black" target="_blank"><u>Terms of Use</u></a>.
