@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Upload } from '@api/models/upload';
 import { FileElement } from '@files/models/file-element';
 import { LogService } from '@shared/core/log.service';
 
@@ -73,6 +74,11 @@ const FILE_TYPES = {
 })
 export class FileExplorerComponent implements OnChanges {
   @ViewChild('file') file: any;
+  @ViewChild('folder') folder: any;
+
+  @Input() sanitizeId: Function;
+
+  @Input() currentUpload: FileElement;
 
   @Input() preventNavigation = false;
   @Input() readOnly = false;
@@ -85,7 +91,7 @@ export class FileExplorerComponent implements OnChanges {
   @Input() fileElements: Array<FileElement>;
 
   // True if we are not at the root
-  @Input() canNavigateUp: string;
+  @Input() canNavigateUp: boolean;
 
   // The path to the current directory
   @Input() path: string;
@@ -105,6 +111,7 @@ export class FileExplorerComponent implements OnChanges {
   @Output() readonly openTaleWorkspacesModal = new EventEmitter();
   @Output() readonly folderAdded = new EventEmitter<{ name: string }>();
   @Output() readonly fileUploadsAdded = new EventEmitter<{ files: { [key: string]: File } }>();
+  @Output() readonly folderUploadAdded = new EventEmitter<{ files: { [key: string]: File } }>();
   @Output() readonly elementRemoved = new EventEmitter<FileElement>();
   @Output() readonly elementRenamed = new EventEmitter<FileElement>();
   @Output() readonly elementCopied = new EventEmitter<FileElement>();
@@ -131,6 +138,10 @@ export class FileExplorerComponent implements OnChanges {
     }
   }
 
+  isFileUploading(file: FileElement): boolean {
+    return this.currentUpload?._id === file._id;
+  }
+
   getIcon(element: FileElement): string {
     if (element._modelType === 'folder' || element._modelType === 'dataset' || element._modelType === 'workspace') {
       return 'fa-folder';
@@ -155,9 +166,19 @@ export class FileExplorerComponent implements OnChanges {
     this.file.nativeElement.click();
   }
 
+  openFolderUploadDialog(): void {
+    this.folder.nativeElement.click();
+  }
+
   onUploadsAdded($event: any): void {
     const target = $event.target || $event.srcElement;
     this.fileUploadsAdded.emit(this.file.nativeElement.files);
+    target.value = '';
+  }
+
+  onFolderUploadAdded($event: any): void {
+    const target = $event.target || $event.srcElement;
+    this.folderUploadAdded.emit(this.folder.nativeElement.files);
     target.value = '';
   }
 

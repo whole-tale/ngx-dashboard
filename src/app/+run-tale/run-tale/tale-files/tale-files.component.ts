@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AccessLevel, Run, Tale, User, Version } from '@api/models';
+import { AccessLevel, Folder, Run, Tale, Upload, User, Version } from '@api/models';
 import {
   CollectionService,
   DatasetService,
@@ -28,14 +28,9 @@ import { TaleWorkspacesDialogComponent } from '../modals/tale-workspaces-dialog/
 // import * as $ from 'jquery';
 declare var $: any;
 
-const URL = window['webkitURL'] || window.URL;  // tslint:disable-line
-
 // TODO: Is there a better place to store these constants?
 const HOME_ROOT_NAME = 'Home';
 const DATA_ROOT_PATH = '/collection/WholeTale Catalog/WholeTale Catalog';
-const WORKSPACES_ROOT_PATH = '/collection/WholeTale Workspaces/WholeTale Workspaces';
-const VERSIONS_ROOT_PATH = '/collection/WholeTale Tale Versions/WholeTale Tale Versions';
-const RUNS_ROOT_PATH = '/collection/WholeTale Tale Runs/WholeTale Tale Runs';
 
 // TODO: Abstract/move enums to reuseable helper
 enum UploadType {
@@ -49,16 +44,13 @@ enum ParentType {
     User = "user"
 }
 
-enum ContentDisposition {
-    Attachment = "attachment",
-    Inline = "inline"
-}
-
 interface Selectable {
   _modelType: string;
   _id: string;
   name: string;
 }
+
+const sortByUpdated = (a: any, b: any) => (a.updated > b.updated) ? -1 : (a.updated < b.updated) ? 1 : 0;
 
 @Component({
   selector: 'app-tale-files',
@@ -66,7 +58,8 @@ interface Selectable {
   styleUrls: ['./tale-files.component.scss']
 })
 export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
-  uploadQueue: Set<File> = new Set();
+  filesToUpload: Array<File> = new Array<File>();
+  currentUpload: FileElement;
 
   loading = false;
 
@@ -211,6 +204,10 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+  sanitizeId(virtualId: string): string {
+    return virtualId.replace(/=/g, '')
+  }
+
   uploadChunk(uploadId: string, offset: number, chunk: Blob): Promise<any> {
     const chunkParams = { uploadId, offset, chunk };
     const chunkResp = this.fileService.fileReadChunk(chunkParams).toPromise();
@@ -256,61 +253,126 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
       this.logger.info(`Uploaded ${chunkResp.received ? chunkResp.received : upload.size} / ${upload.size} bytes (${start/(chunkSize + 1) + 1} / ${numChunks} chunks):`, chunkResp);
 
       // Can't bind to [attr.data-percent].. use js to set total and update progress
-      const percent =  ((chunkResp.received ? +chunkResp.received : +upload.size) / +upload.size) * 100;
-      $(`#upload-${uploadId}`).progress('set percent', percent);
-      existing.uploadProgress = percent;
+      const percent = ((chunkResp.received ? +chunkResp.received : +upload.size) / +upload.size) * 100;
+      $('#in-progress-upload-bar').progress('set percent', percent);
+      if (existing) {
+        existing.uploadProgress = percent;
+      }
       this.ref.detectChanges();
     }
   }
 
-  uploadFiles(filesToUpload: { [key: string]: File }): void {
-    for (const key in filesToUpload) {
-      if (!isNaN(parseInt(key, 10))) {
-        this.uploadQueue.add(filesToUpload[key]);
+  convertToArray(files: FileList): Array<File> {
+    return Array.from(files);
+  }
+
+  uploadFolder(files: Array<File>): void {
+    // Search to find base folder name
+    files.some((file: File) => {
+      // tslint:disable-next-line:no-string-literal
+      const relPath = file['webkitRelativePath'];
+
+      // NOTE: Relative path is only set for folder uploads
+      if (relPath) {
+        // Create a target folder - the assumption is that it's gonna live inside a virtual resource
+        const folderName = relPath.split('/')[0];
+        const params = { name: folderName, parentId: this.getParentId() };
+        this.folderService.folderCreateFolder(params).subscribe(async (folder: Folder) => {
+          await this.load();
+          this.uploadFiles(files, folder);
+          this.ref.detectChanges();
+        });
+
+        return true;
+      } else {
+        this.logger.error("Received request for directory upload without a relPath: ", file);
       }
-    }
-    this.logger.debug(`${filesToUpload.length} files added... upload queue contents:`, this.uploadQueue);
+    })
+  }
 
-    this.uploadQueue.forEach(upload => {
-      // Upload to the current folder, if possible
-      const parentId = this.getParentId();
+  splitPath(path: string): string {
+    return path.split('/').slice(0, -1).join("/");
+  }
 
-      const initUploadParams = {
-        parentId,
-        parentType: UploadType.Folder,
-        name: upload.name,
-        size: upload.size,
-        // chunk: contents
-      };
+  // Returned _id will follow the convention: wtlocal:<..>
+  // do something along the lines:
+  //   payload = folder._id.split(":")[1]
+  //   path_and_root = atob(payload)  // base64 decode
+  //   path = path_and_root.split("|")[0]
+  //   rootId = path_and_root.split("|")[1]
+  // During upload reverse the above with updated path:
+  //  fullPath = path + / + file.webkitRelativePath // note that 'name' shouldn't be the part of fullPath
+  //  newpath_and_root = btoa( fullPath + "|" + rootId )
+  buildVirtualParentId(file: File, folder: Folder, relPath: string): string {
+    const payload = folder._id.split(":")[1];
+    const [path, rootId] = atob(payload).split("|");   // base64 decode
 
-      this.fileService.fileInitUpload(initUploadParams).subscribe(async (initResp: any) => {
-        const uploadId = initResp._id;
+    // repair overlapping/duplicated folder name within new path
+    //    path=/path/in/girder/data/subdir
+    //    relPath=subdir/path/to/file
+    const newPath = `${this.splitPath(path)}/${relPath}`;  // remove parent folder from end of top path
+    const newVirtualParent = this.splitPath(newPath);  // remove filename from end of new path
+
+    return `wtlocal:${btoa(`${newVirtualParent}|${rootId}`)}`;
+  }
+
+  // Optionally takes a folder to upload to (for folder uploads ONLY)
+  uploadFiles(files: Array<File>, folder?: Folder): void {
+    files.forEach(f => this.filesToUpload.push(f));
+    this.logger.debug(`${files.length} files added... upload queue contents:`, this.filesToUpload);
+
+    (async () => {
+      while (this.filesToUpload.length > 0) {
+        // Grab next upload off the queue
+        this.currentUpload = undefined;
+        const currentFile = this.filesToUpload.shift();
+
+        // If we're given a relPath and a folder, then this is a directory upload
+        // Otherwise, we upload to the current folder
+        // tslint:disable-next-line:no-string-literal
+        const relPath = currentFile['webkitRelativePath'];
+        const parentId = folder ? this.buildVirtualParentId(currentFile, folder, relPath) : this.getParentId();
+
+        // POST /file with parentId = wtlocal:<newpath_and_root>, or else to current folder
+        const initUploadParams = {
+          parentId,
+          parentType: UploadType.Folder,
+          name: currentFile.name,
+          size: currentFile.size,
+          // chunk: contents
+        };
+
+        this.currentUpload = await this.fileService.fileInitUpload(initUploadParams).toPromise();
 
         // Add new file upload to the list
         // TODO: Progress updates / indicator
-        const files = this.files.value;
-        initResp.uploadProgress = 0;
-        initResp.uploading = true;
-        files.push(initResp);
-        this.files.next(files);
+        const filesVal = this.files.value;
+        this.currentUpload.uploadProgress = 0;
+        this.currentUpload.uploading = true;
+
+        if (parentId === this.getParentId()) {
+          filesVal.push(this.currentUpload);
+          this.files.next(filesVal);
+        }
+
+        const selector = '#in-progress-upload-bar';
 
         // Can't bind to [attr.data-percent].. use js to set total and update progress
-        $(`#upload-${uploadId}`).progress('set percent', 0);
+        $(selector).progress('set percent', 0);
+        this.currentUpload.uploadProgress = 0;
         this.ref.detectChanges();
 
         // This should be a blocking call
-        await this.uploadChunks(uploadId, upload);
+        await this.uploadChunks(this.currentUpload?._id, currentFile);
 
         // Once all chunks are uploaded, then the upload is complete
-        this.logger.info(`Upload complete: ${upload.name} (${upload.size})`, upload);
+        this.logger.info(`Upload complete: ${currentFile.name} (${currentFile.size})`, currentFile);
 
         // Can't bind to [attr.data-percent].. use js to set total and update progress
-        $(`#upload-${uploadId}`).progress('set percent', 100);
-        initResp.uploading = false;
+        $(selector).progress('set percent', 100);
+        this.currentUpload.uploadProgress = 100;
+        this.currentUpload.uploading = false;
 
-        setTimeout(() => {
-          $('.ui.file.dropdown').dropdown({ action: 'hide' });
-        }, 500);
         this.ref.detectChanges();
 
         // This is apparently not needed all the time? Files are weird...
@@ -324,13 +386,16 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
         //   this.ref.detectChanges();
         // })
 
-        // Update UI with final uploaded item (logo, size, etc)
-        this.load();
-      });
+        setTimeout(() => {
+          $('.ui.file.dropdown').dropdown({ action: 'hide' });
+          this.load();
+        }, 500);
 
-      this.uploadQueue.delete(upload);
-    });
+        // Update UI with final uploaded item (logo, size, etc)
+      }
+    })();
   }
+
 
   load(): void {
     // Already loading, short-circuit
@@ -354,15 +419,6 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
                                                   });
 
       return;
-    }
-    const sortByUpdated = (a: any, b: any) => {
-      if (a.updated > b.updated) {
-        return -1;
-      } else if (a.updated < b.updated) {
-        return 1;
-      } else {
-        return 0;
-      }
     }
 
     switch (this.currentNav) {
@@ -499,8 +555,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
 
   switchNav(nav: string): void {
     this.currentNav = nav;
-    this.currentFolderId = undefined;
-    this.currentRoot = undefined;
+    this.currentFolderId = this.currentRoot = undefined;
     this.currentPath = '';
     this.navigate();
     this.ref.detectChanges();
@@ -511,12 +566,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   truncatePathSegments(path: string): string {
-    const truncatedSegments: Array<string> = [];
-    path.split('/').forEach((s: string) => {
-      truncatedSegments.push(this.truncate.transform(s, 30));
-    });
-
-    return truncatedSegments.join('/');
+    return path.split('/').map((s: string) => this.truncate.transform(s, 30)).join("/");
   }
 
   setCurrentPath(): void {
@@ -564,38 +614,34 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   setCurrentRoot(resourceId: string, modelType = 'folder'): void {
+    const setParams = (result: any) => {
+      this.currentRoot = result;
+      this.currentFolderId = this.currentRoot._id;
+      this.canNavigateUp = !!this.currentRoot;
+      this.logger.debug(`currentRoot is now: ${this.currentRoot.name}`);
+      this.setCurrentPath();
+      this.ref.detectChanges();
+    }
+
     // Lookup and set our root node
     if (resourceId) {
       switch (modelType) {
         case 'folder':
           this.folderService.folderGetFolder(resourceId)
                             .pipe(enterZone(this.zone))
-                            .subscribe(folder => {
-            this.currentRoot = folder;
-            this.currentFolderId = this.currentRoot._id;
-            this.canNavigateUp = this.currentRoot ? true : false;
-            this.logger.debug(`currentRoot is now: ${this.currentRoot.name}`);
-            this.setCurrentPath();
-          });
+                            .subscribe(setParams.bind(this));
           break;
         case 'collection':
           this.collectionService.collectionGetCollection(resourceId)
                                 .pipe(enterZone(this.zone))
-                                .subscribe(collection => {
-            this.currentRoot = collection;
-            this.currentFolderId = this.currentRoot._id;
-            this.canNavigateUp = this.currentRoot ? true : false;
-            this.logger.debug(`currentRoot is now: ${this.currentRoot.name}`);
-            this.setCurrentPath();
-          });
+                                .subscribe(setParams.bind(this));
           break;
         default:
           this.logger.error("Unrecognized model type encountered:", modelType);
           break;
       }
     } else {
-      this.currentRoot = undefined;
-      this.currentFolderId = undefined;
+      this.currentRoot = this.currentFolderId = undefined;
       this.canNavigateUp = false;
       this.currentPath = '';
     }
@@ -634,34 +680,21 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
     return model._id;
   }
 
-  getName(folder: FileElement): string {
-    return folder.name;
-  }
-
   getParentId(): string {
-
     // Upload to the current folder, if possible
-    const parentId = this.currentFolderId ? this.currentFolderId :
+    return this.currentFolderId ? this.currentFolderId :
       // Otherwise upload to "workspace" if we're on the Workspaces nav and have no currentFolderId, else upload to "Home" folder
       this.currentNav === 'tale_workspace' ? this.tale.workspaceId : this.homeRoot._id;
-
-      return parentId;
   }
 
   addFolder(folder: { name: string }): void {
     // Datasets are immutable - prevent modifying them directly
-    if (this.currentNav === 'external_data') {
-      return;
-    }
+    if (this.currentNav === 'external_data') { return; }
 
-    const now = new Date();
-
-    // Upload to the current folder, if possible
-    const parentId = this.getParentId();
-
+    // Create in the current folder, if possible
     const params = {
       parentType: ParentType.Folder,
-      parentId,
+      parentId: this.getParentId(),
       name: folder.name,
       description: ""
     };
@@ -683,11 +716,8 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
   removeElement(element: FileElement): void {
     // Special handling for runs/versions
     if (this.currentNav === 'recorded_runs') {
-      if (this.currentFolderId || this.canNavigateUp) {
-        // No-op: remove not allowed within a run
-        return;
-      }
-
+      // No-op: remove not allowed within a run
+      if (this.currentFolderId || this.canNavigateUp) { return; }
       this.runService.runDeleteRun(element._id).subscribe(resp => {
         this.load();
       }, err => {
@@ -696,11 +726,8 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
 
       return;
     } else if (this.currentNav === 'tale_versions') {
-      if (this.currentFolderId || this.canNavigateUp) {
-        // No-op: remove not allowed within a version
-        return;
-      }
-
+      // No-op: remove not allowed within a version
+      if (this.currentFolderId || this.canNavigateUp) { return; }
       this.versionService.versionDeleteVersion(element._id).subscribe(resp => {
         this.load();
       }, err => {
@@ -716,10 +743,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
                         .pipe(enterZone(this.zone))
                         .subscribe(resp => {
         this.logger.debug("Folder deleted successfully:", resp);
-        const folders = this.folders.value;
-        const index = folders.indexOf(element);
-        folders.splice(index, 1);
-        this.folders.next(folders);
+        this.load();
       }, err => {
         this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
       });
@@ -729,10 +753,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
                       .pipe(enterZone(this.zone))
                       .subscribe(resp => {
         this.logger.debug("Item deleted successfully:", resp);
-        const files = this.files.value;
-        const index = files.indexOf(element);
-        files.splice(index, 1);
-        this.files.next(files);
+        this.load();
       }, err => {
         this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
       });
@@ -741,7 +762,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
 
   moveElement(event: { element: FileElement; moveTo: FileElement }): void {
     const src = event.element;
-    const dest = event.moveTo;;
+    const dest = event.moveTo;
     if (src._modelType === 'folder') {
       const params = { id: src._id, parentId: dest._id, parentType: ParentType.Folder, baseParentId: dest.baseParentId }
       // Element is a folder, move it
@@ -772,11 +793,8 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
 
     // Special handling for runs/versions
     if (this.currentNav === 'recorded_runs') {
-      if (this.canNavigateUp) {
-        // No-op: remove not allowed within a run
-        return;
-      }
-
+      // No-op: remove not allowed within a run
+      if (this.canNavigateUp) { return; }
       this.runService.runPutRenameRun(params.id, params.name).subscribe(resp => {
         this.load();
       }, err => {
@@ -788,11 +806,8 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
 
       return;
     } else if (this.currentNav === 'tale_versions') {
-      if (this.canNavigateUp) {
-        // No-op: remove not allowed within a version
-        return;
-      }
-
+      // No-op: remove not allowed within a version
+      if (this.canNavigateUp) { return; }
       this.versionService.versionPutRenameVersion(params.id, params.name).subscribe(resp => {
         this.load();
       }, err => {
@@ -815,7 +830,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
         const index = folders.indexOf(element);
         folders[index] = resp;
         this.folders.next(folders);
-        
+
         setTimeout(() => {
           $('.ui.file.dropdown').dropdown({ action: 'hide' });
         }, 500);
@@ -885,7 +900,6 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-
   // Expected parameter format:
   //    dataMap: [{"name":"Elevation per SASAP region and Hydrolic Unit (HUC8) boundary for Alaskan watersheds","dataId":"resource_map_doi:10.5063/F1Z60M87","repository":"DataONE","doi":"10.5063/F1Z60M87","size":10293583}]
   openRegisterDataModal(event: Event): void {
@@ -893,18 +907,14 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
     dialogRef.afterClosed().subscribe((selectedResult: any) => {
       if (!selectedResult) { return; }
       const dataMap = JSON.stringify([selectedResult]);
-      const params = { dataMap };
-      this.datasetService.datasetImportData(params).subscribe(resp => {
+      this.datasetService.datasetImportData({ dataMap }).subscribe(resp => {
         this.logger.info("Dataset registered:", resp);
       });
     });
   }
 
   openSelectDataModal(event: Event): void {
-    const config: MatDialogConfig = {
-      data: { tale: this.tale }
-    };
-    const dialogRef = this.dialog.open(SelectDataDialogComponent, config);
+    const dialogRef = this.dialog.open(SelectDataDialogComponent, { data: { tale: this.tale } });
     dialogRef.afterClosed().subscribe((datasets: Array<Selectable>) => {
       if (!datasets) { return; }
 
@@ -923,10 +933,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   openTaleWorkspacesModal(event: Event): void {
-    const config: MatDialogConfig = {
-      data: { tale: this.tale }
-    };
-    const dialogRef = this.dialog.open(TaleWorkspacesDialogComponent, config);
+    const dialogRef = this.dialog.open(TaleWorkspacesDialogComponent, { data: { tale: this.tale } });
     dialogRef.afterClosed().subscribe((result: { action: string, selected: Array<Selectable> }) => {
       if (!result) { return; }
 
@@ -979,7 +986,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
         parentid: this.currentFolderId ? this.currentFolderId : undefined,
       }
     });
-    this.canNavigateUp = this.currentFolderId ? true : false;
+    this.canNavigateUp = !!this.currentFolderId;
   }
 
   // TODO: Parameterize to make path clickable?

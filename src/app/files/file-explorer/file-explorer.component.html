@@ -9,7 +9,13 @@
     <div class="menu">
       <div class="header">{{ currentNav.replace('_', ' ')  | uppercase }} OPTIONS</div>
       <div class="item" *ngIf="currentNav !== 'external_data'" (click)="openFileUploadDialog()">
-        <i class="fas fa-fw fa-2x fa-upload"></i> Upload File...
+        <i class="fas fa-fw fa-2x fa-upload"></i> Upload Files...
+      </div>
+      <div class="item" *ngIf="currentNav !== 'external_data'" (click)="openFolderUploadDialog()">
+        <span class="fas fa-fw fa-stack">
+          <i class="fas fa-folder fa-stack-2x"></i>
+          <i class="fas fa-arrow-up fa-stack-1x fa-inverse"></i>
+        </span> Upload Folder...
       </div>
       <div class="item" *ngIf="currentNav !== 'external_data'" (click)="openNewFolderDialog()">
         <i class="fas fa-fw fa-2x fa-folder-plus"></i> Create Folder...
@@ -32,6 +38,8 @@
   </button>
 </mat-toolbar>
 
+<input #folder multiple type="file" style="display: none" directory webkitdirectory mozdirectory (change)="onFolderUploadAdded($event)" />
+
 <input #file multiple type="file" style="display: none" (change)="onUploadsAdded($event)" />
 
 <div class="container" fxFlex fxLayout="column" fxLayoutAlign="space-between stretch">
@@ -39,6 +47,7 @@
   <div class="ui message" *ngIf="!fileElements || !fileElements.length">
     {{ placeholderMessage }}
   </div>
+
 
   <!-- Show folders/files in table if any exist -->
   <table class="ui basic selectable very compact blue table" *ngIf="fileElements && fileElements.length">
@@ -58,6 +67,7 @@
           [ngStyle]="{ 'cursor': getIcon(ele) === 'fa-folder' ? 'pointer' : 'inherit' }">
         <th class="center aligned"><i class="fas fa-fw fa-2x {{ getIcon(ele) }}"></i></th>
         <td [title]="ele.name">{{ ele.name | truncate:100 }}</td>
+
         <td *ngIf="ele.runStatus !== undefined">
           <span *ngIf="ele.runStatus === 0"><i class="fa fa-fw fa-question yellow"></i> UNKNOWN</span>
           <span *ngIf="ele.runStatus === 1"><i class="fa fa-fw fa-spinner fa-pulse yellow"></i> STARTING</span>
@@ -67,15 +77,15 @@
           <span *ngIf="ele.runStatus === 5"><i class="fa fa-fw fa-ban red"></i> CANCELLED</span>
         </td>
         <td [title]="ele.updated">{{ ele.updated | date }}</td>
-        <td class="right aligned" [title]="ele.size">
-            <small *ngIf="ele.uploading">Uploading... {{ ele.uploadProgress | number }}%</small>
-            <div *ngIf="ele.uploading" [id]="'upload-' + ele._id" class="ui indicating progress" data-percent="0">
-                <div class="bar"></div>
-            </div>
-            {{ ele.size | fileSize }}
+        <td class="right aligned" [title]="ele.folderId === currentUpload?.parentId && ele.name === currentUpload?.name ? (currentUpload.uploadProgress | number) + '%' : ele.size">
+          <span *ngIf="ele.folderId !== currentUpload?.parentId || ele.name !== currentUpload?.name">{{ ele.size | fileSize }}</span>
+          <small *ngIf="ele.folderId === currentUpload?.parentId && ele.name === currentUpload?.name"><i id="in-progress-upload-icon" class="fas fa-fw fa-spinner fa-pulse"></i> Uploading... {{ currentUpload.uploadProgress | number }}%</small>
+          <div *ngIf="ele.folderId === currentUpload?.parentId && ele.name === currentUpload?.name" id="in-progress-upload-bar" class="ui indicating progress" [attr.data-percent]="currentUpload.uploadProgress | number">
+              <div class="bar"></div>
+          </div>
         </td>
         <td class="center aligned">
-          <div id="more-actions-{{ ele._id }}" class="ui inline file dropdown more-actions" (click)="openMenu($event, ele)" *ngIf="showContextMenu">
+          <div [id]="sanitizeId('more-actions-' + ele._id)" class="ui inline file dropdown more-actions" (click)="openMenu($event, ele)" *ngIf="showContextMenu">
             <!--<div class="text">More</div>-->
             <i class="dropdown icon"></i>
             <div class="left menu">
