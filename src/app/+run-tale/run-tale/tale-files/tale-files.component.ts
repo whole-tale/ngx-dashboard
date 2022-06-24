@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AccessLevel, Folder, Run, Tale, Upload, User, Version } from '@api/models';
+import { AccessLevel, Folder, Job, Run, Tale, Upload, User, Version } from '@api/models';
 import {
   CollectionService,
   DatasetService,
@@ -907,8 +907,10 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
     dialogRef.afterClosed().subscribe((selectedResult: any) => {
       if (!selectedResult) { return; }
       const dataMap = JSON.stringify([selectedResult]);
-      this.datasetService.datasetImportData({ dataMap }).subscribe(resp => {
-        this.logger.info("Dataset registered:", resp);
+      this.datasetService.datasetImportData({ dataMap }).subscribe((resp: Job) => {
+        this.logger.info('Dataset registered:', resp);
+      }, (err: any) => {
+        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
       });
     });
   }
