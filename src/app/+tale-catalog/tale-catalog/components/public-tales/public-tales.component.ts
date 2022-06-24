@@ -44,8 +44,6 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
 
   searchQuery = '';
 
-  user: User;
-
   instances: Map<string, Instance> = new Map<string, Instance> ();
   creators: Map<string, User> = new Map<string, User> ();
 
@@ -60,13 +58,12 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
     private logger: LogService,
     private taleService: TaleService,
     private instanceService: InstanceService,
-    private tokenService: TokenService,
+    public tokenService: TokenService,
     private userService: UserService,
     private syncService: SyncService
-  ) { }
+  ) {  }
 
   ngOnInit(): void {
-    this.user = this.tokenService.user.value;
     this.refresh();
     this.taleCreatedSubscription = this.syncService.taleCreatedSubject.subscribe((taleId: string) => {
       this.refresh();
@@ -160,7 +157,7 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
   refresh(): void {
     this.ref.detectChanges();
 
-    if (this.user) {
+    if (this.tokenService.user.value) {
       // Fetch a map of taleId => instance
       const listInstancesParams = {};
       this.instanceService.instanceListInstances(listInstancesParams).subscribe((instances: Array<Instance>) => {
@@ -169,6 +166,7 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
           // Filter deleting instances
           this.instances = Object.assign({}, ...instances.filter(i => i.status !== 3).map(i => ({ [i.taleId]: i })));
         });
+        this.ref.detectChanges();
       }, (err: any) => {
         this.logger.error("Failed to GET /instance:", err);
       });

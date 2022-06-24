@@ -5,15 +5,6 @@ import { LoginComponent } from './login/login.component';
 
 export const routes = [
   {
-    path: 'login',
-    component: LoginComponent,
-    data: {
-      meta: {
-        title: 'PUBLIC.LOGIN.PAGE_TITLE',
-      },
-    },
-  },
-  {
     path: '',
     component: MainComponent,
     children: [
@@ -30,8 +21,16 @@ export const routes = [
         loadChildren: () => import('./+user-settings/user-settings.module').then((m) => m.UserSettingsModule),
         canActivateChild: [CustomAuthGuard],
       },
+      {
+        path: 'about',
+        component: LoginComponent,
+        data: {
+          meta: {
+            title: 'PUBLIC.LOGIN.PAGE_TITLE',
+          },
+        },
+      },
     ],
-    // canActivateChild: [CustomAuthGuard],
     data: {
       i18n: {
         isRoot: true,

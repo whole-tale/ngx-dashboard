@@ -1,11 +1,13 @@
-import { AfterViewInit, Component, EventEmitter, NgZone, OnInit, Output } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Tale } from '@api/models/tale';
 import { User } from '@api/models/user';
 import { TaleService } from '@api/services/tale.service';
 import { UserService } from '@api/services/user.service';
+import { TokenService } from '@api/token.service';
 import { BaseComponent, LogService } from '@shared/core';
+import { Observable, Subscription } from 'rxjs';
 import { routeAnimation } from '~/app/shared';
 
 import { CreateTaleModalComponent } from './modals/create-tale-modal/create-tale-modal.component';
@@ -18,11 +20,11 @@ declare var $: any;
     styleUrls: ['tale-catalog.component.scss'],
     animations: [routeAnimation]
 })
-export class TaleCatalogComponent extends BaseComponent implements AfterViewInit, OnInit {
+export class TaleCatalogComponent extends BaseComponent implements AfterViewInit, OnInit, OnDestroy {
     currentPath = "tales";
-    user: User = undefined;
 
     @Output() readonly taleCreated = new EventEmitter<Tale>();
+    userSubscription: Subscription;
 
     constructor(
       private zone: NgZone,
@@ -31,22 +33,27 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
       private taleService: TaleService,
       private userService: UserService,
       private route: ActivatedRoute,
+      private ref: ChangeDetectorRef,
+      public tokenService: TokenService,
       public dialog: MatDialog
     ) {
         super();
     }
 
     ngOnInit(): void {
-      this.userService.userGetMe().subscribe(user => {
-        this.user = user;
-      }, err => {
-        this.user = undefined;
+      this.userSubscription =  this.tokenService.currentUser.subscribe((user: User) => {
+        setTimeout(() => {
+          $('#createTaleDropdown').dropdown({ action: 'hide' });
+        }, 500);
       });
     }
 
-    ngAfterViewInit(): void {
-      $('#createTaleDropdown').dropdown({ action: 'hide' });
+    ngOnDestroy(): void {
+      super.ngOnDestroy();
+      this.userSubscription?.unsubscribe();
+    }
 
+    ngAfterViewInit(): void {
       // Sample parameters:
       //    environment=RStudio
       //    uri=https%3A%2F%2Fsearch.dataone.org%2Fview%2Fdoi%3A10.18739%2FA2VQ2S94D
@@ -77,7 +84,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
                 url: queryParams.uri ? decodeURIComponent(queryParams.uri) : (result.url ? result.url : ''), // Pull from querystring/form
                 imageId: tale.imageId, // Pull from user input
                 asTale: asTale ? asTale : false, // Pull from user input
-                git: result.url ? true : false,
+                git: !!result.url,
                 spawn: false, // if true, immediately launch a Tale instance
                 taleKwargs: tale.title ? { title: tale.title } : {},
                 lookupKwargs: baseUrl ? { base_url: baseUrl } : {},
@@ -116,7 +123,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
             url: gitUrl ? gitUrl: '', // Pull from querystring/form
             imageId: tale.imageId, // Pull from user input
             asTale: false, // Pull from user input
-            git: gitUrl ? true : false,
+            git: !!gitUrl,
             spawn: false, // if true, immediately launch a Tale instance
             taleKwargs: tale.title ? { title: tale.title } : {},
             lookupKwargs: baseUrl ? { base_url: baseUrl } : {},

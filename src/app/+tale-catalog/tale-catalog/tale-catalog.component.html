@@ -1,20 +1,21 @@
 <div class="wt-dash" fxLayoutAlign="center" [@routeAnimation]>
+
 	<div class="ui stackable grid container">
 
 		<!-- Filter Tales -->
 		<div class="row">
 			<div class="sixteen wide column">
 				<div class="ui secondary pointing menu">
-					<a routerLink="/mine" routerLinkActive="active" class="item" *ngIf="user">
+					<a routerLink="/mine" routerLinkActive="active" class="item" *ngIf="tokenService?.user?.value">
 						My Tales
 					</a>
-					<a routerLink="/shared" routerLinkActive="active" class="item" *ngIf="user">
+					<a routerLink="/shared" routerLinkActive="active" class="item" *ngIf="tokenService?.user?.value">
 						Shared with Me
 					</a>
 					<a routerLink="/public" routerLinkActive="active" class="item">
 						Public Tales
 					</a>
-					<div class="right menu" *ngIf="user">
+					<div class="right menu" *ngIf="tokenService?.user?.value">
 						<div class="item no-phone">
 							<button id="createTaleDropdown" class="ui primary small right labeled icon dropdown button" tabindex="0">
 									<i class="plus icon"></i>

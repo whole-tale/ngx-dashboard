@@ -44,8 +44,6 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     showVersionsPanel = false;
     fetching = false;
 
-    user: User;
-
     collaborators: CollaboratorList = { users: [], groups: [] };
 
     removeSubscription:Subscription;
@@ -66,7 +64,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       private taleService: TaleService,
       private instanceService: InstanceService,
       private userService: UserService,
-      private tokenService: TokenService,
+      public tokenService: TokenService,
       private versionService: VersionService,
       private runService: RunService,
       private syncService: SyncService,
@@ -76,12 +74,12 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         super();
     }
 
-    isVersionsPanelShown() :boolean {
+    isVersionsPanelShown(): boolean {
       return this.showVersionsPanel;
     }
 
-    isTaleWritable() :boolean {
-      return this.tale._accessLevel >= AccessLevel.Write;
+    isTaleWritable(): boolean {
+      return this.tokenService?.user?.value ? this.tale._accessLevel >= AccessLevel.Write : false;
     }
 
     trackByAuthorOrcid(index: number, author: TaleAuthor): string {
@@ -106,7 +104,9 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     }
 
     get dashboardLink(): string {
-      if (!this.tale || this.tale._accessLevel === AccessLevel.Admin) {
+      if (!this.tokenService.user.value) {
+        return '/public';
+      } else if (!this.tale || this.tale._accessLevel === AccessLevel.Admin) {
         return '/mine';
       } else if (this.tale._accessLevel === AccessLevel.None) {
         return '/public';
@@ -158,9 +158,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         return;
       }
 
-      this.user = this.tokenService.user.value;
-
-      if (this.user) {
+      if (this.tokenService.user.value) {
         const params = { taleId: this.taleId };
         this.instanceService.instanceListInstances(params).subscribe((instances: Array<Instance>) => {
           const running = instances.filter(i => i.status !== 3);

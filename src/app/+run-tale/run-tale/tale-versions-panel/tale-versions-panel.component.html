@@ -25,7 +25,7 @@
         <div class="right floated content" *ngIf="!res.runVersionId">
           <div class="ui floating version dropdown icon" tabindex="0">
               <i class="fas fa-ellipsis-v"></i>
-              <div class="menu left transition hidden" tabindex="-1" style="display: block !important;">
+              <div class="menu left transition hidden silent" tabindex="-1" style="display: block !important;">
                 <div class="item" (click)="viewVersionInfo(res)">View Info</div>
 
                 <div class="item" (click)="restoreVersion(res)" *ngIf="tale._accessLevel >= AccessLevel.Write">Restore</div>

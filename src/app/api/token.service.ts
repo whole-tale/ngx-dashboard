@@ -5,9 +5,11 @@ import { User } from '@api/models/user';
 import { UserService } from '@api/services/user.service';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { LogService } from '@shared/core/log.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class TokenService {
   // JWT helper service for checking token expiration
   jwt: JwtHelperService = new JwtHelperService();
@@ -16,9 +18,16 @@ export class TokenService {
 
   // Cache the user that this token represents (for display)
   user: BehaviorSubject<User> = new BehaviorSubject<User>(undefined);
+  currentUser: Observable<User> = this.user.asObservable();
 
   constructor(private readonly userService: UserService, private readonly logger: LogService) {}
 
+  setUser(user: User): void {
+    this.user.next(user);
+  }
+  getUser(): Observable<User> {
+    return this.currentUser;
+  }
   setToken(token: string): void {
     localStorage.setItem('girderToken', token);
   }

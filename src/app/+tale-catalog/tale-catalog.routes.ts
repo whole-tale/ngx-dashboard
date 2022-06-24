@@ -13,7 +13,7 @@ export const routes = [
       {
           path: '',
           pathMatch: 'full',
-          redirectTo: 'mine'
+          redirectTo: 'public'
       },
       {
         path: 'public',

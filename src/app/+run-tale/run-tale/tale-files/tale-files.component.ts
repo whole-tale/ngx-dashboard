@@ -135,40 +135,30 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
       }
     });
 
-    // Fetch Home root
-    this.userService.userGetMe().subscribe((user : User) => {
-      const homeRootParams = { parentId: user._id, parentType: ParentType.User, text: HOME_ROOT_NAME };
-      const dataRootParams = { test: false, path: DATA_ROOT_PATH };
-
-      const homeFind = this.folderService.folderFind(homeRootParams);
-      const dataFind = this.resourceService.resourceLookup(dataRootParams);
-
-      // Fetch all root folders before loading
-      forkJoin([homeFind, dataFind]).pipe(enterZone(this.zone)).subscribe((value: Array<any>) => {
-        if (value.length < 2) {
-          this.logger.error("Error: Value mismatch when fetching root folders");
-        }
-
-        const homeFolderResults = value[0];
-
-        if (homeFolderResults && homeFolderResults.length) {
-          this.homeRoot = homeFolderResults[0];
-        }
-
-        this.dataRoot = value[1];
-
-        this.load();
-      });
-    }, err => {
-      const dataRootParams = { test: false, path: DATA_ROOT_PATH };
-
-      // Fetch all root folders before loading
-      this.resourceService.resourceLookup(dataRootParams).pipe(enterZone(this.zone)).subscribe(dataRoot => {
+    // Fetch Data root, whether user is logged in or not
+    this.resourceService.resourceLookup({ test: false, path: DATA_ROOT_PATH })
+      .pipe(enterZone(this.zone))
+      .subscribe(dataRoot => {
         this.dataRoot = dataRoot;
-
         this.load();
       });
-    });
+
+    // Fetch Home root, if user is logged in
+    this.userService.userGetMe()
+      .pipe(enterZone(this.zone))
+      .subscribe((user : User) => {
+        if (user) {
+          const homeRootParams = { parentId: user._id, parentType: ParentType.User, text: HOME_ROOT_NAME };
+          this.folderService.folderFind(homeRootParams).pipe(enterZone(this.zone)).subscribe((homeFolderResults: Array<any>) => {
+            if (homeFolderResults && homeFolderResults.length) {
+              this.homeRoot = homeFolderResults[0];
+            }
+            this.load();
+          });
+        } else {
+          this.logger.debug('Skipping loading home root since user is not logged in.')
+        }
+      });
   }
 
   ngOnChanges(): void {
@@ -582,7 +572,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
                             .subscribe(folder => {
             this.currentRoot = folder;
             this.currentFolderId = this.currentRoot._id;
-            this.canNavigateUp = this.currentRoot ? true : false;
+            this.canNavigateUp = !!this.currentRoot;
             this.logger.debug(`currentRoot is now: ${this.currentRoot.name}`);
             this.setCurrentPath();
           });
@@ -593,7 +583,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
                                 .subscribe(collection => {
             this.currentRoot = collection;
             this.currentFolderId = this.currentRoot._id;
-            this.canNavigateUp = this.currentRoot ? true : false;
+            this.canNavigateUp = !!this.currentRoot;
             this.logger.debug(`currentRoot is now: ${this.currentRoot.name}`);
             this.setCurrentPath();
           });
@@ -648,7 +638,6 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   getParentId(): string {
-
     // Upload to the current folder, if possible
     const parentId = this.currentFolderId ? this.currentFolderId :
       // Otherwise upload to "workspace" if we're on the Workspaces nav and have no currentFolderId, else upload to "Home" folder
@@ -662,8 +651,6 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
     if (this.currentNav === 'external_data') {
       return;
     }
-
-    const now = new Date();
 
     // Upload to the current folder, if possible
     const parentId = this.getParentId();
@@ -683,10 +670,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
         folders.push(newFolder);
         this.folders.next(folders);
       },
-      err => {
-        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
-      }
-    );
+      err => this.dialog.open(ErrorModalComponent, { data: { error: err.error } }));
   }
 
   removeElement(element: FileElement): void {
@@ -697,11 +681,8 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
         return;
       }
 
-      this.runService.runDeleteRun(element._id).subscribe(resp => {
-        this.load();
-      }, err => {
-        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
-      });
+      this.runService.runDeleteRun(element._id).subscribe(resp => this.load(),
+          err => this.dialog.open(ErrorModalComponent, { data: { error: err.error } }));
 
       return;
     } else if (this.currentNav === 'tale_versions') {
@@ -710,11 +691,8 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
         return;
       }
 
-      this.versionService.versionDeleteVersion(element._id).subscribe(resp => {
-        this.load();
-      }, err => {
-        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
-      });
+      this.versionService.versionDeleteVersion(element._id).subscribe(resp => this.load(),
+          err => this.dialog.open(ErrorModalComponent, { data: { error: err.error } }));
 
       return;
     }
@@ -729,9 +707,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
         const index = folders.indexOf(element);
         folders.splice(index, 1);
         this.folders.next(folders);
-      }, err => {
-        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
-      });
+      }, err => this.dialog.open(ErrorModalComponent, { data: { error: err.error } }));
     } else if (element._modelType === 'item') {
       // Element is an item, delete it
       this.itemService.itemDeleteItem(element._id)
@@ -742,15 +718,13 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
         const index = files.indexOf(element);
         files.splice(index, 1);
         this.files.next(files);
-      }, err => {
-        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
-      });
+      }, err => this.dialog.open(ErrorModalComponent, { data: { error: err.error } }));
     }
   }
 
   moveElement(event: { element: FileElement; moveTo: FileElement }): void {
     const src = event.element;
-    const dest = event.moveTo;;
+    const dest = event.moveTo;
     if (src._modelType === 'folder') {
       const params = { id: src._id, parentId: dest._id, parentType: ParentType.Folder, baseParentId: dest.baseParentId }
       // Element is a folder, move it
@@ -759,9 +733,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
                         .subscribe(resp => {
         this.logger.info("Folder moved successfully:", resp);
         this.load();
-      }, err => {
-        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
-      });
+      }, err => this.dialog.open(ErrorModalComponent, { data: { error: err.error } }));
     } else if (src._modelType === 'item') {
       const params = { id: src._id, folderId: dest._id, baseParentId: dest.baseParentId }
       // Element is an item, move it
@@ -770,9 +742,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
                       .subscribe(resp => {
         this.logger.info("Item moved successfully:", resp);
         this.load();
-      }, err => {
-        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
-      });
+      }, err => this.dialog.open(ErrorModalComponent, { data: { error: err.error } }));
     }
   }
 
@@ -786,9 +756,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
         return;
       }
 
-      this.runService.runPutRenameRun(params.id, params.name).subscribe(resp => {
-        this.load();
-      }, err => {
+      this.runService.runPutRenameRun(params.id, params.name).subscribe(resp => this.load(), err => {
         // Rename failed, roll-back the change
         element.name = element.prevName;
         this.ref.detectChanges();
@@ -802,9 +770,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
         return;
       }
 
-      this.versionService.versionPutRenameVersion(params.id, params.name).subscribe(resp => {
-        this.load();
-      }, err => {
+      this.versionService.versionPutRenameVersion(params.id, params.name).subscribe(resp => this.load(), err => {
         // Rename failed, roll-back the change
         element.name = element.prevName;
         this.ref.detectChanges();
@@ -816,8 +782,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
 
     if (element._modelType === 'folder') {
       // Element is a folder, move it
-      this.folderService.folderUpdateFolder(params)
-                        .pipe(enterZone(this.zone))
+      this.folderService.folderUpdateFolder(params).pipe(enterZone(this.zone))
                         .subscribe(resp => {
         this.logger.debug("Folder renamed successfully:", resp);
         const folders =  this.folders.value;
@@ -836,8 +801,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
       });
     } else if (element._modelType === 'item') {
       // Element is an item, move it
-      this.itemService.itemUpdateItem(params)
-                      .pipe(enterZone(this.zone))
+      this.itemService.itemUpdateItem(params).pipe(enterZone(this.zone))
                       .subscribe(resp => {
         this.logger.debug("Item renamed successfully:", resp);
         const files = this.files.value;
@@ -861,8 +825,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
     return new Promise((resolve, reject) => {
       const params = { id: element._id };
       if (element._modelType === 'folder') {
-        this.folderService.folderCopyFolder(params)
-                          .pipe(enterZone(this.zone))
+        this.folderService.folderCopyFolder(params).pipe(enterZone(this.zone))
                           .subscribe((resp: FileElement) => {
           this.logger.debug("Folder copied successfully:", resp);
           const folders = this.folders.value;
@@ -871,8 +834,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
           resolve(resp);
         }, reject);
       } else if (element._modelType === 'item') {
-        this.itemService.itemCopyItem(params)
-                        .pipe(enterZone(this.zone))
+        this.itemService.itemCopyItem(params).pipe(enterZone(this.zone))
                         .subscribe((resp:FileElement) => {
           this.logger.debug("Item copied successfully:", resp);
           const files = this.files.value;
@@ -893,7 +855,6 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
       window.open(url, "_blank");
     }
   }
-
 
   // Expected parameter format:
   //    dataMap: [{"name":"Elevation per SASAP region and Hydrolic Unit (HUC8) boundary for Alaskan watersheds","dataId":"resource_map_doi:10.5063/F1Z60M87","repository":"DataONE","doi":"10.5063/F1Z60M87","size":10293583}]

@@ -8,7 +8,7 @@ import { EventSourcePolyfill as EventSource } from 'ng-event-source';
 import { bypassSanitizationTrustResourceUrl } from '@angular/core/src/sanitization/bypass';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 class NotificationStreamService implements OnDestroy {
   static readonly Path = '/notification/stream';
@@ -95,11 +95,13 @@ class NotificationStreamService implements OnDestroy {
     // Disconnect, if necessary
     this.disconnect();
 
-    // Connect to SSE using the given parameters
-    this.source = new EventSource(this.url, { headers: { 'Girder-Token': this.token }, heartbeatTimeout: 90000 });
+    if (this.token) {
+      // Connect to SSE using the given parameters
+      this.source = new EventSource(this.url, { headers: { 'Girder-Token': this.token }, heartbeatTimeout: 90000 });
 
-    this.source.onerror = this.onError.bind(this);
-    this.source.onopen = this.onOpen.bind(this);
+      this.source.onerror = this.onError.bind(this);
+      this.source.onopen = this.onOpen.bind(this);
+    }
   }
 
   reconnect(silent: boolean = true) {
