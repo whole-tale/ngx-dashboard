@@ -1,6 +1,6 @@
 # ngx-dashboard
 
-A rewrite of the WholeTale Dashboard in Angular 7+
+A rewrite of the WholeTale Dashboard in Angular 12+
 
 This project was seeded from [ng-seed/universal](https://github.com/ng-seed/univseral)
 
@@ -11,7 +11,7 @@ For a short demonstration, see http://recordit.co/68UCeE5PU3
 - [Prerequisites](#prerequisites)
 - [Getting started](#getting-started)
   - [Installation](#installation)
-  - [Setting up upstream repository](#setting-up-upstream-repository)
+  - [Pulling Updates](#pulling-updates)
   - [Running with Docker](#with-docker)
   - [Development and builds](#development-and-builds)
   - [CLI Scaffolding](#cli-scaffolding)
@@ -20,9 +20,9 @@ For a short demonstration, see http://recordit.co/68UCeE5PU3
 
 ## <a name="prerequisites"></a> Prerequisites
 
-Packages in this seed project depend on `@angular v7.x.x`. Older versions contain outdated dependencies, might produce errors.
+Packages in this project depend on `@angular v12.x.x`. Older versions contain outdated dependencies, might produce errors.
 
-Also, please ensure that you are using **`Typescript v3.1.x`** or higher.
+Also, please ensure that you are using **`Typescript v4.3.x`** or higher.
 
 Optionally, Docker can be used to build and serve the application.
 
@@ -30,7 +30,7 @@ Optionally, Docker can be used to build and serve the application.
 
 ### <a name="installation"> Installation
 
-You can run **`ngx-dashboard`** by simply cloning the repo:
+To run **`ngx-dashboard`**, start by cloning the repo:
 
 ```
 # clone the repo
@@ -38,7 +38,7 @@ $ git clone https://github.com/whole-tale/ngx-dashboard.git
 $ cd ngx-dashboard/
 ```
 
-### <a name="pulling-updates" Pulling updates
+### <a name="pulling-updates"> Pulling updates
 
 Now, you can create a new directory (_ex: `src/app/shared`_) to build your codebase out, while benefiting from the
 client framework located at the `src/app/framework` directory.
@@ -62,13 +62,13 @@ Docker can be used to build and serve the Angular source.
 To build a Docker image capable of performing Angular builds, use the following command:
 
 ```bash
-docker build -t bodom0015/ng -f Dockerfile.build .
+docker build -t wholetale/ng -f Dockerfile.build .
 ```
 
 You can then run a development server using this Docker image:
 
 ```bash
-docker run --name=ng-watch -itd -v $(pwd):/srv/app -w /srv/app bodom0015/ng
+docker run --name=ng-watch -itd -v $(pwd):/srv/app -w /srv/app wholetale/ng
 ```
 
 You can check the logs of the development server by running:
@@ -105,7 +105,7 @@ docker run -it bodom0015/ng-dashboard:wt
 
 Optional: you can mount in `-v /path/to/src/ngx-dashboard/dist:/usr/share/nginx/html/`. Note that in this case you will need to provide your own build container mounting the same `/path/to/src/ngx-dashboard` that will produce the appropriate build output in `dist/`.
 
-### <a name="development-builds"> Development and builds (without Docker)
+### <a name="development-and-builds"> Development and builds (without Docker)
 
 Below are the scripts to dev, build, and test this seed project:
 
