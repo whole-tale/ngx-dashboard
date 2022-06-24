@@ -214,18 +214,6 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
     chunkResp.catch((err) => {
       this.logger.error("Failed to upload chunk:", err);
     });
-    // Update file size as upload progresses
-    // TODO: File upload progress updates
-    // const files = this.files.value;
-    // const existing = files.find(file => file._id === uploadId);
-    // if (existing) {
-    //   const index = files.indexOf(existing);
-    //   files[index] = chunkResp;
-    // } else {
-    //   files.push(chunkResp);
-    // }
-    // this.files.next(files);
-    // this.ref.detectChanges();
 
     return chunkResp;
   }
