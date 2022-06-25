@@ -3,9 +3,17 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Image, Tale } from '@api/models';
 import { ImageService } from '@api/services';
 import { LogService } from '@shared/core';
+import { RepositoryService } from '@api/services';
 
 // import * as $ from 'jquery';
 declare var $: any;
+
+enum Mode {
+  Default = "default",
+  Git = "git",
+  DOI = "doi",
+  AinWT = "ainwt",
+};
 
 @Component({
   templateUrl: './create-tale-modal.component.html',
@@ -15,19 +23,27 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
   newTale: Tale;
   datasetCitation: any;
   asTale = false;
+
+  mode: Mode = Mode.Default;
+
   gitUrl = '';
+  doiUrl = '';
   baseUrl = '';
 
-  showGit = false;
+  loading = false;
+  found = false;
+  isTale = false;
+  error = false;
 
   environments: Array<Image> = [];
 
   constructor(
       private zone: NgZone,
       public dialogRef: MatDialogRef<CreateTaleModalComponent>,
-      @Inject(MAT_DIALOG_DATA) public data: { params: any, showGit: boolean },
+      @Inject(MAT_DIALOG_DATA) public data: { params: any, mode: string },
       private imageService: ImageService,
       private logger: LogService,
+      private repositoryService: RepositoryService,
     ) {
     this.newTale = {
       title: (data && data.params) ? decodeURIComponent(data.params.name) : '',
@@ -41,7 +57,9 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
       copyOfTale: undefined,
       description: '### Provide a description for your Tale'
     };
-    this.showGit = data.showGit;
+    console.log(data.mode);
+    this.mode = <Mode>data.mode;
+    console.log(this.mode);
     this.baseUrl = (data && data.params && data.params.api) ? decodeURIComponent(data.params.api) : '';
   }
 
@@ -53,12 +71,44 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
     $('.ui.checkbox').checkbox();
   }
 
+  lookupDOI(evt: any): void {
+    console.log(evt);
+    var doiUrl = evt.target.value;
+    const dataId = [ doiUrl ];
+    const params = { dataId: JSON.stringify(dataId), baseUrl: this.dataONERepositoryBaseUrl() }
+    this.isTale = false;
+    this.loading = true;
+    this.error = false;
+    this.repositoryService.repositoryLookupData(params).subscribe((values: Array<any>) => {
+      if (values.length > 0) {
+        setTimeout(() => {
+          this.isTale = values[0].tale;
+          this.newTale.title = values[0].name;
+          this.loading = false;
+          this.found = true;
+          this.datasetCitation = { doi: values[0].doi };
+        }, 300);
+      }
+    }, err => {
+      this.logger.error(`Failed to find DOI/URL=${doiUrl}:`, err);
+      this.loading = false;
+      this.error = true;
+    });
+  }
+
+
   result(): { tale: Tale, asTale: boolean, url?: string, baseUrl?: string } {
-    if (this.data.showGit) {
+    if (this.data.mode === Mode.Git) {
       return { tale: this.newTale, asTale: this.asTale, baseUrl: this.baseUrl, url: this.gitUrl };
+    } else if (this.data.mode == Mode.DOI) {
+      return { tale: this.newTale, asTale: this.asTale, baseUrl: this.baseUrl, url: this.doiUrl };
     } else {
       return { tale: this.newTale, asTale: this.asTale, baseUrl: this.baseUrl };
     }
+  }
+
+  dataONERepositoryBaseUrl(): string {
+    return window.env.dataONEBaseUrl;
   }
 
   parseParameters(): void {
@@ -68,9 +118,31 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
     });
 
     if (this.data && this.data.params && this.data.params.uri) {
+      this.mode = Mode.AinWT;
       this.zone.run(() => {
         // TODO: Fetch / display data citation from datacite?
         this.datasetCitation = { doi: decodeURIComponent(this.data.params.uri) };
+      });
+
+      // Lookup dataset information
+      const dataId = [this.data.params.uri];
+      const params = { dataId: JSON.stringify(dataId), baseUrl: this.dataONERepositoryBaseUrl() }
+      this.isTale = false;
+      this.loading = true;
+      this.error = false;
+      this.repositoryService.repositoryLookupData(params).subscribe((values: Array<any>) => {
+        if (values.length > 0) {
+          setTimeout(() => {
+	    this.isTale = values[0].tale;
+            this.newTale.title = values[0].name;
+            this.loading = false;
+            this.found = true;
+          }, 300);
+        }
+      }, err => {
+        this.logger.error(`Failed to find DOI/URL=${this.data.params.uri}:`, err);
+        this.loading = false;
+        this.error = true;
       });
 
       // Set read/write radio buttons using asTale value
@@ -105,7 +177,7 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
   }
 
   enableReadOnly(evt: any): void {
-    this.logger.debug("Enabling read only on this Tale...");
+    console.log("Enabling read only on this Tale...");
     const target = evt.target;
     if (target.checked) {
       this.asTale = false;
@@ -113,7 +185,7 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
   }
 
   enableReadWrite(evt: any): void {
-    this.logger.debug("Enabling read/write on this Tale...");
+    console.log("Enabling read/write on this Tale...");
     const target = evt.target;
     if (target.checked) {
       this.asTale = true;

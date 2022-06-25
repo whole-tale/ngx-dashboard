@@ -1,41 +1,58 @@
-<h1 mat-dialog-title>Create New Tale</h1>
+<h1 mat-dialog-title *ngIf="!isTale && (mode === 'doi')">Create New Tale from DOI</h1>
+<h1 mat-dialog-title *ngIf="!isTale && (mode === 'git')">Create New Tale from Git repository</h1>
+<h1 mat-dialog-title *ngIf="isTale">Import Tale</h1>
 
 <mat-dialog-content>
   <form class="ui form segment">
-    <div class="field" *ngIf="showGit">
-      <label>Git repository URL</label>
-      <input matInput type="text" name="repo" placeholder="Enter a repository URL" [(ngModel)]="gitUrl" required />
+    <div class="ui active inverted dimmer" *ngIf="loading">
+      <div class="ui text loader"></div>
     </div>
 
-    <div class="field">
-      <label>Title</label>
-      <input matInput type="text" name="title" placeholder="Enter a Tale Name" [(ngModel)]="newTale.title" required />
+    <div class="ui message" *ngIf="error">
+      <div class="ui text">Failed to find DOI/URL</div>
     </div>
 
-    <div class="field">
-      <label>Compute Environment</label>
-      <select class="ui dropdown" name="imageId" [(ngModel)]="newTale.imageId" required>
-        <option value="">Choose a Compute Environment...</option>
-        <option class="item" [ngValue]="env._id" *ngFor="let env of environments; index as i; trackBy: trackById">
-          <img class="ui avatar image" [src]="env.icon" />
-          {{ env.name }}
-        </option>
-      </select>
-    </div>
+    <div *ngIf="!(mode === 'ainwt') || ( (mode === 'ainwt') && found)">
+      <div class="field" *ngIf="mode === 'git'">
+        <label>Git repository URL</label>
+        <input matInput type="text" name="repo" placeholder="Enter a repository URL" [(ngModel)]="gitUrl" required />
+      </div>
 
-    <div class="field" *ngIf="!datasetCitation">
-        <label>Input Data</label>
-        <p>Add data after Tale creation using your chosen compute environment, or the Files tab of your running Tale.</p>
-        <!-- <input type="hidden" name="dataSet" [(ngModel)]="newTale.dataSet" /> -->
-    </div>
-    <div class="field" *ngIf="datasetCitation">
-        <label>Input Data</label>
-        <small>Data Source: {{ datasetCitation.doi }}</small>
-        <!-- <input type="hidden" name="dataSet" [(ngModel)]="newTale.dataSet" /> -->
-    </div>
+      <div class="field" *ngIf="mode === 'doi'">
+        <label>DOI or dataset URL</label>
+        <input matInput type="text" name="repo" placeholder="Enter a DOI or dataset URL" [(ngModel)]="doiUrl" required (change)="lookupDOI($event)"/>
+      </div>
 
-    <div class="field" *ngIf="datasetCitation">
-        <div class="ui radio checkbox">
+      <div class="field">
+        <label>Title</label>
+        <input matInput type="text" name="title" placeholder="Enter a Tale Name" [(ngModel)]="newTale.title" required />
+      </div>
+  
+      <div class="field" *ngIf="!isTale">
+        <label>Compute Environment</label>
+        <select class="ui dropdown" name="imageId" [(ngModel)]="newTale.imageId" required>
+          <option value="">Choose a Compute Environment...</option>
+          <option class="item" [ngValue]="env._id" *ngFor="let env of environments; index as i; trackBy: trackById">
+            <img class="ui avatar image" [src]="env.icon" />
+            {{ env.name }}
+          </option>
+        </select>
+      </div>
+  
+      <div *ngIf="!isTale">
+        <div class="field" *ngIf="!datasetCitation && !(mode === 'doi')">
+          <label>Input Data</label>
+          <p>Add data after Tale creation using your chosen compute environment, or the Files tab of your running Tale.</p>
+          <!-- <input type="hidden" name="dataSet" [(ngModel)]="newTale.dataSet" /> -->
+        </div>
+        <div class="field" *ngIf="datasetCitation">
+          <label>Input Data</label>
+          <small>Data Source: {{ datasetCitation.doi }}</small>
+          <!-- <input type="hidden" name="dataSet" [(ngModel)]="newTale.dataSet" /> -->
+        </div>
+
+        <div class="field" *ngIf="datasetCitation">
+          <div class="ui radio checkbox">
             <input id="readOnlyRadio" type="radio" name="access" checked="" (change)="enableReadOnly($event)" tabindex="0" class="hidden">
             <label>
                 <b>READ ONLY</b>
@@ -43,13 +60,15 @@
                 <a [href]="docUrl"
                    style="margin-left: .75rem;font-style:italic" target="_blank">Why would I do this?</a>
             </label>
+          </div>
         </div>
-    </div>
-    <div class="field"  *ngIf="datasetCitation">
-        <div class="ui radio checkbox">
+        <div class="field" *ngIf="datasetCitation">
+          <div class="ui radio checkbox">
             <input id="readWriteRadio" type="radio" name="access" (change)="enableReadWrite($event)" tabindex="0" class="hidden">
             <label><b>READ/WRITE</b> — Enable data editing</label>
+          </div>
         </div>
+      </div>
     </div>
 
     <!--<button class="ui button" type="submit">Submit</button>-->
@@ -58,7 +77,7 @@
 
 <mat-dialog-actions>
   <button class="ui black deny button" mat-dialog-close>Cancel</button>
-  <button class="ui positive right labeled icon button" [disabled]="!newTale.title || !newTale.imageId || (data.showGit && !gitUrl)" [mat-dialog-close]="result()">
+  <button class="ui positive right labeled icon button" [disabled]="!newTale.title || (!isTale && !newTale.imageId) || ((data.mode === 'git') && !gitUrl)" [mat-dialog-close]="result()">
     Create New Tale
     <i class="play icon"></i>
   </button>
