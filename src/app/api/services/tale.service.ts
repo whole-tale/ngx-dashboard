@@ -408,12 +408,13 @@ class TaleService extends __BaseService {
   /**
    * @param id The ID of the document.
    */
-  taleCopyTaleResponse(id: string): __Observable<__StrictHttpResponse<null>> {
+  taleCopyTaleResponse(id: string, versionId?: string): __Observable<__StrictHttpResponse<null>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
 
-    let req = new HttpRequest<any>('POST', this.rootUrl + `/tale/${id}/copy`, __body, {
+    const url = this.rootUrl + versionId ? `/tale/${id}/copy?versionId=${versionId}` : `/tale/${id}/copy`;
+    let req = new HttpRequest<any>('POST', url, __body, {
       headers: __headers,
       params: __params,
       responseType: 'json',
@@ -429,8 +430,8 @@ class TaleService extends __BaseService {
   /**
    * @param id The ID of the document.
    */
-  taleCopyTale(id: string): __Observable<null> {
-    return this.taleCopyTaleResponse(id).pipe(__map((_r) => _r.body as null));
+  taleCopyTale(id: string, versionId?: string): __Observable<null> {
+    return this.taleCopyTaleResponse(id, versionId).pipe(__map((_r) => _r.body as null));
   }
 
   /**

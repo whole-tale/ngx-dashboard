@@ -337,8 +337,9 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
     saveTaleVersion(): void {
       this.logger.debug('Saving Tale version');
-      this.versionService.versionCreateVersion({ taleId: this.taleId, force: true }).subscribe(version => {
+      this.versionService.versionCreateVersion({ taleId: this.taleId, force: true }).subscribe((version: Version) => {
         this.logger.debug("Version saved successfully:", version);
+        this.taleService.taleRestoreVersion(this.taleId, version._id);
       });
     }
 
@@ -378,7 +379,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     }
 
     copyTale(): void {
-      this.taleService.taleCopyTale(this.tale._id).subscribe(res => {
+      this.taleService.taleCopyTale(this.tale._id, this.tale.restoredFrom).subscribe(res => {
         this.logger.debug("Tale copying:", res);
       });
     }
