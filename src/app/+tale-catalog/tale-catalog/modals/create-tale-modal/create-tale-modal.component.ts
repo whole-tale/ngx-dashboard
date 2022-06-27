@@ -19,7 +19,7 @@ enum Mode {
   templateUrl: './create-tale-modal.component.html',
   styleUrls: ['./create-tale-modal.component.scss']
 })
-export class CreateTaleModalComponent implements OnInit,AfterViewInit {
+export class CreateTaleModalComponent implements OnInit, AfterViewInit {
   newTale: Tale;
   datasetCitation: any;
   asTale = false;
@@ -58,7 +58,7 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
       description: '### Provide a description for your Tale'
     };
     console.log(data.mode);
-    this.mode = <Mode>data.mode;
+    this.mode = data.mode as Mode;
     console.log(this.mode);
     this.baseUrl = (data && data.params && data.params.api) ? decodeURIComponent(data.params.api) : '';
   }
@@ -73,7 +73,7 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
 
   lookupDOI(evt: any): void {
     console.log(evt);
-    var doiUrl = evt.target.value;
+    const doiUrl = evt.target.value;
     const dataId = [ doiUrl ];
     const params = { dataId: JSON.stringify(dataId), baseUrl: this.dataONERepositoryBaseUrl() }
     this.isTale = false;
@@ -100,7 +100,7 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
   result(): { tale: Tale, asTale: boolean, url?: string, baseUrl?: string } {
     if (this.data.mode === Mode.Git) {
       return { tale: this.newTale, asTale: this.asTale, baseUrl: this.baseUrl, url: this.gitUrl };
-    } else if (this.data.mode == Mode.DOI) {
+    } else if (this.data.mode === Mode.DOI) {
       return { tale: this.newTale, asTale: this.asTale, baseUrl: this.baseUrl, url: this.doiUrl };
     } else {
       return { tale: this.newTale, asTale: this.asTale, baseUrl: this.baseUrl };
@@ -133,7 +133,7 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
       this.repositoryService.repositoryLookupData(params).subscribe((values: Array<any>) => {
         if (values.length > 0) {
           setTimeout(() => {
-	    this.isTale = values[0].tale;
+            this.isTale = values[0].tale;
             this.newTale.title = values[0].name;
             this.loading = false;
             this.found = true;
