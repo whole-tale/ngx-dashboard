@@ -1,6 +1,4 @@
-<h1 mat-dialog-title *ngIf="!isTale && (mode === 'doi')">Create New Tale from DOI</h1>
-<h1 mat-dialog-title *ngIf="!isTale && (mode === 'git')">Create New Tale from Git repository</h1>
-<h1 mat-dialog-title *ngIf="isTale">Import Tale</h1>
+<h1 mat-dialog-title>{{title}}</h1>
 
 <mat-dialog-content>
   <form class="ui form segment">
@@ -12,7 +10,7 @@
       <div class="ui text">Failed to find DOI/URL</div>
     </div>
 
-    <div [hidden]="mode !== 'ainwt' || !found">
+    <div *ngIf="!(mode === 'ainwt') || ( (mode === 'ainwt') && found)">
       <div class="field" *ngIf="mode === 'git'">
         <label>Git repository URL</label>
         <input matInput type="text" name="repo" placeholder="Enter a repository URL" [(ngModel)]="gitUrl" required />
@@ -53,7 +51,7 @@
 
         <div class="field" [hidden]="!datasetCitation">
           <div class="ui radio checkbox">
-            <input id="readOnlyRadio" type="radio" name="access" checked="" (change)="enableReadOnly($event)" tabindex="0" class="hidden">
+            <input type="radio" name="asTale" checked="" [(ngModel)]="asTale" [value]="false" />
             <label>
                 <b>READ ONLY</b>
                 <i style="margin-left:5px;">recommended</i> — Treat as source dataset for analysis
@@ -64,7 +62,7 @@
         </div>
         <div class="field" [hidden]="!datasetCitation">
           <div class="ui radio checkbox">
-            <input id="readWriteRadio" type="radio" name="access" (change)="enableReadWrite($event)" tabindex="0" class="hidden">
+            <input type="radio" name="asTale" checked="" [(ngModel)]="asTale" [value]="true" />
             <label><b>READ/WRITE</b> — Enable data editing</label>
           </div>
         </div>

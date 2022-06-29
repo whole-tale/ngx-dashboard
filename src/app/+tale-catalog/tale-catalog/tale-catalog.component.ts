@@ -86,11 +86,13 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
 
     openCreateTaleModal(mode: string): void {
       const config: MatDialogConfig = {
+        width: '600px',
         data: { mode }
       };
       const dialogRef = this.dialog.open(CreateTaleModalComponent, config);
       dialogRef.afterClosed().subscribe((result: {tale: Tale, asTale: boolean, url?: string, baseUrl: string}) => {
         const tale = result.tale;
+        const asTale = result.asTale;
         const gitOrDoiUrl = result.url;
         const baseUrl = result.baseUrl;
 
@@ -98,43 +100,25 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
 
         // TODO: Validation
 
-        if (mode === "git") {
+        if (mode === "git" || mode === "doi") {
+   
           // Import Tale from Git repo
           const params = {
             url: gitOrDoiUrl ? gitOrDoiUrl: '', // Pull from querystring/form
             imageId: tale.imageId, // Pull from user input
-            asTale: false, // Pull from user input
-            git: true,
+            asTale: asTale, 
+            git: mode === "git",
             spawn: false, // if true, immediately launch a Tale instance
             taleKwargs: tale.title ? { title: tale.title } : {},
             lookupKwargs: baseUrl ? { base_url: baseUrl } : {},
           };
 
           this.taleService.taleCreateTaleFromUrl(params).subscribe((response: Tale) => {
-            this.logger.debug("Importing Tale from Git:", response);
+            this.logger.debug("Importing Tale:", response);
             this.taleCreated.emit(response);
             this.router.navigate(['run', response._id]);
           }, err => {
-            this.logger.error("Failed to create Tale from Git repo:", err);
-          });
-	}  else if (mode === "doi") {
-          // Import Tale from DOI
-          const params = {
-            url: gitOrDoiUrl ? gitOrDoiUrl: '', // Pull from querystring/form
-            imageId: tale.imageId, // Pull from user input
-            asTale: false, // Pull from user input
-            git: false,
-            spawn: false, // if true, immediately launch a Tale instance
-            taleKwargs: tale.title ? { title: tale.title } : {},
-            lookupKwargs: baseUrl ? { base_url: baseUrl } : {},
-          };
-
-          this.taleService.taleCreateTaleFromUrl(params).subscribe((response: Tale) => {
-            this.logger.debug("Importing Tale from DOI:", response);
-            this.taleCreated.emit(response);
-            this.router.navigate(['run', response._id]);
-          }, err => {
-            this.logger.error("Failed to create Tale from DOI:", err);
+            this.logger.error("Failed to create Tale:", err);
           });
         } else {
           // Create classic Tale

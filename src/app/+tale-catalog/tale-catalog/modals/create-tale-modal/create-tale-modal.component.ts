@@ -57,10 +57,9 @@ export class CreateTaleModalComponent implements OnInit, AfterViewInit {
       copyOfTale: undefined,
       description: '### Provide a description for your Tale'
     };
-    console.log(data.mode);
     this.mode = data.mode as Mode;
-    console.log(this.mode);
     this.baseUrl = (data && data.params && data.params.api) ? decodeURIComponent(data.params.api) : '';
+
   }
 
   ngOnInit(): void {
@@ -72,7 +71,6 @@ export class CreateTaleModalComponent implements OnInit, AfterViewInit {
   }
 
   lookupDOI(evt: any): void {
-    console.log(evt);
     const doiUrl = evt.target.value;
     const dataId = [ doiUrl ];
     const params = { dataId: JSON.stringify(dataId), baseUrl: this.dataONERepositoryBaseUrl() }
@@ -124,6 +122,8 @@ export class CreateTaleModalComponent implements OnInit, AfterViewInit {
         this.datasetCitation = { doi: decodeURIComponent(this.data.params.uri) };
       });
 
+      this.asTale = this.data.params.asTale == "true";
+
       // Lookup dataset information
       const dataId = [this.data.params.uri];
       const params = { dataId: JSON.stringify(dataId), baseUrl: this.dataONERepositoryBaseUrl() }
@@ -145,13 +145,8 @@ export class CreateTaleModalComponent implements OnInit, AfterViewInit {
         this.error = true;
       });
 
-      // Set read/write radio buttons using asTale value
-      if (this.data.params.asTale) {
-        setTimeout(() => {
-          $('#readWriteRadio').click();
-        }, 350);
-      }
     }
+
 
     // Fetch all Tale environment Images
     const listImagesParams = { limit: 0 };
@@ -176,27 +171,28 @@ export class CreateTaleModalComponent implements OnInit, AfterViewInit {
     });
   }
 
-  enableReadOnly(evt: any): void {
-    console.log("Enabling read only on this Tale...");
-    const target = evt.target;
-    if (target.checked) {
-      this.asTale = false;
-    }
-  }
-
-  enableReadWrite(evt: any): void {
-    console.log("Enabling read/write on this Tale...");
-    const target = evt.target;
-    if (target.checked) {
-      this.asTale = true;
-    }
-  }
-
   trackById(index: number, env: Image): string {
     return env._id;
   }
 
   get docUrl(): string {
     return `${window.env.rtdBaseUrl}/users_guide/compose.html`;
+  }
+
+  get title(): string {
+    let title = 'Create New Tale';
+    if (this.isTale) {
+      title = 'Import Tale';
+    } else {
+      switch(this.mode) {
+        case Mode.Git:
+          title = title + ' from Git';
+          break;
+        case Mode.DOI:
+          title = title + ' from DOI';
+          break;
+      }
+    }
+    return title;
   }
 }
