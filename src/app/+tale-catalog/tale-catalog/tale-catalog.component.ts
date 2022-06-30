@@ -3,6 +3,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Tale } from '@api/models/tale';
 import { User } from '@api/models/user';
+import { OauthService } from '@api/services/oauth.service';
 import { TaleService } from '@api/services/tale.service';
 import { UserService } from '@api/services/user.service';
 import { TokenService } from '@api/token.service';
@@ -34,6 +35,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
       private userService: UserService,
       private route: ActivatedRoute,
       private ref: ChangeDetectorRef,
+      private oauth: OauthService,
       public tokenService: TokenService,
       public dialog: MatDialog
     ) {
@@ -63,44 +65,63 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
         this.logger.debug("Detecting parameters");
         const queryParams = this.route.snapshot.queryParams;
         if (queryParams.name || queryParams.uri || queryParams.environment) {
-          // Clear querystring parameters and open the Create Tale modal
-          this.router.navigateByUrl('/', { replaceUrl: true });
+          if (!this.tokenService.user.value) {
+            // TODO: Warn user/countdown before redirecting to login?
 
-          this.zone.run(() => {
-            const dialogRef = this.dialog.open(CreateTaleModalComponent, {
-              width: '600px',
-              data: { params: queryParams }
-            });
-            dialogRef.afterClosed().subscribe((result: {tale: Tale, asTale: boolean, url: string, baseUrl: string}) => {
-              // Short-circuit for 'Cancel' case
-              if (!result || !result.tale) { return; }
+            // Set return route to current route
+            const route = window.location.href.split(window.origin)[1];
+            this.tokenService.setReturnRoute(route);
 
-              const tale = result.tale;
-              const asTale = result.asTale;
-              const baseUrl = result.baseUrl;
+            // FIXME: is it ok to use window.location.origin here?
+            const params = { redirect: `${window.location.origin}/public?token={girderToken}&rd=${route}`, list: false };
+            this.oauth.oauthListProviders(params).subscribe((providers: { Globus: string, Github: string }) => {
+                // TODO: How to support multiple providers here?
+                window.location.href = providers.Globus;
+              },
+              (err) => {
+                this.logger.error('Failed to GET /oauth/providers:', err);
+              });
+          } else {
 
-              // Import Tale from Dataset
-              const params = {
-                url: queryParams.uri ? decodeURIComponent(queryParams.uri) : (result.url ? result.url : ''), // Pull from querystring/form
-                imageId: tale.imageId, // Pull from user input
-                asTale: asTale ? asTale : false, // Pull from user input
-                git: !!result.url,
-                spawn: false, // if true, immediately launch a Tale instance
-                taleKwargs: tale.title ? { title: tale.title } : {},
-                lookupKwargs: baseUrl ? { base_url: baseUrl } : {},
-              };
-              this.taleService.taleCreateTaleFromUrl(params).subscribe((response: Tale) => {
-                this.logger.debug("Successfully submitted 'Analyze in WT' Job:", response);
-                this.taleCreated.emit(response);
-                this.router.navigate(['run', response._id]);
-              }, err => {
-                this.logger.error("Failed to create Tale from Dataset:", err);
+            // Clear querystring parameters and open the Create Tale modal
+            this.router.navigateByUrl('/', { replaceUrl: true });
+
+            this.zone.run(() => {
+              const dialogRef = this.dialog.open(CreateTaleModalComponent, {
+                width: '600px',
+                data: { params: queryParams }
+              });
+              dialogRef.afterClosed().subscribe((result: {tale: Tale, asTale: boolean, url: string, baseUrl: string}) => {
+                // Short-circuit for 'Cancel' case
+                if (!result || !result.tale) { return; }
+
+                const tale = result.tale;
+                const asTale = result.asTale;
+                const baseUrl = result.baseUrl;
+
+                // Import Tale from Dataset
+                const params = {
+                  url: queryParams.uri ? decodeURIComponent(queryParams.uri) : (result.url ? result.url : ''), // Pull from querystring/form
+                  imageId: tale.imageId, // Pull from user input
+                  asTale: asTale ? asTale : false, // Pull from user input
+                  git: !!result.url,
+                  spawn: false, // if true, immediately launch a Tale instance
+                  taleKwargs: tale.title ? { title: tale.title } : {},
+                  lookupKwargs: baseUrl ? { base_url: baseUrl } : {},
+                };
+                this.taleService.taleCreateTaleFromUrl(params).subscribe((response: Tale) => {
+                  this.logger.debug("Successfully submitted 'Analyze in WT' Job:", response);
+                  this.taleCreated.emit(response);
+                  this.router.navigate(['run', response._id]);
+                }, err => {
+                  this.logger.error("Failed to create Tale from Dataset:", err);
+                });
               });
             });
-          });
+          }
 
         }
-      }, 1000);
+      }, 500);
     }
 
     openCreateTaleModal(showGit = false): void {

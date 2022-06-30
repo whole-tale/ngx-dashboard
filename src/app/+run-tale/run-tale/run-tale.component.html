@@ -35,8 +35,8 @@
                                     </div>
                                 </div>
                                 <div class="six wide column" style="text-align: right;">
-                                    <app-tale-run-button class="tale-run-button" *ngIf="tokenService.user.value" [tale]="tale" [instance]="instance" isPrimary="true" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></app-tale-run-button>
-                                    <span title="You must log in to run this Tale." *ngIf="!tokenService.user.value">
+                                    <app-tale-run-button class="tale-run-button" *ngIf="tokenService?.user?.value" [tale]="tale" [instance]="instance" isPrimary="true" (taleInstanceStateChanged)="taleInstanceStateChanged($event)"></app-tale-run-button>
+                                    <span title="You must log in to run this Tale." *ngIf="!tokenService?.user?.value">
                                         <button class="ui disabled primary button">
                                             <i class="play icon"></i>
                                             Run Tale
