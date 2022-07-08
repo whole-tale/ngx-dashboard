@@ -89,8 +89,8 @@ export class CreateTaleModalComponent implements OnInit, AfterViewInit {
       }
     }, err => {
       this.logger.error(`Failed to find DOI/URL=${doiUrl}:`, err);
-      this.loading = false;
       this.error = true;
+      this.reset();
     });
   }
 
@@ -141,8 +141,8 @@ export class CreateTaleModalComponent implements OnInit, AfterViewInit {
         }
       }, err => {
         this.logger.error(`Failed to find DOI/URL=${this.data.params.uri}:`, err);
-        this.loading = false;
         this.error = true;
+        this.reset();
       });
 
     }
@@ -173,6 +173,15 @@ export class CreateTaleModalComponent implements OnInit, AfterViewInit {
 
   trackById(index: number, env: Image): string {
     return env._id;
+  }
+
+  reset(): void {
+    this.newTale.title = '';
+    this.newTale.imageId = '';
+    this.loading = false;
+    this.datasetCitation = {};
+    this.isTale = false;
+    this.asTale = false;
   }
 
   get docUrl(): string {
