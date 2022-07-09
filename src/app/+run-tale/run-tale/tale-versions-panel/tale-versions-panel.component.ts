@@ -63,7 +63,7 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
               private zone: NgZone,
               private logger: LogService,
               private taleService: TaleService,
-              private tokenService: TokenService,
+              public tokenService: TokenService,
               private versionService: VersionService,
               private runService: RunService,
               private dialog: MatDialog,
@@ -91,15 +91,12 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   refresh(): void {
-    if (this.tokenService.user.value) {
-      this.versionService.versionListVersions({ taleId: this.tale._id }).subscribe((versions: Array<Version>) => {
-        this.runService.runListRuns({ taleId: this.tale._id }).subscribe((runs: Array<Run>) => {
-          this.timeline = versions.concat(runs).sort(this.sortByCreatedDate);
-          this.ref.detectChanges();
-        });
+    this.versionService.versionListVersions({ taleId: this.tale._id }).subscribe((versions: Array<Version>) => {
+      this.runService.runListRuns({ taleId: this.tale._id }).subscribe((runs: Array<Run>) => {
+        this.timeline = versions.concat(runs).sort(this.sortByCreatedDate);
+        this.ref.detectChanges();
       });
-    }
-
+    });
   }
 
   /**
