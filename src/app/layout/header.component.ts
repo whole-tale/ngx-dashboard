@@ -83,22 +83,7 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
   }
 
   ngAfterViewInit(): void {
-    this.users.userGetMe().subscribe(
-      (user: any) => {
-        if (user) {
-          this.tokenService.setUser(user);
-          this.logger.debug('Logged in as:', user);
-          this.ref.detectChanges();
-        } else {
-          this.logger.debug('Logged in as Anonymous');
-          this.loginViaQueryStringToken();
-        }
-      },
-      (err) => {
-        this.logger.debug('Logged in as Anonymous');
-        this.loginViaQueryStringToken();
-      }
-    );
+    this.loginViaQueryStringToken();
   }
 
   ngOnDestroy(): void {
@@ -126,10 +111,12 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
 
   loginWith(provider: string): void {
     // Set return route to current route
-    this.tokenService.setReturnRoute(this.currentRoute);
+    // this.tokenService.setReturnRoute(this.currentRoute);
+    const redirect = encodeURIComponent(window.location.href);
+    this.tokenService.setReturnRoute(redirect);
 
     // FIXME: is it ok to use window.location.origin here?
-    const params = { redirect: `${window.location.origin}/?token={girderToken}&rd=${this.currentRoute}`, list: false };
+    const params = { redirect: `${window.location.origin}/?token={girderToken}&rd=${redirect}`, list: false };
     this.oauth.oauthListProviders(params).subscribe(
       (providers: any) => {
         window.location.href = providers[provider];
@@ -141,16 +128,11 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
   }
 
   loginViaQueryStringToken(): void {
-    // Try to scrape token from query string param
-    let token = this.route.snapshot.queryParams.token;
-
+    // Try to scrape token / redirect from query string param
+    const token = this.route.snapshot.queryParams.token;
     if (token) {
       this.tokenService.setToken(token);
-    } else {
-      token = this.tokenService.getToken();
-    }
 
-    if (token) {
       this.users.userGetMe().subscribe(
         (user: User) => {
           if (!user) {
@@ -160,27 +142,24 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
           }
 
           this.tokenService.setUser(user);
-          const url = this.tokenService.getReturnRoute();
 
-          const segments = url.split('?');
+          // Redirect via querystring param, if provided
+          const rd = this.route.snapshot.queryParams.rd;
+          if (rd) {
+            window.location.href = rd;
 
-          // Create our first param (path segments)
-          const pathSegments = segments[0].split('/');
+            return;
+          }
 
-          // Now parse querystring, if we have one
-          const queryParams = {};
-          if (segments.length > 1) {
-            segments[1].split('&').forEach((param: string) => {
-              const kvSegments = param.split('=');
-              const key = kvSegments[0];
-              queryParams[key] = kvSegments.length > 1 ? kvSegments[1] : true;
-            });
+          // Fall back to localStorage, if set
+          const redirect = this.tokenService.getReturnRoute();
+          if (redirect) {
+            window.location.href = redirect;
+
+            return;
           }
 
           this.logger.debug('Logging in as:', user);
-          // this.login();
-          this.router.navigate(pathSegments, { queryParams });
-
           this.zone.runOutsideAngular(() => {
             $('.ui.account.dropdown').dropdown({ action: 'hide' });
           });

@@ -22,13 +22,33 @@ export class AuthGuard implements CanActivateChild, CanActivate, CanLoad {
   constructor(
     private readonly router: Router,
     private readonly tokenService: TokenService,
+    private readonly userService: UserService,
     private readonly oauth: OauthService,
     private readonly logger: LogService
   ) {}
 
+  get token(): string {
+    return this.tokenService.getToken();
+  }
+
+  get user(): User {
+    return this.tokenService.user.value;
+  }
+
   // Returns true if the user is logged in
   checkAuth(): boolean {
-    if (this.tokenService.user.value && this.tokenService.getToken()) {
+    if (this.token && this.user) {
+      // Shortcut for token and user already fetched
+      return true;
+    } else if (this.token) {
+      // Shortcut for token fetched, but user missing
+      this.userService.userGetMe().subscribe((user: User) => {
+        if (!user) {
+          return;
+        }
+        this.tokenService.setUser(user);
+      });
+
       return true;
     }
 
@@ -40,8 +60,10 @@ export class AuthGuard implements CanActivateChild, CanActivate, CanLoad {
     const route = window.location.href.split(window.origin)[1];
     this.tokenService.setReturnRoute(route);
 
+    this.logger.info(`Return route: ${route}`);
+
     // FIXME: is it ok to use window.location.origin here?
-    const params = { redirect: `${window.location.origin}/public?token={girderToken}&rd=${route}`, list: false };
+    const params = { redirect: `${window.location.origin}/?token={girderToken}&rd=${redirect}`, list: false };
     this.oauth.oauthListProviders(params).subscribe(
       (providers: { Globus: string; Github: string }) => {
         // TODO: How to support multiple providers here?
