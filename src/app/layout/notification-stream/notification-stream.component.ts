@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, NgZone } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnChanges, SimpleChanges } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { EventData } from '@api/events/event-data';
 import { GirderEvent } from '@api/events/girder-event';
@@ -17,7 +17,7 @@ declare var $: any;
   templateUrl: './notification-stream.component.html',
   styleUrls: ['./notification-stream.component.scss'],
 })
-export class NotificationStreamComponent {
+export class NotificationStreamComponent implements OnChanges {
   constructor(
     private readonly ref: ChangeDetectorRef,
     private readonly zone: NgZone,
@@ -31,6 +31,10 @@ export class NotificationStreamComponent {
         this.onMessage.call(this, event);
       };
     }
+  }
+
+  get token(): string {
+    return this.notificationStream.token;
   }
 
   get source(): EventSource {
@@ -51,6 +55,12 @@ export class NotificationStreamComponent {
 
   get showNotificationStream(): Boolean {
     return this.notificationStream.showNotificationStream;
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes?.token?.currentValue !== changes?.token?.previousValue) {
+      this.notificationStream.connect();
+    }
   }
 
   ackAll(): void {
