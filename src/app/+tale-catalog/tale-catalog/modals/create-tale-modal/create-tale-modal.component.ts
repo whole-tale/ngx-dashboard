@@ -73,8 +73,9 @@ export class CreateTaleModalComponent implements OnInit,AfterViewInit {
         this.datasetCitation = { doi: decodeURIComponent(this.data.params.uri) };
       });
 
+      const asTale = "true".indexOf(this.data.params.asTale?.toLowerCase()) !== -1;
       // Set read/write radio buttons using asTale value
-      if (this.data.params.asTale) {
+      if (asTale) {
         setTimeout(() => {
           $('#readWriteRadio').click();
         }, 350);
