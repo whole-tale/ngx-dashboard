@@ -56,12 +56,6 @@ export class AuthGuard implements CanActivateChild, CanActivate, CanLoad {
 
     this.logger.info(`Restricted route is prohibited, routing to signin... ${redirect}`);
 
-    // Set return route to current route
-    const route = window.location.href.split(window.origin)[1];
-    this.tokenService.setReturnRoute(route);
-
-    this.logger.info(`Return route: ${route}`);
-
     // FIXME: is it ok to use window.location.origin here?
     const params = { redirect: `${window.location.origin}/?token={girderToken}&rd=${redirect}`, list: false };
     this.oauth.oauthListProviders(params).subscribe(

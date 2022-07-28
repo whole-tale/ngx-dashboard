@@ -8,8 +8,8 @@ import { TaleService } from '@api/services/tale.service';
 import { UserService } from '@api/services/user.service';
 import { TokenService } from '@api/token.service';
 import { BaseComponent, LogService } from '@shared/core';
-import { Subscription } from 'rxjs';
 import { ErrorModalComponent } from '@shared/error-handler/error-modal/error-modal.component';
+import { Subscription } from 'rxjs';
 import { routeAnimation } from '~/app/shared';
 
 import { CreateTaleModalComponent } from './modals/create-tale-modal/create-tale-modal.component';
@@ -66,15 +66,13 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
         this.logger.debug("Detecting parameters");
         const queryParams = this.route.snapshot.queryParams;
         if (queryParams.name || queryParams.uri || queryParams.environment) {
-          if (!this.tokenService.user.value) {
+          if (!this.tokenService.getToken()) {
             // TODO: Warn user/countdown before redirecting to login?
 
-            // Set return route to current route
-            const route = window.location.href.split(window.origin)[1];
-            this.tokenService.setReturnRoute(route);
+            const redirect = encodeURIComponent(window.location.href);
 
             // FIXME: is it ok to use window.location.origin here?
-            const params = { redirect: `${window.location.origin}/public?token={girderToken}&rd=${route}`, list: false };
+            const params = { redirect: `${window.location.origin}/?token={girderToken}&rd=${redirect}`, list: false };
             this.oauth.oauthListProviders(params).subscribe((providers: { Globus: string, Github: string }) => {
                 // TODO: How to support multiple providers here?
                 window.location.href = providers.Globus;
@@ -83,9 +81,8 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
                 this.logger.error('Failed to GET /oauth/providers:', err);
               });
           } else {
-
             // Clear querystring parameters and open the Create Tale modal
-            this.router.navigateByUrl('/', { replaceUrl: true });
+            this.router.navigate(this.route.snapshot.url, { replaceUrl: true });
 
             this.zone.run(() => {
               const dialogRef = this.dialog.open(CreateTaleModalComponent, {

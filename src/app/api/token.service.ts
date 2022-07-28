@@ -37,18 +37,6 @@ export class TokenService {
   clearToken(): void {
     localStorage.removeItem('girderToken');
   }
-  setReturnRoute(returnRoute: string): void {
-    localStorage.setItem('returnRoute', returnRoute);
-  }
-  getReturnRoute(): string {
-    const route = localStorage.getItem('returnRoute');
-
-    if (route) {
-      return route;
-    } else {
-      return 'public';
-    }
-  }
   isAuthenticated(): boolean {
     // get the token
     const token = this.getToken();

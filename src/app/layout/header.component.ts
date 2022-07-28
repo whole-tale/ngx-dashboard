@@ -113,7 +113,6 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
     // Set return route to current route
     // this.tokenService.setReturnRoute(this.currentRoute);
     const redirect = encodeURIComponent(window.location.href);
-    this.tokenService.setReturnRoute(redirect);
 
     // FIXME: is it ok to use window.location.origin here?
     const params = { redirect: `${window.location.origin}/?token={girderToken}&rd=${redirect}`, list: false };
@@ -132,45 +131,39 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
     const token = this.route.snapshot.queryParams.token;
     if (token) {
       this.tokenService.setToken(token);
-
-      this.users.userGetMe().subscribe(
-        (user: User) => {
-          if (!user) {
-            this.logger.debug('Logging in as Anonymous.');
-
-            return;
-          }
-
-          this.tokenService.setUser(user);
-
-          // Redirect via querystring param, if provided
-          const rd = this.route.snapshot.queryParams.rd;
-          if (rd) {
-            window.location.href = rd;
-
-            return;
-          }
-
-          // Fall back to localStorage, if set
-          const redirect = this.tokenService.getReturnRoute();
-          if (redirect) {
-            window.location.href = redirect;
-
-            return;
-          }
-
-          this.logger.debug('Logging in as:', user);
-          this.zone.runOutsideAngular(() => {
-            $('.ui.account.dropdown').dropdown({ action: 'hide' });
-          });
-
-          this.ref.detectChanges();
-        },
-        (err) => {
-          this.logger.error('Error fetching user:', err);
-        }
-      );
     }
+
+    this.users.userGetMe().subscribe(
+      (user: User) => {
+        if (!user) {
+          this.logger.debug('Logging in as Anonymous.');
+
+          return;
+        }
+
+        this.tokenService.setUser(user);
+
+        // Redirect via querystring param, if provided
+        const rd = this.route.snapshot.queryParams.rd;
+        if (rd) {
+          const route = rd.split(window.origin)[1];
+          this.router.navigateByUrl(route);
+
+          return;
+        }
+
+        // If we didn't redirect, we need to enable the navbar dropdown and check for changes
+        this.logger.debug('Logging in as:', user);
+        this.zone.runOutsideAngular(() => {
+          $('.ui.account.dropdown').dropdown({ action: 'hide' });
+        });
+
+        this.ref.detectChanges();
+      },
+      (err) => {
+        this.logger.error('Error fetching user:', err);
+      }
+    );
   }
 
   get events(): Array<EventData> {

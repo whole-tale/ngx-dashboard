@@ -11,11 +11,6 @@ export const routes = [
     component: TaleCatalogComponent,
     children: [
       {
-          path: '',
-          pathMatch: 'full',
-          redirectTo: 'public'
-      },
-      {
         path: 'public',
         component: PublicTalesComponent,
         data: {
@@ -46,6 +41,11 @@ export const routes = [
             description: 'PUBLIC.CATALOG.MINE.META_DESCRIPTION'
           }
         },
+      },
+      {
+        path: '**',
+        pathMatch: 'full',
+        redirectTo: 'public'
       },
     ]
   }

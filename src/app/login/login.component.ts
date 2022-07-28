@@ -53,7 +53,8 @@ export class LoginComponent extends BaseComponent implements OnInit {
     const token = this.route.snapshot.queryParams.token;
     if (token) {
       this.tokenService.setToken(token);
-      this.users.userGetMe().subscribe(
+      // tslint:disable-next-line:comment-type
+      /*this.users.userGetMe().subscribe(
         (user: any) => {
           if (!user) {
             this.logger.error('No user found with token.');
@@ -90,7 +91,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
         (err) => {
           this.logger.error('Error fetching user:', err);
         }
-      );
+      );*/
     } else if (this.isAuthenticated) {
       // FIXME: This causes an endless redirect loop
       // observableFrom(this.router.navigateByUrl(this.auth.defaultUrl))
@@ -106,10 +107,10 @@ export class LoginComponent extends BaseComponent implements OnInit {
   }
 
   loginWithGirder(provider: string): void {
-    const route = this.tokenService.getReturnRoute();
+    const redirect = encodeURIComponent(window.location.href);
 
     // FIXME: is it ok to use window.location.origin here?
-    const params = { redirect: `${window.location.origin}/login?token={girderToken}&rd=${route}`, list: false };
+    const params = { redirect: `${window.location.origin}/?token={girderToken}&rd=${redirect}`, list: false };
     this.oauth.oauthListProviders(params).subscribe(
       (providers: any) => {
         window.location.href = providers[provider];
