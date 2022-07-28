@@ -8,7 +8,8 @@ import { TaleService } from '@api/services/tale.service';
 import { UserService } from '@api/services/user.service';
 import { TokenService } from '@api/token.service';
 import { BaseComponent, LogService } from '@shared/core';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
+import { ErrorModalComponent } from '@shared/error-handler/error-modal/error-modal.component';
 import { routeAnimation } from '~/app/shared';
 
 import { CreateTaleModalComponent } from './modals/create-tale-modal/create-tale-modal.component';
@@ -115,11 +116,11 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
                   this.router.navigate(['run', response._id]);
                 }, err => {
                   this.logger.error("Failed to create Tale from Dataset:", err);
+                  this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
                 });
               });
             });
           }
-
         }
       }, 500);
     }
@@ -156,6 +157,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
             this.router.navigate(['run', response._id]);
           }, err => {
             this.logger.error("Failed to create Tale from Git repo:", err);
+            this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
           });
         } else {
           // Create classic Tale
@@ -165,6 +167,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
             this.router.navigate(['run', response._id]);
           }, err => {
             this.logger.error("Failed to create Tale:", err);
+            this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
           });
         }
       });
