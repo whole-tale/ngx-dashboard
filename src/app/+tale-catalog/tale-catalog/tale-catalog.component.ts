@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Tale } from '@api/models/tale';
 import { TaleService } from '@api/services/tale.service';
 import { BaseComponent, LogService } from '@shared/core';
+import { ErrorModalComponent } from '@shared/error-handler/error-modal/error-modal.component';
 import { routeAnimation } from '~/app/shared';
 
 import { CreateTaleModalComponent } from './modals/create-tale-modal/create-tale-modal.component';
@@ -76,6 +77,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
                 this.router.navigate(['run', response._id]);
               }, err => {
                 this.logger.error("Failed to create Tale from Dataset:", err);
+                this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
               });
             });
           });
@@ -116,6 +118,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
             this.router.navigate(['run', response._id]);
           }, err => {
             this.logger.error("Failed to create Tale from Git repo:", err);
+            this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
           });
         } else {
           // Create classic Tale
@@ -125,6 +128,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
             this.router.navigate(['run', response._id]);
           }, err => {
             this.logger.error("Failed to create Tale:", err);
+            this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
           });
         }
       });
