@@ -5,41 +5,41 @@ import { LoginComponent } from './login/login.component';
 
 export const routes = [
   {
-    path: 'login',
-    component: LoginComponent,
-    data: {
-      meta: {
-        title: 'PUBLIC.LOGIN.PAGE_TITLE'
-      }
-    }
-  },
-  {
     path: '',
     component: MainComponent,
     children: [
       {
-        path: '',
-        loadChildren: () => import('./+tale-catalog/tale-catalog.module').then(m => m.TaleCatalogModule)
-      },
-      {
         path: 'run',
-        loadChildren: () => import('./+run-tale/run-tale.module').then(m => m.RunTaleModule)
+        loadChildren: () => import('./+run-tale/run-tale.module').then((m) => m.RunTaleModule),
       },
       {
         path: 'settings',
-        loadChildren: () => import('./+user-settings/user-settings.module').then(m => m.UserSettingsModule)
-      }
+        loadChildren: () => import('./+user-settings/user-settings.module').then((m) => m.UserSettingsModule),
+        canActivateChild: [CustomAuthGuard],
+      },
+      {
+        path: 'about',
+        component: LoginComponent,
+        data: {
+          meta: {
+            title: 'PUBLIC.LOGIN.PAGE_TITLE',
+          },
+        },
+      },
+      {
+        path: '',
+        loadChildren: () => import('./+tale-catalog/tale-catalog.module').then((m) => m.TaleCatalogModule),
+      },
     ],
-    canActivateChild: [CustomAuthGuard],
     data: {
       i18n: {
-        isRoot: true
-      }
-    }
+        isRoot: true,
+      },
+    },
   },
   {
     path: '**',
     redirectTo: '',
-    pathMatch: 'full'
-  }
+    pathMatch: 'full',
+  },
 ];

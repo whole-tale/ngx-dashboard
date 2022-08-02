@@ -16,7 +16,7 @@
 
   <h3>Tale History</h3>
 
-  <div id="timeline" class="ui middle aligned divided list">
+  <div id="timeline" class="ui middle aligned divided list" style="height:100%;">
     <div class="ui message" style="height:100%;" *ngIf="!timeline.length">
       No previous versions saved for Tale.
     </div>
@@ -25,11 +25,11 @@
         <div class="right floated content" *ngIf="!res.runVersionId">
           <div class="ui floating version dropdown icon" tabindex="0">
               <i class="fas fa-ellipsis-v"></i>
-              <div class="menu left transition hidden" tabindex="-1" style="display: block !important;">
+              <div class="menu left transition hidden silent" tabindex="-1" style="display: block !important;">
                 <div class="item" (click)="viewVersionInfo(res)">View Info</div>
 
-                <div class="item" (click)="restoreVersion(res)" *ngIf="tale._accessLevel >= AccessLevel.Write">Restore</div>
-                <div class="item" (click)="exportVersion(res)" *ngIf="tale._accessLevel >= AccessLevel.Read">Export</div>
+                <div class="item" (click)="restoreVersion(res)" *ngIf="tale._accessLevel >= AccessLevel.Write && tokenService?.user?.value">Restore</div>
+                <div class="item" (click)="exportVersion(res)" *ngIf="tale._accessLevel >= AccessLevel.Read && tokenService?.user?.value">Export</div>
 
                 <!-- TODO: Compare Versions button -->
                 <div class="item" *ngIf="false">Compare</div>

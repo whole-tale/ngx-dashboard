@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, Input, NgZone, OnChanges, OnDestroy, OnIn
 import { MatDialog } from '@angular/material/dialog';
 import { AccessLevel, Instance, Tale, User } from '@api/models';
 import { InstanceService, TaleService, UserService } from '@api/services';
+import { TokenService } from '@api/token.service';
 import { LogService } from '@shared/core/log.service';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { SyncService } from '@tales/sync.service';
@@ -43,8 +44,6 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
 
   searchQuery = '';
 
-  user: User;
-
   instances: Map<string, Instance> = new Map<string, Instance> ();
   creators: Map<string, User> = new Map<string, User> ();
 
@@ -59,15 +58,12 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
     private logger: LogService,
     private taleService: TaleService,
     private instanceService: InstanceService,
+    public tokenService: TokenService,
     private userService: UserService,
     private syncService: SyncService
-  ) { }
+  ) {  }
 
   ngOnInit(): void {
-    this.refresh();
-    this.userService.userGetMe().subscribe(user => {
-      this.user = user;
-    });
     this.refresh();
     this.taleCreatedSubscription = this.syncService.taleCreatedSubject.subscribe((taleId: string) => {
       this.refresh();
@@ -161,17 +157,20 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
   refresh(): void {
     this.ref.detectChanges();
 
-    // Fetch a map of taleId => instance
-    const listInstancesParams = {};
-    this.instanceService.instanceListInstances(listInstancesParams).subscribe((instances: Array<Instance>) => {
-      this.zone.run(() => {
-        // Convert array to map of taleId -> instance
-        // Filter deleting instances
-        this.instances = Object.assign({}, ...instances.filter(i => i.status !== 3).map(i => ({[i.taleId]: i})));
+    if (this.tokenService.user.value) {
+      // Fetch a map of taleId => instance
+      const listInstancesParams = {};
+      this.instanceService.instanceListInstances(listInstancesParams).subscribe((instances: Array<Instance>) => {
+        this.zone.run(() => {
+          // Convert array to map of taleId -> instance
+          // Filter deleting instances
+          this.instances = Object.assign({}, ...instances.filter(i => i.status !== 3).map(i => ({ [i.taleId]: i })));
+        });
+        this.ref.detectChanges();
+      }, (err: any) => {
+        this.logger.error("Failed to GET /instance:", err);
       });
-    }, (err: any) => {
-      this.logger.error("Failed to GET /instance:", err);
-    });
+    }
 
     // Fetch the list of public tales
     const listTalesParams = { limit: 0 };

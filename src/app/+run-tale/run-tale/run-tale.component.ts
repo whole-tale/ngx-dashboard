@@ -64,7 +64,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       private taleService: TaleService,
       private instanceService: InstanceService,
       private userService: UserService,
-      private tokenService: TokenService,
+      public tokenService: TokenService,
       private versionService: VersionService,
       private runService: RunService,
       private syncService: SyncService,
@@ -74,12 +74,12 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         super();
     }
 
-    isVersionsPanelShown() :boolean {
+    isVersionsPanelShown(): boolean {
       return this.showVersionsPanel;
     }
 
-    isTaleWritable() :boolean {
-      return this.tale._accessLevel >= AccessLevel.Write;
+    isTaleWritable(): boolean {
+      return this.tokenService?.user?.value ? this.tale._accessLevel >= AccessLevel.Write : false;
     }
 
     trackByAuthorOrcid(index: number, author: TaleAuthor): string {
@@ -104,7 +104,9 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     }
 
     get dashboardLink(): string {
-      if (!this.tale || this.tale._accessLevel === AccessLevel.Admin) {
+      if (!this.tokenService.user.value) {
+        return '/public';
+      } else if (!this.tale || this.tale._accessLevel === AccessLevel.Admin) {
         return '/mine';
       } else if (this.tale._accessLevel === AccessLevel.None) {
         return '/public';
@@ -156,20 +158,22 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         return;
       }
 
-      const params = { taleId: this.taleId };
-      this.instanceService.instanceListInstances(params).subscribe((instances: Array<Instance>) => {
-        const running = instances.filter(i => i.status !== 3);
-        if (running.length > 0) {
-          this.instance = running[0];
-        }
-      });
+      if (this.tokenService.user.value) {
+        const params = { taleId: this.taleId };
+        this.instanceService.instanceListInstances(params).subscribe((instances: Array<Instance>) => {
+          const running = instances.filter(i => i.status !== 3);
+          if (running.length > 0) {
+            this.instance = running[0];
+          }
+        });
+      }
 
       this.logger.debug(`Fetching tale with _id=${this.taleId}`);
       this.taleService.taleGetTale(this.taleId)
                       .subscribe((tale: Tale) => {
         if (!tale) {
           this.logger.error("Tale is null, something went horribly wrong");
-          this.router.navigate(['mine']);
+          this.router.navigate(['public']);
 
           return;
         }
@@ -193,8 +197,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
           });
         });
       }, err => {
-        this.logger.error("Failed to fetch tale:", err);
-        this.router.navigate(['mine']);
+        this.logger.error("Failed to fetch creator user:", err);
       });
     }
 

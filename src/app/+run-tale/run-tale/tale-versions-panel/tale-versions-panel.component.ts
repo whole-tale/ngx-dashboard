@@ -63,7 +63,7 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
               private zone: NgZone,
               private logger: LogService,
               private taleService: TaleService,
-              private tokenService: TokenService,
+              public tokenService: TokenService,
               private versionService: VersionService,
               private runService: RunService,
               private dialog: MatDialog,
@@ -97,7 +97,6 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
         this.ref.detectChanges();
       });
     });
-
   }
 
   /**

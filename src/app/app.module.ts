@@ -5,6 +5,8 @@ import { ApiModule } from '@api/api.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
+import { SafePipe } from '@shared/common/pipes/safe.pipe';
+import { TruncatePipe } from '@shared/common/pipes/truncate.pipe';
 import { CoreModule } from '@shared/core';
 import { ErrorHandlerModule } from '@shared/error-handler/error-handler.module';
 import { MaterialModule } from '@shared/material';
@@ -53,7 +55,7 @@ declare global {
     MaterialModule,
     FontAwesomeModule,
     NotificationStreamModule,
-    ErrorHandlerModule,
+    ApiModule.forRoot({ rootUrl: window.env.apiUrl }),
   ],
   declarations: [HeaderComponent, FooterComponent, MainComponent, LoginComponent, AppComponent],
   providers: [
