@@ -406,14 +406,16 @@ class TaleService extends __BaseService {
   }
 
   /**
-   * @param id The ID of the document.
+   @param id The ID of the Tale to copy.
+   @param versionId (optional) the ID of the Tale Version to copy. If set, only current version will be copied.
+   @param shallow If true, copy only current state. If versionId is set, copy only current Version.
    */
-  taleCopyTaleResponse(id: string, versionId?: string): __Observable<__StrictHttpResponse<null>> {
+  taleCopyTaleResponse(id: string, versionId?: string, shallow = false): __Observable<__StrictHttpResponse<null>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
 
-    const url = this.rootUrl + versionId ? `/tale/${id}/copy?versionId=${versionId}` : `/tale/${id}/copy`;
+    const url = this.rootUrl + (versionId ? `/tale/${id}/copy?versionId=${versionId}&shallow=${shallow}` : `/tale/${id}/copy`);
     let req = new HttpRequest<any>('POST', url, __body, {
       headers: __headers,
       params: __params,
@@ -428,10 +430,12 @@ class TaleService extends __BaseService {
     );
   }
   /**
-   * @param id The ID of the document.
+   * @param id The ID of the Tale to copy.
+   * @param versionId (optional) the ID of the Tale Version to copy. If set, only current version will be copied.
+   * @param shallow If true, copy only current state. If versionId is set, copy only current Version.
    */
-  taleCopyTale(id: string, versionId?: string): __Observable<null> {
-    return this.taleCopyTaleResponse(id, versionId).pipe(__map((_r) => _r.body as null));
+  taleCopyTale(id: string, versionId?: string, shallow = false): __Observable<null> {
+    return this.taleCopyTaleResponse(id, versionId, shallow).pipe(__map((_r) => _r.body as null));
   }
 
   /**
