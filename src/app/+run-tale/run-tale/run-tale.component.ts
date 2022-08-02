@@ -379,11 +379,10 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     }
 
     copyTale(): void {
-      this.taleService.taleCopyTale(this.tale._id, this.tale.restoredFrom).subscribe(res => {
-        this.logger.debug("Tale copying:", res);
+      this.taleService.taleCopyTale(this.tale._id).subscribe(res => {
+        this.logger.debug("Cloning entire Tale (including versions):", res);
       });
     }
-
 
     // Expected parameter format:
     //    dataMap: [{"name":"Elevation per SASAP region and Hydrolic Unit (HUC8) boundary for Alaskan watersheds","dataId":"resource_map_doi:10.5063/F1Z60M87","repository":"DataONE","doi":"10.5063/F1Z60M87","size":10293583}]
