@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AccessLevel, Folder, Run, Tale, Upload, User, Version } from '@api/models';
+import { AccessLevel, Folder, Job, Run, Tale, Upload, User, Version } from '@api/models';
 import {
   CollectionService,
   DatasetService,
@@ -128,31 +128,30 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
       }
     });
 
-    // Fetch Home root
-    this.userService.userGetMe().subscribe((user : User) => {
-      const homeRootParams = { parentId: user._id, parentType: ParentType.User, text: HOME_ROOT_NAME };
-      const dataRootParams = { test: false, path: DATA_ROOT_PATH };
-
-      const homeFind = this.folderService.folderFind(homeRootParams);
-      const dataFind = this.resourceService.resourceLookup(dataRootParams);
-
-      // Fetch all root folders before loading
-      forkJoin([homeFind, dataFind]).pipe(enterZone(this.zone)).subscribe((value: Array<any>) => {
-        if (value.length < 2) {
-          this.logger.error("Error: Value mismatch when fetching root folders");
-        }
-
-        const homeFolderResults = value[0];
-
-        if (homeFolderResults && homeFolderResults.length) {
-          this.homeRoot = homeFolderResults[0];
-        }
-
-        this.dataRoot = value[1];
-
+    // Fetch Data root, whether user is logged in or not
+    this.resourceService.resourceLookup({ test: false, path: DATA_ROOT_PATH })
+      .pipe(enterZone(this.zone))
+      .subscribe(dataRoot => {
+        this.dataRoot = dataRoot;
         this.load();
       });
-    });
+
+    // Fetch Home root, if user is logged in
+    this.userService.userGetMe()
+      .pipe(enterZone(this.zone))
+      .subscribe((user : User) => {
+        if (user) {
+          const homeRootParams = { parentId: user._id, parentType: ParentType.User, text: HOME_ROOT_NAME };
+          this.folderService.folderFind(homeRootParams).pipe(enterZone(this.zone)).subscribe((homeFolderResults: Array<any>) => {
+            if (homeFolderResults && homeFolderResults.length) {
+              this.homeRoot = homeFolderResults[0];
+            }
+            this.load();
+          });
+        } else {
+          this.logger.debug('Skipping loading home root since user is not logged in.')
+        }
+      });
   }
 
   ngOnChanges(): void {
@@ -215,18 +214,6 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
     chunkResp.catch((err) => {
       this.logger.error("Failed to upload chunk:", err);
     });
-    // Update file size as upload progresses
-    // TODO: File upload progress updates
-    // const files = this.files.value;
-    // const existing = files.find(file => file._id === uploadId);
-    // if (existing) {
-    //   const index = files.indexOf(existing);
-    //   files[index] = chunkResp;
-    // } else {
-    //   files.push(chunkResp);
-    // }
-    // this.files.next(files);
-    // this.ref.detectChanges();
 
     return chunkResp;
   }
@@ -707,10 +694,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
         folders.push(newFolder);
         this.folders.next(folders);
       },
-      err => {
-        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
-      }
-    );
+      err => this.dialog.open(ErrorModalComponent, { data: { error: err.error } }));
   }
 
   removeElement(element: FileElement): void {
@@ -771,9 +755,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
                         .subscribe(resp => {
         this.logger.info("Folder moved successfully:", resp);
         this.load();
-      }, err => {
-        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
-      });
+      }, err => this.dialog.open(ErrorModalComponent, { data: { error: err.error } }));
     } else if (src._modelType === 'item') {
       const params = { id: src._id, folderId: dest._id, baseParentId: dest.baseParentId }
       // Element is an item, move it
@@ -782,9 +764,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
                       .subscribe(resp => {
         this.logger.info("Item moved successfully:", resp);
         this.load();
-      }, err => {
-        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
-      });
+      }, err => this.dialog.open(ErrorModalComponent, { data: { error: err.error } }));
     }
   }
 
@@ -793,6 +773,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
 
     // Special handling for runs/versions
     if (this.currentNav === 'recorded_runs') {
+
       // No-op: remove not allowed within a run
       if (this.canNavigateUp) { return; }
       this.runService.runPutRenameRun(params.id, params.name).subscribe(resp => {
@@ -822,8 +803,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
 
     if (element._modelType === 'folder') {
       // Element is a folder, move it
-      this.folderService.folderUpdateFolder(params)
-                        .pipe(enterZone(this.zone))
+      this.folderService.folderUpdateFolder(params).pipe(enterZone(this.zone))
                         .subscribe(resp => {
         this.logger.debug("Folder renamed successfully:", resp);
         const folders =  this.folders.value;
@@ -842,8 +822,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
       });
     } else if (element._modelType === 'item') {
       // Element is an item, move it
-      this.itemService.itemUpdateItem(params)
-                      .pipe(enterZone(this.zone))
+      this.itemService.itemUpdateItem(params).pipe(enterZone(this.zone))
                       .subscribe(resp => {
         this.logger.debug("Item renamed successfully:", resp);
         const files = this.files.value;
@@ -867,8 +846,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
     return new Promise((resolve, reject) => {
       const params = { id: element._id };
       if (element._modelType === 'folder') {
-        this.folderService.folderCopyFolder(params)
-                          .pipe(enterZone(this.zone))
+        this.folderService.folderCopyFolder(params).pipe(enterZone(this.zone))
                           .subscribe((resp: FileElement) => {
           this.logger.debug("Folder copied successfully:", resp);
           const folders = this.folders.value;
@@ -877,8 +855,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
           resolve(resp);
         }, reject);
       } else if (element._modelType === 'item') {
-        this.itemService.itemCopyItem(params)
-                        .pipe(enterZone(this.zone))
+        this.itemService.itemCopyItem(params).pipe(enterZone(this.zone))
                         .subscribe((resp:FileElement) => {
           this.logger.debug("Item copied successfully:", resp);
           const files = this.files.value;
@@ -907,8 +884,10 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
     dialogRef.afterClosed().subscribe((selectedResult: any) => {
       if (!selectedResult) { return; }
       const dataMap = JSON.stringify([selectedResult]);
-      this.datasetService.datasetImportData({ dataMap }).subscribe(resp => {
-        this.logger.info("Dataset registered:", resp);
+      this.datasetService.datasetImportData({ dataMap }).subscribe((resp: Job) => {
+        this.logger.info('Dataset registered:', resp);
+      }, (err: any) => {
+        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
       });
     });
   }

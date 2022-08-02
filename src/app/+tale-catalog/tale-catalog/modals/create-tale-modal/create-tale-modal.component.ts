@@ -122,7 +122,7 @@ export class CreateTaleModalComponent implements OnInit, AfterViewInit {
         this.datasetCitation = { doi: decodeURIComponent(this.data.params.uri) };
       });
 
-      this.asTale = this.data.params.asTale == "true";
+      this.asTale = "true".indexOf(this.data.params.asTale?.toLowerCase()) !== -1;
 
       // Lookup dataset information
       const dataId = [this.data.params.uri];
@@ -144,7 +144,6 @@ export class CreateTaleModalComponent implements OnInit, AfterViewInit {
         this.error = true;
         this.reset();
       });
-
     }
 
 

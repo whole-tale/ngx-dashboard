@@ -1,3 +1,5 @@
+import { AuthGuard as CustomAuthGuard } from '@api/auth-guard';
+
 import { MyTalesComponent } from './tale-catalog/components/my-tales/my-tales.component';
 import { PublicTalesComponent } from './tale-catalog/components/public-tales/public-tales.component';
 import { SharedTalesComponent } from './tale-catalog/components/shared-tales/shared-tales.component';
@@ -8,11 +10,6 @@ export const routes = [
     path: '',
     component: TaleCatalogComponent,
     children: [
-      {
-          path: '',
-          pathMatch: 'full',
-          redirectTo: 'mine'
-      },
       {
         path: 'public',
         component: PublicTalesComponent,
@@ -26,6 +23,7 @@ export const routes = [
       {
         path: 'shared',
         component: SharedTalesComponent,
+        canActivate: [CustomAuthGuard],
         data: {
           meta: {
             title: 'PUBLIC.CATALOG.SHARED.PAGE_TITLE',
@@ -36,12 +34,18 @@ export const routes = [
       {
         path: 'mine',
         component: MyTalesComponent,
+        canActivate: [CustomAuthGuard],
         data: {
           meta: {
             title: 'PUBLIC.CATALOG.MINE.PAGE_TITLE',
             description: 'PUBLIC.CATALOG.MINE.META_DESCRIPTION'
           }
         },
+      },
+      {
+        path: '**',
+        pathMatch: 'full',
+        redirectTo: 'public'
       },
     ]
   }

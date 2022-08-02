@@ -21,7 +21,7 @@ export const APP_LAYOUT_CONFIG = {
 const ROOT_URL = window.env.apiUrl;
 
 @NgModule({
-  imports: [CommonModule, FormsModule, ApiModule.forRoot({ rootUrl: ROOT_URL })],
+  imports: [CommonModule, FormsModule],
   providers: [
     {
       provide: LAYOUT_CONFIG,

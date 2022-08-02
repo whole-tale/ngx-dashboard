@@ -1,5 +1,5 @@
 /* tslint:disable */
-import { NgModule, ModuleWithProviders } from '@angular/core';
+import { NgModule, ModuleWithProviders, SkipSelf, Optional } from '@angular/core';
 import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ApiConfiguration, ApiConfigurationInterface } from './api-configuration';
 
@@ -77,20 +77,26 @@ import { AuthGuard } from './auth-guard';
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
-      multi: true
-    }
-  ]
+      multi: true,
+    },
+  ],
 })
 export class ApiModule {
+  constructor(@Optional() @SkipSelf() parentModule?: ApiModule) {
+    if (parentModule) {
+      throw new Error('ApiModule is already loaded. Import it in the AppModule only');
+    }
+  }
+
   static forRoot(customParams: ApiConfigurationInterface): ModuleWithProviders<ApiModule> {
     return {
       ngModule: ApiModule,
       providers: [
         {
           provide: ApiConfiguration,
-          useValue: { rootUrl: customParams.rootUrl }
-        }
-      ]
+          useValue: { rootUrl: customParams.rootUrl },
+        },
+      ],
     };
   }
 }
