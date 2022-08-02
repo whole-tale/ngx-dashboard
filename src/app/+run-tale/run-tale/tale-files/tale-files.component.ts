@@ -1016,4 +1016,12 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
     this.currentFolderId = element._id;
     this.navigate();
   }
+
+  copyTaleVersionAsNewTale(taleVersionId: string): void {
+    this.logger.debug("Cloning version into new Tale:", taleVersionId);
+    this.taleService.taleCopyTale(this.tale._id, taleVersionId, true).subscribe((res: Tale) => {
+      const newTaleId = res._id;
+      this.router.navigate(['run', newTaleId], { queryParams: { tab: 'metadata' } });
+    });
+  }
 }
