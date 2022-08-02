@@ -1,9 +1,8 @@
 import { AfterViewInit, Component, Inject, NgZone, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Image, Tale } from '@api/models';
-import { ImageService } from '@api/services';
+import { ImageService, RepositoryService } from '@api/services';
 import { LogService } from '@shared/core';
-import { RepositoryService } from '@api/services';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -13,7 +12,7 @@ enum Mode {
   Git = "git",
   DOI = "doi",
   AinWT = "ainwt",
-};
+}
 
 @Component({
   templateUrl: './create-tale-modal.component.html',
@@ -194,13 +193,17 @@ export class CreateTaleModalComponent implements OnInit, AfterViewInit {
     } else {
       switch(this.mode) {
         case Mode.Git:
-          title = title + ' from Git';
+          title = `${title} from Git`;
           break;
         case Mode.DOI:
-          title = title + ' from DOI';
+          title = `${title} from DOI`;
+          break;
+        case Mode.Default:
+        default:
           break;
       }
     }
+
     return title;
   }
 }
