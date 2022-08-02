@@ -9,10 +9,6 @@ export const routes = [
     component: MainComponent,
     children: [
       {
-        path: '',
-        loadChildren: () => import('./+tale-catalog/tale-catalog.module').then((m) => m.TaleCatalogModule),
-      },
-      {
         path: 'run',
         loadChildren: () => import('./+run-tale/run-tale.module').then((m) => m.RunTaleModule),
       },
@@ -29,6 +25,10 @@ export const routes = [
             title: 'PUBLIC.LOGIN.PAGE_TITLE',
           },
         },
+      },
+      {
+        path: '',
+        loadChildren: () => import('./+tale-catalog/tale-catalog.module').then((m) => m.TaleCatalogModule),
       },
     ],
     data: {
