@@ -94,6 +94,7 @@
               <div class="item" (click)="downloadElement(ele)"><i class="fas fa-fw fa-download"></i> Download</div>
               <div *ngIf="!readOnlyDropdown && ((currentNav !== 'recorded_runs' && currentNav !== 'tale_versions'))" class="item" (click)="openMoveToDialog(ele)"><i class="fas fa-fw fa-exchange-alt"></i> Move To...</div>
               <div *ngIf="!readOnlyDropdown && ((currentNav !== 'recorded_runs' && currentNav !== 'tale_versions'))" class="item" (click)="copyElement(ele)"><i class="fas fa-fw fa-clone"></i> Copy</div>
+              <div *ngIf="currentNav === 'tale_versions'" class="item" (click)="copyTaleVersion(ele._id)"><i class="fas fa-fw fa-clone"></i> As New Tale</div>
             </div>
           </div>
         </td>
