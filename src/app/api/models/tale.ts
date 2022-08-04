@@ -139,6 +139,11 @@ export interface Tale {
   workspaceId?: string;
 
   /**
+   * ID of a folder containing Tale's roots of external data
+   */
+  dataDirId?: string;
+
+  /**
    * ID of a folder containing the Tale's Versions and Recorded Runs
    */
   runsRootId?: string;

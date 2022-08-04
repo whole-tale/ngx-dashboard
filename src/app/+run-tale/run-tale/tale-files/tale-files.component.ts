@@ -30,7 +30,7 @@ declare var $: any;
 
 // TODO: Is there a better place to store these constants?
 const HOME_ROOT_NAME = 'Home';
-const DATA_ROOT_PATH = '/collection/WholeTale Catalog/WholeTale Catalog';
+const DATA_ROOT_PATH = 'current';
 
 // TODO: Abstract/move enums to reuseable helper
 enum UploadType {
@@ -129,10 +129,11 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
     });
 
     // Fetch Data root, whether user is logged in or not
-    this.resourceService.resourceLookup({ test: false, path: DATA_ROOT_PATH })
+    const currentDataDirParams = { parentId: this.tale.dataDirId, parentType: ParentType.Folder, name: 'current' };
+    this.folderService.folderFind(currentDataDirParams)
       .pipe(enterZone(this.zone))
       .subscribe(dataRoot => {
-        this.dataRoot = dataRoot;
+        this.dataRoot = dataRoot[0];
         this.load();
       });
 
@@ -464,6 +465,11 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
           return;
         }
 
+        this.currentFolderId = this.dataRoot._id;
+        // Fetch folders and items in the data folder
+        const dataFoldersFetch = this.folderService.folderFind({ parentId: this.dataRoot._id, parentType: ParentType.Folder, limit: 0 });
+        const dataItemsFetch = this.itemService.itemFind({ folderId: this.dataRoot._id, limit: 0 });
+
         if (this.tale.dataSet.length === 0) {
           this.folders.next([]);
           this.files.next([]);
@@ -473,16 +479,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
           return;
         }
 
-        // Fetch registered datasets
-        const sources = this.tale.dataSet.map(mount => {
-          if (mount._modelType === 'folder') {
-            return this.folderService.folderGetFolder(mount.itemId);
-          } else {
-            return this.itemService.itemGetItem(mount.itemId);
-          }
-        });
-
-        this.dataFolderForkJoinSub = forkJoin(sources).pipe(enterZone(this.zone)).subscribe((values: Array<FileElement>) => {
+        this.dataFolderForkJoinSub = forkJoin([dataFoldersFetch, dataItemsFetch]).pipe(enterZone(this.zone)).subscribe((values: Array<FileElement>) => {
           if (this.currentNav === 'external_data') {
             const folderMatches = values.filter(element => element._modelType === 'folder');
             const itemMatches = values.filter(element => element._modelType === 'item');
@@ -883,8 +880,12 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
     const dialogRef = this.dialog.open(RegisterDataDialogComponent);
     dialogRef.afterClosed().subscribe((selectedResult: any) => {
       if (!selectedResult) { return; }
-      const dataMap = JSON.stringify([selectedResult]);
-      this.datasetService.datasetImportData({ dataMap }).subscribe((resp: Job) => {
+      const params = {
+        parentType: ParentType.Folder,
+        parentId: this.dataRoot._id,
+        dataMap: JSON.stringify([selectedResult])
+      };
+      this.datasetService.datasetImportData(params).subscribe((resp: Job) => {
         this.logger.info('Dataset registered:', resp);
       }, (err: any) => {
         this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
