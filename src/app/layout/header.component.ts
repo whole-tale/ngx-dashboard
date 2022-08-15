@@ -147,7 +147,9 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
         const rd = this.route.snapshot.queryParams.rd;
         if (rd) {
           const route = rd.split(window.origin)[1];
-          this.router.navigateByUrl(route);
+          this.router.navigateByUrl(route).then(() => {
+            this.notificationStream.connect();
+          });
 
           return;
         }

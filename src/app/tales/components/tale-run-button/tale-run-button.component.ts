@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AccessLevel, Instance, Tale } from '@api/models';
 import { InstanceService, TaleService } from '@api/services';
+import { TokenService } from '@api/token.service';
 import { LogService } from '@shared/core/log.service';
 import { ErrorModalComponent } from '@shared/error-handler/error-modal/error-modal.component';
 import { CopyOnLaunchModalComponent } from '@tales/components/modals/copy-on-launch-modal/copy-on-launch-modal.component';
@@ -37,6 +38,7 @@ export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
     private readonly router: Router,
     private readonly taleService: TaleService,
     private readonly instanceService: InstanceService,
+    private readonly tokenService: TokenService,
     private readonly syncService: SyncService
   ) {}
 
@@ -56,11 +58,14 @@ export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
     this.instanceErrorSubscription = this.syncService.instanceErrorSubject.subscribe((resource) => {
       this.updateInstance(resource);
     });
+    this.tokenService.currentUser.subscribe(() => {
+      this.refresh();
+    });
   }
 
   ngOnChanges(): void {
-    if (this.instance && (this.instance.status === 0 || this.instance.status === 3)) {
-      // this.autoRefresh();
+    if (this.tokenService?.user?.value) {
+      this.refresh();
     }
   }
 
@@ -74,7 +79,7 @@ export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
 
   updateInstance(resource: { taleId: string; instanceId: string }): void {
     // Ignore updates that aren't for this Tale
-    if (resource.taleId !== this.tale._id) {
+    if (resource.taleId !== this.tale._id || !this.tokenService?.user?.value) {
       return;
     }
 
@@ -83,6 +88,24 @@ export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
       this.ref.detectChanges();
       this.taleInstanceStateChanged.emit(this);
     });
+  }
+
+  refresh(): void {
+    const taleId = this.tale?._id;
+
+    if (taleId) {
+      this.instanceService.instanceListInstances({ taleId: this.tale._id }).subscribe(
+        (instances: Array<Instance>) => {
+          this.logger.debug('Checking for instances:', instances);
+          this.instance = instances.length ? instances[0] : undefined;
+        },
+        (err) => {
+          this.instance = undefined;
+          this.logger.error('Error checking for instance status:', err);
+          this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
+        }
+      );
+    }
   }
 
   autoRefresh(): void {
@@ -99,7 +122,7 @@ export class TaleRunButtonComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     this.interval = setInterval(() => {
-      if (!this.instance || !this.instance._id) {
+      if (!this.instance || !this.instance._id || !this.tokenService?.user?.value) {
         stopPolling();
 
         return;

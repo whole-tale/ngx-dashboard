@@ -171,13 +171,6 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       this.logger.debug(`Fetching tale with _id=${this.taleId}`);
       this.taleService.taleGetTale(this.taleId)
                       .subscribe((tale: Tale) => {
-        if (!tale) {
-          this.logger.error("Tale is null, something went horribly wrong");
-          this.router.navigate(['public']);
-
-          return;
-        }
-
         this.logger.info("Fetched tale:", tale);
         this.tale = tale;
 

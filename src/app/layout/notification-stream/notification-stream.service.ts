@@ -77,7 +77,9 @@ class NotificationStreamService implements OnDestroy {
   }
 
   constructor(private config: ApiConfiguration, private tokenService: TokenService, private logger: LogService) {
-    this.connect();
+    this.tokenService.currentUser.subscribe(() => {
+      this.connect(false);
+    });
   }
 
   ngOnDestroy() {
@@ -85,19 +87,21 @@ class NotificationStreamService implements OnDestroy {
     this.disconnect();
   }
 
-  disconnect(silent: boolean = true) {
-    silent || this.logger.debug('Disconnecting now...');
+  disconnect(silent: boolean = false) {
     if (this.source) {
+      silent || this.logger.warn('Disconnecting now...');
       this.source.close();
     }
   }
 
-  connect(silent: boolean = true) {
+  connect(silent: boolean = false) {
     // Disconnect, if necessary
     this.disconnect();
 
-    silent || this.logger.debug('Connecting now...');
-    if (this.token) {
+    const token = this.token;
+    if (token) {
+      silent || this.logger.warn('Connecting now...');
+
       // Connect to SSE using the given parameters
       this.source = new EventSource(this.url, { headers: { 'Girder-Token': this.token }, heartbeatTimeout: 90000 });
 
@@ -106,11 +110,11 @@ class NotificationStreamService implements OnDestroy {
     }
   }
 
-  reconnect(silent: boolean = true) {
-    silent || this.logger.debug('Reconnecting now...');
+  reconnect(silent: boolean = false) {
+    silent || this.logger.warn('Reconnecting now...');
     this.disconnect();
     this.connect();
-    silent || this.logger.debug('Reconnected.');
+    silent || this.logger.warn('Reconnected.');
   }
 
   onError(err: any) {
