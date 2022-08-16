@@ -205,6 +205,12 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       this.detectTaleId();
       this.detectCurrentTab();
 
+      this.tokenService.currentUser.subscribe((user: User) => {
+        if (!user && !this.tale.public) {
+          this.router.navigate(['public'])
+        }
+      });
+
       this.taleInstanceLaunchingSubscription = this.syncService.instanceLaunchingSubject.subscribe(this.updateInstance);
       this.taleInstanceRunningSubscription = this.syncService.instanceRunningSubject.subscribe(this.updateInstance);
       this.taleInstanceErrorSubscription = this.syncService.instanceErrorSubject.subscribe(this.updateInstance);
