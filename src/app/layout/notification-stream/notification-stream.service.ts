@@ -27,8 +27,6 @@ class NotificationStreamService implements OnDestroy {
   ackAll() {
     const newSince = new Date().getTime() / 1000;
     this.since = newSince;
-    //this.reconnect(true);
-    //this.connect();
     this.openNotificationStream(false);
     this.events = [];
   }
@@ -92,14 +90,14 @@ class NotificationStreamService implements OnDestroy {
     this.disconnect();
   }
 
-  disconnect(silent: boolean = false) {
+  disconnect(silent: boolean = true) {
     silent || this.logger.warn('Disconnecting now...');
     this.source?.close();
 
     this.source = undefined;
   }
 
-  connect(callback: Function, silent: boolean = false) {
+  connect(callback: Function, silent: boolean = true) {
     // Disconnect, if necessary
     if (this.source) {
       this.disconnect();
