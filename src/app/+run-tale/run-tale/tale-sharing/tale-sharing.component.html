@@ -57,7 +57,7 @@
                 <div class="item" data-value="2">Owns</div>
               </div>
            </div>
-           <button class="ui button primary" [disabled]="!newCollabUser" (click)="addCollaborator()">Add</button>
+           <button class="ui button primary" [disabled]="saving || !newCollabUser" (click)="addCollaborator()">Add</button>
          </div>
 
          <!-- Collaborator List -->

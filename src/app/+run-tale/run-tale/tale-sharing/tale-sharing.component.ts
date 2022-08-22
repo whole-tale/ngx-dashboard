@@ -49,6 +49,8 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
   newCollabAccess = 0;
   newCollabUser: User;
 
+  saving = false;
+
   handleChange(evt: any, level: string): void {
     const target = evt.target;
     if (!target.checked) {
@@ -306,6 +308,11 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
   }
 
   saveCollaborators(): Promise<any> {
+    if (this.saving) {
+      return;
+    }
+    this.saving = true;
+
     // Make sure Owner retains access (backend should validate this too)
     const owner = this.collaborators.users.find(user => this.tale.creatorId === user.id);
     if (!owner) {
@@ -331,6 +338,8 @@ export class TaleSharingComponent extends BaseComponent implements OnInit, OnCha
       this.logger.debug('Tale access updated successfully:', response);
       this.collaboratorsChange.emit(this.collaborators);
       this.refilterSearch(this.filterUsers(this.users));
+    }).finally(() => {
+      this.saving = false;
     });
 
     return promise;
