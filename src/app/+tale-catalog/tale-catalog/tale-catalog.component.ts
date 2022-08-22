@@ -122,34 +122,37 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
       }, 500);
     }
 
-    openCreateTaleModal(showGit = false): void {
+    openCreateTaleModal(mode: string): void {
       const config: MatDialogConfig = {
-        data: { showGit }
+        width: '600px',
+        data: { mode }
       };
       const dialogRef = this.dialog.open(CreateTaleModalComponent, config);
       dialogRef.afterClosed().subscribe((result: {tale: Tale, asTale: boolean, url?: string, baseUrl: string}) => {
         const tale = result.tale;
-        const gitUrl = result.url;
+        const asTale = result.asTale;
+        const gitOrDoiUrl = result.url;
         const baseUrl = result.baseUrl;
 
         if (!tale) { return; }
 
         // TODO: Validation
 
-        if (showGit) {
+        if (mode === "git" || mode === "doi") {
+
           // Import Tale from Git repo
           const params = {
-            url: gitUrl ? gitUrl: '', // Pull from querystring/form
+            url: gitOrDoiUrl ? gitOrDoiUrl: '', // Pull from querystring/form
             imageId: tale.imageId, // Pull from user input
-            asTale: false, // Pull from user input
-            git: !!gitUrl,
+            asTale,
+            git: mode === "git",
             spawn: false, // if true, immediately launch a Tale instance
             taleKwargs: tale.title ? { title: tale.title } : {},
             lookupKwargs: baseUrl ? { base_url: baseUrl } : {},
           };
 
           this.taleService.taleCreateTaleFromUrl(params).subscribe((response: Tale) => {
-            this.logger.debug("Importing Tale from Git:", response);
+            this.logger.debug("Importing Tale:", response);
             this.taleCreated.emit(response);
             this.router.navigate(['run', response._id]);
           }, err => {
