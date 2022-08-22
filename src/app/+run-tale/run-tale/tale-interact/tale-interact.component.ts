@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, Input, NgZone, OnChanges } from '@angular
 import { Instance } from '@api/models/instance';
 import { Tale } from '@api/models/tale';
 import { InstanceService } from '@api/services/instance.service';
+import { TokenService } from '@api/token.service';
 import { enterZone } from '@shared/core';
 
 @Component({
@@ -15,10 +16,11 @@ export class TaleInteractComponent implements OnChanges {
 
   constructor(private ref: ChangeDetectorRef,
               private zone: NgZone,
-              private instanceService: InstanceService) {  }
+              private instanceService: InstanceService,
+              private tokenService: TokenService) {  }
 
   ngOnChanges(): void {
-    if (this.tale) {
+    if (this.tale && this.tokenService?.user?.value) {
       const params = { taleId: this.tale._id };
       this.instanceService.instanceListInstances(params)
                           .pipe(enterZone(this.zone))

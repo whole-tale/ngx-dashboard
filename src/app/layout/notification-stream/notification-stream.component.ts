@@ -1,7 +1,8 @@
-import { ChangeDetectorRef, Component, NgZone, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { EventData } from '@api/events/event-data';
 import { GirderEvent } from '@api/events/girder-event';
+import { TokenService } from '@api/token.service';
 import { LogService } from '@shared/core';
 import { SyncService } from '@tales/sync.service';
 import { EventSourcePolyfill as EventSource } from 'ng-event-source';
@@ -17,20 +18,25 @@ declare var $: any;
   templateUrl: './notification-stream.component.html',
   styleUrls: ['./notification-stream.component.scss'],
 })
-export class NotificationStreamComponent implements OnChanges {
+export class NotificationStreamComponent implements OnInit {
   constructor(
     private readonly ref: ChangeDetectorRef,
     private readonly zone: NgZone,
     private readonly sync: SyncService,
     private readonly logger: LogService,
     private readonly dialog: MatDialog,
-    private readonly notificationStream: NotificationStreamService
-  ) {
-    if (this.source) {
-      this.source.onmessage = (event: GirderEvent) => {
-        this.onMessage.call(this, event);
-      };
-    }
+    private readonly notificationStream: NotificationStreamService,
+    private readonly tokenService: TokenService
+  ) {}
+
+  ngOnInit(): void {
+    this.tokenService.currentUser.subscribe(() => {
+      if (this.tokenService.user.value) {
+        this.notificationStream.connect(this.onMessage.bind(this), false);
+      } else {
+        this.notificationStream.disconnect();
+      }
+    });
   }
 
   get token(): string {
@@ -55,12 +61,6 @@ export class NotificationStreamComponent implements OnChanges {
 
   get showNotificationStream(): Boolean {
     return this.notificationStream.showNotificationStream;
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes?.token?.currentValue !== changes?.token?.previousValue) {
-      this.notificationStream.connect();
-    }
   }
 
   ackAll(): void {

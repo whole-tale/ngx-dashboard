@@ -1,6 +1,7 @@
 /* tslint:disable */
 import { Injectable, OnDestroy } from '@angular/core';
 import { ApiConfiguration } from '@api/api-configuration';
+import { GirderEvent } from '@api/events/girder-event';
 import { LogService } from '@shared/core';
 
 import { TokenService } from '@api/token.service';
@@ -13,10 +14,10 @@ import { bypassSanitizationTrustResourceUrl } from '@angular/core/src/sanitizati
 class NotificationStreamService implements OnDestroy {
   static readonly Path = '/notification/stream';
   static readonly TimeoutMs = 85;
-  static readonly IntervalDelayMs = 85000;
+  // static readonly IntervalDelayMs = 85000;
   private _since: number = 0;
 
-  interval: any;
+  // interval: any;
 
   source: EventSource;
   events: Array<any> = [];
@@ -26,8 +27,6 @@ class NotificationStreamService implements OnDestroy {
   ackAll() {
     const newSince = new Date().getTime() / 1000;
     this.since = newSince;
-    //this.reconnect(true);
-    //this.connect();
     this.openNotificationStream(false);
     this.events = [];
   }
@@ -60,6 +59,14 @@ class NotificationStreamService implements OnDestroy {
     return this.tokenService.getToken();
   }
 
+  get headers() {
+    return { 'Girder-Token': this.token };
+  }
+
+  get eventSourceParams() {
+    return { headers: this.headers, heartbeatTimeout: 90000 };
+  }
+
   get url() {
     let url = this.config.rootUrl + NotificationStreamService.Path;
 
@@ -76,41 +83,41 @@ class NotificationStreamService implements OnDestroy {
     return url;
   }
 
-  constructor(private config: ApiConfiguration, private tokenService: TokenService, private logger: LogService) {
-    this.connect();
-  }
+  constructor(private config: ApiConfiguration, private tokenService: TokenService, private logger: LogService) {}
 
   ngOnDestroy() {
-    clearInterval(this.interval);
+    // clearInterval(this.interval);
     this.disconnect();
   }
 
   disconnect(silent: boolean = true) {
-    silent || this.logger.debug('Disconnecting now...');
-    if (this.source) {
-      this.source.close();
-    }
+    silent || this.logger.warn('Disconnecting now...');
+    this.source?.close();
+
+    this.source = undefined;
   }
 
-  connect(silent: boolean = true) {
+  connect(callback: Function, silent: boolean = true) {
     // Disconnect, if necessary
-    this.disconnect();
+    if (this.source) {
+      this.disconnect();
+    }
 
-    silent || this.logger.debug('Connecting now...');
-    if (this.token) {
+    const token = this.token;
+    if (token) {
+      silent || this.logger.warn('Connecting now...');
+
       // Connect to SSE using the given parameters
-      this.source = new EventSource(this.url, { headers: { 'Girder-Token': this.token }, heartbeatTimeout: 90000 });
+      this.source = new EventSource(this.url, this.eventSourceParams);
 
       this.source.onerror = this.onError.bind(this);
       this.source.onopen = this.onOpen.bind(this);
+      this.source.onmessage = (event: GirderEvent) => {
+        callback(event);
+      };
+    } else {
+      silent || this.logger.warn('No token, skipping connection...');
     }
-  }
-
-  reconnect(silent: boolean = true) {
-    silent || this.logger.debug('Reconnecting now...');
-    this.disconnect();
-    this.connect();
-    silent || this.logger.debug('Reconnected.');
   }
 
   onError(err: any) {

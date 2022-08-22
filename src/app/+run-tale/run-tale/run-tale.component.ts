@@ -171,13 +171,6 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       this.logger.debug(`Fetching tale with _id=${this.taleId}`);
       this.taleService.taleGetTale(this.taleId)
                       .subscribe((tale: Tale) => {
-        if (!tale) {
-          this.logger.error("Tale is null, something went horribly wrong");
-          this.router.navigate(['public']);
-
-          return;
-        }
-
         this.logger.info("Fetched tale:", tale);
         this.tale = tale;
 
@@ -211,6 +204,12 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     ngOnInit(): void {
       this.detectTaleId();
       this.detectCurrentTab();
+
+      this.tokenService.currentUser.subscribe((user: User) => {
+        if (!user && !this.tale.public) {
+          this.router.navigate(['public'])
+        }
+      });
 
       this.taleInstanceLaunchingSubscription = this.syncService.instanceLaunchingSubject.subscribe(this.updateInstance);
       this.taleInstanceRunningSubscription = this.syncService.instanceRunningSubject.subscribe(this.updateInstance);

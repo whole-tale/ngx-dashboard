@@ -72,6 +72,10 @@
                 }
               ]
             },
+            "dev": {
+              "optimization": false,
+              "sourceMap": true
+            },
             "production": {
               "fileReplacements": [
                 {
@@ -100,6 +104,9 @@
             "hmr": {
               "hmr": true,
               "browserTarget": "universal:build:hmr"
+            },
+            "dev": {
+              "browserTarget": "universal:build:dev"
             },
             "production": {
               "browserTarget": "universal:build:production"

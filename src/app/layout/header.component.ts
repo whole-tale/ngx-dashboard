@@ -147,9 +147,8 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
         const rd = this.route.snapshot.queryParams.rd;
         if (rd) {
           const route = rd.split(window.origin)[1];
-          this.router.navigateByUrl(route);
 
-          return;
+          return this.router.navigateByUrl(route);
         }
 
         // If we didn't redirect, we need to enable the navbar dropdown and check for changes
