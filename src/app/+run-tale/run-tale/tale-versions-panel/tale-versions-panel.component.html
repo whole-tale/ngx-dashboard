@@ -20,6 +20,8 @@
     <div class="ui message" style="height:100%;" *ngIf="!timeline.length">
       No previous versions saved for Tale.
     </div>
+
+    <!-- Dropdown for Versions/Runs -->
     <div class="item" *ngFor="let res of timeline; index as i; trackBy: trackById"
             [ngClass]="{ 'selected-version': tale.restoredFrom === res._id }">
         <div class="right floated content" *ngIf="!res.runVersionId">
@@ -37,11 +39,12 @@
                 <!-- Hide these options in the UI to make the Versions panel mostly read-only -->
                 <div class="item" (click)="renameVersion(res)" *ngIf="false && tale._accessLevel >= AccessLevel.Write">Rename</div>
                 <div class="item" (click)="deleteVersion(res)" *ngIf="false && tale._accessLevel >= AccessLevel.Admin">Delete</div>
+                <div class="item" *ngIf="!res.runVersionId" (click)="copyTaleVersionAsNewTale(res._id)">As New Tale</div>
+
               </div>
           </div>
         </div>
 
-        <!-- Dropdown for Runs -->
         <div class="right floated content" *ngIf="res.runVersionId">
           <div class="ui floating version dropdown icon" tabindex="0">
             <i class="fas fa-ellipsis-v"></i>

@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { ApiConfiguration } from '@api/api-configuration';
 import { AccessLevel, Run, Tale, Version } from '@api/models';
 import { RunService, TaleService, VersionService } from '@api/services';
@@ -66,6 +67,7 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
               private runService: RunService,
               private dialog: MatDialog,
               private notificationService: NotificationService,
+              private router: Router,
               private syncService: SyncService) {
   }
 
@@ -311,6 +313,16 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
           });
         }
       });
+    });
+  }
+
+  copyTaleVersionAsNewTale(taleVersionId: string): void {
+    this.logger.debug("Cloning version into new Tale:", taleVersionId);
+    this.taleService.taleCopyTale(this.tale._id, taleVersionId, true).subscribe((res: Tale) => {
+      const newTaleId = res._id;
+
+      // Router redirect here does not fully refresh the view
+      this.router.navigate(['run', newTaleId], { queryParamsHandling: 'preserve' });
     });
   }
 }
