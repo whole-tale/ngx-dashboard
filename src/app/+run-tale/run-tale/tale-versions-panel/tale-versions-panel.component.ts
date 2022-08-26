@@ -70,7 +70,6 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   ngOnInit(): void {
-    this.refresh();
     this.versionsSubscription = this.syncService.taleUpdatedSubject.subscribe((taleId) => {
       if (taleId === this.tale._id) {
         this.refresh();
@@ -79,6 +78,7 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   ngOnChanges(): void {
+    this.refresh();
     setTimeout(() => {
       $('.ui.version.dropdown').dropdown({ context: 'body', keepOnScreen: true});
     }, 500);

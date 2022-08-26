@@ -1022,11 +1022,8 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
     this.taleService.taleCopyTale(this.tale._id, taleVersionId, true).subscribe((res: Tale) => {
       const newTaleId = res._id;
 
-      // Router redirect here does not fuly refresh the view
-      // this.router.navigate(['run', newTaleId], { queryParamsHandling: 'preserve' });
-
-      // Workaround: use window.location.href for this edged case for now
-      window.location.href =`${window.origin}/run/${newTaleId}?tab=files&nav=tale_versions`;
+      // Router redirect here does not fully refresh the view
+      this.router.navigate(['run', newTaleId], { queryParamsHandling: 'preserve' });
     });
   }
 }
