@@ -119,6 +119,7 @@ export class FileExplorerComponent implements OnChanges {
   @Output() readonly elementMoved = new EventEmitter<{ element: FileElement; moveTo?: FileElement }>();
   @Output() readonly navigatedDown = new EventEmitter<FileElement>();
   @Output() readonly navigatedUp = new EventEmitter();
+  @Output() readonly copyTaleVersionAsNewTale = new EventEmitter();
 
   showMore: any = {};
 
@@ -286,5 +287,9 @@ export class FileExplorerComponent implements OnChanges {
 
   openTaleWorkspacesDialog(event: any): void {
     this.openTaleWorkspacesModal.emit(event);
+  }
+
+  copyTaleVersion(taleVersionId: string): void {
+    this.copyTaleVersionAsNewTale.emit(taleVersionId);
   }
 }

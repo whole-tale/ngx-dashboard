@@ -1,12 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
-import { NgForm } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { ApiConfiguration } from '@api/api-configuration';
 import { AccessLevel, Run, Tale, Version } from '@api/models';
 import { RunService, TaleService, VersionService } from '@api/services';
 import { TokenService } from '@api/token.service';
-import { ViewLogsDialogComponent } from '@layout/notification-stream/modals/view-logs-dialog/view-logs-dialog.component';
 import { LogService } from '@shared/core';
 import { ErrorModalComponent } from '@shared/error-handler/error-modal/error-modal.component';
 import { NotificationService } from '@shared/error-handler/services/notification.service';
@@ -68,11 +67,11 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
               private runService: RunService,
               private dialog: MatDialog,
               private notificationService: NotificationService,
+              private router: Router,
               private syncService: SyncService) {
   }
 
   ngOnInit(): void {
-    this.refresh();
     this.versionsSubscription = this.syncService.taleUpdatedSubject.subscribe((taleId) => {
       if (taleId === this.tale._id) {
         this.refresh();
@@ -81,6 +80,7 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   ngOnChanges(): void {
+    this.refresh();
     setTimeout(() => {
       $('.ui.version.dropdown').dropdown({ context: 'body', keepOnScreen: true});
     }, 500);
@@ -312,6 +312,16 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
           });
         }
       });
+    });
+  }
+
+  copyTaleVersionAsNewTale(taleVersionId: string): void {
+    this.logger.debug("Cloning version into new Tale:", taleVersionId);
+    this.taleService.taleCopyTale(this.tale._id, taleVersionId, true).subscribe((res: Tale) => {
+      const newTaleId = res._id;
+
+      // Router redirect here does not fully refresh the view
+      this.router.navigate(['run', newTaleId], { queryParamsHandling: 'preserve' });
     });
   }
 }
