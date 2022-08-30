@@ -107,7 +107,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
   }
 
   loginWithGirder(provider: string): void {
-    const redirect = encodeURIComponent(window.location.href);
+    const redirect = encodeURIComponent(window.location.pathname + window.location.search);
 
     // FIXME: is it ok to use window.location.origin here?
     const params = { redirect: `${window.location.origin}/?token={girderToken}&rd=${redirect}`, list: false };
