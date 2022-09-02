@@ -5,8 +5,10 @@ import { ApiModule } from '@api/api.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
-import { SafePipe } from '@shared/common/pipes/safe.pipe';
-import { TruncatePipe } from '@shared/common/pipes/truncate.pipe';
+import { FooterComponent } from '@layout/footer.component';
+import { HeaderComponent } from '@layout/header.component';
+import { MainComponent } from '@layout/main.component';
+import { NotificationStreamModule } from '@layout/notification-stream/notification-stream.module';
 import { CoreModule } from '@shared/core';
 import { ErrorHandlerModule } from '@shared/error-handler/error-handler.module';
 import { MaterialModule } from '@shared/material';
@@ -17,11 +19,6 @@ import { PerfectScrollbarConfigInterface, PerfectScrollbarModule, PERFECT_SCROLL
 
 import { AppComponent } from './app.component';
 import { routes } from './app.routes';
-import { FooterComponent } from './layout/footer.component';
-import { HeaderComponent } from './layout/header.component';
-import { MainComponent } from './layout/main.component';
-import { NotificationStreamModule } from './layout/notification-stream/notification-stream.module';
-import { LoginComponent } from './login/login.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = { suppressScrollX: true };
 
@@ -57,7 +54,7 @@ declare global {
     NotificationStreamModule,
     ApiModule.forRoot({ rootUrl: window.env.apiUrl }),
   ],
-  declarations: [HeaderComponent, FooterComponent, MainComponent, LoginComponent, AppComponent],
+  declarations: [HeaderComponent, FooterComponent, MainComponent, AppComponent],
   providers: [
     {
       provide: PERFECT_SCROLLBAR_CONFIG,
