@@ -52,7 +52,7 @@ export class AuthGuard implements CanActivateChild, CanActivate, CanLoad {
       return true;
     }
 
-    const redirect = encodeURIComponent(window.location.href);
+    const redirect = encodeURIComponent(window.location.pathname + window.location.search);
 
     this.logger.info(`Restricted route is prohibited, routing to signin... ${redirect}`);
 

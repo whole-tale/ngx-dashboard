@@ -112,7 +112,7 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
   loginWith(provider: string): void {
     // Set return route to current route
     // this.tokenService.setReturnRoute(this.currentRoute);
-    const redirect = encodeURIComponent(window.location.href);
+    const redirect = encodeURIComponent(window.location.pathname + window.location.search);
 
     // FIXME: is it ok to use window.location.origin here?
     const params = { redirect: `${window.location.origin}/?token={girderToken}&rd=${redirect}`, list: false };
@@ -146,9 +146,7 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
         // Redirect via querystring param, if provided
         const rd = this.route.snapshot.queryParams.rd;
         if (rd) {
-          const route = rd.split(window.origin)[1];
-
-          return this.router.navigateByUrl(route);
+          return this.router.navigateByUrl(rd);
         }
 
         // If we didn't redirect, we need to enable the navbar dropdown and check for changes

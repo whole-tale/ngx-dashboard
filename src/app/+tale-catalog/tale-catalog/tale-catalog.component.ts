@@ -69,7 +69,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
           if (!this.tokenService.getToken()) {
             // TODO: Warn user/countdown before redirecting to login?
 
-            const redirect = encodeURIComponent(window.location.href);
+            const redirect = encodeURIComponent(window.location.pathname + window.location.search);
 
             // FIXME: is it ok to use window.location.origin here?
             const params = { redirect: `${window.location.origin}/?token={girderToken}&rd=${redirect}`, list: false };

@@ -23,7 +23,7 @@ export class TokenInterceptor implements HttpInterceptor {
 
   redirectToLogin(): void {
     // route to login, redirect back here after auth
-    const redirect = encodeURIComponent(window.location.href);
+    const redirect = encodeURIComponent(window.location.pathname + window.location.search);
 
     const params = { redirect: `${window.location.origin}/?token={girderToken}&rd=${redirect}`, list: false };
     this.oauth.oauthListProviders(params).subscribe(
