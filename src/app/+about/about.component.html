@@ -1,13 +1,8 @@
-<!-- Fake navbar (yuck) -->
-
-<div class="ui inverted menu wt top" role="heading">
-  <a href="/login#start-of-content" class="show-on-focus js-skip-to-content">Skip to content</a>
-  <div class="header item wt brand"><img src="../../assets/img/wholetale_logo_sm.png" alt="Whole Tale Logo">WHOLE<span>TALE</span> <span> Dashboard</span></div>
-</div>
 
 <!-- Styled login area -->
 <div class="login area">
   <div class="login banner" role="banner">
+    <h1 class="ui massive white header">About WholeTale</h1>
     <div class="ui huge white header">Reproducibility Simplified</div>
 
     <div class="ui white header">
@@ -17,25 +12,6 @@
   </div>
   <div id="start-of-content" class="show-on-focus"></div>
   <div role="main">
-    <div style="margin-top: 10vh; margin-bottom: 2vh; color: black;">
-      <h1>
-        Sign in to Whole Tale
-      </h1>
-    </div>
-
-    <a class="ui github-button button" (click)="loginWithGirder('GitHub')" (keydown.enter)="loginWithGirder('GitHub')" role="button" tabindex="0">
-      <i class="github icon github-button-icon"></i>
-      Sign in with GitHub
-    </a>
-    <a class="ui globus-button button" (click)="loginWithGirder('Globus')" (keydown.enter)="loginWithGirder('Globus')" role="button" tabindex="0">
-      <i class="fa-globe icon globus-button-icon"></i>
-      Sign in with Globus
-    </a>
-    <a class="ui preview-button button" (click)="loginAsAnonymous()" (keydown.enter)="loginAsAnonymous()" role="button" tabindex="0">
-      <i class="fa-user icon user-button-icon"></i>
-      Preview WholeTale
-    </a>
-
     <p style="botmargin" style="margin: 10px; color:black;">By accessing Whole Tale, you agree to our
       <a [href]="tosUrl" style="color:black" target="_blank"><u>Terms of Use</u></a>.
     </p>

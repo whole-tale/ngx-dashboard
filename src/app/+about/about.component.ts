@@ -12,12 +12,12 @@ import { routeAnimation } from '~/app/shared';
 declare var $: any;
 
 @Component({
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
+  templateUrl: './about.component.html',
+  styleUrls: ['./about.component.scss'],
   animations: [routeAnimation],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoginComponent extends BaseComponent implements OnInit {
+export class AboutComponent extends BaseComponent implements OnInit {
   username: string;
   password: string;
   isProcessing: boolean;

@@ -1,7 +1,7 @@
 import { AuthGuard as CustomAuthGuard } from '@api/auth-guard';
 
+import { AboutComponent } from './+about/login.component';
 import { MainComponent } from './layout/main.component';
-import { LoginComponent } from './login/login.component';
 
 export const routes = [
   {
@@ -19,12 +19,7 @@ export const routes = [
       },
       {
         path: 'about',
-        component: LoginComponent,
-        data: {
-          meta: {
-            title: 'PUBLIC.LOGIN.PAGE_TITLE',
-          },
-        },
+        loadChildren: () => import('./+about/about.module').then((m) => m.AboutModule),
       },
       {
         path: '',
