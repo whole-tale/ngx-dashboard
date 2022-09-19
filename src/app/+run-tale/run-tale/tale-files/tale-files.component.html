@@ -55,7 +55,7 @@
         [highlighted]="highlighted"
         [placeholderMessage]="placeholderMessage"
         [currentUpload]="currentUpload"
-        [preventNavigation]="isNavActive('external_data')"
+        [preventNavigation]=false
         [readOnly]="tale._accessLevel <= AccessLevel.Read"
         [readOnlyDropdown]="tale._accessLevel <= AccessLevel.Read || isNavActive('external_data')"
         (openSelectDataModal)="openSelectDataModal($event)"
