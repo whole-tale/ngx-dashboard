@@ -383,6 +383,14 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
     })();
   }
 
+  initDropdowns(): void {
+    setTimeout(() => {
+      $('.ui.file.dropdown').dropdown({ action: 'hide' });
+      this.load();
+    }, 500);
+
+  }
+
 
   load(): void {
     // Already loading, short-circuit
@@ -401,6 +409,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
                                                   .subscribe((values: Array<any>) => {
                                                     this.folders.next(values[0]);
                                                     this.files.next(values[1]);
+                                                    this.initDropdowns();
                                                     this.loading = false;
                                                     this.ref.detectChanges();
                                                   });
@@ -416,6 +425,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
                          if (this.currentNav === 'recorded_runs') {
                            this.folders.next(r.sort(sortByUpdated));
                            this.files.next([]);
+                           this.initDropdowns();
                            this.loading = false;
                            this.ref.detectChanges();
                          }
@@ -428,6 +438,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
                              if (this.currentNav === 'tale_versions') {
                                this.folders.next(v.sort(sortByUpdated));
                                this.files.next([]);
+                               this.initDropdowns();
                                this.loading = false;
                                this.ref.detectChanges();
                              }
@@ -451,6 +462,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
           if (this.currentNav === 'home') {
             this.folders.next(values[0]);
             this.files.next(values[1]);
+            this.initDropdowns();
             this.loading = false;
             this.ref.detectChanges();
           }
@@ -467,6 +479,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
         if (this.tale.dataSet.length === 0) {
           this.folders.next([]);
           this.files.next([]);
+          this.initDropdowns();
           this.loading = false;
           this.ref.detectChanges();
 
@@ -489,6 +502,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
 
             this.folders.next(folderMatches);
             this.files.next(itemMatches);
+            this.initDropdowns();
             this.loading = false;
             this.ref.detectChanges();
           }
@@ -521,6 +535,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
           if (this.currentNav === 'tale_workspace') {
             this.folders.next(values[0]);
             this.files.next(values[1]);
+            this.initDropdowns();
             this.loading = false;
             this.ref.detectChanges();
           }
@@ -690,9 +705,11 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
                       .pipe(enterZone(this.zone))
                       .subscribe(
       newFolder => {
-        const folders = this.folders.value;
-        folders.push(newFolder);
-        this.folders.next(folders);
+        //const folders = this.folders.value;
+        //folders.push(newFolder);
+        //this.folders.next(folders);
+
+        this.load();
       },
       err => this.dialog.open(ErrorModalComponent, { data: { error: err.error } }));
   }
@@ -806,14 +823,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
       this.folderService.folderUpdateFolder(params).pipe(enterZone(this.zone))
                         .subscribe(resp => {
         this.logger.debug("Folder renamed successfully:", resp);
-        const folders =  this.folders.value;
-        const index = folders.indexOf(element);
-        folders[index] = resp;
-        this.folders.next(folders);
-
-        setTimeout(() => {
-          $('.ui.file.dropdown').dropdown({ action: 'hide' });
-        }, 500);
+        this.load();
       }, err => {
         // Rename failed, roll-back the change
         element.name = element.prevName;
