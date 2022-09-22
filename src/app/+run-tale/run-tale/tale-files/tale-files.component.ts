@@ -386,9 +386,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
   initDropdowns(): void {
     setTimeout(() => {
       $('.ui.file.dropdown').dropdown({ action: 'hide' });
-      this.load();
     }, 500);
-
   }
 
 
