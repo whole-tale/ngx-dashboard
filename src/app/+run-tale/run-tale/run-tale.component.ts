@@ -176,6 +176,12 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
         this.refreshCollaborators();
 
+        this.tokenService.currentUser.subscribe((user: User) => {
+          if (!user && !this.tale.public) {
+            this.router.navigate(['']);
+          }
+        });
+
         this.userService.userGetUser(this.tale.creatorId)
                       .subscribe(creator => {
           this.creator = creator;
@@ -204,12 +210,6 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
     ngOnInit(): void {
       this.detectTaleId();
       this.detectCurrentTab();
-
-      this.tokenService.currentUser.subscribe((user: User) => {
-        if (!user && !this.tale?.public) {
-          this.router.navigate(['public']);
-        }
-      });
 
       this.taleInstanceLaunchingSubscription = this.syncService.instanceLaunchingSubject.subscribe(this.updateInstance);
       this.taleInstanceRunningSubscription = this.syncService.instanceRunningSubject.subscribe(this.updateInstance);
