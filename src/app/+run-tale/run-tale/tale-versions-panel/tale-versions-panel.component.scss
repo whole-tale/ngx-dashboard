@@ -14,8 +14,8 @@
 }
 
 #timeline {
-  height: calc(100vh - 500px);
-  overflow: scroll;
+  height: 45vh;
+  overflow: auto;
   padding: 0 1rem;
 }
 #timeline .item {
