@@ -1,5 +1,5 @@
 #timeline-column {
-  padding: 0 1rem 1rem;
+  padding: 0;
   border-left: 1px solid #ddd;
 }
 #timeline-column h3 {
@@ -10,7 +10,7 @@
   font-weight: 700;
 }
 #timeline-column > .vertical.segment {
-  padding-top: 0;
+  padding: 10pt;
 }
 
 #timeline {
