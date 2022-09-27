@@ -2,6 +2,7 @@
   //height: calc(60vh - 64px);
   //overflow: auto;
   //min-height: 60vh;
+  margin-top: 0;
   height: 100%;
 }
 
@@ -11,10 +12,12 @@
 
 .ui.grid > .row {
   padding-top: 0;
+  padding-bottom: 0;
 }
 
 .ui.grid > .row > .column {
   padding-left: 0;
+  padding-right: 0;
 }
 
 .status-banner {
@@ -35,4 +38,5 @@
 
 iframe {
   border: none;
+  height: 65vh;
 }
