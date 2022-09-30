@@ -92,7 +92,7 @@
               <div *ngIf="!readOnlyDropdown && !canNavigateUp" class="item" (click)="renameElement(ele)"><i class="fas fa-fw fa-edit"></i> Rename</div>
               <div *ngIf="!readOnlyDropdown && !canNavigateUp" class="item" (click)="removeElement(ele)"><i class="fas fa-fw fa-trash"></i> Remove</div>
               <div class="item" (click)="downloadElement(ele)"><i class="fas fa-fw fa-download"></i> Download {{ ele._modelType | titlecase }}</div>
-              <div *ngIf="!readOnlyDropdown" class="item" (click)="copyElement(ele)"><i class="fas fa-fw fa-clone"></i> Copy</div>
+              <div *ngIf="!readOnlyDropdown && (!canNavigateUp || (currentNav !== 'recorded_runs' && currentNav !== 'tale_versions'))" class="item" (click)="copyElement(ele)"><i class="fas fa-fw fa-clone"></i> Copy</div>
               <div *ngIf="!readOnlyDropdown && (currentNav !== 'recorded_runs' && currentNav !== 'tale_versions')" class="item" (click)="openMoveToDialog(ele)"><i class="fas fa-fw fa-exchange-alt"></i> Move To...</div>
 
               <div *ngIf="!canNavigateUp && (currentNav === 'recorded_runs' || currentNav === 'tale_versions')" class="divider"></div>
