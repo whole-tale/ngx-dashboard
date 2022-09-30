@@ -31,6 +31,7 @@
                                         <div class="title-tags">
                                             <span class="ui horizontal label wt-green" *ngIf="tale.copyOfTale">COPY</span>
                                             <span class="ui horizontal label wt-green">{{ tale.public ? 'PUBLIC' : 'PRIVATE'}}</span>
+                                            <span class="ui horizontal label wt-green" *ngIf="tale.restoredFrom" matTooltipPosition="after" [matTooltip]="'Restored from previous Tale version: ' + restoredVersionName">RESTORED</span>
                                         </div>
                                     </div>
                                 </div>

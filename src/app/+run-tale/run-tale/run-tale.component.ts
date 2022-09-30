@@ -12,6 +12,7 @@ import { CollaboratorList } from '@tales/components/rendered-tale-metadata/rende
 import { TaleAuthor } from '@tales/models/tale-author';
 import { SyncService } from '@tales/sync.service';
 import { Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { TaleVersionsPanelComponent } from '~/app/+run-tale/run-tale/tale-versions-panel/tale-versions-panel.component';
 import { routeAnimation } from '~/app/shared';
 
@@ -36,6 +37,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
     AccessLevel: any = AccessLevel;
 
+    restoredVersionName = '';
     taleId: string;
     tale: Tale;
     instance: Instance;
@@ -181,6 +183,13 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
           this.creator = creator;
           this.logger.info("Fetched creator:", this.creator);
           this.ref.detectChanges();
+
+          if (this.tale?.restoredFrom) {
+            this.versionService.versionGetVersion(this.tale?.restoredFrom).pipe(map((v: Version) => v.name)).subscribe((versionName: string) => {
+              this.restoredVersionName = versionName;
+              this.ref.detectChanges();
+            });
+          }
 
           // FIXME: Due to a timing issue, the Tale dropdown isn't present until tale is populated
           this.zone.runOutsideAngular(() => {
