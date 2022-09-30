@@ -1052,6 +1052,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
     this.taleService.taleRestoreVersion(this.tale._id, version._id).subscribe(response => {
       this.logger.info("Tale version successfully restored");
       this.taleVersionChanged.emit(response);
+      this.load();
     }, err => {
       this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
     });
