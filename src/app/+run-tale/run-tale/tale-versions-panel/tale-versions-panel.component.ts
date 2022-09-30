@@ -170,87 +170,6 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
     });
   }
 
-
-  /** Per-run dropdown options */
-  viewRecordedRunInfo(run: Run): void {
-    // TODO: Would be nice to also show the Run logs, but we don't know the Job ID
-    this.versionService.versionGetVersion(run.runVersionId).subscribe((version: Version) => {
-      this.dialog.open(RecordedRunInfoDialogComponent, {
-        data: { run, version, tale: this.tale }
-      });
-    },err => {
-      this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
-    });
-  }
-
-
-  /** Per-version dropdown options */
-  viewVersionInfo(version: Version): void {
-    this.dialog.open(TaleVersionInfoDialogComponent, {
-      data: { version, tale: this.tale, collaborators: this.collaborators }
-    });
-  }
-
-  restoreVersion(version: Version): void {
-    this.taleService.taleRestoreVersion(this.tale._id, version._id).subscribe(response => {
-      this.logger.info("Tale version successfully restored");
-      this.taleVersionChanged.emit(response);
-    });
-    // TODO: Once they do this, how can the user get back to HEAD?
-  }
-
-  compareVersion(version: Version): void {
-    // TODO: Show diff of this version with the current one
-  }
-
-  renameVersion(version: Version): void {
-    this.openCreateRenameModal("rename", (result: { name: string, force?: boolean }) => {
-      this.logger.debug('Renaming Tale version:', result);
-
-      // Prompt for new name, disable "Save" if empty
-      this.versionService.versionPutRenameVersion(version._id, result.name).subscribe(resp => {
-        this.logger.info("Tale version successfully renamed:", result.name);
-        const idx = this.timeline.indexOf(version);
-        this.timeline[idx].name = result.name;
-        this.ref.detectChanges();
-      },err => {
-          this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
-        });
-    });
-  }
-
-  exportVersion(version: Version): void {
-    const token = this.tokenService.getToken();
-    const url = `${this.config.rootUrl}/tale/${this.tale._id}/export?token=${token}&taleFormat=bagit&versionId=${version._id}`;
-    window.open(url, '_blank');
-  }
-
-  deleteVersion(version: Version): void {
-    // Delete the chosen version
-    this.versionService.versionDeleteVersion(version._id).subscribe(response => {
-      this.logger.info("Tale version successfully deleted:", version.name);
-      const idx = this.timeline.indexOf(version);
-      this.timeline.splice(idx, 1);
-      this.ref.detectChanges();
-    },
-      err => {
-        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
-      });
-  }
-
-  getVersion(tale: Tale): Observable<Version> {
-    if (!tale.restoredFrom) {
-      // TODO: Prompt to save a new version?
-      // No version exists, save a new version
-      this.logger.debug("Creating version...");
-
-      return this.versionService.versionCreateVersion({ taleId: tale._id });
-    } else {
-      // Fetch existing version and use that
-      return this.versionService.versionGetVersion(tale.restoredFrom);
-    }
-  }
-
   createAndStartRecordedRun(version: Version, mainEntrypoint: string): void {
     // Update Tale to get "restoredFrom" (prevents 303 from POST /version)
     this.taleVersionChanged.emit();
@@ -270,9 +189,11 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
           this.refresh();
         }, err => {
           this.logger.error("Failed to start run: ", err);
+          this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
         });
       }, err => {
         this.logger.error("Failed to create run: ", err);
+        this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
       });
     }
   }
@@ -303,25 +224,17 @@ export class TaleVersionsPanelComponent implements OnInit, OnChanges, OnDestroy 
         if (createErr.error instanceof ErrorEvent) {
           // A client-side or network error occurred
           this.logger.error('An error occurred:', createErr.error.message);
+          this.dialog.open(ErrorModalComponent, { data: { error: createErr.error } });
         } else if (createErr.status === 303) {
           const json = createErr.error;
           this.versionService.versionGetVersion(json.extra).subscribe((version: Version) => {
             this.createAndStartRecordedRun(version, mainEntrypoint);
           }, fetchErr => {
             this.logger.error("Failed to fetch version: ", fetchErr);
+            this.dialog.open(ErrorModalComponent, { data: { error: createErr.error } });
           });
         }
       });
-    });
-  }
-
-  copyTaleVersionAsNewTale(taleVersionId: string): void {
-    this.logger.debug("Cloning version into new Tale:", taleVersionId);
-    this.taleService.taleCopyTale(this.tale._id, taleVersionId, true).subscribe((res: Tale) => {
-      const newTaleId = res._id;
-
-      // Router redirect here does not fully refresh the view
-      this.router.navigate(['run', newTaleId], { queryParamsHandling: 'preserve' });
     });
   }
 }

@@ -89,11 +89,16 @@
             <!--<div class="text">More</div>-->
             <i class="dropdown icon"></i>
             <div class="left menu">
-              <div *ngIf="!readOnlyDropdown && ((currentNav !== 'recorded_runs' && currentNav !== 'tale_versions') || !canNavigateUp)" class="item" (click)="renameElement(ele)"><i class="fas fa-fw fa-edit"></i> Rename</div>
-              <div *ngIf="!readOnlyDropdown && ((currentNav !== 'recorded_runs' && currentNav !== 'tale_versions') || !canNavigateUp)" class="item" (click)="removeElement(ele)"><i class="fas fa-fw fa-trash"></i> Remove</div>
-              <div class="item" (click)="downloadElement(ele)"><i class="fas fa-fw fa-download"></i> Download</div>
-              <div *ngIf="!readOnlyDropdown && ((currentNav !== 'recorded_runs' && currentNav !== 'tale_versions'))" class="item" (click)="openMoveToDialog(ele)"><i class="fas fa-fw fa-exchange-alt"></i> Move To...</div>
-              <div *ngIf="!readOnlyDropdown && ((currentNav !== 'recorded_runs' && currentNav !== 'tale_versions'))" class="item" (click)="copyElement(ele)"><i class="fas fa-fw fa-clone"></i> Copy</div>
+              <div *ngIf="!readOnlyDropdown && !canNavigateUp" class="item" (click)="renameElement(ele)"><i class="fas fa-fw fa-edit"></i> Rename</div>
+              <div *ngIf="!readOnlyDropdown && !canNavigateUp" class="item" (click)="removeElement(ele)"><i class="fas fa-fw fa-trash"></i> Remove</div>
+              <div class="item" (click)="downloadElement(ele)"><i class="fas fa-fw fa-download"></i> Download {{ ele._modelType | titlecase }}</div>
+              <div *ngIf="!readOnlyDropdown" class="item" (click)="copyElement(ele)"><i class="fas fa-fw fa-clone"></i> Copy</div>
+
+              <div *ngIf="currentNav !== 'external_data'" class="divider"></div>
+              <div *ngIf="!readOnlyDropdown && (currentNav !== 'recorded_runs' && currentNav !== 'tale_versions')" class="item" (click)="openMoveToDialog(ele)"><i class="fas fa-fw fa-exchange-alt"></i> Move To...</div>
+              <div *ngIf="(currentNav === 'recorded_runs' || currentNav === 'tale_versions')" class="item" (click)="showInfo(ele)"><i class="fas fa-fw fa-info"></i> View Info</div>
+              <div *ngIf="currentNav === 'tale_versions'" class="item" (click)="restoreVersion(ele)"><i class="fas fa-fw fa-window-restore"></i> Restore Version</div>
+              <div *ngIf="currentNav === 'tale_versions'" class="item" (click)="exportVersion(ele)"><i class="fas fa-fw fa-file-export"></i> Export Version</div>
               <div *ngIf="currentNav === 'tale_versions'" class="item" (click)="copyTaleVersion(ele._id)"><i class="fas fa-fw fa-clone"></i> As New Tale</div>
             </div>
           </div>

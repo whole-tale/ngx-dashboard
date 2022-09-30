@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ApiConfiguration } from '@api/api-configuration';
 import { AccessLevel, Folder, Job, Run, Tale, Upload, User, Version } from '@api/models';
 import {
   CollectionService,
@@ -14,12 +15,20 @@ import {
   UserService,
   VersionService
 } from '@api/services';
+import { TokenService } from '@api/token.service';
 import { FileElement } from '@files/models/file-element';
 import { TruncatePipe } from '@shared/common/pipes/truncate.pipe';
 import { enterZone, LogService } from '@shared/core';
 import { ErrorModalComponent } from '@shared/error-handler/error-modal/error-modal.component';
+import { CollaboratorList } from '@tales/components/rendered-tale-metadata/rendered-tale-metadata.component';
 import { SyncService } from '@tales/sync.service';
-import { BehaviorSubject, forkJoin, Subscription } from 'rxjs';
+import { BehaviorSubject, forkJoin, Observable, Subscription } from 'rxjs';
+import {
+  RecordedRunInfoDialogComponent
+} from '~/app/+run-tale/run-tale/modals/recorded-run-info-dialog/recorded-run-info-dialog.component';
+import {
+  TaleVersionInfoDialogComponent
+} from '~/app/+run-tale/run-tale/modals/tale-version-info-dialog/tale-version-info-dialog.component';
 
 import { RegisterDataDialogComponent } from '../modals/register-data-dialog/register-data-dialog.component';
 import { SelectDataDialogComponent } from '../modals/select-data-dialog/select-data-dialog.component';
@@ -69,6 +78,9 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
   @Input() taleId: string;
 
   @Output() readonly taleUpdated = new EventEmitter<Tale>();
+  @Output() readonly taleVersionChanged = new EventEmitter<Version>();
+
+  @Input() collaborators: CollaboratorList;
 
   homeRoot: FileElement;
   dataRoot: FileElement;
@@ -107,6 +119,8 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
     private userService: UserService,
     private taleService: TaleService,
     private resourceService: ResourceService,
+    private config: ApiConfiguration,
+    public tokenService: TokenService,
     private runService: RunService,
     private versionService: VersionService,
     private truncate: TruncatePipe,
@@ -1003,6 +1017,54 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
 
       // Router redirect here does not fully refresh the view
       this.router.navigate(['run', newTaleId], { queryParamsHandling: 'preserve' });
+    }, err => {
+      this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
     });
+  }
+
+  showInfo(element: FileElement): void {
+    switch (this.currentNav) {
+      case "recorded_runs":
+        const run = element as Run;
+        // TODO: Would be nice to also show the Run logs, but we don't know the Job ID
+        this.versionService.versionGetVersion(run.runVersionId).subscribe((version: Version) => {
+          this.dialog.open(RecordedRunInfoDialogComponent, {
+            data: { run, version, tale: this.tale }
+          });
+        },err => {
+          this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
+        });
+        break;
+      case "tale_versions":
+        const version = element as Version;
+        this.dialog.open(TaleVersionInfoDialogComponent, {
+          data: { version, tale: this.tale, collaborators: this.collaborators }
+        });
+        break;
+      default:
+        // no-op, should not be supported
+        this.logger.warn(`Unsupported: Attempted to showInfo for element id=${element._id} modelType=${element._modelType}`)
+        break;
+    }
+  }
+
+  restoreVersion(version: Version): void {
+    this.taleService.taleRestoreVersion(this.tale._id, version._id).subscribe(response => {
+      this.logger.info("Tale version successfully restored");
+      this.taleVersionChanged.emit(response);
+    }, err => {
+      this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
+    });
+    // TODO: Once they do this, how can the user get back to HEAD?
+  }
+
+  compareVersion(version: Version): void {
+    // TODO: Show diff of this version with the current one
+  }
+
+  exportVersion(version: Version): void {
+    const token = this.tokenService.getToken();
+    const url = `${this.config.rootUrl}/tale/${this.tale._id}/export?token=${token}&taleFormat=bagit&versionId=${version._id}`;
+    window.open(url, '_blank');
   }
 }
