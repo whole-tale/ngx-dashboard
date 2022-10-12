@@ -71,7 +71,6 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
   @Output() readonly taleUpdated = new EventEmitter<Tale>();
 
   homeRoot: FileElement;
-  dataRoot: FileElement;
 
   folders: BehaviorSubject<Array<FileElement>> = new BehaviorSubject<Array<FileElement>>([]);
   files: BehaviorSubject<Array<FileElement>> = new BehaviorSubject<Array<FileElement>>([]);
@@ -127,14 +126,6 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
         }, 1000);
       }
     });
-
-    // Fetch Data root, whether user is logged in or not
-    this.resourceService.resourceLookup({ test: false, path: DATA_ROOT_PATH })
-      .pipe(enterZone(this.zone))
-      .subscribe(dataRoot => {
-        this.dataRoot = dataRoot;
-        this.load();
-      });
 
     // Fetch Home root, if user is logged in
     this.userService.userGetMe()
@@ -394,6 +385,10 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
     // Already loading, short-circuit
     if (this.loading) { return; }
 
+    // Clear out existing folders/files before reloading
+    this.folders.next([]);
+    this.files.next([]);
+
     this.loading = true;
 
     if (this.currentFolderId) {
@@ -467,13 +462,6 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
         });
         break;
       case 'external_data':
-        if (!this.dataRoot) {
-          this.logger.warn("Warning: Data root not detected. Delaying loading until it has been found:", this.dataRoot);
-          this.loading = false;
-
-          return;
-        }
-
         if (this.tale.dataSet.length === 0) {
           this.folders.next([]);
           this.files.next([]);
@@ -980,14 +968,14 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
   navigateUp(): void {
     // TODO: Allow user to navigate to root folders?
     // NOTE: we may need something like this for the Data Catalog, but doesn't need to be this same Component
-    const isDataRoot = this.currentNav === 'external_data' && this.currentRoot.parentId === this.dataRoot._id;
+    const isExternalData = this.currentNav === 'external_data';
     const isTaleWorkspaceRoot = this.currentNav === 'tale_workspace' && this.currentRoot.parentId === this.tale.workspaceId;
     const isHomeRoot = this.currentNav === 'home' && this.currentRoot.parentId === this.homeRoot._id;
     const isVersionsRoot = this.currentNav === 'tale_versions' && this.currentRoot.parentId === this.tale.versionsRootId;
     const isRunsRoot = this.currentNav === 'recorded_runs' && this.currentRoot.parentId === this.tale.runsRootId;
 
     // If we find that our parentId matches our known root folders, then we have reached the root
-    if (this.currentRoot && (isDataRoot || isTaleWorkspaceRoot || isHomeRoot || isVersionsRoot || isRunsRoot)) {
+    if (this.currentRoot && (isExternalData || isTaleWorkspaceRoot || isHomeRoot || isVersionsRoot || isRunsRoot)) {
       this.currentRoot = undefined;
       this.currentFolderId = undefined;
       this.canNavigateUp = false;

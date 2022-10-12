@@ -22,12 +22,21 @@
   margin: 12pt 0 0 0;
 }
 
+.ui.secondary.pointing.menu {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
 .ui.breadcrumb a {
   color: #333;
 }
 
 .panel-container {
   width: 100%;
+}
+
+.panel-container > .row {
+  padding-top: 0;
 }
 
 .tale-run-button {
@@ -159,8 +168,10 @@ app-tale-versions-panel {
 .wt-panel:nth-child(2) {
   margin-top: 1rem;
 }
-.wt-panel .wt-panel-body .ui.grid .row .wide.column > div {
-  height: 99.4%;
+
+.wt-panel-body > .ui.grid > .row {
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .wt_panel_body > .ui.grid,
@@ -173,10 +184,16 @@ app-tale-versions-panel {
 
 .ui.grid {
   height: 100%;
+  margin: 0;
 }
 
 .wt-panel > .wt-panel-body > .row {
   padding-bottom: 0 !important;
+}
+
+.four.wide.column {
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .ui.stretched.stackable.grid.panel-container {
@@ -184,9 +201,6 @@ app-tale-versions-panel {
   height: auto;
 }
 
-.wt-panel .wt-panel-body {
-  height: 88%;
-}
 .wt-panel .wt-panel-body.bg-grey,
 .wt-panel .wt-panel-header.bg-grey {
   background-color: #f9fafb;
