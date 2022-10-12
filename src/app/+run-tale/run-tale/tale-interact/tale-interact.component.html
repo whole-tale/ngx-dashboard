@@ -2,14 +2,15 @@
 <div class="ui stretched stackable grid" id="tale-interact-container">
   <div class="row">
     <div class="sixteen wide column" *ngIf="instance">
+
       <!-- Launching state -->
-      <div *ngIf="instance.status === 0" class="status-banner">
+      <div *ngIf="tokenService?.user?.value && instance.status === 0" class="status-banner">
         <h3>Tale is launching, please wait...</h3>
         <i class="fas fa-5x fa-spinner fa-pulse"></i>
       </div>
 
       <!-- Running state -->
-      <div *ngIf="instance.status === 1">
+      <div *ngIf="tokenService?.user?.value && instance.status === 1">
         <iframe *ngIf="instance.iframe" height="100%" width="100%" [src]="instance.url | safe:'url'"></iframe>
 
         <div *ngIf="!instance.iframe" class="ui message">
@@ -25,21 +26,28 @@
       </div>
 
       <!-- Error state -->
-      <div *ngIf="instance.status === 2" class="status-banner">
+      <div *ngIf="tokenService?.user?.value && instance.status === 2" class="status-banner">
         <i class="fas fa-exclamation-triangle"></i> Something went wrong.
         Please wait a few moments and try again.
       </div>
 
       <!-- Deleting state -->
-      <div *ngIf="instance.status === 3" class="status-banner">
+      <div *ngIf="tokenService?.user?.value && instance.status === 3" class="status-banner">
         <h3>Tale is stopping, please wait...</h3>
         <i class="fas fa-5x fa-trash fa-spin"></i>
       </div>
     </div>
 
-    <div class="sixteen wide column" *ngIf="!instance">
+    <div class="sixteen wide column" *ngIf="tokenService?.user?.value && !instance">
       <div class="status-banner">
         <h3>You must Run this Tale before you can Interact.</h3>
+      </div>
+    </div>
+
+    <!-- User is not logged in -->
+    <div class="sixteen wide column" *ngIf="!tokenService?.user?.value">
+      <div class="status-banner">
+        <h3>You must Sign In before you can Interact.</h3>
       </div>
     </div>
   </div>
