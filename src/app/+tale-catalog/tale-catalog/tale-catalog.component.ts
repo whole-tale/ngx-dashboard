@@ -12,7 +12,7 @@ import { ErrorModalComponent } from '@shared/error-handler/error-modal/error-mod
 import { Subscription } from 'rxjs';
 import { routeAnimation } from '~/app/shared';
 
-import { CreateTaleModalComponent } from './modals/create-tale-modal/create-tale-modal.component';
+import { CreateTaleModalComponent, Mode } from './modals/create-tale-modal/create-tale-modal.component';
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -85,9 +85,10 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
             this.router.navigate(this.route.snapshot.url, { replaceUrl: true });
 
             this.zone.run(() => {
+              const modeGit = (queryParams.git ? queryParams.git : 'false') === 'true';
               const dialogRef = this.dialog.open(CreateTaleModalComponent, {
                 width: '600px',
-                data: { params: queryParams }
+                data: { params: queryParams, mode: modeGit ? Mode.Git : Mode.AinWT }
               });
               dialogRef.afterClosed().subscribe((result: {tale: Tale, asTale: boolean, url: string, baseUrl: string}) => {
                 // Short-circuit for 'Cancel' case
@@ -102,7 +103,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
                   url: queryParams.uri ? decodeURIComponent(queryParams.uri) : (result.url ? result.url : ''), // Pull from querystring/form
                   imageId: tale.imageId, // Pull from user input
                   asTale: asTale ? asTale : false, // Pull from user input
-                  git: !!result.url,
+                  git: modeGit,
                   spawn: false, // if true, immediately launch a Tale instance
                   taleKwargs: tale.title ? { title: tale.title } : {},
                   lookupKwargs: baseUrl ? { base_url: baseUrl } : {},
