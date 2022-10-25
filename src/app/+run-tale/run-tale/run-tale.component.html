@@ -80,7 +80,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="ui secondary pointing menu" style="margin-top: 0;">
+                    <div class="ui secondary pointing menu">
                         <a class="item" [ngClass]="{ 'active': isTabActive('interact') }" (click)="switchTab('interact')" *ngIf="tokenService?.user?.value">
                           Interact
                         </a>

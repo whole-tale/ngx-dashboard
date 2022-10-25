@@ -83,7 +83,6 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
   @Input() collaborators: CollaboratorList;
 
   homeRoot: FileElement;
-  dataRoot: FileElement;
 
   folders: BehaviorSubject<Array<FileElement>> = new BehaviorSubject<Array<FileElement>>([]);
   files: BehaviorSubject<Array<FileElement>> = new BehaviorSubject<Array<FileElement>>([]);
@@ -141,14 +140,6 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
         }, 1000);
       }
     });
-
-    // Fetch Data root, whether user is logged in or not
-    this.resourceService.resourceLookup({ test: false, path: DATA_ROOT_PATH })
-      .pipe(enterZone(this.zone))
-      .subscribe(dataRoot => {
-        this.dataRoot = dataRoot;
-        this.load();
-      });
 
     // Fetch Home root, if user is logged in
     this.userService.userGetMe()
@@ -397,10 +388,20 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
     })();
   }
 
+  initDropdowns(): void {
+    setTimeout(() => {
+      $('.ui.file.dropdown').dropdown({ action: 'hide' });
+    }, 500);
+  }
+
 
   load(): void {
     // Already loading, short-circuit
     if (this.loading) { return; }
+
+    // Clear out existing folders/files before reloading
+    this.folders.next([]);
+    this.files.next([]);
 
     this.loading = true;
 
@@ -415,6 +416,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
                                                   .subscribe((values: Array<any>) => {
                                                     this.folders.next(values[0]);
                                                     this.files.next(values[1]);
+                                                    this.initDropdowns();
                                                     this.loading = false;
                                                     this.ref.detectChanges();
                                                   });
@@ -430,6 +432,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
                          if (this.currentNav === 'recorded_runs') {
                            this.folders.next(r.sort(sortByUpdated));
                            this.files.next([]);
+                           this.initDropdowns();
                            this.loading = false;
                            this.ref.detectChanges();
                          }
@@ -442,6 +445,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
                              if (this.currentNav === 'tale_versions') {
                                this.folders.next(v.sort(sortByUpdated));
                                this.files.next([]);
+                               this.initDropdowns();
                                this.loading = false;
                                this.ref.detectChanges();
                              }
@@ -465,22 +469,17 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
           if (this.currentNav === 'home') {
             this.folders.next(values[0]);
             this.files.next(values[1]);
+            this.initDropdowns();
             this.loading = false;
             this.ref.detectChanges();
           }
         });
         break;
       case 'external_data':
-        if (!this.dataRoot) {
-          this.logger.warn("Warning: Data root not detected. Delaying loading until it has been found:", this.dataRoot);
-          this.loading = false;
-
-          return;
-        }
-
         if (this.tale.dataSet.length === 0) {
           this.folders.next([]);
           this.files.next([]);
+          this.initDropdowns();
           this.loading = false;
           this.ref.detectChanges();
 
@@ -503,6 +502,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
 
             this.folders.next(folderMatches);
             this.files.next(itemMatches);
+            this.initDropdowns();
             this.loading = false;
             this.ref.detectChanges();
           }
@@ -535,6 +535,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
           if (this.currentNav === 'tale_workspace') {
             this.folders.next(values[0]);
             this.files.next(values[1]);
+            this.initDropdowns();
             this.loading = false;
             this.ref.detectChanges();
           }
@@ -704,9 +705,11 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
                       .pipe(enterZone(this.zone))
                       .subscribe(
       newFolder => {
-        const folders = this.folders.value;
-        folders.push(newFolder);
-        this.folders.next(folders);
+        //const folders = this.folders.value;
+        //folders.push(newFolder);
+        //this.folders.next(folders);
+
+        this.load();
       },
       err => this.dialog.open(ErrorModalComponent, { data: { error: err.error } }));
   }
@@ -820,14 +823,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
       this.folderService.folderUpdateFolder(params).pipe(enterZone(this.zone))
                         .subscribe(resp => {
         this.logger.debug("Folder renamed successfully:", resp);
-        const folders =  this.folders.value;
-        const index = folders.indexOf(element);
-        folders[index] = resp;
-        this.folders.next(folders);
-
-        setTimeout(() => {
-          $('.ui.file.dropdown').dropdown({ action: 'hide' });
-        }, 500);
+        this.load();
       }, err => {
         // Rename failed, roll-back the change
         element.name = element.prevName;
@@ -986,14 +982,14 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
   navigateUp(): void {
     // TODO: Allow user to navigate to root folders?
     // NOTE: we may need something like this for the Data Catalog, but doesn't need to be this same Component
-    const isDataRoot = this.currentNav === 'external_data' && this.currentRoot.parentId === this.dataRoot._id;
+    const isExternalData = this.currentNav === 'external_data';
     const isTaleWorkspaceRoot = this.currentNav === 'tale_workspace' && this.currentRoot.parentId === this.tale.workspaceId;
     const isHomeRoot = this.currentNav === 'home' && this.currentRoot.parentId === this.homeRoot._id;
     const isVersionsRoot = this.currentNav === 'tale_versions' && this.currentRoot.parentId === this.tale.versionsRootId;
     const isRunsRoot = this.currentNav === 'recorded_runs' && this.currentRoot.parentId === this.tale.runsRootId;
 
     // If we find that our parentId matches our known root folders, then we have reached the root
-    if (this.currentRoot && (isDataRoot || isTaleWorkspaceRoot || isHomeRoot || isVersionsRoot || isRunsRoot)) {
+    if (this.currentRoot && (isExternalData || isTaleWorkspaceRoot || isHomeRoot || isVersionsRoot || isRunsRoot)) {
       this.currentRoot = undefined;
       this.currentFolderId = undefined;
       this.canNavigateUp = false;

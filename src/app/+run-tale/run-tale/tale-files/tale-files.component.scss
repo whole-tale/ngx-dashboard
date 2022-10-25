@@ -2,6 +2,7 @@
   //height: calc(60vh - 64px);
   //min-height: 60vh;
   height: 100%;
+  margin-top: 0;
 }
 
 #tale-files-browser {
@@ -22,7 +23,6 @@
 }
 
 .twelve.wide.column > .ui.segment {
-  border-radius: 0 0 10pt 0;
   box-shadow: none;
 }
 
@@ -39,9 +39,7 @@
 
 .four.wide.column,
 .twelve.wide.column {
-  padding-top: 0;
-  padding-left: 0;
-  padding-bottom: 0;
+  padding: 0;
 }
 
 .ui.grid {

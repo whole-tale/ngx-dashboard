@@ -80,6 +80,7 @@ export class FileExplorerComponent implements OnChanges {
 
   @Input() currentUpload: FileElement;
 
+  @Input() loading = false;
   @Input() preventNavigation = false;
   @Input() readOnly = false;
   @Input() readOnlyDropdown = false;

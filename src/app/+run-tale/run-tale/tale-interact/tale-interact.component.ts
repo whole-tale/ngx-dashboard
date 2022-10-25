@@ -17,10 +17,10 @@ export class TaleInteractComponent implements OnChanges {
   constructor(private ref: ChangeDetectorRef,
               private zone: NgZone,
               private instanceService: InstanceService,
-              private tokenService: TokenService) {  }
+              public tokenService: TokenService) {  }
 
   ngOnChanges(): void {
-    if (this.tale && this.tokenService?.user?.value) {
+    if (this.tale) {
       const params = { taleId: this.tale._id };
       this.instanceService.instanceListInstances(params)
                           .pipe(enterZone(this.zone))

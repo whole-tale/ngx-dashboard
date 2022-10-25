@@ -49,6 +49,7 @@
 
 
       <app-file-explorer id="tale-files-browser"
+        [loading]="loading"
         [fileElements]="folders?.value?.concat(files?.value)"
         [sanitizeId]="sanitizeId"
         [path]="currentPath"
