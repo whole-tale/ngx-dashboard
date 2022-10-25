@@ -7,7 +7,7 @@ import { LogService } from '@shared/core';
 // import * as $ from 'jquery';
 declare var $: any;
 
-enum Mode {
+export enum Mode {
   Default = "default",
   Git = "git",
   DOI = "doi",
@@ -58,6 +58,9 @@ export class CreateTaleModalComponent implements OnInit, AfterViewInit {
     };
     this.mode = data.mode as Mode;
     this.baseUrl = (data && data.params && data.params.api) ? decodeURIComponent(data.params.api) : '';
+    if (this.mode === Mode.Git) {
+      this.gitUrl = (data && data.params && data.params.uri) ? decodeURIComponent(data.params.uri) : '';
+    }
 
   }
 
@@ -114,8 +117,7 @@ export class CreateTaleModalComponent implements OnInit, AfterViewInit {
       $('.ui.dropdown').dropdown();
     });
 
-    if (this.data && this.data.params && this.data.params.uri) {
-      this.mode = Mode.AinWT;
+    if (this.data && this.data.params && this.data.params.uri && this.mode === Mode.AinWT) {
       this.zone.run(() => {
         // TODO: Fetch / display data citation from datacite?
         this.datasetCitation = { doi: decodeURIComponent(this.data.params.uri) };
