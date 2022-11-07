@@ -182,6 +182,10 @@ app-tale-versions-panel {
   padding: 0;
 }
 
+.wt-panel-body > .ui.grid > .row > .wide.column > div {
+  height: 65vh;
+}
+
 .ui.grid {
   height: 100%;
   margin: 0;
