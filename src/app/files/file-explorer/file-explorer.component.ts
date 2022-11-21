@@ -121,6 +121,9 @@ export class FileExplorerComponent implements OnChanges {
   @Output() readonly navigatedDown = new EventEmitter<FileElement>();
   @Output() readonly navigatedUp = new EventEmitter();
   @Output() readonly copyTaleVersionAsNewTale = new EventEmitter();
+  @Output() readonly showAdditionalInfo = new EventEmitter();
+  @Output() readonly versionExported = new EventEmitter();
+  @Output() readonly versionRestored = new EventEmitter();
 
   showMore: any = {};
 
@@ -292,5 +295,17 @@ export class FileExplorerComponent implements OnChanges {
 
   copyTaleVersion(taleVersionId: string): void {
     this.copyTaleVersionAsNewTale.emit(taleVersionId);
+  }
+
+  showInfo(element: FileElement): void {
+    this.showAdditionalInfo.emit(element);
+  }
+
+  restoreVersion(element: FileElement): void {
+    this.versionRestored.emit(element);
+  }
+
+  exportVersion(element: FileElement): void {
+    this.versionExported.emit(element);
   }
 }
