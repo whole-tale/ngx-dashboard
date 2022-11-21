@@ -3,7 +3,7 @@
     <a class="header item wt-brand" href="https://wholetale.org"><img src="assets/img/wholetale_logo_sm.png">Whole<span>Tale</span></a>
     <a class="item" [ngClass]="{ 'active':currentRoute==='/mine' || currentRoute==='/public' || currentRoute==='/shared' }" [routerLink]="user ? '/mine' : '/public'" routerLinkActive="active">Tale Dashboard</a>
     <!-- <a class="item" [ngClass]="{ 'active':currentRoute==='/datasets' }" routerLink="/datasets" routerLinkActive="active">Data Catalog</a> -->
-    <!-- <a class="item" [ngClass]="{ 'active':currentRoute==='/environments' }" routerLink="/environments" routerLinkActive="active">Compute Environments</a> -->
+    <a class="item" [ngClass]="{ 'active':currentRoute==='/environments' }" routerLink="/environments" routerLinkActive="active">Compute Environments</a>
     <div class="right menu">
         <a class="item" [href]="docUrl" target="_blank" matTooltip="Open user's guide">
         <i class="info circle white icon"></i>
