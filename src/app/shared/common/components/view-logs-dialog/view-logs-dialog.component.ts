@@ -7,7 +7,7 @@ import { BehaviorSubject } from 'rxjs';
 @Component({
   selector: 'app-view-logs-dialog',
   templateUrl: './view-logs-dialog.component.html',
-  styleUrls: ['./view-logs-dialog.component.scss']
+  styleUrls: ['./view-logs-dialog.component.scss'],
 })
 export class ViewLogsDialogComponent implements OnInit, OnDestroy {
   logs: BehaviorSubject<string> = new BehaviorSubject<string>('');
@@ -23,7 +23,7 @@ export class ViewLogsDialogComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.data.jobIds.forEach(jobId => {
+    this.data.jobIds.forEach((jobId) => {
       this.jobService.jobGetJob(jobId).subscribe((job: Job) => {
         // Save this job and resort by created timestamp
         this.jobs.push(job);
@@ -33,18 +33,16 @@ export class ViewLogsDialogComponent implements OnInit, OnDestroy {
       });
     });
     const count = this.data.jobIds.length;
-    const latestJob = this.data.jobIds.sort(
-      (a: string, b: string): number => {
-        if (a > b) {
-          return 1;
-        }
-        if (a < b) {
-          return -1;
-        }
-
-        return 0;
+    const latestJob = this.data.jobIds.sort((a: string, b: string): number => {
+      if (a > b) {
+        return 1;
       }
-    )[count - 1];
+      if (a < b) {
+        return -1;
+      }
+
+      return 0;
+    })[count - 1];
     this.autoFetch(latestJob);
   }
 
@@ -64,18 +62,16 @@ export class ViewLogsDialogComponent implements OnInit, OnDestroy {
     let logs = '';
 
     // Sort jobs by date/time
-    this.jobs.sort(
-      (a: Job, b: Job): number => {
-        if (a.created > b.created) {
-          return 1;
-        }
-        if (a.created < b.created) {
-          return -1;
-        }
-
-        return 0;
+    this.jobs.sort((a: Job, b: Job): number => {
+      if (a.created > b.created) {
+        return 1;
       }
-    );
+      if (a.created < b.created) {
+        return -1;
+      }
+
+      return 0;
+    });
 
     // Concatenate all logs together for display
     this.jobs.forEach((job: Job) => {
@@ -102,7 +98,7 @@ export class ViewLogsDialogComponent implements OnInit, OnDestroy {
         }
 
         // Overwrite existing log data for this job
-        const existing = this.jobs.find(j => jobId === j._id);
+        const existing = this.jobs.find((j) => jobId === j._id);
         const index = this.jobs.indexOf(existing);
         this.jobs[index] = job;
 
