@@ -1,8 +1,13 @@
 import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Job } from '@api/models';
-import { JobService } from '@api/services';
+import { Instance, Job } from '@api/models';
+import { InstanceService, JobService } from '@api/services';
 import { BehaviorSubject } from 'rxjs';
+
+enum LogsType {
+  Instance,
+  JobList,
+}
 
 @Component({
   selector: 'app-view-logs-dialog',
@@ -11,7 +16,7 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class ViewLogsDialogComponent implements OnInit, OnDestroy {
   logs: BehaviorSubject<string> = new BehaviorSubject<string>('');
-  refreshInterval = 2000;
+  refreshInterval = 5000;
   jobs: Array<Job> = [];
   intervals: Array<any> = [];
   stayAtBottom = true;
@@ -19,10 +24,19 @@ export class ViewLogsDialogComponent implements OnInit, OnDestroy {
   constructor(
     private readonly ref: ChangeDetectorRef,
     private readonly jobService: JobService,
-    @Inject(MAT_DIALOG_DATA) public data: { jobIds: Array<string> }
+    private readonly instanceService: InstanceService,
+    @Inject(MAT_DIALOG_DATA) public data: { jobIds: Array<string>; instance: Instance }
   ) {}
 
   ngOnInit(): void {
+    // If we're given an instanceId, render the logs ofr that instance only
+    if (this.data.instance) {
+      this.autoFetchInstanceLogs();
+
+      return;
+    }
+
+    // Otherwise, assume that we're showing one or more logs for Job resource
     this.data.jobIds.forEach((jobId) => {
       this.jobService.jobGetJob(jobId).subscribe((job: Job) => {
         // Save this job and resort by created timestamp
@@ -43,7 +57,7 @@ export class ViewLogsDialogComponent implements OnInit, OnDestroy {
 
       return 0;
     })[count - 1];
-    this.autoFetch(latestJob);
+    this.autoFetchJobLogs(latestJob);
   }
 
   shouldStayAtBottom(): boolean {
@@ -88,8 +102,23 @@ export class ViewLogsDialogComponent implements OnInit, OnDestroy {
       clearInterval(interval);
     }
   }
+  autoFetchInstanceLogs(intervalMs: number = this.refreshInterval): void {
+    const interval: any = setInterval(() => {
+      this.instanceService.instanceGetInstanceLogs(this.data.instance._id).subscribe((logs: string) => {
+        this.logs.next(logs);
+        this.ref.detectChanges();
 
-  autoFetch(jobId: string, intervalMs: number = this.refreshInterval): void {
+        // If requested, keep scrolling at the bottom
+        if (this.shouldStayAtBottom()) {
+          this.scrollToBottom();
+        }
+      });
+    }, intervalMs);
+
+    this.intervals.push(interval);
+  }
+
+  autoFetchJobLogs(jobId: string, intervalMs: number = this.refreshInterval): void {
     const interval: any = setInterval(() => {
       this.jobService.jobGetJob(jobId).subscribe((job: Job) => {
         // If job is done, stop polling

@@ -8,7 +8,7 @@ import { Observable as __Observable } from 'rxjs';
 import { map as __map, filter as __filter } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 class InstanceService extends __BaseService {
   static readonly instanceListInstancesPath = '/instance';
@@ -16,6 +16,7 @@ class InstanceService extends __BaseService {
   static readonly instanceDeleteInstancePath = '/instance/{id}';
   static readonly instanceGetInstancePath = '/instance/{id}';
   static readonly instanceUpdateInstancePath = '/instance/{id}';
+  static readonly instanceGetInstanceLogsPath = '/instance/{id}/log';
 
   constructor(config: __Configuration, http: HttpClient) {
     super(config, http);
@@ -52,12 +53,12 @@ class InstanceService extends __BaseService {
     let req = new HttpRequest<any>('GET', this.rootUrl + `/instance`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
@@ -80,7 +81,7 @@ class InstanceService extends __BaseService {
    * - `limit`: Result set size limit.
    */
   instanceListInstances(params: InstanceService.InstanceListInstancesParams): __Observable<null> {
-    return this.instanceListInstancesResponse(params).pipe(__map(_r => _r.body as null));
+    return this.instanceListInstancesResponse(params).pipe(__map((_r) => _r.body as null));
   }
 
   /**
@@ -103,12 +104,12 @@ class InstanceService extends __BaseService {
     let req = new HttpRequest<any>('POST', this.rootUrl + `/instance`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
@@ -124,7 +125,7 @@ class InstanceService extends __BaseService {
    * - `name`: A user-friendly, short name of the tale.
    */
   instanceCreateInstance(params: InstanceService.InstanceCreateInstanceParams): __Observable<null> {
-    return this.instanceCreateInstanceResponse(params).pipe(__map(_r => _r.body as null));
+    return this.instanceCreateInstanceResponse(params).pipe(__map((_r) => _r.body as null));
   }
 
   /**
@@ -138,12 +139,12 @@ class InstanceService extends __BaseService {
     let req = new HttpRequest<any>('DELETE', this.rootUrl + `/instance/${id}`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
@@ -152,7 +153,7 @@ class InstanceService extends __BaseService {
    * @param id The ID of the document.
    */
   instanceDeleteInstance(id: string): __Observable<null> {
-    return this.instanceDeleteInstanceResponse(id).pipe(__map(_r => _r.body as null));
+    return this.instanceDeleteInstanceResponse(id).pipe(__map((_r) => _r.body as null));
   }
 
   /**
@@ -166,12 +167,12 @@ class InstanceService extends __BaseService {
     let req = new HttpRequest<any>('GET', this.rootUrl + `/instance/${id}`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
@@ -180,7 +181,7 @@ class InstanceService extends __BaseService {
    * @param id The ID of the document.
    */
   instanceGetInstance(id: string): __Observable<null> {
-    return this.instanceGetInstanceResponse(id).pipe(__map(_r => _r.body as null));
+    return this.instanceGetInstanceResponse(id).pipe(__map((_r) => _r.body as null));
   }
 
   /**
@@ -194,12 +195,12 @@ class InstanceService extends __BaseService {
     let req = new HttpRequest<any>('PUT', this.rootUrl + `/instance/${id}`, __body, {
       headers: __headers,
       params: __params,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map(_r => {
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
         return _r as __StrictHttpResponse<null>;
       })
     );
@@ -208,7 +209,37 @@ class InstanceService extends __BaseService {
    * @param id The ID of the document.
    */
   instanceUpdateInstance(id: string): __Observable<null> {
-    return this.instanceUpdateInstanceResponse(id).pipe(__map(_r => _r.body as null));
+    return this.instanceUpdateInstanceResponse(id).pipe(__map((_r) => _r.body as null));
+  }
+
+  /**
+   * Fetch the logs of the running Instance of a Tale.
+   *
+   * @param id The ID of the Instance.
+   */
+  instanceGetInstanceLogsResponse(id: string): __Observable<__StrictHttpResponse<null>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>('GET', this.rootUrl + `/instance/${id}/log`, __body, {
+      headers: __headers,
+      params: __params,
+      responseType: 'text',
+    });
+
+    return this.http.request<any>(req).pipe(
+      __filter((_r) => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<null>;
+      })
+    );
+  }
+  /**
+   * @param id The ID of the document.
+   */
+  instanceGetInstanceLogs(id: string): __Observable<null> {
+    return this.instanceGetInstanceLogsResponse(id).pipe(__map((_r) => _r.body as null));
   }
 }
 
