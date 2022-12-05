@@ -40,16 +40,15 @@
         </span>
       </td>
       <td width="5%">
-        <button class="ui tiny circular negative basic right floated icon button"
-                [class.disabled]="!event.data.resource.jobs"
-                [disabled]="!event.data.resource.jobs"
+        <button class="ui tiny negative basic right floated icon button"
+                [disabled]="!event?.data?.resource?.jobs?.length"
                 *ngIf="event.data.state === 'active'"
                 (click)="cancelJob(event)">
           <i class="times icon"></i>
         </button>
       </td>
       <td width="20%">
-          <button (click)="openLogViewerModal(event)" [disabled]="!event.data.resource || !event.data.resource.jobs"
+          <button (click)="openLogViewerModal(event)" [disabled]="!event?.data?.resource?.jobs?.length"
                 class="ui tiny primary basic right floated button">
             View Logs
           </button>
