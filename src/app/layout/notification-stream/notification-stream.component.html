@@ -34,6 +34,10 @@
           <i class="ui fas fa-fw fa-pause yellow icon"></i>
           Queued<span *ngIf="event.data.message">: {{ event.data.message }}</span>
         </span>
+        <span  *ngSwitchCase="'canceled'">
+          <i class="ui fas fa-fw fa-stop brown icon"></i>
+          Canceled<span *ngIf="event.data.message">: {{ event.data.message }}</span>
+        </span>
         <span  *ngSwitchDefault>
           <i class="ui fas fa-fw fa-ban red icon"></i>
           Error<span *ngIf="event.data.message">: {{ event.data.message }}</span>
