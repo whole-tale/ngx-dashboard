@@ -1,7 +1,7 @@
 import { Component, Inject, NgZone, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Job, PublishInfo, Repository, Tale } from '@api/models';
-import { JobService, RepositoryService, TaleService,  } from '@api/services';
+import { Job, PublishInfo, Repository, Tale, Version } from '@api/models';
+import { JobService, RepositoryService, TaleService, VersionService } from '@api/services';
 import { LogService } from '@shared/core';
 
 // import * as $ from 'jquery';
@@ -15,7 +15,10 @@ const DEFAULT_PUBLISHING_MESSAGE = 'Publishing Tale...'
 })
 export class PublishTaleDialogComponent implements OnInit {
   repositories: Array<Repository> = [];
-  selectedRepository: string;
+  selectedRepository = '';
+
+  versions: Array<Version> = [];
+  selectedVersion = '';
 
   publishStatus = 'init';
   lastMessage: string = DEFAULT_PUBLISHING_MESSAGE;
@@ -36,6 +39,7 @@ export class PublishTaleDialogComponent implements OnInit {
     private readonly repositoryService: RepositoryService,
     private readonly taleService: TaleService,
     private readonly jobService: JobService,
+    private readonly versionService: VersionService,
     private readonly logger: LogService,
     @Inject(MAT_DIALOG_DATA) public data: { tale: Tale }) {
 
@@ -60,18 +64,34 @@ export class PublishTaleDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    $('.ui.dropdown').dropdown();
+
     this.repositoryService.repositoryListRepository().subscribe((repos: Array<Repository>) => {
       this.repositories = repos;
-      this.logger.info("Fetched repositories:", repos);
+      this.logger.debug("Fetched repositories:", repos);
 
-      if (!repos.length) {
+      if (!repos?.length) {
         this.logger.warn("No repositories configured.. prompting to route to settings:", repos);
+      }
+    });
+
+    // TODO: is this a safe assumption?
+    // this.selectedVersion = this.data.tale.restoredFrom;
+    this.versionService.versionListVersions({ limit: 0, taleId: this.data.tale._id }).subscribe((versions: Array<Version>) => {
+      this.versions = versions;
+      this.logger.debug("Fetched versions:", versions);
+      if (!versions?.length) {
+        this.logger.warn("No Tale versions have been saved");
       }
     });
   }
 
   trackByRepository(index: number, repo: Repository): string {
     return repo.repository;
+  }
+
+  trackByVersion(index: number, version: Version): string {
+    return version._id;
   }
 
   submitPublish(): void {
@@ -90,6 +110,7 @@ export class PublishTaleDialogComponent implements OnInit {
 
     // TODO: PUT /tale/publish
     const params = {
+      version: this.selectedVersion,
       repository: this.selectedRepository,
       id: this.data.tale._id
     };

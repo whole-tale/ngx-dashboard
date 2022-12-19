@@ -36,10 +36,21 @@
     </a>.
   </p>
 
-  <!-- Target repository selector -->
   <form class="ui form">
+    <!-- Target version selector -->
     <div class="field">
-      <select class="ui selection dropdown" name="selectedRepository" [(ngModel)]="selectedRepository">
+      <select #versionDropdown required class="ui selection dropdown" name="selectedVersion" [(ngModel)]="selectedVersion" [disabled]="publishStatus==='active'">
+        <option value="" *ngIf="versions.length > 0">Select a Version to publish</option>
+        <option value="" *ngIf="!versions?.length">No Tale versions have been saved.</option>
+        <option *ngFor="let version of versions; index as i; trackBy: trackByVersion" [value]="version._id">{{ version.name }}</option>
+      </select>
+    </div>
+
+    <!-- Target repository selector -->
+    <div class="field">
+      <select required class="ui selection dropdown" name="selectedRepository" [(ngModel)]="selectedRepository" [disabled]="publishStatus==='active'">
+        <option value="" *ngIf="repositories.length > 0">Select a target Repository to publish your Tale</option>
+        <option value="" *ngIf="!repositories?.length">No repository credentials have been configured.</option>
         <option *ngFor="let repo of repositories; index as i; trackBy: trackByRepository" [value]="repo.repository">{{ repo.name }}</option>
       </select>
     </div>
@@ -82,7 +93,7 @@
 
 <mat-dialog-actions *ngIf="repositories.length">
   <button class="ui black deny button" [disabled]="publishStatus==='active'" mat-dialog-close>Cancel</button>
-  <button class="ui positive right labeled icon button" [disabled]="publishStatus==='active'" (click)="submitPublish()">
+  <button class="ui positive right labeled icon button" [disabled]="!selectedRepository || !selectedVersion || publishStatus==='active'" (click)="submitPublish()">
     Publish
     <i class="checkmark icon"></i>
   </button>
