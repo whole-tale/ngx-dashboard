@@ -18,6 +18,7 @@
         <div class="ui two stackable doubling selectable special cards">
           <div class="ui card" *ngFor="let tale of filteredRunningTales; index as i; trackBy: trackById">
             <div class="extra content">
+              <div class="right floated meta" (click)="openDeleteTaleModal(tale)"><i class="close icon"></i></div>
               <span style="text-transform:uppercase">
                 {{ tale.copyOfTale ? 'copy' : 'original' }}
               </span>
