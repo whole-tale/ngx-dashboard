@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Job, PublishInfo, Repository, Tale, Version } from '@api/models';
 import { JobService, RepositoryService, TaleService, VersionService } from '@api/services';
 import { LogService } from '@shared/core';
+import TalePublishTaleParams = TaleService.TalePublishTaleParams;
 
 // import * as $ from 'jquery';
 declare var $: any;
@@ -109,11 +110,13 @@ export class PublishTaleDialogComponent implements OnInit {
     }, 3000);
 
     // TODO: PUT /tale/publish
-    const params = {
-      version: this.selectedVersion,
+    const params: TalePublishTaleParams = {
       repository: this.selectedRepository,
       id: this.data.tale._id
     };
+    if (this.selectedVersion) {
+      params.version = this.selectedVersion;
+    }
     this.taleService.talePublishTale(params).subscribe((job: Job) => {
 
       this.zone.run(() => {

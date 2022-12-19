@@ -40,7 +40,7 @@
     <!-- Target version selector -->
     <div class="field">
       <select class="ui selection dropdown" name="selectedVersion" [(ngModel)]="selectedVersion" [disabled]="publishStatus==='active'">
-        <option value="" *ngIf="!versions?.length">No Tale version has been saved. This will publish the Tale's current state.</option>
+        <option value="" *ngIf="versions.length > 0">Select a Tale version, otherwise the Tale's current state will be published.</option>
         <option value="" *ngIf="!versions?.length">No Tale versions have been saved. This will publish the Tale's current state.</option>
         <option *ngFor="let version of versions; index as i; trackBy: trackByVersion" [value]="version._id">{{ version.name }}</option>
       </select>
