@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { EventData } from '@api/events/event-data';
 import { GirderEvent } from '@api/events/girder-event';
+import { JobService } from '@api/services/job.service';
 import { TokenService } from '@api/token.service';
 import { LogService } from '@shared/core';
 import { SyncService } from '@tales/sync.service';
@@ -26,7 +27,8 @@ export class NotificationStreamComponent implements OnInit {
     private readonly logger: LogService,
     private readonly dialog: MatDialog,
     private readonly notificationStream: NotificationStreamService,
-    private readonly tokenService: TokenService
+    private readonly tokenService: TokenService,
+    private readonly jobService: JobService
   ) {}
 
   ngOnInit(): void {
@@ -67,6 +69,22 @@ export class NotificationStreamComponent implements OnInit {
     this.zone.run(() => {
       this.notificationStream.ackAll();
       this.ref.detectChanges();
+    });
+  }
+
+  cancelJob(event: EventData): void {
+    if (!event.data || !event.data || !event.data.resource || !event.data.resource.jobs || !event.data.resource.jobs.length) {
+      this.logger.warn('Warning: Cannot cancel job without IDs');
+
+      return;
+    }
+
+    const jobIds: Array<string> = event.data.resource.jobs;
+    this.logger.debug(`Cancelling jobIds: ${jobIds}`);
+    jobIds.forEach((jobId) => {
+      this.jobService.jobCancelJob(jobId).subscribe((resp) => {
+        this.logger.info(`Job cancelled: ${jobId}`);
+      });
     });
   }
 

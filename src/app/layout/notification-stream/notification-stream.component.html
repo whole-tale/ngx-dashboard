@@ -13,7 +13,7 @@
       <td width="20%"><label class="ui label">{{ event.data.title || event.type }}</label></td>
 
       <!-- TODO: Truncate name -->
-      <td width="30%" *ngIf="event.data.resource.tale_title" [title]="event.data.resource.tale_title">{{ event.data.resource.tale_title | truncate:20 }}</td>
+      <td width="15%" *ngIf="event.data.resource.tale_title" [title]="event.data.resource.tale_title">{{ event.data.resource.tale_title | truncate:20 }}</td>
       <td width="40%" [ngSwitch]="event.data.state">
         <div class="ui small teal indicating progress event-progress nomargin" *ngSwitchCase="'active'">
           <div id="event-progress-{{ event._id }}" class="ui progress">
@@ -34,13 +34,30 @@
           <i class="ui fas fa-fw fa-pause yellow icon"></i>
           Queued<span *ngIf="event.data.message">: {{ event.data.message }}</span>
         </span>
+        <span  *ngSwitchCase="'canceling'">
+          <i class="ui fas fa-fw fas fa-circle-notch fa-spin brown icon"></i>
+          Canceling<span *ngIf="event.data.message">: {{ event.data.message }}</span>
+        </span>
+        <span  *ngSwitchCase="'canceled'">
+          <i class="ui fas fa-fw fa-stop brown icon"></i>
+          Canceled<span *ngIf="event.data.message">: {{ event.data.message }}</span>
+        </span>
         <span  *ngSwitchDefault>
           <i class="ui fas fa-fw fa-ban red icon"></i>
           Error<span *ngIf="event.data.message">: {{ event.data.message }}</span>
         </span>
       </td>
-      <td width="10%">
-          <button (click)="openLogViewerModal(event)" [disabled]="!event.data.resource || !event.data.resource.jobs || !event.data.resource.jobs.length"
+      <td width="5%">
+        <button class="ui tiny negative basic right floated icon button"
+                [disabled]="!event?.data?.resource?.jobs?.length"
+                matTooltip="Cancel"
+                *ngIf="event.data.state === 'active'"
+                (click)="cancelJob(event)">
+          <i class="times icon"></i>
+        </button>
+      </td>
+      <td width="20%">
+          <button (click)="openLogViewerModal(event)" [disabled]="!event?.data?.resource?.jobs?.length"
                 class="ui tiny primary basic right floated button">
             View Logs
           </button>
