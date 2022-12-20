@@ -115,7 +115,7 @@ export class PublishTaleDialogComponent implements OnInit {
       id: this.data.tale._id
     };
     if (this.selectedVersion) {
-      params.version = this.selectedVersion;
+      params.versionId = this.selectedVersion;
     }
     this.taleService.talePublishTale(params).subscribe((job: Job) => {
 
