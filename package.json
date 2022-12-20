@@ -44,7 +44,7 @@
     "compression": "~1.7.3",
     "core-js": "~3.3",
     "debug": "~4.1.1",
-    "express": "~4.16.4",
+    "express": "~4.17.3",
     "jasmine-core": "~3.6.0",
     "lodash": "~4.17.21",
     "ngx-perfect-scrollbar": "~7.1.0",
