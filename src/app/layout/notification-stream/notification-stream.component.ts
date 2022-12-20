@@ -8,7 +8,8 @@ import { LogService } from '@shared/core';
 import { SyncService } from '@tales/sync.service';
 import { EventSourcePolyfill as EventSource } from 'ng-event-source';
 
-import { ViewLogsDialogComponent } from './modals/view-logs-dialog/view-logs-dialog.component';
+import { ViewLogsDialogComponent } from '../../shared/common/components/view-logs-dialog/view-logs-dialog.component';
+
 import { NotificationStreamService } from './notification-stream.service';
 
 // import * as $ from 'jquery';

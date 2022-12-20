@@ -1,12 +1,12 @@
 import { ChangeDetectorRef, Component, NgZone, OnChanges, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiConfiguration } from '@api/api-configuration';
 import { AccessLevel, Instance, Run, Tale, User, Version } from '@api/models';
 import { InstanceService, RunService, TaleService, UserService, VersionService } from '@api/services';
 import { TokenService } from '@api/token.service';
 import { AlertModalComponent } from '@shared/common/components/alert-modal/alert-modal.component';
+import { ViewLogsDialogComponent } from '@shared/common/components/view-logs-dialog/view-logs-dialog.component';
 import { BaseComponent, LogService } from '@shared/core';
 import { CollaboratorList } from '@tales/components/rendered-tale-metadata/rendered-tale-metadata.component';
 import { TaleAuthor } from '@tales/models/tale-author';
@@ -367,6 +367,21 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
           this.logger.info(`Git repo added to ${taleId}:`, gitRepo);
         });
       });
+    }
+
+    viewInstanceLogs(): void {
+      if (!this.instance) {
+        this.logger.debug('No instance detected, cannot view logs');
+
+        return;
+      }
+      // Feed in params needed to fetch instance logs
+      const config: MatDialogConfig = {
+        data: { instance: this.instance },
+      };
+
+      const dialogRef = this.dialog.open(ViewLogsDialogComponent, config);
+      // Do nothing on close
     }
 
     rebuildTale(): void {
