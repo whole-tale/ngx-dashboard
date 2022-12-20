@@ -43,6 +43,7 @@
         <button class="ui tiny negative basic right floated icon button"
                 [disabled]="!event?.data?.resource?.jobs?.length"
                 *ngIf="event.data.state === 'active'"
+                matTooltip="Cancel Running Job"
                 (click)="cancelJob(event)">
           <i class="times icon"></i>
         </button>
