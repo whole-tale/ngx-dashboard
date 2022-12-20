@@ -50,6 +50,7 @@
       <td width="5%">
         <button class="ui tiny negative basic right floated icon button"
                 [disabled]="!event?.data?.resource?.jobs?.length"
+                matTooltip="Cancel"
                 *ngIf="event.data.state === 'active'"
                 (click)="cancelJob(event)">
           <i class="times icon"></i>
