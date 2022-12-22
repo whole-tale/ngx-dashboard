@@ -1,6 +1,6 @@
 {
   "name": "wholetale",
-  "version": "v1.2",
+  "version": "v1.3.dev0",
   "description": "Whole Tale dashboard application",
   "repository": {
     "type": "git",
