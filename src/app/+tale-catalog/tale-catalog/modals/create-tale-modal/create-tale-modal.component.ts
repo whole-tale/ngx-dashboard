@@ -51,11 +51,12 @@ export class CreateTaleModalComponent implements OnInit, AfterViewInit {
       licenseSPDX: 'CC-BY-4.0',
       category: 'science',
       publishInfo: [],
-      dataSet: [],
+      dataSet: (data && data.params && data.params.dataSet) ? JSON.parse(decodeURIComponent(data.params.dataSet)) : [],
       public: false,
       copyOfTale: undefined,
       description: '### Provide a description for your Tale'
     };
+    this.logger.info(this.newTale, data.mode);
     this.mode = data.mode as Mode;
     this.baseUrl = (data && data.params && data.params.api) ? decodeURIComponent(data.params.api) : '';
     if (this.mode === Mode.Git) {
@@ -116,6 +117,10 @@ export class CreateTaleModalComponent implements OnInit, AfterViewInit {
     this.zone.run(() => {
       $('.ui.dropdown').dropdown();
     });
+
+    if (this.newTale.dataSet) {
+      this.found = true;
+    }
 
     if (this.data && this.data.params && this.data.params.uri && this.mode === Mode.AinWT) {
       this.zone.run(() => {

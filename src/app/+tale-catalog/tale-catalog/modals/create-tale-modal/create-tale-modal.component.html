@@ -38,7 +38,7 @@
       </div>
 
       <div *ngIf="!isTale">
-        <div class="field" *ngIf="!datasetCitation && !(mode === 'doi')">
+        <div class="field" *ngIf="!datasetCitation && !(mode === 'doi') && !newTale.dataSet">
           <label>Input Data</label>
           <p>Add data after Tale creation using your chosen compute environment, or the Files tab of your running Tale.</p>
           <!-- <input type="hidden" name="dataSet" [(ngModel)]="newTale.dataSet" /> -->
@@ -47,6 +47,12 @@
           <label>Input Data</label>
           <small>Data Source: {{ datasetCitation.doi }}</small>
           <!-- <input type="hidden" name="dataSet" [(ngModel)]="newTale.dataSet" /> -->
+        </div>
+        <div class="field" *ngIf="newTale.dataSet">
+          <label>Input Data</label>
+          <div *ngFor="let item of newTale.dataSet">
+            <small><p>Girder {{item._modelType}}: {{item.itemId}} mounted to data{{item.mountPath}}</p></small>
+          </div>
         </div>
 
         <div class="field" [hidden]="!datasetCitation">

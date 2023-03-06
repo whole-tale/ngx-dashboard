@@ -85,10 +85,15 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
             this.router.navigate(this.route.snapshot.url, { replaceUrl: true });
 
             this.zone.run(() => {
+              let mode = Mode.Default;
               const modeGit = (queryParams.git ? queryParams.git : 'false') === 'true';
+              if (!queryParams.dataSet) {
+                 mode = modeGit ? Mode.Git : Mode.AinWT;
+              }
+
               const dialogRef = this.dialog.open(CreateTaleModalComponent, {
                 width: '600px',
-                data: { params: queryParams, mode: modeGit ? Mode.Git : Mode.AinWT }
+                data: { params: queryParams, mode }
               });
               dialogRef.afterClosed().subscribe((result: {tale: Tale, asTale: boolean, url: string, baseUrl: string}) => {
                 // Short-circuit for 'Cancel' case
@@ -99,23 +104,35 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
                 const baseUrl = result.baseUrl;
 
                 // Import Tale from Dataset
-                const params = {
-                  url: queryParams.uri ? decodeURIComponent(queryParams.uri) : (result.url ? result.url : ''), // Pull from querystring/form
-                  imageId: tale.imageId, // Pull from user input
-                  asTale: asTale ? asTale : false, // Pull from user input
-                  git: modeGit,
-                  spawn: false, // if true, immediately launch a Tale instance
-                  taleKwargs: tale.title ? { title: tale.title } : {},
-                  lookupKwargs: baseUrl ? { base_url: baseUrl } : {},
-                };
-                this.taleService.taleCreateTaleFromUrl(params).subscribe((response: Tale) => {
-                  this.logger.debug("Successfully submitted 'Analyze in WT' Job:", response);
-                  this.taleCreated.emit(response);
-                  this.router.navigate(['run', response._id]);
-                }, err => {
-                  this.logger.error("Failed to create Tale from Dataset:", err);
-                  this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
-                });
+                if (mode === Mode.Git || mode === Mode.AinWT || mode === Mode.DOI) {
+                  const params = {
+                    url: queryParams.uri ? decodeURIComponent(queryParams.uri) : (result.url ? result.url : ''), // Pull from querystring/form
+                    imageId: tale.imageId, // Pull from user input
+                    asTale: asTale ? asTale : false, // Pull from user input
+                    git: modeGit,
+                    spawn: false, // if true, immediately launch a Tale instance
+                    taleKwargs: tale.title ? { title: tale.title } : {},
+                    lookupKwargs: baseUrl ? { base_url: baseUrl } : {},
+                  };
+                  this.taleService.taleCreateTaleFromUrl(params).subscribe((response: Tale) => {
+                    this.logger.debug("Successfully submitted 'Analyze in WT' Job:", response);
+                    this.taleCreated.emit(response);
+                    this.router.navigate(['run', response._id]);
+                  }, err => {
+                    this.logger.error("Failed to create Tale from Dataset:", err);
+                    this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
+                  });
+                } else {
+                  // Create classic Tale
+                  this.taleService.taleCreateTale(tale).subscribe((response: Tale) => {
+                    this.logger.debug("Successfully created Tale:", response);
+                    this.taleCreated.emit(response);
+                    this.router.navigate(['run', response._id]);
+                  }, err => {
+                    this.logger.error("Failed to create Tale:", err);
+                    this.dialog.open(ErrorModalComponent, { data: { error: err.error } });
+                  });
+                }
               });
             });
           }
