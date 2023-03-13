@@ -15,7 +15,9 @@ import { EventData } from '@api/events/event-data';
 import { User } from '@api/models/user';
 import { OauthService } from '@api/services/oauth.service';
 import { UserService } from '@api/services/user.service';
+import { WholetaleService } from '@api/services/wholetale.service';
 import { TokenService } from '@api/token.service';
+import { ApiConfiguration } from '@api/api-configuration';
 import { BaseComponent, LogService } from '@shared/core';
 import { CookieService } from 'ngx-cookie-service';
 import { Subscription } from 'rxjs';
@@ -41,8 +43,12 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
   isAuthenticated: boolean; // TODO: access only through getter
   currentRoute = '';
   userSubscription: Subscription;
+  settingsSubscription: Subscription;
   @ViewChild('userDropdown') userDropdown: ElementRef;
   // events: Array<EventData>;
+  apiRoot: string;
+  settings: Map<string, string>;
+  logoUrl: string;
 
   @Output() readonly toggledNotificationStream: EventEmitter<Boolean> = new EventEmitter<Boolean>();
 
@@ -56,9 +62,15 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
     private readonly oauth: OauthService,
     private readonly users: UserService,
     private readonly notificationStream: NotificationStreamService,
+    private readonly wholetaleService: WholetaleService,
+    private config: ApiConfiguration,
     public tokenService: TokenService
   ) {
     super();
+
+    this.apiRoot = this.config.rootUrl;
+    this.logger.info('Using apiRoot', this.apiRoot);
+    this.refreshSettings();
 
     this.router.events.subscribe((value) => {
       if (value instanceof NavigationEnd) {
@@ -70,6 +82,21 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
   ngOnInit(): void {
     this.title = 'APP_NAME';
     this.subtitle = 'TALE';
+     
+
+    this.settingsSubscription = this.wholetaleService.wholetaleGetSettings().subscribe((settings: Map<string, string>) => {
+      this.settings = settings;
+      if (settings['wholetale.logo']) {
+         this.logoUrl = this.apiRoot + "/" + settings['wholetale.logo'];
+      }
+
+      this.ref.detectChanges();
+
+      this.logger.info('Fetched settings:', settings);
+      this.logger.info('Using logoUrl:', this.logoUrl);
+    }, (err: any) => {
+      this.logger.error('Failed to fetch settings:', err);
+    });
 
     this.userSubscription = this.tokenService.currentUser.subscribe((user) => {
       this.user = user;
@@ -89,6 +116,7 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
   ngOnDestroy(): void {
     super.ngOnDestroy();
     this.userSubscription?.unsubscribe();
+    this.settingsSubscription?.unsubscribe();
   }
 
   logout(): void {
@@ -173,6 +201,20 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
     }
 
     return this.events.length;
+  }
+
+  refreshSettings(): void {
+    this.wholetaleService.wholetaleGetSettings().subscribe((settings: Map<string, string>) => {
+      this.settings = settings;
+      if (settings['wholetale.logo']) {
+         this.logoUrl = this.apiRoot + "/" + settings['wholetale.logo'];
+      }
+
+      this.logger.info('Fetched wholetale settings:', settings);
+      this.logger.info('Using logoUrl:', this.logoUrl);
+    }, (err: any) => {
+      this.logger.error('Failed to fetch wholetale settings:', err);
+    });
   }
 
   get docUrl(): string {
