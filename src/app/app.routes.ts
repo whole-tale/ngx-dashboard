@@ -9,6 +9,10 @@ export const routes = [
     component: MainComponent,
     children: [
       {
+        path: 'environments',
+        loadChildren: () => import('./+compute-environments/compute-environments.module').then((m) => m.ComputeEnvironmentsModule),
+      },
+      {
         path: 'run',
         loadChildren: () => import('./+run-tale/run-tale.module').then((m) => m.RunTaleModule),
       },

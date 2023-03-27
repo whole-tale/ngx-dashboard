@@ -1,0 +1,87 @@
+<div fxLayoutAlign="center" [@routeAnimation]>
+  <div class="ui stackable grid container">
+    <!-- <div class="row">
+        <div class="sixteen wide column">
+            <div class="ui secondary pointing menu">
+                <a href="browse-env.html" class="active item">
+            Public Environments
+        </a>
+                <a href="" class="item">
+            My Environments
+        </a>
+                <div class="right menu">
+                    <div class="item">
+                        <div class="ui primary right labeled icon button" id="add-env">
+                            Add Environment
+                            <i class="plus icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <div class="row">
+      <div class="sixteen wide column">
+
+        <div class="ui fluid icon wt-input input" style="margin-bottom:1em">
+          <input type="text" placeholder="Search WholeTale Environments...">
+          <i class="search icon"></i>
+        </div>
+
+        <div class="ui styled fluid accordion" *ngFor="let environment of environments; index as index">
+          <span>
+            <div class="title">
+              <div class="label">
+                <img [src]="environment.icon" alt="RStudio">
+              </div>
+              <div class="listing">
+                <h3>{{ environment.name }}</h3> {{ environment.description }}
+              </div>
+              <!--<div class="ui floating dropdown theme" tabindex="0">
+                <i class="fas fa-ellipsis-v"></i>
+                <div class="menu transition hidden" tabindex="-1">
+                  <div class="item">Save to My Environments</div>
+                  <a class="item">Use in Existing Tale</a>
+                  <a class="item">Create New Tale</a>
+                </div>
+              </div>-->
+            </div>
+            <div class="content">
+            <div class="ui list transition hidden">
+              <div class="ui stackable grid">
+                <div class="ui six wide column">
+                  <div class="item">
+                    <b>Name:</b> {{ environment.name }}
+                  </div>
+                  <div class="item" *ngIf="environment.description">
+                    <b>Description:</b> {{ environment.description }}
+                  </div>
+                  <div class="item" *ngIf="environment | taleCreator | async as creator">
+                    <b>Creator:</b>
+                    <img *ngIf="creator.gravatar_baseUrl" alt="avatar" [src]="creator.gravatar_baseUrl" />
+                    {{ creator.firstName }} {{ creator.lastName }}
+                  </div>
+                  <div class="item">
+                    <b>Is Public:</b> {{ environment.public ? 'Yes' : 'No' }}
+                  </div>
+                </div>
+                <div class="ui ten wide column">
+                  <div class="item">
+                    <b>Configuration:</b>
+                    <div class="ui message">
+                      <pre>{{ environment.config | json }}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          </span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
