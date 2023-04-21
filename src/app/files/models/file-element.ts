@@ -67,7 +67,7 @@ export class FileElement implements FileElement {
   public = false;
 
   // folders only
-  parentCollection = 'folder';
+  parentCollection: string;
   parentId?: string;
 
   // items only
@@ -92,6 +92,7 @@ export class FileElement implements FileElement {
       this._accessLevel = tale._accessLevel;
       this.public = tale.public;
       this.parentId = root._id;
+      this.parentCollection = 'folder';
     }
   }
 }
