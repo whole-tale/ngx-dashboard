@@ -3,7 +3,7 @@
 <mat-dialog-content>
   <div class="ui grid">
     <div class="row">
-      <div class="four wide column">
+      <div class="four wide column" *ngIf="!enableDataCatalog">
         <div class="ui vertical menu fluid dta">
           <a class="item" [ngClass]="{ 'active': isNavActive('mine') }" (click)="activateNav('mine')">
             <p style="margin-bottom:0">My External Data</p>
@@ -16,7 +16,7 @@
         </div>
       </div>
 
-      <div class="six wide column" style="padding: 20px 20px 40px 0;">
+      <div [ngClass]="enableDataCatalog ? 'eight wide column': 'six wide column'" style="padding: 20px 20px 40px 0;">
         <button class="ui basic primary left floated small button" (click)="addSelectedDatasets()">Add Selected <i class="fas fa-chevron-right fa-fw"></i></button>
         <table class="ui compact striped table">
           <!-- If dataset is selected, show the name of the dataset as the header -->
@@ -29,9 +29,18 @@
               </span>
             </th>
           </thead>
+          <thead *ngIf="selectedCollection">
+            <th colspan="5" class="ui sub header collapsing noselect clickable blue" (click)="navigateUp()">
+              <span class="long alternate blue">
+                <i class="horizontally flipped level up icon"></i>
+                <span *ngIf="currentRoot && currentRoot._id === selectedCollection._id">{{ selectedCollection.name | truncate:40 }}</span>
+                <span *ngIf="currentRoot && currentRoot._id !== selectedCollection._id">{{ currentRoot.name | truncate:40 }}</span>
+              </span>
+            </th>
+          </thead>
 
           <!-- If dataset is selected, browse folders/files within the dataset -->
-          <tbody *ngIf="selectedDataset">
+          <tbody *ngIf="selectedDataset || selectedCollection">
             <tr *ngFor="let elem of (folders | async).concat(files | async); index as i; trackBy:trackById"
                 [ngClass]="{ 'clickable': elem._modelType === 'folder', 'active': isSelected(elem, datasetsToAdd) }" (click)="toggledCheckbox($event, elem, datasetsToAdd)" (dblclick)="navigateToFolder(elem)">
               <td class="icon-column"><i class="fas fa-fw" [ngClass]="{ 'fa-folder': elem._modelType === 'folder', 'fa-file': elem._modelType === 'item' || elem._modelType === 'file' }"></i></td>
@@ -42,7 +51,7 @@
           </tbody>
 
           <!-- If no dataset is selected, browse datasets -->
-          <tbody *ngIf="!selectedDataset">
+          <tbody *ngIf="!selectedDataset && !enableDataCatalog">
             <tr>
                 <td class="ui sub header collapsing noselect" colspan="2">DATA CATALOG</td>
             </tr>
@@ -54,11 +63,24 @@
               <td [title]="dataset.updated">{{ dataset.updated | date }}</td>-->
             </tr>
           </tbody>
+
+          <tbody *ngIf="!selectedCollection && enableDataCatalog">
+            <tr>
+                <td class="ui sub header collapsing noselect" colspan="2">Data Catalog</td>
+            </tr>
+            <tr  *ngFor="let collection of skipSystemCollections(collections | async); index as i; trackBy:trackById"
+                [ngClass]="{ 'clickable': true, 'active': false }"
+                (dblclick)="navigateIntoCollection(collection)">
+              <td class="icon-column"><i class="fas fa-fw fa-folder"></i></td>
+              <td>{{ collection.name | truncate:40 }}</td>
+            </tr>
+          </tbody>
+
         </table>
       </div>
 
 
-      <div class="six wide column" style="padding: 20px 20px 40px 0;">
+      <div [ngClass]="enableDataCatalog ? 'eight wide column': 'six wide column'" style="padding: 20px 20px 40px 0;">
 
         <button class="ui basic primary right floated small button" (click)="removeSelectedDatasets()"><i class="fas fa-chevron-left fa-fw"></i> Remove Selected</button>
         <table class="ui compact striped table">

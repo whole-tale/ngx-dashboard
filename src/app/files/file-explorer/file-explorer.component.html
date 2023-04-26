@@ -28,7 +28,7 @@
         </span>
         WT Data Catalog
       </div>
-      <div class="item" *ngIf="currentNav === 'external_data'" (click)="openRegisterDataDialog($event)">
+      <div class="item" *ngIf="currentNav === 'external_data' && !enableDataCatalog" (click)="openRegisterDataDialog($event)">
         <i class="fas fa-fw fa-2x fa-file-import"></i> Web (DOI or URL)
       </div>
       <div class="item" *ngIf="currentNav === 'tale_workspace'" (click)="openTaleWorkspacesDialog($event)">

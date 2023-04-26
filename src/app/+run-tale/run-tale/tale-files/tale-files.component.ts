@@ -13,7 +13,8 @@ import {
   RunService,
   TaleService,
   UserService,
-  VersionService
+  VersionService,
+  WholetaleService
 } from '@api/services';
 import { TokenService } from '@api/token.service';
 import { FileElement } from '@files/models/file-element';
@@ -97,6 +98,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
 
   updateSubscription: Subscription;
   fetching = false;
+  enableDataCatalog = false;
 
   currentFolderForkJoinSub: Subscription;
   homeFolderForkJoinSub: Subscription;
@@ -122,6 +124,7 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
     public tokenService: TokenService,
     private runService: RunService,
     private versionService: VersionService,
+    private readonly wholetaleService: WholetaleService,
     private truncate: TruncatePipe,
     private dialog: MatDialog
   ) {}
@@ -157,6 +160,12 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
           this.logger.debug('Skipping loading home root since user is not logged in.')
         }
       });
+
+    this.wholetaleService.wholetaleGetSettings().subscribe((settings: Map<string, any>) => {
+      if (settings !== undefined && settings['wholetale.enable_data_catalog'] !== undefined) {
+        this.enableDataCatalog = settings['wholetale.enable_data_catalog'];
+      }
+    });
   }
 
   ngOnChanges(): void {
@@ -903,7 +912,8 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   openSelectDataModal(event: Event): void {
-    const dialogRef = this.dialog.open(SelectDataDialogComponent, { data: { tale: this.tale } });
+    const dialogRef = this.dialog.open(
+      SelectDataDialogComponent, { data: { tale: this.tale, enableDataCatalog: this.enableDataCatalog } });
     dialogRef.afterClosed().subscribe((datasets: Array<Selectable>) => {
       if (!datasets) { return; }
 

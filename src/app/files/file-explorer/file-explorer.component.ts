@@ -87,6 +87,7 @@ export class FileExplorerComponent implements OnChanges {
   @Input() allowRoot = false;
   @Input() showButtons = true;
   @Input() showContextMenu = true;
+  @Input() enableDataCatalog = false;
 
   // List of folders/files in the current folder
   @Input() fileElements: Array<FileElement>;
