@@ -5,7 +5,7 @@
 		{{ settings["core.brand_name"] }}
 	</a>
     <a class="item" [ngClass]="{ 'active':currentRoute==='/mine' || currentRoute==='/public' || currentRoute==='/shared' }" [routerLink]="user ? '/mine' : '/public'" routerLinkActive="active">Tale Dashboard</a>
-    <a class="item" href="https://girder.local.wholetale.org/" *ngIf="settings['wholetale.enable_data_catalog']">{{ settings["wholetale.catalog_link_title"] }}</a>
+    <a class="item" [href]="dataUrl" *ngIf="settings['wholetale.enable_data_catalog']">{{ settings["wholetale.catalog_link_title"] }}</a>
     <!-- <a class="item" [ngClass]="{ 'active':currentRoute==='/datasets' }" routerLink="/datasets" routerLinkActive="active">Data Catalog</a> -->
     <!-- <a class="item" [ngClass]="{ 'active':currentRoute==='/environments' }" routerLink="/environments" routerLinkActive="active">Compute Environments</a> -->
     <div class="right menu">
