@@ -52,7 +52,7 @@ declare global {
     MaterialModule,
     FontAwesomeModule,
     NotificationStreamModule,
-    ApiModule.forRoot({ rootUrl: window.env.apiUrl }),
+    ApiModule.forRoot({ rootUrl: window.env.apiUrl, authProvider: window.env.authProvider }),
   ],
   declarations: [HeaderComponent, FooterComponent, MainComponent, AppComponent],
   providers: [

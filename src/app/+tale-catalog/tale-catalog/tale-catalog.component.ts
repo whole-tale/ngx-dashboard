@@ -1,6 +1,7 @@
 import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ApiConfiguration } from '@api/api-configuration';
 import { Tale } from '@api/models/tale';
 import { User } from '@api/models/user';
 import { OauthService } from '@api/services/oauth.service';
@@ -37,6 +38,7 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
       private route: ActivatedRoute,
       private ref: ChangeDetectorRef,
       private oauth: OauthService,
+      private readonly config: ApiConfiguration,
       public tokenService: TokenService,
       public dialog: MatDialog
     ) {
@@ -73,9 +75,9 @@ export class TaleCatalogComponent extends BaseComponent implements AfterViewInit
 
             // FIXME: is it ok to use window.location.origin here?
             const params = { redirect: `${window.location.origin}/?token={girderToken}&rd=${redirect}`, list: false };
-            this.oauth.oauthListProviders(params).subscribe((providers: { Globus: string, Github: string }) => {
+            this.oauth.oauthListProviders(params).subscribe((providers: Map<String, String>) => {
                 // TODO: How to support multiple providers here?
-                window.location.href = providers.Globus;
+                window.location.href = providers[this.config.authProvider];
               },
               (err) => {
                 this.logger.error('Failed to GET /oauth/providers:', err);

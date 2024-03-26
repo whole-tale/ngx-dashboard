@@ -27,9 +27,9 @@ export class TokenInterceptor implements HttpInterceptor {
 
     const params = { redirect: `${window.location.origin}/?token={girderToken}&rd=${redirect}`, list: false };
     this.oauth.oauthListProviders(params).subscribe(
-      (providers: { Globus: string; Github: string }) => {
+      (providers: Map<string, string>) => {
         // TODO: How to support multiple providers here?
-        window.location.href = providers.Globus;
+        window.location.href = providers[this.config.authProvider];
       },
       (err) => {
         this.logger.error('Failed to GET /oauth/providers:', err);
