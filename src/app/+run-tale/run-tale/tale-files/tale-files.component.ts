@@ -714,9 +714,9 @@ export class TaleFilesComponent implements OnInit, OnChanges, OnDestroy {
                       .pipe(enterZone(this.zone))
                       .subscribe(
       newFolder => {
-        //const folders = this.folders.value;
-        //folders.push(newFolder);
-        //this.folders.next(folders);
+        // const folders = this.folders.value;
+        // folders.push(newFolder);
+        // this.folders.next(folders);
 
         this.load();
       },

@@ -49,6 +49,12 @@ export class AboutComponent extends BaseComponent implements OnInit {
 
     this.isAuthenticated = false; // this.auth.isAuthenticated;
 
+    const girderToken = this.cookies.get('girderToken');
+    if (girderToken) {
+      this.tokenService.setToken(girderToken);
+      // this.login();
+    }
+
     // Try to scrape token from query string param
     const token = this.route.snapshot.queryParams.token;
     if (token) {

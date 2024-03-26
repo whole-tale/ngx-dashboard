@@ -71,7 +71,6 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
 
     this.apiRoot = this.config.rootUrl;
     this.logger.info('Using apiRoot', this.apiRoot);
-    this.refreshSettings();
 
     this.dataUrl = this.config.rootUrl.replace('/api/v1', '/');
 
@@ -103,6 +102,11 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
       }
     );
 
+    const girderToken = this.cookies.get('girderToken');
+    if (girderToken) {
+      this.tokenService.setToken(girderToken);
+    }
+
     this.userSubscription = this.tokenService.currentUser.subscribe((user) => {
       this.user = user;
 
@@ -128,6 +132,8 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
     this.isAuthenticated = false;
     this.tokenService.user.next(undefined);
     this.cookies.deleteAll();
+    const domain = `.${window.location.hostname.split('.').slice(1).join('.')}`;
+    this.cookies.delete('girderToken', '/', domain, true, 'None');
     this.tokenService.clearToken();
 
     this.ref.detectChanges();
@@ -142,7 +148,7 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
     // this.toggledNotificationStream.emit();
   }
 
-  loginWith(provider: string): void {
+  loginWith(provider?: string): void {
     // Set return route to current route
     // this.tokenService.setReturnRoute(this.currentRoute);
     const redirect = encodeURIComponent(window.location.pathname + window.location.search);
@@ -150,8 +156,8 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
     // FIXME: is it ok to use window.location.origin here?
     const params = { redirect: `${window.location.origin}/?token={girderToken}&rd=${redirect}`, list: false };
     this.oauth.oauthListProviders(params).subscribe(
-      (providers: any) => {
-        window.location.href = providers[provider];
+      (providers: Map<String, String>) => {
+        window.location.href = provider ? providers[provider] : providers[this.config.authProvider];
       },
       (err) => {
         this.logger.error('Failed to GET /oauth/providers:', err);
@@ -206,23 +212,6 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
     }
 
     return this.events.length;
-  }
-
-  refreshSettings(): void {
-    this.wholetaleService.wholetaleGetSettings().subscribe(
-      (settings: Map<string, string>) => {
-        this.settings = settings;
-        if (settings['wholetale.logo']) {
-          this.logoUrl = `${this.apiRoot}/${settings['wholetale.logo']}`;
-        }
-
-        this.logger.info('Fetched wholetale settings:', settings);
-        this.logger.info('Using logoUrl:', this.logoUrl);
-      },
-      (err: any) => {
-        this.logger.error('Failed to fetch wholetale settings:', err);
-      }
-    );
   }
 
   get docUrl(): string {
