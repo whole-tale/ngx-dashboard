@@ -204,6 +204,7 @@ class TaleService extends __BaseService {
     let __body: any = null;
 
     if (params.progress != null) __params = __params.set('progress', params.progress.toString());
+    if (params.force != null) __params = __params.set('force', params.force.toString());
     let req = new HttpRequest<any>('DELETE', this.rootUrl + `/tale/${params.id}`, __body, {
       headers: __headers,
       params: __params,
@@ -730,6 +731,11 @@ module TaleService {
      * Whether to record progress on this task.
      */
     progress?: boolean;
+
+    /**
+     * Whether to force deletion when Instances of this Tale still exist.
+     */
+    force?: boolean;
   }
 
   /**
