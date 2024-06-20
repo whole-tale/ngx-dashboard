@@ -6,4 +6,5 @@
   window['env']['dataONEBaseUrl'] = '${DATAONE_URL}';
   window['env']['authProvider'] = '${AUTH_PROVIDER}';
   window['env']['rtdBaseUrl'] = '${RTD_URL}';
+  window['env']['banner'] = '${BANNER}';
 })(this);
