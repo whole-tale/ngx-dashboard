@@ -5,6 +5,7 @@ import { ApiModule } from '@api/api.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
+import { CustomSnackbarComponent } from '@layout/customsnackbar.component';
 import { FooterComponent } from '@layout/footer.component';
 import { HeaderComponent } from '@layout/header.component';
 import { MainComponent } from '@layout/main.component';
@@ -31,6 +32,7 @@ declare global {
       dataONEBaseUrl: string;
       authProvider: string;
       rtdBaseUrl: string;
+      banner: string;
     };
 
     alert(msg: string): void;
@@ -54,7 +56,7 @@ declare global {
     NotificationStreamModule,
     ApiModule.forRoot({ rootUrl: window.env.apiUrl, authProvider: window.env.authProvider }),
   ],
-  declarations: [HeaderComponent, FooterComponent, MainComponent, AppComponent],
+  declarations: [CustomSnackbarComponent, HeaderComponent, FooterComponent, MainComponent, AppComponent],
   providers: [
     {
       provide: PERFECT_SCROLLBAR_CONFIG,

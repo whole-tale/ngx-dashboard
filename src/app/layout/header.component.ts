@@ -10,6 +10,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ApiConfiguration } from '@api/api-configuration';
 import { EventData } from '@api/events/event-data';
@@ -22,6 +23,7 @@ import { BaseComponent, LogService } from '@shared/core';
 import { CookieService } from 'ngx-cookie-service';
 import { Subscription } from 'rxjs';
 
+import { CustomSnackbarComponent } from './customsnackbar.component';
 import { NotificationStreamService } from './notification-stream/notification-stream.service';
 
 // import * as $ from 'jquery';
@@ -65,6 +67,7 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
     private readonly notificationStream: NotificationStreamService,
     private readonly wholetaleService: WholetaleService,
     private readonly config: ApiConfiguration,
+    private readonly snackBar: MatSnackBar,
     public tokenService: TokenService
   ) {
     super();
@@ -111,6 +114,12 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
       this.user = user;
 
       this.ref.detectChanges();
+      if (window.env.banner === 'true' && this.user) {
+        this.snackBar.openFromComponent(CustomSnackbarComponent, {
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+        });
+      }
 
       setTimeout(() => {
         $('#userDropdown').dropdown({ action: 'hide' });
