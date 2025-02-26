@@ -41,10 +41,6 @@ export class AuthGuard implements CanActivateChild, CanActivate, CanLoad {
 
   // Returns true if the user is logged in
   checkAuth(): boolean {
-    const girderToken = this.cookies.get('girderToken');
-    if (girderToken) {
-      this.tokenService.setToken(girderToken);
-    }
     if (this.token && this.user) {
       // Shortcut for token and user already fetched
       return true;
@@ -65,7 +61,7 @@ export class AuthGuard implements CanActivateChild, CanActivate, CanLoad {
     this.logger.info(`Restricted route is prohibited, routing to signin... ${redirect}`);
 
     // FIXME: is it ok to use window.location.origin here?
-    const params = { redirect: `${window.location.origin}/?token={girderToken}&rd=${redirect}`, list: false };
+    const params = { redirect: `${window.location.origin}/?girderToken={girderToken}&rd=${redirect}`, list: false };
     this.oauth.oauthListProviders(params).subscribe(
       (providers: Map<string, string>) => {
         // TODO: How to support multiple providers here?

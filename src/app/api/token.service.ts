@@ -29,6 +29,7 @@ export class TokenService {
     return this.currentUser;
   }
   setToken(token: string): void {
+    this.logger.warn('Setting token:', token);
     localStorage.setItem('girderToken', token);
   }
   getToken(): string {

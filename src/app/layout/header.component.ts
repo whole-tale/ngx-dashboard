@@ -102,11 +102,6 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
       }
     );
 
-    const girderToken = this.cookies.get('girderToken');
-    if (girderToken) {
-      this.tokenService.setToken(girderToken);
-    }
-
     this.userSubscription = this.tokenService.currentUser.subscribe((user) => {
       this.user = user;
 
@@ -154,7 +149,7 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
     const redirect = encodeURIComponent(window.location.pathname + window.location.search);
 
     // FIXME: is it ok to use window.location.origin here?
-    const params = { redirect: `${window.location.origin}/?token={girderToken}&rd=${redirect}`, list: false };
+    const params = { redirect: `${window.location.origin}/?girderToken={girderToken}&rd=${redirect}`, list: false };
     this.oauth.oauthListProviders(params).subscribe(
       (providers: Map<String, String>) => {
         window.location.href = provider ? providers[provider] : providers[this.config.authProvider];
@@ -167,7 +162,7 @@ export class HeaderComponent extends BaseComponent implements OnInit, OnDestroy,
 
   loginViaQueryStringToken(): void {
     // Try to scrape token / redirect from query string param
-    const token = this.route.snapshot.queryParams.token;
+    const token = this.route.snapshot.queryParams.girderToken;
     if (token) {
       this.tokenService.setToken(token);
     }

@@ -48,15 +48,8 @@ export class AboutComponent extends BaseComponent implements OnInit {
     $('.ui.accordion').accordion();
 
     this.isAuthenticated = false; // this.auth.isAuthenticated;
-
-    const girderToken = this.cookies.get('girderToken');
-    if (girderToken) {
-      this.tokenService.setToken(girderToken);
-      // this.login();
-    }
-
     // Try to scrape token from query string param
-    const token = this.route.snapshot.queryParams.token;
+    const token = this.route.snapshot.queryParams.girderToken;
     if (token) {
       this.tokenService.setToken(token);
       // tslint:disable-next-line:comment-type
@@ -116,7 +109,7 @@ export class AboutComponent extends BaseComponent implements OnInit {
     const redirect = encodeURIComponent(window.location.pathname + window.location.search);
 
     // FIXME: is it ok to use window.location.origin here?
-    const params = { redirect: `${window.location.origin}/?token={girderToken}&rd=${redirect}`, list: false };
+    const params = { redirect: `${window.location.origin}/?girderToken={girderToken}&rd=${redirect}`, list: false };
     this.oauth.oauthListProviders(params).subscribe(
       (providers: any) => {
         window.location.href = providers[provider];

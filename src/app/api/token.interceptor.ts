@@ -25,7 +25,7 @@ export class TokenInterceptor implements HttpInterceptor {
     // route to login, redirect back here after auth
     const redirect = encodeURIComponent(window.location.pathname + window.location.search);
 
-    const params = { redirect: `${window.location.origin}/?token={girderToken}&rd=${redirect}`, list: false };
+    const params = { redirect: `${window.location.origin}/?girderToken={girderToken}&rd=${redirect}`, list: false };
     this.oauth.oauthListProviders(params).subscribe(
       (providers: Map<string, string>) => {
         // TODO: How to support multiple providers here?
