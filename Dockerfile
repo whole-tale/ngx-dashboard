@@ -9,7 +9,7 @@
 #
 
 # Perform build in the "nodebuild" container
-FROM node:fermium as nodebuild
+FROM node:fermium AS nodebuild
 WORKDIR /srv/app/
 ARG NODE_OPTIONS=--max-old-space-size=4096
 ARG TIMEOUT=360000
@@ -24,10 +24,14 @@ COPY . ./
 RUN ./node_modules/@angular/cli/bin/ng build --configuration production --no-aot --build-optimizer false
 
 # Copy built artifacts from "nodebuild" to nginx
-FROM nginx:stable-alpine
+FROM nginxinc/nginx-unprivileged:stable-alpine
+
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+USER root
 RUN rm -rf /usr/share/nginx/html/*
 COPY --from=nodebuild /srv/app/dist/* /usr/share/nginx/html/
 COPY ./entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+RUN echo "" > /usr/share/nginx/html/assets/env.js && chown nginx:nginx /usr/share/nginx/html/assets/env.js
+USER nginx
 ENTRYPOINT ["/entrypoint.sh"]
