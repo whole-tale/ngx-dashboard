@@ -1,8 +1,10 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectorRef, Component, Input, NgZone, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AccessLevel, Instance, Tale, User } from '@api/models';
 import { InstanceService, TaleService, UserService } from '@api/services';
 import { TokenService } from '@api/token.service';
+import { ConfirmationModalComponent } from '@shared/common/components/confirmation-modal/confirmation-modal.component';
 import { LogService } from '@shared/core/log.service';
 import { TaleAuthor } from '@tales/models/tale-author';
 import { SyncService } from '@tales/sync.service';
@@ -204,10 +206,33 @@ export class PublicTalesComponent implements OnChanges, OnInit, OnDestroy {
 
         this.tales = this.tales.filter((t: Tale) => t._id !== id);
         this.ref.detectChanges();
-      }, err => {
+      }, (err: HttpErrorResponse) => {
+        if (err.status === 409) {
+          const confirmRef = this.dialog.open(ConfirmationModalComponent, {
+            data: {
+              content: [
+                'This Tale still has running instances.',
+                'Deleting this Tale will terminate the running instances.',
+                'This cannot be undone.',
+                '',
+                'Are you sure?'
+              ]
+            }
+          });
+          confirmRef.afterClosed().subscribe(confirmResult => {
+            if (confirmResult) {
+              this.taleService.taleDeleteTale({ id, force: true }).subscribe(deleted => {
+                this.tales = this.tales.filter((t: Tale) => t._id !== id);
+                this.ref.detectChanges();
+              }, (confirmErr) => {
+                this.logger.error("Failed to force deletion of Tale:", confirmErr);
+              });
+            }
+          });
+        } else {
           this.logger.error("Failed to delete Tale:", err);
+        }
       });
     });
   }
-
 }
