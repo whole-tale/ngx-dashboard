@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { Image } from '@api/models/image';
 import { Tale } from '@api/models/tale';
 import { UserService } from '@api/services/user.service';
 import { EMPTY, Observable } from 'rxjs';
@@ -9,7 +10,7 @@ import { EMPTY, Observable } from 'rxjs';
 export class TaleCreatorPipe implements PipeTransform {
   constructor(private readonly userService: UserService) {}
 
-  transform(value: Tale): Observable<any> {
+  transform(value: Tale | Image): Observable<any> {
     if (!value || !value.creatorId) {
       return EMPTY;
     }
