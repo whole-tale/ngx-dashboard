@@ -4,55 +4,35 @@
  */
 export interface EventData {
   // ID of this message
-  _id: string;
+  /* type=wt_tale_updated */
+  modelType?: string; // The type of model this update affects
 
-  // Current time on the Girder server
-  _girderTime: number;
+  // Message payload
+  state: string; // status of the overall operation
+  title: string; // unused - effectively a friendly job name= (e.g. "Creating instance")
 
-  // Type of the message (we are only interested in type=="wt_progress")
-  type: string;
+  // Progress indication
+  current: number; // Current step number
+  total: number; // Total step number
+  message: string; // Step progress message
 
-  // Who is this message for?
-  userId: string;
+  // Time indication
+  estimateTime: boolean; // True if a time estimate is provided
 
-  // Timing attributes for this message
-  startTime: number;
-  expires: Date;
-  time: Date;
-  updated: Date;
-  updatedTime: number;
-
-  // Data payload for the message
-  data: {
-    /* type=wt_tale_updated */
-    modelType?: string; // The type of model this update affects
-
-    // Message payload
-    state: string; // status of the overall operation
-    title: string; // unused - effectively a friendly job name= (e.g. "Creating instance")
-
-    // Progress indication
-    current: number; // Current step number
-    total: number; // Total step number
-    message: string; // Step progress message
-
-    // Time indication
-    estimateTime: boolean; // True if a time estimate is provided
-
-    // Our custom resource, which includes associated IDs relevant to this message
-    event: string;
-    resourceName: string;
-    affectedResourceIds: {
-      instanceId: string;
-      taleId: string;
-    };
-    resource: {
-      /* type=wt_progress */
-      instance_id?: string; // ID of the Instance for which this message is relevant
-      jobs?: Array<string>; // Job IDs associated with this progress update
-      tale_id?: string; // ID of the Tale for which this message is relevant
-      tale_title?: string; // Title of the Tale
-      type?: string; // WT job name (e.g. "wt_create_instance")
-    };
+  // Our custom resource, which includes associated IDs relevant to this message
+  event: string;
+  resourceName: string;
+  affectedResourceIds: {
+    instanceId: string;
+    taleId: string;
+  };
+  resource: {
+    /* type=wt_progress */
+    _id?: string; // ID of the resource this message is about
+    instance_id?: string; // ID of the Instance for which this message is relevant
+    jobs?: Array<string>; // Job IDs associated with this progress update
+    tale_id?: string; // ID of the Tale for which this message is relevant
+    tale_title?: string; // Title of the Tale
+    type?: string; // WT job name (e.g. "wt_create_instance")
   };
 }

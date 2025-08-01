@@ -144,7 +144,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       }
 
       this.taleService.taleGetTaleAccess(this.taleId).subscribe((resp: any) => {
-        this.logger.info("Fetched collaborators:", resp);
+        this.logger.debug("Fetched collaborators:", resp);
         this.collaborators = resp;
         this.ref.detectChanges();
 
@@ -173,7 +173,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       this.logger.debug(`Fetching tale with _id=${this.taleId}`);
       this.taleService.taleGetTale(this.taleId)
                       .subscribe((tale: Tale) => {
-        this.logger.info("Fetched tale:", tale);
+        this.logger.debug("Fetched tale:", tale);
         this.tale = tale;
 
         this.refreshCollaborators();
@@ -187,7 +187,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         this.userService.userGetUser(this.tale.creatorId)
                       .subscribe(creator => {
           this.creator = creator;
-          this.logger.info("Fetched creator:", this.creator);
+          this.logger.debug("Fetched creator:", this.creator);
           this.ref.detectChanges();
 
           if (this.tale?.restoredFrom) {
@@ -294,11 +294,11 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
       });
 
       this.updateSubscription = this.syncService.taleUpdatedSubject.subscribe((taleId) => {
-        this.logger.info("Tale update received from SyncService: ", taleId);
+        this.logger.debug("Tale update received from SyncService: ", taleId);
         if (taleId === this.taleId && !this.fetching) {
           this.fetching = true;
           setTimeout(() => {
-            this.logger.info("Tale update applied via SyncService: ", taleId);
+            this.logger.debug("Tale update applied via SyncService: ", taleId);
             this.refresh();
             this.fetching = false;
           }, 1000);
@@ -309,7 +309,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
         if (taleId === this.taleId && !this.fetching) {
           this.fetching = true;
           setTimeout(() => {
-            this.logger.info("Tale update applied after import via SyncService: ", taleId);
+            this.logger.debug("Tale update applied after import via SyncService: ", taleId);
             this.refresh();
             this.fetching = false;
           }, 1000);
@@ -364,7 +364,7 @@ export class RunTaleComponent extends BaseComponent implements OnInit, OnChanges
 
         const taleId = this.taleId;
         this.taleService.taleUpdateGit(taleId, gitRepo).subscribe(resp => {
-          this.logger.info(`Git repo added to ${taleId}:`, gitRepo);
+          this.logger.debug(`Git repo added to ${taleId}:`, gitRepo);
         });
       });
     }
