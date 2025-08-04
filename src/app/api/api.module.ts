@@ -18,7 +18,6 @@ import { IntegrationService } from './services/integration.service';
 import { ItemService } from './services/item.service';
 import { JobService } from './services/job.service';
 import { LicenseService } from './services/license.service';
-import { NotificationService } from './services/notification.service';
 import { OauthService } from './services/oauth.service';
 import { PublishService } from './services/publish.service';
 import { RepositoryService } from './services/repository.service';
@@ -61,7 +60,6 @@ import { AuthGuard } from './auth-guard';
     ItemService,
     JobService,
     LicenseService,
-    NotificationService,
     OauthService,
     PublishService,
     RepositoryService,
