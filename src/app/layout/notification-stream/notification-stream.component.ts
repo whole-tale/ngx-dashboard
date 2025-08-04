@@ -6,7 +6,6 @@ import { JobService } from '@api/services/job.service';
 import { TokenService } from '@api/token.service';
 import { LogService } from '@shared/core';
 import { SyncService } from '@tales/sync.service';
-import { EventSourcePolyfill as EventSource } from 'ng-event-source';
 
 import { ViewLogsDialogComponent } from '../../shared/common/components/view-logs-dialog/view-logs-dialog.component';
 
@@ -46,11 +45,11 @@ export class NotificationStreamComponent implements OnInit {
     return this.notificationStream.token;
   }
 
-  get source(): EventSource {
+  get source(): WebSocket {
     return this.notificationStream.source;
   }
 
-  get events(): Array<EventData> {
+  get events(): Array<GirderEvent> {
     return this.notificationStream.events;
   }
 
@@ -73,31 +72,32 @@ export class NotificationStreamComponent implements OnInit {
     });
   }
 
-  cancelJob(event: EventData): void {
-    if (!event.data || !event.data || !event.data.resource || !event.data.resource.jobs || !event.data.resource.jobs.length) {
+  cancelJob(event: GirderEvent): void {
+    if (!event.data || !event.data.resource || !event.data.resource || !event.data.resourceName) {
       this.logger.warn('Warning: Cannot cancel job without IDs');
 
       return;
     }
+    if (event.data.resourceName !== 'job') {
+      this.logger.warn('Cannot cancel since event is not a job progress');
 
-    const jobIds: Array<string> = event.data.resource.jobs;
-    this.logger.debug(`Cancelling jobIds: ${jobIds}`);
-    jobIds.forEach((jobId) => {
-      this.jobService.jobCancelJob(jobId).subscribe((resp) => {
-        this.logger.info(`Job cancelled: ${jobId}`);
-      });
+      return;
+    }
+    const jobId = event.data.resource._id;
+    this.jobService.jobCancelJob(jobId).subscribe((resp) => {
+      this.logger.debug(`Job cancelled: ${jobId}`, resp);
     });
   }
 
   onMessage(girderEvent: GirderEvent): void {
     // Discard everything outside of "data"
-    const eventData: EventData = JSON.parse(girderEvent.data);
-    const { affectedResourceIds, event } = eventData.data;
+    this.logger.debug('Received event:', girderEvent);
+    const eventData: EventData = girderEvent.data;
+    const { affectedResourceIds, event } = eventData;
 
     // FIXME: this should use `eventData.type` instead, or adjust wt_progress + others
     // Handle resource-specific updates
 
-    this.logger.info('Processing event: ', event);
     switch (event) {
       case 'wt_tale_updated':
         return this.sync.taleUpdated(affectedResourceIds.taleId);
@@ -129,62 +129,64 @@ export class NotificationStreamComponent implements OnInit {
       case 'wt_instance_error':
         return this.sync.instanceError(affectedResourceIds.taleId, affectedResourceIds.instanceId);
       default:
-        this.logger.info('Unrecognized update event: ', girderEvent.data);
+        this.logger.debug('Unrecognized update event: ', girderEvent.data);
         break;
     }
 
     // Ignore everything else except for progress updates
-    if (eventData.type !== 'wt_progress') {
-      this.logger.debug(`Skipping ignored event type (${eventData.type}):`, eventData);
+    if (girderEvent.type !== 'progress') {
+      this.logger.debug(`Skipping ignored event type (${girderEvent.type}):`, girderEvent);
 
       return;
     }
 
-    this.logger.warn('Message received:', eventData);
-
     this.zone.run(() => {
       // Check for existing notifications matching this one
-      const existing = this.events.find((evt) => eventData._id === evt._id);
+      const existing = this.events.find((evt) => girderEvent._id === evt._id);
       if (!existing) {
         // If we haven't seen one like this, then display it
-        this.notificationStream.events.push(eventData);
+        this.notificationStream.events.push(girderEvent);
         this.notificationStream.openNotificationStream(true);
-        // this.events.next(events);
-      } else if (existing && existing.updated < eventData.updated) {
+      } else if (existing) {
         // Replace existing notification with newer updates
         const index = this.events.indexOf(existing);
-        this.events[index] = eventData;
-        // this.events.next(events);
+        this.events[index] = girderEvent;
       }
     });
 
     // If task is active, update progress
-    if (eventData.data.state === 'active') {
+    if (eventData.state === 'active') {
       this.zone.runOutsideAngular(() => {
-        $(`#event-progress-${eventData._id}`).progress({
-          total: eventData.data.total,
-          value: eventData.data.current,
+        $(`#event-progress-${girderEvent._id}`).progress({
+          total: eventData.total,
+          value: eventData.current,
         });
       });
     }
 
     // If task has related resources, attempt to update them too
-    if (eventData.data.resource.type === 'wt_recorded_run') {
-      return this.sync.taleUpdated(eventData.data.resource.tale_id);
+    if (eventData.resource.type === 'wt_recorded_run') {
+      return this.sync.taleUpdated(eventData.resource.tale_id);
     }
 
     this.ref.detectChanges();
   }
 
-  openLogViewerModal(event: EventData): void {
-    if (!event || !event.data || !event.data.resource || !event.data.resource.jobs || !event.data.resource.jobs.length) {
+  openLogViewerModal(event: GirderEvent): void {
+    if (!event || !event.data || !event.data.resource || !event.data.resource || !event.data.resourceName) {
       this.logger.error('Failed to view logs - no jobId provided by event.');
 
       return;
     }
 
+    if (event.data.resourceName !== 'job') {
+      this.logger.error('Failed to view logs - event is not a job progress update.');
+
+      return;
+    }
+
     // Grab first (build) jobId
-    const jobIds = event.data.resource.jobs;
+    const jobIds: Array<string> = [event.data.resource._id];
     const config: MatDialogConfig = {
       data: { jobIds },
     };
@@ -193,7 +195,7 @@ export class NotificationStreamComponent implements OnInit {
     // Do nothing on close
   }
 
-  trackById(index: number, event: EventData): string {
+  trackById(index: number, event: GirderEvent): string {
     return event._id;
   }
 }
