@@ -14,7 +14,6 @@ export { IntegrationService } from './services/integration.service';
 export { ItemService } from './services/item.service';
 export { JobService } from './services/job.service';
 export { LicenseService } from './services/license.service';
-export { NotificationService } from './services/notification.service';
 export { OauthService } from './services/oauth.service';
 export { PublishService } from './services/publish.service';
 export { RepositoryService } from './services/repository.service';
